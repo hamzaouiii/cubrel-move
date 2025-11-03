@@ -1,0 +1,60 @@
+name: Deploy to Hetzner (FTP)
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Build PHP dependencies (server has no Composer)
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+
+      - name: Composer install (no dev, optimized)
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      # Build JS/CSS (Vite)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install node deps & build
+        run: |
+          npm ci
+          npm run build
+        # This generates public/build/**
+
+      # Safety: ensure no Vite dev server file is shipped
+      - name: Remove Vite hot file if present
+        run: rm -f public/hot || true
+
+      # Deploy via FTP
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # protocol: ${{ secrets.FTP_SECURE == 'true' && 'ftps' || 'ftp' }}
+          # port: ${{ secrets.FTP_PORT || 21 }}
+          server-dir: /laravel/        # => /web/laravel on Hetzner
+          dangerous-clean-slate: true  # remove files that no longer exist in repo
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/tests/**
+            .env
+            .env.*
+            storage/**
+            public/storage/**
