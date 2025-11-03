@@ -1,71 +1,38 @@
 <template>
-  <header :class="['navigation', { scrolled: isScrolled } , {background_white: whiteBg}]">
-    <div class="nav-inner">
-      <a class="brand" href="#home">
+  <header :class="{scrolled : isScrolled}">
+      <Link class="logo"  href="/#home">
         <img src="/img/logo/logo.png" alt="Logo" />
-      </a>
-      <div  class="nav-bar">      
-        <button
-        class="burger"
-        :aria-expanded="menuOpen ? 'true' : 'false'"
-        aria-controls="primary-nav"
-        @click="openMenu()"
-      >
-        <span></span><span></span><span></span>
-        <span class="sr-only">Menü öffnen</span>
-      </button>
-
-        <nav 
-        v-if="isHome()"
-          id="primary-nav"
-          :class="['nav-links', { 'is-open': menuOpen }]"
-          @click="openMenu()"
-        >
-          <a href="#feature">Leistungen</a>
-          <a href="#about">Ablauf</a>
-          <a href="#pricing">Preise</a>
-          <a href="#contact">Kontakt</a>
+      </Link>
+        <nav :class="{showMobileMenu: isOpen}">
+          <div class='burger' @click="isOpen = !isOpen">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div> 
+          <ul>
+            <Link @click="isOpen = !isOpen" href="/#leistungen">Leistungen</Link>
+            <Link @click="isOpen = !isOpen" href="/#ablauf">Ablauf</Link>
+            <Link @click="isOpen = !isOpen" href="/#preise">Preise</Link>
+            <Link @click="isOpen = !isOpen" href="/#kontakt">Kontakt</Link>
+          </ul>
         </nav>
-        <nav v-else
-                 id="primary-nav"
-          :class="['nav-links', { 'is-open': menuOpen }]"
-          @click="openMenu()">
-          <Link href="/#feature">Leistungen</Link>
-          <Link href="/#about">Ablauf</Link>
-          <Link href="/#pricing">Preise</Link>
-          <Link href="/#contact">Kontakt</Link>
-        </nav>
-      </div>
 
-    </div>
   </header>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { usePage, Link } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3';
+import { ref ,onMounted, onUnmounted} from 'vue';
 
-const Currentpage = usePage()
-
-let menuOpen = ref(false);
 let isScrolled = ref(false);
-let whiteBg = ref(false);
+let isOpen = ref(false);
 
 const onScroll = () => {
-  isScrolled.value = window.scrollY > 260;
+    isScrolled.value = window.scrollY > 260;
   if(window.scrollY < 20){
     isScrolled.value = false;
   }
-};
-function isHome () {
-  if (Currentpage.url != "/"){
-    return false;
-  }
-  else{
-    return true;
-  }
 }
-console.log(Currentpage.url )
 
 onMounted(() => {
   onScroll();
@@ -73,10 +40,5 @@ onMounted(() => {
 });
 onUnmounted(() => window.removeEventListener('scroll', onScroll));
 
-function openMenu(){
-  console.log(whiteBg)
-  menuOpen.value = !menuOpen.value
-  whiteBg.value = !whiteBg.value
-}
-</script>
+ </script>
 

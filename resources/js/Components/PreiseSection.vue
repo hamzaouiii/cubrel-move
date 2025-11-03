@@ -1,6 +1,6 @@
 <template>
 
-  <section id="pricing" class="pricing-section pricing-style-4 bg-light">
+  <section id="preise" class="pricing-section pricing-style-4 bg-light">
     <div class="container">
       <div class="row">
         <div class="col-8 pricing-img">

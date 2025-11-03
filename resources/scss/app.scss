@@ -33,12 +33,6 @@ body {
   width: 100%;
 }
 
-@media only screen and (min-width: 992px) and (max-width: 1199px), (max-width: 767px) {
-  .pricing-style-4 .price-image img {
-    width: 100%;
-  }
-}
-
 .contact .contact-image img{
   margin-top: 30px;
   width: 150%;
@@ -46,25 +40,40 @@ body {
 
 }
 
-@media only screen and (min-width: 992px) and (max-width: 1199px), (max-width: 767px) {
-  .contact .contact-image img {
-    width: 100%;
-  }
-}
+
 
 .task .task-image img{
   width: 80%;
   margin-bottom: 50px;
 
 }
-
 @media only screen and (min-width: 992px) and (max-width: 1199px), (max-width: 767px) {
+  .pricing-style-4 .price-image img {
+    width: 100%;
+  }
+  .contact .contact-image img {
+    width: 100%;
+  }
+
   .task .task-image img {
     width: 100%;
   }
+   .privacy-content{
+    flex-direction: column;
+  }
+  .privacy-content .figure img{
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
 }
 
+//edge case
+@media only screen and (max-width: 1520px) {
 
+ .about-style-4 .about-image img{
+    width: 100%;
+  }
+}
 
 .privacy-content{
   background-color: #f3f3f3;
@@ -94,6 +103,9 @@ max-width: 600px;
 .privacy-content h3{
   font-size: 1rem;
 }
+.privacy-content h5{
+  font-size: 1rem;
+}
 .privacy-content-par{
   margin: 35px 0;
 }
@@ -102,14 +114,5 @@ max-width: 600px;
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1199px), (max-width: 767px) {
-  .privacy-content{
-    flex-direction: column;
-  }
-  .privacy-content .figure img{
-    max-width: 300px;
-    margin-bottom: 20px;
-  }
-}
-
-.task{
+ 
 }
