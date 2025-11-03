@@ -11,7 +11,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Build PHP dependencies (server has no Composer)
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -22,7 +21,6 @@ jobs:
       - name: Composer install (no dev, optimized)
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # Build JS/CSS (Vite)
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -32,13 +30,10 @@ jobs:
         run: |
           npm ci
           npm run build
-        # This generates public/build/**
 
-      # Safety: ensure no Vite dev server file is shipped
       - name: Remove Vite hot file if present
         run: rm -f public/hot || true
 
-      # Deploy via FTP
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
@@ -47,8 +42,8 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps          
           port: 21
-          server-dir: /laravel/        # => /web/laravel on Hetzner
-          dangerous-clean-slate: true  # remove files that no longer exist in repo
+          server-dir: /public_html/ 
+          
           exclude: |
             **/.git*
             **/.github/**
