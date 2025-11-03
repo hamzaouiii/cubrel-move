@@ -45,8 +45,8 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # protocol: ${{ secrets.FTP_SECURE == 'true' && 'ftps' || 'ftp' }}
-          # port: ${{ secrets.FTP_PORT || 21 }}
+          protocol: ftps          
+          port: 21
           server-dir: /laravel/        # => /web/laravel on Hetzner
           dangerous-clean-slate: true  # remove files that no longer exist in repo
           exclude: |
