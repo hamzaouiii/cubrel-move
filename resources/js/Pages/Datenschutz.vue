@@ -53,8 +53,9 @@
       </div>
       <div class="privacy-content-par">
         <h2>6. Cookies</h2>
-          <p>Diese Website verwendet in der Regel <strong>keine Cookies.</strong></p>
+          <p>Diese Website verwendet in der Regel <strong>keine Tracking Cookies.</strong></p>
           <p>Sollten einzelne technische Cookies erforderlich sein (z. B. für Sitzungs- oder Sicherheitszwecke), erfolgt deren Einsatz auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer fehlerfreien Bereitstellung der Website).</p>
+          <p>Derzeit werden lediglich technisch notwendige Cookies (z. B. ein Sitzungs-Cookie und ein CSRF-Token) verwendet, die keine personenbezogenen Daten enthalten und nach Sitzungsende automatisch gelöscht werden.</p>
       </div>
       <div class="privacy-content-par">
         <h2>7. Analyse-Tools</h2>
