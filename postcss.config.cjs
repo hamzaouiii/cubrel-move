@@ -18,7 +18,7 @@ module.exports = {
         safelist: {
           standard: [
             // navbar / bootstrap-ish
-            'show', 'collapse', 'collapsing', 'navbar-collapse', 'navbar', 'nav', 'active',
+            'show', 'collapse', 'collapsing', 'navbar-collapse', 'navbar', 'nav', 'active','showMobileMenu',
             // wow/animate
             'wow', 'animated', 'fadeInUp', 'fadeIn', 'fade',
             // grid/utils
