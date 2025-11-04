@@ -33,7 +33,6 @@
 
             <form v-else @submit.prevent="submit" novalidate>
               <div class="row">
-                <!-- Name -->
                 <div class="col-md-6">
                   <div class="single-input">
                     <input
@@ -47,13 +46,12 @@
                       @blur="validateField('name')"
                     />
                     <i class="fa-solid fa-user"></i>
-                    <div v-if="form.errors.name" class="invalid-feedback d-block">
+                    <div v-if="form.errors.name" class="invalid-feedback">
                       {{ form.errors.name }}
                     </div>
                   </div>
                 </div>
 
-                <!-- Email -->
                 <div class="col-md-6">
                   <div class="single-input">
                     <input
@@ -67,13 +65,12 @@
                       @blur="validateField('email')"
                     />
                     <i class="fa-solid fa-envelope"></i>
-                    <div v-if="form.errors.email" class="invalid-feedback d-block">
+                    <div v-if="form.errors.email" class="invalid-feedback">
                       {{ form.errors.email }}
                     </div>
                   </div>
                 </div>
 
-                <!-- Phone -->
                 <div class="col-md-12">
                   <div class="single-input">
                     <input
@@ -87,13 +84,12 @@
                       @blur="validateField('phone')"
                     />
                     <i class="fa-solid fa-phone"></i>
-                    <div v-if="form.errors.phone" class="invalid-feedback d-block">
+                    <div v-if="form.errors.phone" class="invalid-feedback ">
                       {{ form.errors.phone }}
                     </div>
                   </div>
                 </div>
 
-                <!-- Message -->
                 <div class="col-md-12">
                   <div class="single-input">
                     <textarea
@@ -106,7 +102,7 @@
                       @blur="validateField('message')"
                     ></textarea>
                     <i class="fa-solid fa-message"></i>
-                    <div v-if="form.errors.message" class="invalid-feedback d-block">
+                    <div v-if="form.errors.message" class="invalid-feedback">
                       {{ form.errors.message }}
                     </div>
                   </div>
@@ -196,7 +192,6 @@
         break
 
       case 'message':
-        if (!v) return form.setError('message', 'Nachricht ist erforderlich.')
         if (v.length > 5000) return form.setError('message', 'Maximal 5000 Zeichen.')
         break
     }
@@ -231,12 +226,12 @@
     return !hasRealErrors()
   }
 
-  function submit() {
+  const submit = async () => {
     flash.value = ''
     rateError.value = ''
     if (!validateAll()) return
-
     showLoader.value = true
+      await new Promise(resolve => setTimeout(resolve, 2000))
     form.post(endpoint, {
       preserveScroll: true,
       onSuccess: () => {

@@ -1,5 +1,15 @@
-.is-invalid { border-color: #dc3545; }
-.invalid-feedback { font-size: .875rem; }
+.is-invalid { border-top: 2px solid salmon !important}
+.invalid-feedback { 
+  background:
+    linear-gradient(rgba(250, 128, 114, 0.765), rgba(250, 128, 114, 0.883)) padding-box,        /* inner fill */
+    linear-gradient(90deg, #ff7a18, #af002d, #319197) border-box; /* border */
+  color: #fff;
+  padding: 5px;
+  color: white !important;
+  border: 2px solid transparent;        /* thickness */
+  border-radius: 0 8px;
+}
+
 .loader-container{
   display: flex;
   justify-content: center;
@@ -7,7 +17,6 @@
   flex-direction: column;
 
 }
-/* HTML: <div class="loader"></div> */
 .loader {    
   --r1: 154%;
   --r2: 68.5%;
