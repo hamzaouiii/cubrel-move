@@ -11,11 +11,14 @@ use Illuminate\Support\Facades\Mail;
 use \App\Models\ContactMessage;
 use \App\Models\IpWhitelist;
 use App\Mail\ContactMessageReceived;
+use App\Mail\ContactMessageConfirmation;
+use App\Models\Email;
 
 class ContactMessageController extends Controller
 {
   public function store(Request $request)
   {
+    // validate
     $data = $request->validate([
         'name'    => ['required', 'string', 'max:150'],
         'email'   => ['nullable', 'email', 'max:190'],
@@ -24,8 +27,9 @@ class ContactMessageController extends Controller
     ]);
 
     $ip = $request->ip();
-    $whitelisted = IpWhitelist::where('ip', $ip)->where('active', true)->exists();    
-    
+    $whitelisted = IpWhitelist::where('ip', $ip)->where('active', true)->exists();   
+
+    // check white list or if visitor had already sent a message within the last 24h
     if(! $whitelisted){
       $alreadySent = DB::table('contact_messages')
           ->where('ip', $ip)
@@ -57,22 +61,89 @@ class ContactMessageController extends Controller
         ]);
       }
     }
-
+    
+    // store message
     $contactMessage = ContactMessage::create([
         'name'       => $data['name'],
         'email'      => $data['email'] ?? null,
         'phone'      => $data['phone'] ?? null,
-        'message'    => $data['message']?? '',
+        'message'    => $data['message'],
         'status'     => 'new',
         'ip'         => $request->ip(),
         'user_agent' => substr((string) $request->userAgent(), 0, 255),
     ]);
-
+    
+    /*// send confirmations and store emails sent
     try {
-     Mail::to('simo.hamzaoui.1993@gmail.com')->send(new ContactMessageReceived($contactMessage));
+      // notify admin of a new lead
+      Mail::to(config('mail.admin_address'))->send(new ContactMessageReceived($contactMessage));
+
+      //store email in table and wait for sending confirmation fro the worker
+      Email::create([
+        'to' => config('mail.admin_address'),
+        'subject' => 'New contact message received',
+        'mailable_class' => ContactMessageReceived::class,
+        'related_id' => $contactMessage->id,
+      ]);
+
+      // notify visitor that we recieved their message
+      if (!empty($contactMessage->email)) {
+        Mail::to($contactMessage->email)
+            ->send(new ContactMessageConfirmation($contactMessage));
+
+        Email::create([
+            'to' => $contactMessage->email,
+            'subject' => 'Confirmation: your message was received',
+            'mailable_class' => ContactMessageConfirmation::class,
+            'related_id' => $contactMessage->id,
+        ]);
+      }
     } catch (\Throwable $e) {
-      dd('Contact email failed: '.$e->getMessage(), ['contact_id' => $contactMessage->id]);
+      \Log::error('Contact email failed', [
+        'error' => $e->getMessage(),
+        'contact_id' => $contactMessage->id,
+      ]);
     }
+*/
+
+try {
+    // Admin email queued
+    $admin = "simo.hamzaoui.1993@gmail.com";
+
+    $adminLog = Email::create([
+        'to' =>  $admin,
+        'subject' => 'New contact message received',
+        'mailable_class' => ContactMessageReceived::class,
+        'related_id' => $contactMessage->id,
+        'status' => 'queued',
+    ]);
+
+    Mail::to($admin)
+        ->queue((new ContactMessageReceived($contactMessage))
+            ->withSentEmailId($adminLog->id));
+
+    // Confirmation to user
+    if (!empty($contactMessage->email)) {
+        $userLog = Email::create([
+            'to' => $contactMessage->email,
+            'subject' => 'Confirmation: your message was received',
+            'mailable_class' => ContactMessageConfirmation::class,
+            'related_id' => $contactMessage->id,
+            'status' => 'queued',
+        ]);
+
+        Mail::to($contactMessage->email)
+            ->queue((new ContactMessageConfirmation($contactMessage))
+                ->withSentEmailId($userLog->id));
+    }
+
+} catch (\Throwable $e) {
+    \Log::error('Failed to queue contact mail', [
+        'error' => $e->getMessage(),
+        'contact_id' => $contactMessage->id,
+    ]);
+}
+
     if ($request->wantsJson()) {
         return response()->json(['ok' => true, 'message' => 'Nachricht gesendet.']);
     }

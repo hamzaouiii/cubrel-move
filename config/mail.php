@@ -2,6 +2,7 @@
 
 return [
 
+  'admin_address' => env('ADMIN_EMAIL', 'simo.hamzaoui.1993@gmail.com'),
     /*
     |--------------------------------------------------------------------------
     | Default Mailer

@@ -3,34 +3,36 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use App\Models\ContactMessage;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Models\Email;
 
-class ContactMessageReceived extends Mailable implements ShouldQueue
+class ContactMessageConfirmation extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+
+    public $contactMessage;
     protected ?int $sentEmailId = null;
-    public ContactMessage $msg;
 
-    public function __construct(ContactMessage $msg)
+    public function __construct($contactMessage)
     {
-        $this->msg = $msg;
+        $this->contactMessage = $contactMessage;
     }
 
-    public function build()
-    {
-        return $this->subject('Neue Kontaktanfrage')
-            ->replyTo($this->msg->email, $this->msg->name) 
-            ->markdown('emails.contact_received');
-    }
     public function withSentEmailId(int $id): static
     {
         $this->sentEmailId = $id;
         return $this;
     }
+
+    public function build()
+    {
+        return $this->subject('Bestätigung: Ihre Nachricht wurde erhalten')
+                    ->markdown('emails.contact.confirmation', [
+                        'contactMessage' => $this->contactMessage,
+                    ]);
+    }
+
     public function __destruct()
     {
         if ($this->sentEmailId) {
@@ -38,6 +40,7 @@ class ContactMessageReceived extends Mailable implements ShouldQueue
                 ->update(['status' => 'sent']);
         }
     }
+
     public function failed(\Throwable $e): void
     {
         if ($this->sentEmailId) {
@@ -45,5 +48,4 @@ class ContactMessageReceived extends Mailable implements ShouldQueue
                 ->update(['status' => 'failed']);
         }
     }
-
 }
