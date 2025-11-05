@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 use \App\Models\ContactMessage;
 use \App\Models\IpWhitelist;
+use App\Mail\ContactMessageReceived;
 
 class ContactMessageController extends Controller
 {
@@ -55,15 +58,21 @@ class ContactMessageController extends Controller
       }
     }
 
-    ContactMessage::create([
+    $contactMessage = ContactMessage::create([
         'name'       => $data['name'],
-        'email'      => $data['email'],
+        'email'      => $data['email'] ?? null,
         'phone'      => $data['phone'] ?? null,
-        'message'    => $data['message'],
+        'message'    => $data['message']?? '',
         'status'     => 'new',
         'ip'         => $request->ip(),
         'user_agent' => substr((string) $request->userAgent(), 0, 255),
     ]);
+
+    try {
+     Mail::to('simo.hamzaoui.1993@gmail.com')->send(new ContactMessageReceived($contactMessage));
+    } catch (\Throwable $e) {
+      dd('Contact email failed: '.$e->getMessage(), ['contact_id' => $contactMessage->id]);
+    }
     if ($request->wantsJson()) {
         return response()->json(['ok' => true, 'message' => 'Nachricht gesendet.']);
     }

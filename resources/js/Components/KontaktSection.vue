@@ -231,7 +231,7 @@
     rateError.value = ''
     if (!validateAll()) return
     showLoader.value = true
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // await new Promise(resolve => setTimeout(resolve, 2000))
     form.post(endpoint, {
       preserveScroll: true,
       onSuccess: () => {
