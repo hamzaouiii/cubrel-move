@@ -22,9 +22,9 @@ class ContactMessageReceived extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject('Neue Kontaktanfrage')
+        return $this->subject('Automatisierung Regensburg: New Lead from Contact form')
             ->replyTo($this->msg->email, $this->msg->name) 
-            ->markdown('emails.contact_received');
+            ->markdown('emails.contact.adminNotification');
     }
     public function withSentEmailId(int $id): static
     {
