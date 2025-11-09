@@ -49,7 +49,10 @@ body {
   margin-bottom: 50px;
 
 }
-@media only screen and (min-width: 992px) and (max-width: 1199px), (max-width: 767px) {
+.hero-btn{
+  margin-top: 75px !important;
+}
+@media only screen and (max-width: 767px) {
   .pricing-style-4 .price-image img {
     width: 100%;
   }
@@ -66,6 +69,14 @@ body {
   .privacy-content .figure img{
     max-width: 300px;
     margin-bottom: 20px;
+  }
+    .hero-btn{
+    margin-top: 45px !important;
+    font-size: 0.88rem !important;
+  }
+  .hero-content-wrapper h2 {
+    font-size: 1.94rem!important;
+    margin-top: 75px;
   }
 }
 
@@ -115,6 +126,7 @@ max-width: 600px;
   padding-left: 5px;
 }
 
-@media only screen and (min-width: 992px) and (max-width: 1199px), (max-width: 767px) {
- 
+
+.single-feature{
+  padding: 10px !important;
 }

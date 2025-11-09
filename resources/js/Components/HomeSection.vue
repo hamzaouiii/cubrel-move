@@ -5,9 +5,10 @@
         <div class="row">
           <div class="col-lg-6">
             <div class="hero-content-wrapper">
-              <h2>Weniger Klicks. Mehr Zeit für Ihr Geschäft.</h2>
-              <p>Optimieren Sie Ihre täglichen Abläufe mit digitaler Prozessautomatisierung, weniger manuelle Arbeit, weniger Fehler, mehr Zeit für das Wesentliche. Ihre Formulare, Dokumente und E-Mails werden zu einem intelligenten System verbunden, das im Hintergrund für Sie arbeitet.</p>
-              <a href="#kontakt" class="button button-lg radius-50">Kontakt<i class="fa-solid fa-chevron-right"></i></a>
+              <h2>Digitale Automatisierung für Ihr Unternehmen</h2>
+              <p>Wir entwickeln individuelle <strong>Mini-CRM-Systeme</strong> und <strong>Automatisierungen</strong>, die Ihre täglichen Abläufe vereinfachen,  von Angeboten über Rechnungen bis hin zur Kundenkommunikation.</p>
+              <p><strong>Sparen Sie jeden Tag Zeit und vermeiden Sie Routinearbeit.</strong> </p>
+              <a href="#kontakt" class="hero-btn button button-lg radius-50">Kostenlose Prozessanalyse anfragen<i class="fa-solid fa-chevron-right"></i></a>
             </div>
           </div>
           <div class="hero-img col-lg-6 align-self-end">

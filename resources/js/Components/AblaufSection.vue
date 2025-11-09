@@ -25,7 +25,7 @@
                   <strong>Übergabe</strong><span>: Dokumentation und Einweisung.</span>
                 </li>
               </ul>
-              <a href="#contact" class="button button-lg radius-10 wow fadeInUp" data-wow-delay=".5s">Kontakt</a>
+              <!-- <a href="#contact" class="button button-lg radius-10 wow fadeInUp" data-wow-delay=".5s">Kontakt</a> -->
             </div>
           </div>
           <div class="col-xl-7 col-lg-6">

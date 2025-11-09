@@ -16,48 +16,46 @@
             <!-- Plan 1 -->
             <div class="single-pricing-wrapper">
               <div class="single-pricing">
-                <h6>Festpreis Starter</h6>
+                <h6>Basis</h6>
                 <h4>Kleine Automatisierung</h4>
                 <h3>ab 400 €</h3>
                 <ul>
-                  <li><i class="fa-solid fa-check"></i> 1 Formular → PDF und E-Mail Versand</li>
-                  <li><i class="fa-solid fa-check"></i> Übernahme in Excel oder bestehendes CRM</li>
-                  <li><i class="fa-solid fa-check"></i> Kurze Einweisung und Übergabe</li>
-                  <li><i class="fa-solid fa-check"></i> Bereitstellung in wenigen Tagen</li>
+                  <li><i class="fa-solid fa-check"></i> Automatisierte Angebots oder Rechnungserstellung</li>
+                  <li><i class="fa-solid fa-check"></i> Formularübertragung in Excel, CRM oder Datenbank</li>
+                  <li><i class="fa-solid fa-check"></i> E-Mail-Benachrichtigungen und Erinnerungen</li>
                 </ul>
-                <a href="#contact" class="button radius-30">Anfragen</a>
+                <!-- <a href="#contact" class="button radius-30">Anfragen</a> -->
               </div>
             </div>
 
             <!-- Plan 2 -->
             <div class="single-pricing-wrapper">
               <div class="single-pricing">
-                <h6>Projekt Standard</h6>
-                <h4>Workflow Automatisierung</h4>
-                <h3>ab 950 €</h3>
+                <h6>Business</h6>
+                <h4>Mini-CRM & Integration</h4>
+                <h3>ab 1500 €</h3>
                 <ul>
-                  <li><i class="fa-solid fa-check"></i> 2–3 Schritte automatisiert (z. B. Angebot, Rechnung, Mail)</li>
-                  <li><i class="fa-solid fa-check"></i> Anbindung an Excel oder einfaches Dashboard</li>
-                  <li><i class="fa-solid fa-check"></i> 30 Minuten Schulung inklusive</li>
-                  <li><i class="fa-solid fa-check"></i> Klar definierte Abnahme</li>
+                  <li><i class="fa-solid fa-check"></i> Alles aus dem Basis-Plan</li>
+
+                  <li><i class="fa-solid fa-check"></i> Kunden, Angebots und Rechnungsverwaltung</li>
+                  <li><i class="fa-solid fa-check"></i> Verbindung zwischen CRM oder Onlineshop</li>
                 </ul>
-                <a href="#contact" class="button radius-30">Kostenlose Einschätzung</a>
+                <!-- <span><strong>Ergebnis:</strong> Alle Daten an einem Ort, klar strukturierte Abläufe, weniger Fehler.</span> -->
               </div>
             </div>
 
             <!-- Plan 3 -->
             <div class="single-pricing-wrapper">
               <div class="single-pricing">
-                <h6>Projekt Pro</h6>
+                <h6>Premium</h6>
                 <h4>Individuelle Lösung</h4>
-                <h3>ab 1.800 €</h3>
+                <h3>ab 2500 €</h3>
                 <ul>
-                  <li><i class="fa-solid fa-check"></i> Mehrere Abläufe mit Schnittstellen</li>
+                  <li><i class="fa-solid fa-check"></i> Alles vaus dem Business-Plan</li>
+                  <li><i class="fa-solid fa-check"></i> Automatisierte Reports und Dashboards</li>
                   <li><i class="fa-solid fa-check"></i> Benutzerverwaltung oder Freigaben</li>
                   <li><i class="fa-solid fa-check"></i> Tests, Dokumentation, Übergabe</li>
-                  <li><i class="fa-solid fa-check"></i> Optionale Erweiterungen nach Bedarf</li>
                 </ul>
-                <a href="#contact" class="button radius-30">Projekt besprechen</a>
               </div>
             </div>
           </div>

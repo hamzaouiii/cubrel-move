@@ -5,7 +5,7 @@
         <div class="col-xxl-5 col-xl-5 col-lg-7 col-md-10">
           <div class="section-title text-center mb-50">
             <h3 class="mb-15">Kontakt</h3>
-            <p>Senden Sie Ihre Anfrage – Sie erhalten in der Regel noch am selben Tag eine Antwort.</p>
+            <p>Senden Sie Ihre Anfrage, Sie erhalten in der Regel noch am selben Tag eine Antwort.</p>
           </div>
         </div>
       </div>

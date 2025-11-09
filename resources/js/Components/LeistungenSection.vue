@@ -4,7 +4,7 @@
       <div class="row justify-content-center">
         <div class="col-xxl-5 col-xl-5 col-lg-7 col-md-8">
           <div class="section-title text-center mb-60">
-            <h3 class="mb-15 wow fadeInUp" data-wow-delay=".2s">Was wir für Sie tun können</h3>
+            <h3 class="mb-15 wow fadeInUp" data-wow-delay=".2s">Wir digitalisieren wiederkehrende Abläufe</h3>
           </div>
         </div>
       </div>
@@ -19,42 +19,42 @@
           <div class="col-lg-3 col-md-6">
             <div class="single-feature wow fadeInUp" data-wow-delay=".2s">
               <div class="icon">
-                <i class="fa-solid fa-file-pdf"></i>
+                <i class="fa-solid fa-users-gear"></i>
                 <svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M110 54.7589C110 85.0014 85.3757 66.2583 55 66.2583C24.6243 66.2583 0 85.0014 0 54.7589C0 24.5164 24.6243 0 55 0C85.3757 0 110 24.5164 110 54.7589Z" fill="#EBF4FF"/>
                   </svg>                  
               </div>
               <div class="content">
-                <h5>Angebote und Rechnungen als PDF generieren</h5>
-                <p>Aus Formular oder Excel entsteht automatisch eine saubere PDF mit Logo und Positionen. Auf Wunsch Versand per E Mail.</p>
+                <h5>Mini CRM Systeme</h5>
+                <p>Wir entwickeln kleine CRM Lösungen, mit denen Sie Kunden, Angebote und Rechnungen an einem Ort verwalten. Aus Formularen oder Excel Daten entstehen automatisch saubere PDFs mit Logo und Positionen.</p>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
             <div class="single-feature wow fadeInUp" data-wow-delay=".4s">
               <div class="icon">
-                <i class="fa-solid fa-file-import"></i> 
+                <i class="fa-solid fa-link"></i>
                 <svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M110 54.7589C110 85.0014 85.3757 66.2583 55 66.2583C24.6243 66.2583 0 85.0014 0 54.7589C0 24.5164 24.6243 0 55 0C85.3757 0 110 24.5164 110 54.7589Z" fill="#EBF4FF"/>
                   </svg> 
               </div>
               <div class="content">
-                <h5>Formular zu Excel oder CRM</h5>
-                <p>Kundenanfragen werden direkt in eine Tabelle oder zu Ihrem CRM gespeichert. Kein Kopieren mehr.</p>
+                <h5>System und Datenintegration</h5>
+                <p>Wir verbinden Ihre bestehenden Systeme, damit Informationen automatisch fließen. Ob CRM, E-Mail, Buchhaltung oder Onlineshop</p>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
             <div class="single-feature wow fadeInUp" data-wow-delay=".6s">
               <div class="icon">
-                <i class="fa-solid fa-business-time"></i>
+                <i class="fa-solid fa-chart-line"></i>
                 <svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M110 54.7589C110 85.0014 85.3757 66.2583 55 66.2583C24.6243 66.2583 0 85.0014 0 54.7589C0 24.5164 24.6243 0 55 0C85.3757 0 110 24.5164 110 54.7589Z" fill="#EBF4FF"/>
                   </svg> 
               </div>
               <div class="content">
-                <h5>Erinnerungen und Status</h5>
-                <p>Automatische Erinnerungsmails oder Statusupdates, wenn Fristen erreicht sind.</p>
+                <h5>Reporting & Prozessanalyse</h5>
+                <p>Wir automatisieren die Datenauswertung und erstellen individuelle Dashboards oder PDF-Berichte mit Ihren wichtigsten Kennzahlen.</p>
               </div>
             </div>
           </div>
@@ -67,8 +67,8 @@
                   </svg> 
               </div>
               <div class="content">
-                <h5>Web Development</h5>
-                <p>Erstellen Sie moderne, leistungsstarke Weblösungen, die perfekt zu Ihren Geschäftsprozessen passen.</p>
+                <h5>Web Entwickelung</h5>
+                <p>Wir erstellen moderne, leistungsstarke Weblösungen, die perfekt zu Ihren Geschäftsprozessen passen. Vom individuellen Kundenportal über Schnittstellen bis hin zu komplett angepassten Unternehmensanwendungen</p>
               </div>
             </div>
           </div>
