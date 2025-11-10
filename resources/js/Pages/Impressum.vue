@@ -10,7 +10,7 @@
 
       <div class="privacy-content-par">
         <h2>Angaben gemäß § 5 TMG</h2>
-        <p><strong>Mohammed Hamzaoui</strong><br>
+        <p><strong>Simo Hamzaoui</strong><br>
         Ahornstr. 11<br>
         93087 Alteglofsheim<br>
         Deutschland</p>
@@ -34,7 +34,7 @@
 
       <div class="privacy-content-par">
         <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-        <p>Mohammed Hamzaoui<br>
+        <p>Simo Hamzaoui<br>
         Ahornstr. 11<br>
         93087 Alteglofsheim</p>
       </div>

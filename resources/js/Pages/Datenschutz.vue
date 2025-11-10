@@ -9,7 +9,7 @@
       <div class="privacy-content-par">
         <h2>1. Verantwortlicher</h2>
         <h5>Verantwortlich für die Datenverarbeitung auf dieser Website ist:</h5>
-        <p><strong>Mohammed Hamzaoui</strong><br>
+        <p><strong>Simo Hamzaoui</strong><br>
         Ahornstr. 11<br>
         93087 Alteglofsheim<br>
         Deutschland<br>

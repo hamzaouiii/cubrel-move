@@ -1,7 +1,8 @@
 <template>
   <header :class="{scrolled : isScrolled}">
       <Link class="logo"  href="/#home">
-        <img src="/img/logo/logo.png" alt="Logo" />
+        <img src="/img/logo/vector/default-monochrome.svg" alt="Logo" />
+
       </Link>
         <nav :class="{showMobileMenu: isOpen}">
           <div class='burger' @click="isOpen = !isOpen">
