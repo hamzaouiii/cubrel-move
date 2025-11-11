@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
 import vue from '@vitejs/plugin-vue'
-import { fileURLToPath, URL } from 'node:url'   // <-- add this
+import { fileURLToPath, URL } from 'node:url' 
 
 export default defineConfig({
   plugins: [
@@ -10,11 +10,12 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls: { base: null, includeAbsolute: false } },
     }),
+      vuetify({ autoImport: true }), 
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
-      '@img': fileURLToPath(new URL('./resources/img', import.meta.url)), // <-- use @img (no ~)
+      '@img': fileURLToPath(new URL('./resources/img', import.meta.url)), 
     },
   },
 })
