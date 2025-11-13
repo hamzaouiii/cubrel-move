@@ -53,7 +53,7 @@ const logout = () => {
         <!-- Top metrics -->
         <div class="row g-3">
           <div class="col-lg-9">
-            <div class="card card-border-radius scale-at-hover card-shadow mb-3 scale-at-hover">
+            <div class="card card-border-radius scale-at-hover card-shadow mb-3">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <span>Total Revenue</span>
                 <div>
