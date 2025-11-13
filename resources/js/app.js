@@ -4,6 +4,9 @@ import { createInertiaApp } from '@inertiajs/vue3'
 import '../scss/app.scss'; 
 import '../scss/lib.min.css'; 
 
+
+
+
 createInertiaApp({
   resolve: name => {
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
