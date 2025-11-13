@@ -10,7 +10,6 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls: { base: null, includeAbsolute: false } },
     }),
-      vuetify({ autoImport: true }), 
   ],
   resolve: {
     alias: {

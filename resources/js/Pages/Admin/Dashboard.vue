@@ -12,22 +12,14 @@ const logout = () => {
     <Head>
     <title>Dashboard - Automatisierung Regensburg</title>
   </Head>
-  <button color="primary" @click="logout">Logout</button>
   <div class="dashboard d-flex">
-    <!-- Sidebar -->
-    <aside class="sidebar border-end">
+
+    <aside class="sidebar">
       <div class="p-3 d-flex align-items-center gap-2">
         <img src="/favicon-32x32.png" alt="logo" width="24" height="24" />
-        <span class="fw-semibold">sneat</span>
       </div>
 
       <ul class="nav nav-pills flex-column px-2 gap-1">
-        <li class="nav-item">
-          <a class="nav-link active d-flex align-items-center gap-2" href="#">
-            <i class="fa-solid fa-gauge"></i> Dashboard
-          </a>
-        </li>
-
         <li class="text-uppercase small text-muted mt-3 px-2">Pages</li>
         <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-right-to-bracket me-2"></i>Login</a></li>
         <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-user-plus me-2"></i>Register</a></li>
@@ -40,13 +32,13 @@ const logout = () => {
         <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-table me-2"></i>Tables</a></li>
         <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-pen-to-square me-2"></i>Form Layouts</a></li>
       </ul>
+      <button color="btn btn-primary" @click="logout">Logout</button>
+
     </aside>
 
-    <!-- Main -->
     <main class="content flex-grow-1">
-      <!-- Topbar -->
-      <header class="topbar d-flex align-items-center gap-3 p-3 border-bottom">
-        <form class="flex-grow-1">
+      <div class="top-bar">
+        <form class="flex-grow-1 card-shadow">
           <div class="input-group">
             <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass"></i></span>
             <input class="form-control" placeholder="Search…" />
@@ -54,25 +46,14 @@ const logout = () => {
         </form>
         <button class="btn btn-link"><i class="fa-brands fa-github"></i></button>
         <button class="btn btn-link"><i class="fa-regular fa-bell"></i></button>
-        <img src="https://i.pravatar.cc/40" class="rounded-circle" width="36" height="36" alt="avatar" />
-      </header>
+        <img src=" https://i.pravatar.cc/40" class="rounded-circle" width="36" height="36" alt="avatar" />
+      </div>
 
       <div class="container-fluid py-3">
-        <!-- Greeting banner -->
-        <div class="card shadow-sm mb-3">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="mb-1">Congratulations John! 🎉</h5>
-              <small class="text-muted">You have done 72% more sales today. Check your new badge in your profile.</small>
-            </div>
-            <button class="btn btn-primary">View Badges</button>
-          </div>
-        </div>
-
         <!-- Top metrics -->
         <div class="row g-3">
           <div class="col-lg-9">
-            <div class="card shadow-sm mb-3">
+            <div class="card card-border-radius scale-at-hover card-shadow mb-3 scale-at-hover">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <span>Total Revenue</span>
                 <div>
@@ -87,7 +68,7 @@ const logout = () => {
           </div>
 
           <div class="col-lg-3">
-            <div class="card shadow-sm mb-3">
+            <div class="card card-border-radius scale-at-hover card-shadow mb-3">
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <span>Profit</span><i class="fa-solid fa-ellipsis-vertical"></i>
@@ -97,7 +78,7 @@ const logout = () => {
               </div>
             </div>
 
-            <div class="card shadow-sm mb-3">
+            <div class="card card-border-radius scale-at-hover card-shadow mb-3">
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <span>Sales</span><i class="fa-solid fa-ellipsis-vertical"></i>
@@ -107,7 +88,7 @@ const logout = () => {
               </div>
             </div>
 
-            <div class="card shadow-sm">
+            <div class="card card-border-radius scale-at-hover card-shadow">
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <span>Transactions</span><i class="fa-solid fa-ellipsis-vertical"></i>
@@ -122,7 +103,7 @@ const logout = () => {
         <!-- Bottom content -->
         <div class="row g-3 mt-1">
           <div class="col-xl-4">
-            <div class="card shadow-sm h-100">
+            <div class="card card-border-radius scale-at-hover card-shadow h-100">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <span>Order Statistics</span>
                 <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -154,7 +135,7 @@ const logout = () => {
           </div>
 
           <div class="col-xl-5">
-            <div class="card shadow-sm h-100">
+            <div class="card card-border-radius scale-at-hover card-shadow h-100">
               <div class="card-header bg-white d-flex gap-2">
                 <span class="badge text-bg-primary">Income</span>
                 <span class="badge text-bg-light border">Expenses</span>
@@ -167,7 +148,7 @@ const logout = () => {
           </div>
 
           <div class="col-xl-3">
-            <div class="card shadow-sm h-100">
+            <div class="card card-border-radius scale-at-hover card-shadow h-100">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <span>Transactions</span>
                 <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -187,7 +168,7 @@ const logout = () => {
                     <span class="text-success">+ $637.91</span>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><i class="fa-solid fa-credit-card me-2 text-danger"></i>Ordered Food</span>
+                    <span><i class="fa-solid fa-credit-card card-border-radius scale-at-hover me-2 text-danger"></i>Ordered Food</span>
                     <span class="text-danger">- $838.71</span>
                   </li>
                 </ul>
@@ -202,10 +183,5 @@ const logout = () => {
 
 
 <style scoped>
-.dashboard { min-height: 100vh; background: #f5f6fa; }
-.sidebar   { width: 260px; background: #fff; position: sticky; top: 0; height: 100vh; }
-.content   { min-width: 0; } /* allow flex child to shrink properly */
-.nav-link  { color: #4b5563; }
-.nav-link.active { background: #eef2ff; color: #4f46e5; }
-.placeholder-wave { opacity: .5; }
+
 </style>

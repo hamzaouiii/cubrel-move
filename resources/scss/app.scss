@@ -3,7 +3,7 @@
 @use 'hero';
 @use 'pricing';
 @use 'contact';
-
+@use 'dashboard';
 
 *{
   margin: 0;
@@ -52,41 +52,7 @@ body {
 .hero-btn{
   margin-top: 75px !important;
 }
-@media only screen and (max-width: 767px) {
-  .pricing-style-4 .price-image img {
-    width: 100%;
-  }
-  .contact .contact-image img {
-    width: 100%;
-  }
 
-  .task .task-image img {
-    width: 100%;
-  }
-   .privacy-content{
-    flex-direction: column;
-  }
-  .privacy-content .figure img{
-    max-width: 300px;
-    margin-bottom: 20px;
-  }
-    .hero-btn{
-    margin-top: 45px !important;
-    font-size: 0.88rem !important;
-  }
-  .hero-content-wrapper h2 {
-    font-size: 1.94rem!important;
-    margin-top: 75px;
-  }
-}
-
-//edge case
-@media only screen and (max-width: 1520px) {
-
- .about-style-4 .about-image img{
-    width: 100%;
-  }
-}
 
 .privacy-content{
   background-color: #f3f3f3;
@@ -125,6 +91,44 @@ max-width: 600px;
 .privacy-content-par p{
   padding-left: 5px;
 }
+
+@media only screen and (max-width: 767px) {
+  .pricing-style-4 .price-image img {
+    width: 100%;
+  }
+  .contact .contact-image img {
+    width: 100%;
+  }
+
+  .task .task-image img {
+    width: 100%;
+  }
+   .privacy-content{
+    flex-direction: column;
+  }
+  .privacy-content .figure img{
+    max-width: 300px;
+    margin-bottom: 20px;
+    
+  }
+    .hero-btn{
+    margin-top: 45px !important;
+    font-size: 0.88rem !important;
+  }
+  .hero-content-wrapper h2 {
+    font-size: 1.94rem!important;
+    margin-top: 75px;
+  }
+}
+
+//edge case
+@media only screen and (max-width: 1520px) {
+
+ .about-style-4 .about-image img{
+    width: 100%;
+  }
+}
+
 
 
 .single-feature{
