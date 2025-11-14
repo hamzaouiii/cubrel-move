@@ -1,11 +1,9 @@
 
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3'
+import { Head } from '@inertiajs/vue3'
+import Sidebar from './Components/Sidebar.vue';
+import Navis from './Components/Navis.vue';
 
-const form = useForm({})
-const logout = () => {
-  form.post('/ar-admin/logout')  
-}
 </script>
 
 <template>
@@ -13,29 +11,8 @@ const logout = () => {
     <title>Dashboard - Automatisierung Regensburg</title>
   </Head>
   <div class="dashboard d-flex">
-
-    <aside class="sidebar">
-      <div class="p-3 d-flex align-items-center gap-2">
-        <img src="/favicon-32x32.png" alt="logo" width="24" height="24" />
-      </div>
-
-      <ul class="nav nav-pills flex-column px-2 gap-1">
-        <li class="text-uppercase small text-muted mt-3 px-2">Pages</li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-right-to-bracket me-2"></i>Login</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-user-plus me-2"></i>Register</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-triangle-exclamation me-2"></i>Error</a></li>
-
-        <li class="text-uppercase small text-muted mt-3 px-2">User Interface</li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-regular fa-font me-2"></i>Typography</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-regular fa-icons me-2"></i>Icons</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-regular fa-clone me-2"></i>Cards</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-table me-2"></i>Tables</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-pen-to-square me-2"></i>Form Layouts</a></li>
-      </ul>
-      <button color="btn btn-primary" @click="logout">Logout</button>
-
-    </aside>
-
+    <sidebar></sidebar>
+     <!-- <Navis></Navis> -->
     <main class="content flex-grow-1">
       <div class="top-bar">
         <form class="flex-grow-1 card-shadow">
@@ -53,7 +30,7 @@ const logout = () => {
         <!-- Top metrics -->
         <div class="row g-3">
           <div class="col-lg-9">
-            <div class="card card-border-radius scale-at-hover card-shadow mb-3">
+            <div class="card card-border-radius card-shadow mb-3">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <span>Total Revenue</span>
                 <div>
