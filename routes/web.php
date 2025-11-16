@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
-
+use App\Models\Module;
 
 
 Route::middleware(['auth'])->group(function () {
@@ -22,7 +22,10 @@ Route::middleware(['auth'])
     ->name('admin.')
     ->group(function () {
         Route::get('/', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
-        $modules = ['accounts', 'contacts', 'leads', 'cases', 'emails', 'quotes', 'invoices'];
+        
+        $modules = Module::query()
+            ->where('is_active', true)
+            ->pluck('slug');
 
          foreach ($modules as $module) {
             Route::get("/{$module}", function () use ($module) {
@@ -31,14 +34,6 @@ Route::middleware(['auth'])
                 ]);
             })->name("{$module}.index");
         }
-
-        // Route::get('/accounts', fn () => Inertia::render('Admin/Modules/List'))->name('accounts.index');
-        // Route::get('/contacts', fn () => Inertia::render('Admin/Modules/Contacts/List'))->name('contacts.index');
-        // Route::get('/leads', fn () => Inertia::render('Admin/Modules/Leads/List'))->name('leads.index');
-        // Route::get('/cases', fn () => Inertia::render('Admin/Modules/Cases/List'))->name('cases.index');
-        // Route::get('/emails', fn () => Inertia::render('Admin/Modules/Emails/List'))->name('emails.index');
-        // Route::get('/quotes', fn () => Inertia::render('Admin/Modules/Quotes/List'))->name('quotes.index');
-        // Route::get('/invoices', fn () => Inertia::render('Admin/Modules/Invoices/List'))->name('invoices.index');
     });
 
 Route::middleware(['guest'])->group(function () {
