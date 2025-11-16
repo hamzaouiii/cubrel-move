@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
-use App\Models\Module;
-
+use App\Http\Controllers\AdminModuleController;
 
 Route::middleware(['auth'])->group(function () {
   Route::get('/ar-admin', fn () => Inertia::render('Admin/Dashboard'))->name('AdminDashboard');
@@ -22,18 +21,7 @@ Route::middleware(['auth'])
     ->name('admin.')
     ->group(function () {
         Route::get('/', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
-        
-        $modules = Module::query()
-            ->where('is_active', true)
-            ->pluck('slug');
-
-         foreach ($modules as $module) {
-            Route::get("/{$module}", function () use ($module) {
-                return Inertia::render('Admin/Modules/List', [
-                    'module' => ucwords($module),   
-                ]);
-            })->name("{$module}.index");
-        }
+        Route::get('/{module}', AdminModuleController::class)->name('modules.index');
     });
 
 Route::middleware(['guest'])->group(function () {
