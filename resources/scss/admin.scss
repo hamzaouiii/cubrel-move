@@ -1,4 +1,4 @@
-.dashboard { 
+.admin { 
   min-height: 100vh; 
   background: #f5f6fa; 
 
@@ -78,6 +78,7 @@
           left: -35px;
           width: 40px;
           margin: 5px;
+          padding: 5px;
           border-radius: 5px;
           transition: all 0.3s ease-in-out;
           display: flex;
@@ -130,4 +131,11 @@
   &:hover{
     transform: scale(1.04);
   }
+}
+
+.module-list-view {
+  display: flex;
+  border: 2px solid salmon;
+  padding: 20px;
+  margin-top: 25px;
 }

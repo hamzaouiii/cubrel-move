@@ -1,9 +1,9 @@
 <template>
   
     <aside class="sidebar">
-      <div class="logo">
+      <Link href="/" class="logo">
         <img src="/img/logo/logo.svg" alt="logo"  width="240"height="180" />
-      </div>
+      </Link>
       <ul class="module_list">
         <li
           v-for="mod in modules"
