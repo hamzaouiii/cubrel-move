@@ -102,15 +102,104 @@
 
   main{
     padding-top: 20px;
-    .top-bar{
+    .top-bar {
       background: none;
       display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
+      justify-content: flex-end;
+      align-items: flex-end;
       padding-right: .75rem;
       padding-left: .75rem;
-      border: 2px solid slateblue;
+      height: 60px;
+      font-size: 1.2rem;
+      .search-bar {
+        flex-grow: 1;
+        input{
+          all: unset;
+          border: 2px solid lightgrey;
+          background-color: white;
+          width: 98%;
+          padding-top: 10px;
+          padding-bottom: 10px;
+          padding-left: 30px;
+          border-radius: 8px;
+          box-shadow: 2px 5px 5px 0px rgba(51, 51, 51, 0.5)!important;
+
+        }
+      }
+
+      .icons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 140px;
+
+        div i {
+          cursor: pointer;
+          transition: all 0.1s ease;
+          &:hover {
+            color: deepskyblue;
+          }
+        }
+
+        .profile {
+          position: relative;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+
+          i {
+            margin-left: 5px;
+          }
+
+          .profile-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            list-style: none;
+            min-width: 160px;
+            z-index: 50;
+
+            li a {
+              display: block;
+              padding: 8px 14px;
+              color: #333;
+              text-decoration: none;
+
+              &:hover {
+                background: #f5f5f5;
+              }
+            }
+          }
+        }
+      }
     }
+          /* Fade animation */
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity 0.15s ease, transform 0.15s ease;
+      }
+
+      .fade-enter-from,
+      .fade-leave-to {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+    /* Transition for the search bar */
+    .slide-search-enter-active,
+    .slide-search-leave-active {
+      transition: all 0.2s ease;
+    }
+
+    .slide-search-enter-from,
+    .slide-search-leave-to {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+
   }
 }
 
@@ -136,7 +225,6 @@
 
 .module-list-view {
   display: flex;
-  border: 2px solid salmon;
   padding: 20px;
   margin-top: 25px;
 }

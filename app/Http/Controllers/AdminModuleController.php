@@ -15,7 +15,7 @@ class AdminModuleController extends Controller
             ->firstOrFail();
 
         return Inertia::render('Admin/Modules/List', [
-            'module' => $moduleModel->slug,
+            'module' => ucwords($moduleModel->slug),
             'title'  => $moduleModel->name,
         ]);
     }
