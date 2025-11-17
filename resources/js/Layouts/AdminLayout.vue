@@ -1,6 +1,5 @@
 
 <script setup>
-import { Head } from '@inertiajs/vue3'
 import Sidebar from '@/Pages/Admin/Components/Sidebar.vue';
 import Topbar from '@/Pages/Admin/Components/Topbar.vue';
 import { usePage } from '@inertiajs/vue3';

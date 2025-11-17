@@ -26,12 +26,12 @@
       flex-grow: 5;
       overflow-y: scroll;
       padding-top: 50px;
-      li {
+      .link-item {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
         margin-top: 15px;
-        a {
+        .link-label {
           display: flex;
           align-items: center;
           color: #4b5563;
@@ -61,14 +61,14 @@
             & > .module-color i{
               opacity: 1;
             }
-          & > a{
+          & > .link-label{
           color: #4f46e5 !important;
           }
-          & > a i {
+          & > .link-label i {
             opacity: 0;
             width: 0px;
           }
-          & > a span {
+          & > .link-label span {
             color: var(--hover-color);
           }
         }
@@ -117,13 +117,12 @@
           all: unset;
           border: 2px solid lightgrey;
           background-color: white;
-          width: 98%;
+          width: 95%;
           padding-top: 10px;
           padding-bottom: 10px;
           padding-left: 30px;
           border-radius: 8px;
           box-shadow: 2px 5px 5px 0px rgba(51, 51, 51, 0.5)!important;
-
         }
       }
 
@@ -177,7 +176,7 @@
         }
       }
     }
-          /* Fade animation */
+        /* Fade animation */
       .fade-enter-active,
       .fade-leave-active {
         transition: opacity 0.15s ease, transform 0.15s ease;
@@ -186,7 +185,7 @@
       .fade-enter-from,
       .fade-leave-to {
         opacity: 0;
-        transform: translateY(-4px);
+        transform: translateY(20px);
       }
     /* Transition for the search bar */
     .slide-search-enter-active,

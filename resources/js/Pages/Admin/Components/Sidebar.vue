@@ -4,33 +4,18 @@
       <Link href="/" class="logo">
         <img src="/img/logo/logo.svg" alt="logo"  width="240"height="180" />
       </Link>
-      <ul class="module_list">
-        <li
-          v-for="mod in modules"
-          :key="mod.slug"
-        >
-          <div class="module-color" 
-          :style="{ background: mod.color, color: 'white' }">
-                    <i
-              v-if="mod.icon"
-              :class="['fa-solid', mod.icon]"
-
-            ></i></div>
-          <Link
-            :href="mod.path"
-            :class="{ active: currentUrl.startsWith(mod.path) }"
-          >
-            <i
-              v-if="mod.icon"
-              :class="['fa-solid', mod.icon]"
-
-            ></i>
-
+      <div class="module_list">
+        <Link class="link-item" v-for="mod in modules" :key="mod.slug" :href="mod.path">
+          <div class="module-color" :style="{ background: mod.color, color: 'white' }">
+            <i v-if="mod.icon" :class="['fa-solid', mod.icon]"></i>
+          </div>
+          <div  :class="['link-label',{ active: currentUrl.startsWith(mod.path) }]">
+            <i v-if="mod.icon" :class="['fa-solid', mod.icon]"></i>
             <span :style="{ '--hover-color': mod.color}">{{ mod.label }}</span>
-          </Link>
-        </li>
+          </div>
+        </Link>
  
-      </ul>
+      </div>
       <div class="sidebar-footer">
         <span>{{ page.props.locale?.toUpperCase?.() ?? 'DE' }}</span>
         <button class="btn btn-primary" @click="logout">Logout</button>
