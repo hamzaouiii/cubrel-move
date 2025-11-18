@@ -5,7 +5,7 @@
         v-if="showSearch"
         class="search-bar "
       >
-          <input placeholder="Search…" />
+          <input placeholder="Global Search…" />
       </form>
     </transition>
 

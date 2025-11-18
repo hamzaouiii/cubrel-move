@@ -176,29 +176,51 @@
         }
       }
     }
-        /* Fade animation */
-      .fade-enter-active,
-      .fade-leave-active {
-        transition: opacity 0.15s ease, transform 0.15s ease;
-      }
-
-      .fade-enter-from,
-      .fade-leave-to {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-    /* Transition for the search bar */
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .fade-enter-from,
+    .fade-leave-to {
+      opacity: 0;
+      transform: translateY(20px);
+    }
     .slide-search-enter-active,
     .slide-search-leave-active {
-      transition: all 0.2s ease;
+    transition: all 0.2s ease;
     }
-
     .slide-search-enter-from,
     .slide-search-leave-to {
-      opacity: 0;
-      transform: translateX(20px);
+    opacity: 0;
+    transform: translateX(20px);
     }
+    .module_list{
+      padding: 5px;
+      &_header{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        &_details{
 
+        display: flex;
+        flex-direction: row;
+        justify-content: baseline;
+        align-items: baseline;
+          &_title{
+            font-size: 2.5rem;
+            margin-right: 20px;
+          }
+          &_meta{
+            font-size: 1.2rem;
+            font-weight: 600;
+            color:#323450
+          }
+        }
+        &_actions{
+        }
+
+      }
+    }
   }
 }
 
