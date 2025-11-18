@@ -1,65 +1,66 @@
 
 
 <script setup>
-import { Head, usePage } from '@inertiajs/vue3'
-import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
+  import { Head, usePage } from '@inertiajs/vue3'
+  import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
 
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import Pagination from '../Components/Pagination.vue';
+  import AdminLayout from '@/Layouts/AdminLayout.vue';
+  import Pagination from '../Components/Pagination.vue';
 
-defineOptions({
-  layout: AdminLayout,
-});
-
-const { props } = usePage();
-defineProps({
-  module: Object,
-  title: String,
-  items: Array,
-  meta: Object,
-})
-
-let records_number_phrase;
-const recordsNumber = computed(() => props.items.length);
-if (props.meta) {
-  records_number_phrase = recordsNumber.value+" of "+props.meta.total
-}
-else {
-  records_number_phrase = "(0)"
-
-}
-const formatDate = (value) => {
-  if (!value) return '-';
-  return new Date(value).toLocaleDateString('de-DE', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
+  defineOptions({
+    layout: AdminLayout,
   });
-};
 
-const showActionDropDown = ref(false)
-const actionDropDownref = ref(null)
+  const { props } = usePage();
+  defineProps({
+    module: Object,
+    title: String,
+    items: Array,
+    meta: Object,
+    listLayout: Object
+  })
 
-const toggleActionDropDown = () => {
-  showActionDropDown.value = !showActionDropDown.value
-}
-
-const handleClickOutsideActionDropDown = (event) => {
-  if (actionDropDownref.value && !actionDropDownref.value.contains(event.target)) {
-    showActionDropDown.value = false
+  let records_number_phrase;
+  const recordsNumber = computed(() => props.items.length);
+  if (props.meta) {
+    records_number_phrase = recordsNumber.value+" of "+props.meta.total
   }
-}
-onMounted(() => {
-  document.addEventListener('click', handleClickOutsideActionDropDown)
-})
+  else {
+    records_number_phrase = "(0)"
 
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutsideActionDropDown)
-})
+  }
+  const formatDate = (value) => {
+    if (!value) return '-';
+    return new Date(value).toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
+
+  const showActionDropDown = ref(false)
+  const actionDropDownref = ref(null)
+
+  const toggleActionDropDown = () => {
+    showActionDropDown.value = !showActionDropDown.value
+  }
+
+  const handleClickOutsideActionDropDown = (event) => {
+    if (actionDropDownref.value && !actionDropDownref.value.contains(event.target)) {
+      showActionDropDown.value = false
+    }
+  }
+  onMounted(() => {
+    document.addEventListener('click', handleClickOutsideActionDropDown)
+  })
+
+  onBeforeUnmount(() => {
+    document.removeEventListener('click', handleClickOutsideActionDropDown)
+  })
 </script>
 
 <template>
-    <Head>
+  <Head>
     <title>{{title}} - Automatisierung Regensburg</title>
   </Head>
   <div class="module_list">
@@ -95,27 +96,53 @@ onBeforeUnmount(() => {
         <table class="table table-striped table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>Vorname</th>
-              <th>Nachname</th>
-              <th>Email</th>
-              <th>Telefon</th>
-              <th>Firma</th>
-              <th>Erstellt am</th>
-              <th>Aktualisiert am</th>
+              <th
+                v-for="col in listLayout?.columns || []"
+                :key="col.key"
+                scope="col"
+              >
+                {{ col.label }}
+              </th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-for="item in items" :key="item.id">
-              <td>{{ item.first_name }}</td>
-              <td>{{ item.last_name }}</td>
-              <td>
-                <a :href="'mailto:' + item.email">{{ item.email }}</a>
+              <td
+                v-for="col in listLayout?.columns || []"
+                :key="col.key"
+              >
+                <!-- Email as mailto-link -->
+                <template v-if="col.key === 'email' && item[col.key]">
+                  <a :href="'mailto:' + item[col.key]">
+                    {{ item[col.key] }}
+                  </a>
+                </template>
+
+                <!-- Datetime formatting based on layout definition -->
+                <template v-else-if="col.length === 'datetime' && item[col.key]">
+                  {{ formatDate(item[col.key]) }}
+                </template>
+
+                <!-- Truncate long strings -->
+                  <template v-else-if="item[col.key] && item[col.key].length > 62">
+                    {{ item[col.key].substring(0, 64) + "..." }}
+                  </template>
+
+                <!-- Default: plain text with '-' fallback -->
+                <template v-else>
+                  {{ item[col.key] ?? '-' }}
+                </template>
               </td>
-              <td>{{ item.phone || '-' }}</td>
-              <td>{{ item.company || '-' }}</td>
-              <td>{{ formatDate(item.created_at) }}</td>
-              <td>{{ formatDate(item.updated_at) }}</td>
+            </tr>
+
+            <tr v-if="!items.length">
+              <td
+                :colspan="(listLayout?.columns?.length || 0)"
+                class="text-center"
+              >
+                Keine Einträge gefunden.
+              </td>
             </tr>
           </tbody>
         </table>

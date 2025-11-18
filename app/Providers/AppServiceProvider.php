@@ -30,11 +30,10 @@ class AppServiceProvider extends ServiceProvider
                 ->orderBy('sort_order')
                 ->get()
                 ->map(function (Module $module) {
-                    $translatedLabel = __("modules.{$module->slug}");
 
                     return [
                         'slug'  => $module->slug,
-                        'label' => $translatedLabel ?: $module->label,
+                        'label' => $module->label,
                         'icon'  => $module->icon,
                         'color' => $module->color,
                         'path'  => $module->path,
