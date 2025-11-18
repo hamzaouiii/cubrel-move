@@ -18,7 +18,8 @@ defineProps({
   items: Array,
   meta: Object,
 })
-console.log(props.module)
+console.log(props.meta)
+
 let records_number_phrase;
 const recordsNumber = computed(() => props.items.length);
 if (props.meta) {
@@ -90,37 +91,37 @@ onBeforeUnmount(() => {
       </div>
 
     </div>
-    <div class="module_list_content">
-    <div v-if="meta" class="table-responsive">
-      <table class="table table-striped table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Vorname</th>
-            <th>Nachname</th>
-            <th>Email</th>
-            <th>Telefon</th>
-            <th>Firma</th>
-            <th>Erstellt am</th>
-            <th>Aktualisiert am</th>
-          </tr>
-        </thead>
+    <div v-if="meta && meta.total  !=0"  class="module_list_content">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Vorname</th>
+              <th>Nachname</th>
+              <th>Email</th>
+              <th>Telefon</th>
+              <th>Firma</th>
+              <th>Erstellt am</th>
+              <th>Aktualisiert am</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td>{{ item.first_name }}</td>
-            <td>{{ item.last_name }}</td>
-            <td>
-              <a :href="'mailto:' + item.email">{{ item.email }}</a>
-            </td>
-            <td>{{ item.phone || '-' }}</td>
-            <td>{{ item.company || '-' }}</td>
-            <td>{{ formatDate(item.created_at) }}</td>
-            <td>{{ formatDate(item.updated_at) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <Pagination :meta="meta" />
+          <tbody>
+            <tr v-for="item in items" :key="item.id">
+              <td>{{ item.first_name }}</td>
+              <td>{{ item.last_name }}</td>
+              <td>
+                <a :href="'mailto:' + item.email">{{ item.email }}</a>
+              </td>
+              <td>{{ item.phone || '-' }}</td>
+              <td>{{ item.company || '-' }}</td>
+              <td>{{ formatDate(item.created_at) }}</td>
+              <td>{{ formatDate(item.updated_at) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <Pagination :meta="meta" />
     </div>
   </div>
 </template>
