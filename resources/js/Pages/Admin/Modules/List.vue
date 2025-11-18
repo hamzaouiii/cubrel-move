@@ -18,7 +18,6 @@ defineProps({
   items: Array,
   meta: Object,
 })
-console.log(props.meta)
 
 let records_number_phrase;
 const recordsNumber = computed(() => props.items.length);
