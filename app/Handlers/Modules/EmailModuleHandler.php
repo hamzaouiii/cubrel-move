@@ -2,7 +2,7 @@
 
 namespace App\Handlers\Modules;
 
-use App\Models\Email;
+use App\Models\Modules\Email;
 use Illuminate\Database\Eloquent\Builder;
 
 class EmailModuleHandler extends BasePaginatedModuleHandler

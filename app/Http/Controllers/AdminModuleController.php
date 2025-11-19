@@ -25,7 +25,7 @@ class AdminModuleController extends Controller
                 if ($handler instanceof ModuleHandler) {
                   // here implement search later
                     $props = $handler->getListData([
-                        'perPage' => request()->query('perPage', 31),
+                        'perPage' => request()->query('perPage', 18),
                     ]);
                 } else {
                     if (method_exists($handler, 'getListData')) {

@@ -2,7 +2,7 @@
 
 namespace App\Handlers\Modules;
 
-use App\Models\Lead;
+use App\Models\Modules\Lead;
 use Illuminate\Database\Eloquent\Builder;
 
 class LeadModuleHandler extends BasePaginatedModuleHandler

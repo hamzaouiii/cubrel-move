@@ -2,14 +2,14 @@
 
 namespace App\Handlers\Modules;
 
-use App\Models\Modules\ContactMessage;
+use App\Models\Modules\Contact;
 use Illuminate\Database\Eloquent\Builder;
 
-class CustomerInquriesModuleHandler extends BasePaginatedModuleHandler
+class ContactsModuleHandler extends BasePaginatedModuleHandler
 {
     protected function query(array $params = []): Builder
     {
-        $query = ContactMessage::query();
+        $query = Contact::query();
 
         // apply filters here if needed
 

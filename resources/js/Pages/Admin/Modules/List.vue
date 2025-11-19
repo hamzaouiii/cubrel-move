@@ -63,13 +63,13 @@
   <Head>
     <title>{{title}} - Automatisierung Regensburg</title>
   </Head>
-  <div class="module_list">
-    <div class="module_list_header">
-      <div class="module_list_header_details">
-        <h1 class="module_list_header_details_title">{{title}}</h1> 
-        <span class="module_list_header_details_meta" >{{ records_number_phrase}}</span>
+  <div class="list">
+    <div class="list_header">
+      <div class="list_header_details">
+        <h1 class="list_header_details_title">{{title}}</h1> 
+        <span class="list_header_details_meta" >{{ records_number_phrase}}</span>
       </div>
-      <div class="module_list_header_actions" ref="actionDropDownref">
+      <div class="list_header_actions" ref="actionDropDownref">
         <div class="input-group" >
           <input type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="Search in this list">
           <button type="button" class="btn btn-outline-secondary" :style="{ background: module.color, color: 'white' }">Create</button>
@@ -91,10 +91,10 @@
       </div>
 
     </div>
-    <div v-if="meta && meta.total  !=0"  class="module_list_content">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle">
-          <thead class="table-light">
+    <div v-if="meta && meta.total  !=0"  class="list_content">
+      <div class="">
+        <table class="list_content_table" :style="{ '--module-color': module.color}">
+          <thead  >
             <tr>
               <th
                 v-for="col in listLayout?.columns || []"
