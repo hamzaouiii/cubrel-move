@@ -305,21 +305,37 @@
               flex: 1 1 calc(50% - 0.625rem);  // 2 per row, minus half the gap
 
               .field{
-                padding: 10px;
                 width: 420px;
-                border-radius:5px ;
                 font-size: 1.2rem;
                 font-weight: 600;
-                transition: box-shadow .1s ease-in-out;
+                border: 2px solid transparent;
+                display: flex;
+                transition: border .3s ease-in-out;
                 &:hover{
-                border-bottom: 1px solid var(--module-color);
+                  border-bottom: 2px solid var(--module-color);
+                  cursor: pointer;
+                }
+                span{
+                padding: 10px;
+                  width: 100%;
 
-                cursor: pointer;
+                }
+                input{
+                  all:unset;
+                  width: 100%;
+                padding: 10px;
+                  cursor: text !important;
+
 
                 }
 
               }
+              .editing-mode{
+                transition: all 0.3s ease-in-out;
+                border: 2px solid var(--module-color);
+                border-radius: 5px;
 
+              }
             }
           }
         }
