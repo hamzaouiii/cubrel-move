@@ -16,36 +16,36 @@ class AdminModuleRecordController extends Controller
             ->firstOrFail();
 
         $props = [];
-
-        if ($handlerClass = $moduleModel->handler_class) {
-            if (class_exists($handlerClass)) {
-                $handler = app($handlerClass);
-
-                if ($handler instanceof ModuleHandler && method_exists($handler, 'getRecordData')) {
-                    $props = $handler->getRecordData($recordId, request()->all());
-                } elseif (method_exists($handler, 'getRecordData')) {
-                    $props = $handler->getRecordData($recordId, request()->all());
-                } else {
-                    $props = [
-                        'recordId' => $recordId,
-                    ];
-                }
-            } else {
-                $props = [
-                    'recordId' => $recordId,
-                ];
-            }
-        } else {
-            $props = [
-                'recordId' => $recordId,
-            ];
+        $handlerClass = $module->handlerClass ?? "App\Handlers\Modules\\".ucwords($module)."ModuleHandler";
+        if (empty($handlerClass)) {
+          dd("No Handler Class found for module $module");
         }
 
-        // 3) Render a dedicated "Show" page for a single record
+        if (!class_exists($handlerClass)) {
+            $props = [];
+        } else {
+            $handler = app($handlerClass);
+            
+            if ($handler instanceof ModuleHandler || method_exists($handler, 'getRecordData')) {
+                $props = $handler->getRecordData($recordId, request()->all());                    
+            } else {
+            $props = ['recordId' => $recordId];
+            }
+          }
+
+        $recordLayout = optional($moduleModel->recordLayout())->definition;
+
+
         return Inertia::render('Admin/Modules/Record', array_merge([
             'module'   => $moduleModel,
             'title'    => $moduleModel->name,
             'recordId' => $recordId,
+            'recordLayout' => $recordLayout
         ], $props));
     }
-}
+
+  }
+
+
+
+

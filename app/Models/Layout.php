@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Layout extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
-        'module_id',
         'module_name',
         'type',
         'name',
@@ -36,4 +38,22 @@ class Layout extends Model
     {
         return $query->where('is_default', true);
     }
-}
+
+    // public function getDefaultLayout(string $type){
+    //   return $this->where('type', $type)
+    //   ->where('module_name', 'global')
+    //   ->first();
+    // }
+    public static function getDefaultLayout(string $type)
+    {
+        return self::whereNull('module_id')
+            ->where('type', $type)
+            ->where(function ($q) use ($type) {
+                return $type === 'record'
+                    ? $q->where('is_record_default', true)
+                    : $q->where('is_list_default', true);
+            })
+            ->first();
+    }
+
+  }

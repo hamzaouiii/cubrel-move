@@ -8,28 +8,24 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('layouts', function (Blueprint $table) {
-            $table->uuid()->primary();
-            $table->uuid('module_id')->unique();
+            $table->uuid('id')->primary();
+            $table->uuid('module_id')->nullable();
             $table->foreign('module_id')
                 ->references('id')
                 ->on('modules')
                 ->onDelete('cascade');
 
-            // list / record / form / etc.
             $table->enum('type', ['list', 'record', 'form'])->index();
+            $table->string('module_name')->nullable();
 
-            // optional human readable name
             $table->string('name')->nullable();
 
-            // the actual layout configuration (JSON)
             $table->json('definition');
 
-            // in case you later want multiple layouts per type
-            $table->boolean('is_default')->default(true);
+            $table->boolean('is_record_default')->default(false);
+            $table->boolean('is_list_default')->default(false);
 
             $table->timestamps();
-            // one default layout per module + type
-            $table->unique(['type', 'is_default'], 'layouts_module_type_default_unique');
         });
     }
 

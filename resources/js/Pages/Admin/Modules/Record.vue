@@ -11,8 +11,11 @@ defineOptions({
   const props = defineProps({
     module: Object,
     title: String,
-    record: Object
+    record: Object,
+    recordLayout: Object
   })
+console.log(props.recordLayout)
+  
   const showActionDropDown = ref(false)
   const actionDropDownref = ref(null)
 
@@ -32,19 +35,27 @@ defineOptions({
   onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutsideActionDropDown)
   })
+    const formatDate = (value) => {
+    if (!value) return '-';
+    return new Date(value).toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
 </script>
 
 <template>
     <Head>
-    <title>{{record.first_name}} {{ record.last_name }} - {{title}} - Automatisierung Regensburg</title>
+    <title>{{record.name}} - {{title}} - Automatisierung Regensburg</title>
   </Head>
   <div>
     
   </div>
-    <div class="ar-main-container">
+    <div class="ar-main-container" :style="{ '--module-color': module.color}">
         <div class="ar-main-container_header">
             <div class="ar-main-container_header_details">
-              <h1 class="ar-main-container_header_details_title">{{record.first_name}} {{ record.last_name }}</h1> 
+              <h1 class="ar-main-container_header_details_title">{{ record.name }}</h1> 
             </div>
             <div class="ar-main-container_header_actions" ref="actionDropDownref">
                 <div class="input-group" >
@@ -66,6 +77,30 @@ defineOptions({
 
                 </div>
             </div>
+        </div>
+        <div class="ar-main-container_content">
+          <div class="ar-main-container_content_section card-shadow" v-for="s in recordLayout.sections">
+            <div class="ar-main-container_content_section_title">
+            {{ s.name }}
+            </div>
+              <div class="ar-main-container_content_section_layout">
+                <div v-for="f in s.layout" class="ar-main-container_content_section_layout_field">
+                  <span class="label">
+                  {{ f.label }}:
+                  </span>
+                  <span class="field">
+                      <template  v-if="f.format === 'datetime' && record[f.key]">
+                        {{ formatDate(record[f.key]) }}
+                      </template>
+                      <template  v-else>
+                        {{ record[f.key] }}
+                      </template>
+
+                  </span>
+
+                </div>
+              </div>
+          </div>
         </div>
     </div>
 </template>

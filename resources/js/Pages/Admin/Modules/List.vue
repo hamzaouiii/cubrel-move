@@ -19,7 +19,6 @@
     meta: Object,
     listLayout: Object
   })
-console.log(props.listLayout)
   let records_number_phrase;
   const recordsNumber = computed(() => props.items.length);
   if (props.meta) {
@@ -78,7 +77,7 @@ console.log(props.listLayout)
           </button>
         <transition name="fade">
           <ul  v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-            <li ><a  class="dropdown-item disabled" href="#">Module Settings</a></li>
+            <li ><a  class="dropdown-item " href="#">Module Settings</a></li>
             <li><a class="dropdown-item disabled" href="#">Export</a></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
             <li><hr class="dropdown-divider"></li>
@@ -126,7 +125,7 @@ console.log(props.listLayout)
                 </template>
 
                 <!-- Datetime formatting based on layout definition -->
-                <template v-else-if="col.length === 'datetime' && item[col.key]">
+                <template v-else-if="col.format === 'datetime' && item[col.key]">
                   {{ formatDate(item[col.key]) }}
                 </template>
 
@@ -138,6 +137,7 @@ console.log(props.listLayout)
                 <!-- Default: plain text with '-' fallback -->
                 <template v-else>
                   {{ item[col.key] ?? '-' }}
+
                 </template>
               </td>
               </Link>

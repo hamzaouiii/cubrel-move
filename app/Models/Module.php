@@ -47,16 +47,20 @@ class Module extends BaseModule
     {
         return $this->layouts()
             ->where('type', 'list')
-            ->where('is_default', true)
             ->first();
     }
 
     public function recordLayout()
     {
-        return $this->layouts()
+        $recordLayout = $this->layouts()
             ->where('type', 'record')
-            ->where('is_default', true)
             ->first();
+        if(!empty($recordLayout)){
+          return $recordLayout;
+        }
+        else{
+          return Layout::getDefaultLayout('record');
+        }
     }
 
     // optional generic helper
@@ -64,7 +68,8 @@ class Module extends BaseModule
     {
         return $this->layouts()
             ->where('type', $type)
-            ->where('is_default', true)
             ->first();
     }
+
+
 } 
