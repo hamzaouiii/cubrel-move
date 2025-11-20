@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
-class Module extends Model
+
+class Module extends BaseModule
 {
     protected $fillable = [
         'slug',

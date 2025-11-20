@@ -11,6 +11,7 @@ class Lead extends Model
     use HasUuids,HasFactory;
 
     protected $fillable = [
+        'name',
         'first_name',
         'last_name',
         'email',

@@ -4,12 +4,14 @@ namespace App\Handlers\Modules;
 
 use App\Contracts\ModuleHandler;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class BasePaginatedModuleHandler implements ModuleHandler
 {
 
     abstract protected function query(array $params = []): Builder;
 
+    protected string $model;
 
     protected function getPerPage(array $params): int
     {
@@ -25,7 +27,6 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
     {
         $perPage   = $this->getPerPage($params);
         $query     = $this->query($params);
-
         $paginator = $query
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
@@ -59,6 +60,25 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
                 ],
                 'pages'       => $pages,
             ],
+        ];
+    }
+
+    public function getRecordData(string $recordId, array $params = []): array
+    {
+        if (! isset($this->model)) {
+            throw new \Exception("Model class not defined in handler.");
+        }
+
+        $model = $this->model;
+
+        try {
+            $record = $model::findOrFail($recordId);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        }
+
+        return [
+            'record' => $record,        // full Eloquent object (auto-serialized by Inertia)
         ];
     }
 }

@@ -15,4 +15,6 @@ class CustomerInquriesModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
+            protected string $model = ContactMessage::class;
+
 }

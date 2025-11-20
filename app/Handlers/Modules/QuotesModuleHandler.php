@@ -15,4 +15,5 @@ class QuotesModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
+      protected string $model = Quote::class;
 }

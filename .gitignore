@@ -25,4 +25,3 @@ Homestead.yaml
 Thumbs.db
 .env.prod
 *.zip
-/database

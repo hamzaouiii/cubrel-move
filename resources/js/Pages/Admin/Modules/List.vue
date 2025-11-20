@@ -1,7 +1,7 @@
 
 
 <script setup>
-  import { Head, usePage } from '@inertiajs/vue3'
+  import { Head, usePage, Link } from '@inertiajs/vue3'
   import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
 
   import AdminLayout from '@/Layouts/AdminLayout.vue';
@@ -19,7 +19,7 @@
     meta: Object,
     listLayout: Object
   })
-
+console.log(props.listLayout)
   let records_number_phrase;
   const recordsNumber = computed(() => props.items.length);
   if (props.meta) {
@@ -63,13 +63,13 @@
   <Head>
     <title>{{title}} - Automatisierung Regensburg</title>
   </Head>
-  <div class="list">
-    <div class="list_header">
-      <div class="list_header_details">
-        <h1 class="list_header_details_title">{{title}}</h1> 
-        <span class="list_header_details_meta" >{{ records_number_phrase}}</span>
+  <div class="ar-main-container">
+    <div class="ar-main-container_header">
+      <div class="ar-main-container_header_details">
+        <h1 class="ar-main-container_header_details_title">{{title}}</h1> 
+        <span class="ar-main-container_header_details_meta" >{{ records_number_phrase}}</span>
       </div>
-      <div class="list_header_actions" ref="actionDropDownref">
+      <div class="ar-main-container_header_actions" ref="actionDropDownref">
         <div class="input-group" >
           <input type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="Search in this list">
           <button type="button" class="btn btn-outline-secondary" :style="{ background: module.color, color: 'white' }">Create</button>
@@ -91,9 +91,9 @@
       </div>
 
     </div>
-    <div v-if="meta && meta.total  !=0"  class="list_content">
+    <div v-if="meta && meta.total  !=0"  class="ar-main-container_content">
       <div class="">
-        <table class="list_content_table" :style="{ '--module-color': module.color}">
+        <table class="ar-main-container_content_table" :style="{ '--module-color': module.color}">
           <thead  >
             <tr>
               <th
@@ -107,7 +107,13 @@
           </thead>
 
           <tbody>
-            <tr v-for="item in items" :key="item.id">
+            <Link
+              v-for="item in items"
+              :key="item.id"
+              as="tr"
+              class="clickable-row"
+              :href="`/ar-admin/${module.slug}/${item.id}`"
+            >
               <td
                 v-for="col in listLayout?.columns || []"
                 :key="col.key"
@@ -134,16 +140,8 @@
                   {{ item[col.key] ?? '-' }}
                 </template>
               </td>
-            </tr>
+              </Link>
 
-            <tr v-if="!items.length">
-              <td
-                :colspan="(listLayout?.columns?.length || 0)"
-                class="text-center"
-              >
-                Keine Einträge gefunden.
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>

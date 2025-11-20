@@ -195,7 +195,7 @@
     opacity: 0;
     transform: translateX(20px);
     }
-.list {
+.ar-main-container {
   padding: 5px;
 
   &_header {
@@ -233,11 +233,9 @@
       font-family: sans-serif;
       min-width: 400px;
       width: 95%;
-      /* ✅ outer border + radius */
       border: 2px solid var(--module-color);
       border-radius: 15px;
 
-      /* ✅ make radius + border work nicely */
       border-collapse: separate;
       border-spacing: 0;
       overflow: hidden;
@@ -272,9 +270,6 @@
           color: var(--module-color);
         }
       }
-
-
-
       /* keep last row slightly emphasized, optional with outer border */
       tbody tr:last-of-type {
         border-bottom: 2px solid var(--module-color);

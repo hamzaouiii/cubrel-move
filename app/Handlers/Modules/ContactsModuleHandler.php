@@ -15,4 +15,6 @@ class ContactsModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
+    protected string $model = Contact::class;
+
 }

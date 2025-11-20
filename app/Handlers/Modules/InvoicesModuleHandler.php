@@ -15,4 +15,5 @@ class InvoicesModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
+        protected string $model = Invoice::class;
 }

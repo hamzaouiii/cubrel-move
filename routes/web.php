@@ -8,6 +8,7 @@
   use App\Http\Controllers\ProfileController;
   use App\Http\Controllers\AuthController;
   use App\Http\Controllers\AdminModuleController;
+  use App\Http\Controllers\AdminModuleRecordController;
 
 
   Route::get('/', fn () => Inertia::render('Home'))->name('home');
@@ -22,10 +23,12 @@
     // Dashboard
       Route::get('/', fn () => Inertia::render('Admin/Dashboard'))
         ->name('dashboard'); // admin.dashboard
+      Route::get('/{module}/{recordId}', AdminModuleRecordController::class);
 
       Route::get('/{module}', AdminModuleController::class)
         ->where('module', '^(?!login$|logout$).+')
         ->name('modules.index');
+      
 
       // Logout
       Route::post('/logout', [AuthController::class, 'logout'])

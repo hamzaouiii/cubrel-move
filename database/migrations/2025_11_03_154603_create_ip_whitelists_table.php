@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('ip_whitelists', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();   
             // fits IPv4 and IPv6
             $table->string('ip', 45)->unique()->comment('IPv4/IPv6 in text form');
             $table->boolean('active')->default(true)->index();

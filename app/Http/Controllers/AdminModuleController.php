@@ -17,25 +17,25 @@ class AdminModuleController extends Controller
             ->firstOrFail();
 
         $props = [];
+        $handlerClass = $module->handlerClass ?? "App\Handlers\Modules\\".ucwords($module)."ModuleHandler";
 
-        if ($handlerClass = $moduleModel->handler_class) {
-            if (class_exists($handlerClass)) {
-                $handler = app($handlerClass);
+        if (empty($handlerClass)) {
+            dd("No Handler Class found for module $module");
+        }
 
-                if ($handler instanceof ModuleHandler) {
-                  // here implement search later
-                    $props = $handler->getListData([
-                        'perPage' => request()->query('perPage', 18),
-                    ]);
-                } else {
-                    if (method_exists($handler, 'getListData')) {
-                        $props = $handler->getListData(request()->all());
-                    } else {
-                        $props = [];
-                    }
-                }
+        if (!class_exists($handlerClass)) {
+            $props = [];
+        } else {
+            $handler = app($handlerClass);
+            
+            if ($handler instanceof ModuleHandler || method_exists($handler, 'getListData')) {
+                $params = $handler instanceof ModuleHandler 
+                    ? ['perPage' => request()->query('perPage', 18)]
+                    : request()->all();
+                    
+                $props = $handler->getListData($params);
             } else {
-                // else
+                $props = [];
             }
         }
         $listLayout = optional($moduleModel->listLayout())->definition;

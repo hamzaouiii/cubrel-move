@@ -5,7 +5,7 @@ namespace App\Handlers\Modules;
 use App\Models\Modules\Lead;
 use Illuminate\Database\Eloquent\Builder;
 
-class LeadModuleHandler extends BasePaginatedModuleHandler
+class LeadsModuleHandler extends BasePaginatedModuleHandler
 {
     /**
      * Build the base query for leads.
@@ -23,9 +23,6 @@ class LeadModuleHandler extends BasePaginatedModuleHandler
         return $query;
     }
 
-    // If you want a different default per-page for leads, you can do:
-    // protected function getPerPage(array $params): int
-    // {
-    //     return $params['perPage'] ?? 25;
-    // }
+    protected string $model = Lead::class;
+    
 }
