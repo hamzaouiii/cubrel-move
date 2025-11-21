@@ -85,10 +85,12 @@ const submit = () => {
 
 <style scoped>
 .submit-btn {
-  background-color: salmon;
+  background-color: #0d6efd;
   color: white;
 }
 .submit-btn:hover {
-  background-color: #e76d6d;
+  background-color: #0d6dfdbd;
+  color: white;
+
 }
 </style>
