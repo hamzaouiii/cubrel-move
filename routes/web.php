@@ -9,6 +9,7 @@
   use App\Http\Controllers\AuthController;
   use App\Http\Controllers\AdminModuleController;
   use App\Http\Controllers\AdminModuleRecordController;
+  use App\Http\Controllers\ModuleManagerController;
 
 
   Route::get('/', fn () => Inertia::render('Home'))->name('home');
@@ -20,19 +21,24 @@
   ->prefix('ar-admin')
   ->name('admin.')
   ->group(function () {
-    // Dashboard
-      Route::get('/', fn () => Inertia::render('Admin/Dashboard'))
-        ->name('dashboard'); // admin.dashboard
+
+    Route::get('/', fn () => Inertia::render('Admin/Dashboard'))
+        ->name('dashboard'); 
+      Route::get('/modules', [ModuleManagerController::class, 'index'])
+          ->name('admin.modules.index');
+
       Route::get('/{module}/{recordId}', AdminModuleRecordController::class);
+      
+      Route::put('/{module}/{record}', [AdminModuleRecordController::class,'update'])
+      ->name('admin.modules.records.update');
 
       Route::get('/{module}', AdminModuleController::class)
         ->where('module', '^(?!login$|logout$).+')
         ->name('modules.index');
       
 
-      // Logout
       Route::post('/logout', [AuthController::class, 'logout'])
-        ->name('logout'); // admin.logout
+        ->name('logout'); 
   });
 
 

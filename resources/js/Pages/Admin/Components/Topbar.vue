@@ -1,5 +1,13 @@
 <template>
+
+
   <div class="top-bar">
+  <div class="logo">
+    <Link href="/ar-admin" class="logo">
+    <img src="/img/logo/logo.svg" alt="logo"  width="240"height="180" />
+  </Link>
+  </div>
+  <div class="actions">
     <transition name="slide-search">
       <form
         v-if="showSearch"
@@ -26,6 +34,7 @@
           <!-- Dropdown -->
         <transition name="fade">
           <ul v-if="showProfile" class="profile-dropdown card-shadow">
+            <li><Link href="/ar-admin/modules">Module Manager</Link></li>
             <li><a href="/settings">Settings</a></li>
             <li><a href="/profile">My Profile</a></li>
             <li @click="logout"><a href="#">Logout</a></li>
@@ -35,10 +44,12 @@
       </div>
     </div>
   </div>
+
+  </div>
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, Link} from '@inertiajs/vue3'
 
 const form = useForm({})
 const logout = () => {

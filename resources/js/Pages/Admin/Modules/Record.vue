@@ -1,6 +1,7 @@
+
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, usePage, Link, router } from '@inertiajs/vue3'
+import { Head, Link, useForm } from '@inertiajs/vue3'
 import { computed, ref, onMounted, onBeforeUnmount, reactive } from 'vue'
 
 defineOptions({
@@ -14,13 +15,14 @@ const props = defineProps({
   recordLayout: Object
 })
 
+// Use Inertia form as editable state
+const form = useForm({ ...props.record })
 
 // State for editing mode
 const isEditing = ref(false)
 const showActionDropDown = ref(false)
 const actionDropDownref = ref(null)
 
-// Create a reactive copy of the record for editing
 const editableRecord = reactive({ ...props.record })
 
 const toggleActionDropDown = () => {
@@ -33,41 +35,97 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 }
 
-// Edit/Save functionality
+const hasRecordChanged = (original, edited) => {
+  for (const key of Object.keys(edited)) {
+    const originalValue = original[key]
+    const editedValue = edited[key]
+
+    if (originalValue !== editedValue) {
+      return true
+    }
+  }
+  return false
+}
+
+// compare original record with form state
+const isDirty = computed(() => hasRecordChanged(props.record, form))
+
 const enableEditing = () => {
   isEditing.value = true
 }
 
+const getChangedData = (original, edited) => {
+  const changed = {}
+
+  for (const key of Object.keys(edited)) {
+    if (original[key] !== edited[key]) {
+      changed[key] = edited[key]
+    }
+  }
+
+  return changed
+}
+
 const saveRecord = () => {
-  //later
-  // Use Inertia.js to POST the modified data
-  // router.post(route('records.update', props.record.id), {
-  //   _method: 'put', // Use PUT method for update
-  //   ...editableRecord
-  // }, {
-  //   onSuccess: () => {
-  //     isEditing.value = false
-  //     // The page will be reloaded with updated data from the backend
-  //   },
-  //   onError: (errors) => {
-  //     console.error('Error saving record:', errors)
-  //     // Handle errors here (show validation messages, etc.)
-  //   }
-  // })
+  const payload = getChangedData(props.record, form)
+
+  if (Object.keys(payload).length === 0) {
+    isEditing.value = false
+    return
+  }
+
+  // build URL manually, no Ziggy/route()
+  const moduleSlug = props.module.slug ?? props.module
+  const url = `/ar-admin/${moduleSlug}/${props.record.id}`
+  form
+    .transform(() => payload)
+    .put(url, {
+      onSuccess: () => {
+        isEditing.value = false
+      },
+      onError: () => {
+        // validation errors available in form.errors
+        console.error('Error saving record:', form.errors)
+      },
+    })
+
+
+}
+
+function handleKeydown(e) {
+  // CTRL + S
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault()
+    if (isEditing.value) {
+      saveRecord()
+    }
+  }
+
+  // CTRL + E -> enable editing
+  if (e.ctrlKey && e.key === 'e') {
+    e.preventDefault()
+    enableEditing()
+  }
+
+  // ESC -> cancel editing
+  if (e.key === 'Escape') {
+    cancelEditing()
+  }
 }
 
 const cancelEditing = () => {
-  // Reset the editableRecord to original values
-  Object.assign(editableRecord, props.record)
+  form.reset()          // reset to original props.record
   isEditing.value = false
 }
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutsideActionDropDown)
+  window.addEventListener('keydown', handleKeydown)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutsideActionDropDown)
+  window.removeEventListener('keydown', handleKeydown)
 })
 
 const formatDate = (value) => {
@@ -85,13 +143,23 @@ const formatDate = (value) => {
     <title>{{ record.name }} - {{ title }} - Automatisierung Regensburg</title>
   </Head>
   
-  <div class="ar-main-container" :style="{ '--module-color': module.color }">
+  <div class="ar-main-container" :style="{ '--module-color': module.color }" >
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
         <h1 class="ar-main-container_header_details_title">{{ record.name }}</h1>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
         <div class="input-group">
+          <button 
+            v-if="isEditing"
+            type="button" 
+            class="btn btn-outline-secondary" 
+            :style="{ color: module.color }"
+            @click="cancelEditing"
+          >
+            Cancel
+          </button>
+          
           <!-- Edit/Save Button -->
           <button 
             v-if="!isEditing"
@@ -104,22 +172,16 @@ const formatDate = (value) => {
           </button>
           
           <!-- Save/Cancel Buttons when editing -->
-          <div v-else class="btn-group">
-            <button 
+            <button   v-else
               type="button" 
-              class="btn btn-success" 
-              @click="saveRecord"
+              class="btn btn-outline-secondary" 
+              :style="{ background: module.color, color: 'white' }"
+                :disabled="!isDirty"
+                @click="saveRecord"
             >
               Save
             </button>
-            <button 
-              type="button" 
-              class="btn btn-secondary" 
-              @click="cancelEditing"
-            >
-              Cancel
-            </button>
-          </div>
+
 
           <button 
             @click="toggleActionDropDown" 
@@ -178,14 +240,14 @@ const formatDate = (value) => {
                 <template v-if="f.format === 'datetime'">
                   <input 
                     type="date" 
-                    v-model="editableRecord[f.key]"
-                    :placeholder="editableRecord[f.key]"
+                    v-model="form[f.key]"
+                    :placeholder="form[f.key]"
                   />
                 </template>
                 <template v-else>
                   <input 
                     type="text" 
-                    v-model="editableRecord[f.key]"
+                    v-model="form[f.key]"
                   />
                 </template>
               </div>

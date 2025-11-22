@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
 
         Inertia::share('modules', function () {
             return Module::active()
-                ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
                 ->map(function (Module $module) {
 

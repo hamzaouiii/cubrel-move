@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Module;
 use Inertia\Inertia;
 use App\Contracts\ModuleHandler;
-
+use Illuminate\Http\Request;
 class AdminModuleRecordController extends Controller
 {
     public function __invoke(string $module, string $recordId)
@@ -44,6 +44,23 @@ class AdminModuleRecordController extends Controller
         ], $props));
     }
 
+    public function update(Request $request, $module, $id)
+    {
+        // Load module config from DB
+        $module = Module::where('slug', $module)->firstOrFail();
+
+        // Resolve model dynamically
+        $modelClass = $module->model_class;
+
+        // Load record
+        $record = $modelClass::findOrFail($id);
+        // Validate
+$data = $request->except('_token', '_method');
+        // Save
+        $record->fill($data)->save();
+
+        return back()->with('success', 'Record updated successfully.');
+    }
   }
 
 
