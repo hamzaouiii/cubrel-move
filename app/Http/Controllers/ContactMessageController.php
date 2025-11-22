@@ -8,11 +8,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-use \App\Models\ContactMessage;
+use \App\Models\Modules\ContactMessage;
 use \App\Models\IpWhitelist;
 use App\Mail\ContactMessageReceived;
 use App\Mail\ContactMessageConfirmation;
-use App\Models\Email;
+use App\Models\Modules\Email;
 
 class ContactMessageController extends Controller
 {

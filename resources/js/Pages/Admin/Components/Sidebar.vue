@@ -39,7 +39,6 @@ const page = usePage()
 const modules = computed(() => page.props.modules ?? [])
 const currentUrl = computed(() => page.url)
 
-console.log(modules.value)
 
 const collapsedSidebar = ref(true);
 const toggleSidebar = () => {
