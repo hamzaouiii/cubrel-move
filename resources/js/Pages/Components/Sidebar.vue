@@ -40,7 +40,7 @@ const modules = computed(() => page.props.modules ?? [])
 const currentUrl = computed(() => page.url)
 
 
-const collapsedSidebar = ref(true);
+const collapsedSidebar = ref(false);
 const toggleSidebar = () => {
   collapsedSidebar.value = !collapsedSidebar.value
 }

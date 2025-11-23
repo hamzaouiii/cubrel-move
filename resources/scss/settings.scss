@@ -1,0 +1,46 @@
+.settings{
+  display: flex;
+  flex-direction: column;
+
+  &_header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+    &_search{
+    input{
+      all: unset;
+      border: 2px solid lightgrey ;
+      padding: 5px 15px;
+      width: 380px;
+      border-radius: 8px;
+            font-family: 'Fira Sans', 'Heebo', sans-serif;
+
+    }
+
+    }
+  }
+  &_content{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;                          /* spacing */
+    &_section{
+      margin: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5)!important;
+      border-radius: 8px;
+      &_header{
+        &_title{
+          margin-bottom: 10px;
+        }
+        &_desc p{
+          font-size: 0.8rem !important;
+        }
+      }
+
+    }
+  }
+}

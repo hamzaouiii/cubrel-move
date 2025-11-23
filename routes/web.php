@@ -9,6 +9,7 @@
   use App\Http\Controllers\AuthController;
   use App\Http\Controllers\ListController;
   use App\Http\Controllers\RecordController;
+  use App\Http\Controllers\SettingsController;
   use App\Http\Controllers\ModuleManagerController;
 
 
@@ -21,6 +22,9 @@
         ->name('dashboard'); 
       Route::get('/modules', [ModuleManagerController::class, 'index'])
           ->name('modules.index');
+
+      Route::get('/settings', [SettingsController::class, 'index'])
+        ->name('settings.index');
 
       Route::get('/{module}/{recordId}', RecordController::class);
       

@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-      $this->call(ModulesSeeder::class);
-      $this->call(LayoutsSeeder::class);
-      $this->call(UsersSeeder::class);
-      $this->call(InquiriesLayoutSeeder::class);
-      $this->call(InquiriesModuleSeeder::class);
+      // $this->call(ModulesSeeder::class);
+      // $this->call(LayoutsSeeder::class);
+      // $this->call(UsersSeeder::class);
+      $this->call(SettingsLayoutSeeder::class);
+      $this->call(SettingsModuleSeeder::class);
     }
 }
