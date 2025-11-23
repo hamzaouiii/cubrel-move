@@ -27,3 +27,4 @@ Thumbs.db
 *.zip
 
 app/console/*
+*.ps1
