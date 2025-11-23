@@ -1,4 +1,5 @@
 .admin { 
+
   min-height: 100vh; 
   background: #f5f6fa; 
   background-size: 100% 100%;
@@ -126,6 +127,7 @@
       align-items: center;
     }
   }
+
   .collapsed{
     min-width: 80px;
     width: 80px;  
@@ -187,6 +189,7 @@
         }
     }
   }
+
   main{
 
     padding-top: 20px;
@@ -281,24 +284,8 @@
       }
 
     }
-    .fade-enter-active,
-    .fade-leave-active {
-      transition: opacity 0.15s ease, transform 0.15s ease;
-    }
-    .fade-enter-from,
-    .fade-leave-to {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .slide-search-enter-active,
-    .slide-search-leave-active {
-    transition: all 0.2s ease;
-    }
-    .slide-search-enter-from,
-    .slide-search-leave-to {
-    opacity: 0;
-    transform: translateX(20px);
-    }
+
+
     .ar-main-container {
       padding: 5px;
       margin-top: 25px;
@@ -327,6 +314,37 @@
         }
 
         &_actions {
+
+          .search-input{
+            all: unset;
+            border: 2px solid lightgray;
+            padding: 8px 10px;
+            width: 380px;
+            border-radius: 8px;
+            font-family: 'Fira Sans', 'Heebo', sans-serif;
+            border-right: none;
+
+          }
+          button{
+            all: unset;
+            background-color: var(--background-color);
+            color: white;
+            padding: 0 8px;
+            border: 2px solid lightgray;
+            cursor: pointer;
+
+          }
+          .main-btn{
+            border-left: none;
+            border-right: none;
+          }
+          .dropdown-btn{
+           
+            border-left: 1px solid lightgray;
+            border-radius: 0 8px 8px 0 !important;
+
+
+          }
         }
       }
 
@@ -446,25 +464,20 @@
       }
     }
 
-  }
-}
 
-
-.content   { min-width: 0; }
-.nav-link  { color: #4b5563; }
-.nav-link.active { background: #eef2ff; color: #4f46e5; }
-.placeholder-wave { opacity: .5; }
-
-.card-shadow{
-  box-shadow: 2px 5px 5px 0px rgba(51, 51, 51, 0.5)!important;
-}
-.card-border-radius{
-  border-radius: .45rem !important;
-}
-.scale-at-hover{
-  transition: all 0.2s ease-out;
-  cursor: pointer;
-  &:hover{
-    transform: scale(1.04);
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .fade-enter-from, .fade-leave-to {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .slide-search-enter-active, .slide-search-leave-active {
+      transition: all 0.2s ease;
+    }
+    .slide-search-enter-from, .slide-search-leave-to {
+      opacity: 0;
+      transform: translateX(20px);
+    }
   }
 }

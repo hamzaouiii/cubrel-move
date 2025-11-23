@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
   public function index() {
-    return \Inertia\Inertia::render('Admin/Login'); 
+    return \Inertia\Inertia::render('Login'); 
   }
 
   public function login(Request $request) {

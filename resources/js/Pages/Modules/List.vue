@@ -16,7 +16,8 @@ const pageProps = defineProps({
   title: String,
   items: Array,
   meta: Object,
-  listLayout: Object
+  listLayout: Object,
+  filters: Object
 })
 
 const recordsNumber = computed(() => pageProps.items?.length ?? 0)
@@ -52,7 +53,8 @@ const recordsNumberPhrase = computed(() => {
   }
 
   // --- SEARCH LOGIC ---
-  const search = ref('')
+
+  const search = ref(pageProps.filters.search ?? '')
 
   const performSearch = (page = 1) => {
     router.get(
@@ -68,6 +70,7 @@ const recordsNumberPhrase = computed(() => {
       }
     )
   }
+
 
   const handleSearchInput = () => {
     // Trigger search when at least 3 characters, or when cleared (0) to reset
@@ -96,11 +99,11 @@ const recordsNumberPhrase = computed(() => {
         <span class="ar-main-container_header_details_meta">{{ recordsNumberPhrase  }}</span>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group">
+        <div class="input-group"  :style="{ '--background-color': module.color}">
           <input
             type="text"
             name="search"
-            class="form-control"
+            class="search-input"
             aria-label="Text input with segmented dropdown button"
             placeholder="Search in this list"
             v-model="search"
@@ -109,19 +112,20 @@ const recordsNumberPhrase = computed(() => {
           >
           <button
             type="button"
-            class="btn btn-outline-secondary"
-            :style="{ background: module.color, color: 'white' }"
+            class="main-btn"
+           
           >
             Create
           </button>
           <button
             @click="toggleActionDropDown"
             type="button"
-            class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+            class="dropdown-btn"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-            :style="{ background: module.color, color: 'white' }"
+            
           >
+            <i :class="showActionDropDown ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>
             <span class="visually-hidden">Toggle Dropdown</span>
           </button>
           <transition name="fade">

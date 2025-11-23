@@ -1,8 +1,4 @@
-@use 'navbar';
 @use 'fonts' as *;
-@use 'hero';
-@use 'pricing';
-@use 'contact';
 @use 'admin';
 
 *{
@@ -16,126 +12,21 @@ body {
   margin-bottom: 0 !important;
 }
 
-.single-pricing ul li {
-  list-style: none;
-  margin: 8px 0;
-  text-align: left;
-}
-.single-pricing ul li i {
-  color: #007bff; /* deine Akzentfarbe */
-  margin-right: 8px;
-}
-.email-text p{
-  font-size: 0.8rem !important;
-}
+.content   { min-width: 0; }
+.nav-link  { color: #4b5563; }
+.nav-link.active { background: #eef2ff; color: #4f46e5; }
+.placeholder-wave { opacity: .5; }
 
-
-.pricing-style-4 .price-image img{
-  margin-top: 30px;
-  width: 100%;
+.card-shadow{
+  box-shadow: 2px 5px 5px 0px rgba(51, 51, 51, 0.5)!important;
 }
-
-.contact .contact-image img{
-  margin-top: 30px;
-  width: 150%;
-  margin-bottom: 30px;
-
+.card-border-radius{
+  border-radius: .45rem !important;
 }
-
-
-
-.task .task-image img{
-  width: 80%;
-  margin-bottom: 50px;
-
-}
-.hero-btn{
-  margin-top: 75px !important;
-}
-
-
-.privacy-content{
-  background-color: #f3f3f3;
-  min-height: 100vh;
-  height: 100%;
-  padding-top: 200px;
-  padding-left: 50px;
-  padding-right: 50px;
-  padding-bottom: 50px;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: center;
-}
-
-
-.privacy-content .figure img{
-max-width: 600px;
-
-}
-.privacy-content h1{
-  font-size: 2rem;
-}
-
-.privacy-content h2{
-  font-size: 1.5rem;
-}
-.privacy-content h3{
-  font-size: 1rem;
-}
-.privacy-content h5{
-  font-size: 1rem;
-}
-.privacy-content-par{
-  margin: 35px 0;
-}
-.privacy-content-par p{
-  padding-left: 5px;
-}
-
-@media only screen and (max-width: 767px) {
-  .pricing-style-4 .price-image img {
-    width: 100%;
+.scale-at-hover{
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+  &:hover{
+    transform: scale(1.04);
   }
-  .contact .contact-image img {
-    width: 100%;
-  }
-
-  .task .task-image img {
-    width: 100%;
-  }
-   .privacy-content{
-    flex-direction: column;
-  }
-  .privacy-content .figure img{
-    max-width: 300px;
-    margin-bottom: 20px;
-    
-  }
-    .hero-btn{
-    margin-top: 45px !important;
-    font-size: 0.88rem !important;
-  }
-  .hero-content-wrapper h2 {
-    font-size: 1.94rem!important;
-    margin-top: 75px;
-  }
-}
-
-//edge case
-@media only screen and (max-width: 1520px) {
-
- .about-style-4 .about-image img{
-    width: 100%;
-  }
-}
-
-
-
-.single-feature{
-  padding: 10px !important;
-}
-
-.footer .logo img{
-  width: 200px;
-  height: 100px;
 }
