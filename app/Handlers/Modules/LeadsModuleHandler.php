@@ -22,7 +22,12 @@ class LeadsModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
-
+    protected array $searchable = [
+        'name',
+        'email',
+        'phone',
+        'company',
+    ];
     protected string $model = Lead::class;
     
 }

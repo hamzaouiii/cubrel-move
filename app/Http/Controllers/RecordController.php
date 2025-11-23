@@ -6,7 +6,7 @@ use App\Models\Module;
 use Inertia\Inertia;
 use App\Contracts\ModuleHandler;
 use Illuminate\Http\Request;
-class AdminModuleRecordController extends Controller
+class RecordController extends Controller
 {
     public function __invoke(string $module, string $recordId)
     {

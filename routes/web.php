@@ -7,8 +7,8 @@
   use App\Http\Controllers\ContactMessageController;
   use App\Http\Controllers\ProfileController;
   use App\Http\Controllers\AuthController;
-  use App\Http\Controllers\AdminModuleController;
-  use App\Http\Controllers\AdminModuleRecordController;
+  use App\Http\Controllers\ListController;
+  use App\Http\Controllers\RecordController;
   use App\Http\Controllers\ModuleManagerController;
 
 
@@ -22,12 +22,12 @@
       Route::get('/modules', [ModuleManagerController::class, 'index'])
           ->name('modules.index');
 
-      Route::get('/{module}/{recordId}', AdminModuleRecordController::class);
+      Route::get('/{module}/{recordId}', RecordController::class);
       
-      Route::put('/{module}/{record}', [AdminModuleRecordController::class,'update'])
+      Route::put('/{module}/{record}', [RecordController::class,'update'])
       ->name('modules.records.update');
 
-      Route::get('/{module}', AdminModuleController::class)
+      Route::get('/{module}', ListController::class)
         ->where('module', '^(?!login$|logout$).+')
         ->name('modules.index');
       

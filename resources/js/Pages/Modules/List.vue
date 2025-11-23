@@ -1,7 +1,5 @@
-
-
 <script setup>
-  import { Head, usePage, Link } from '@inertiajs/vue3'
+  import { Head, usePage, Link, router } from '@inertiajs/vue3'
   import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
 
   import Layout from '@/Layouts/Layout.vue';
@@ -12,22 +10,25 @@
   });
 
   const { props } = usePage();
-  defineProps({
-    module: Object,
-    title: String,
-    items: Array,
-    meta: Object,
-    listLayout: Object
-  })
-  let records_number_phrase;
-  const recordsNumber = computed(() => props.items.length);
-  if (props.meta) {
-    records_number_phrase = recordsNumber.value+" of "+props.meta.total
-  }
-  else {
-    records_number_phrase = "(0)"
 
+const pageProps = defineProps({
+  module: Object,
+  title: String,
+  items: Array,
+  meta: Object,
+  listLayout: Object
+})
+
+const recordsNumber = computed(() => pageProps.items?.length ?? 0)
+
+const recordsNumberPhrase = computed(() => {
+  if (!pageProps.meta) {
+    return '(0)'
   }
+
+  return `${recordsNumber.value} of ${pageProps.meta.total}`
+})
+
   const formatDate = (value) => {
     if (!value) return '-';
     return new Date(value).toLocaleDateString('de-DE', {
@@ -49,6 +50,32 @@
       showActionDropDown.value = false
     }
   }
+
+  // --- SEARCH LOGIC ---
+  const search = ref('')
+
+  const performSearch = (page = 1) => {
+    router.get(
+      window.location.pathname,
+      {
+        search: search.value || undefined,
+        page,
+      },
+      {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+      }
+    )
+  }
+
+  const handleSearchInput = () => {
+    // Trigger search when at least 3 characters, or when cleared (0) to reset
+    if (search.value.length >= 3 || search.value.length === 0) {
+      performSearch(1)
+    }
+  }
+
   onMounted(() => {
     document.addEventListener('click', handleClickOutsideActionDropDown)
   })
@@ -66,34 +93,55 @@
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
         <h1 class="ar-main-container_header_details_title">{{title}}</h1> 
-        <span class="ar-main-container_header_details_meta" >{{ records_number_phrase}}</span>
+        <span class="ar-main-container_header_details_meta">{{ recordsNumberPhrase  }}</span>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group" >
-          <input type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="Search in this list">
-          <button type="button" class="btn btn-outline-secondary" :style="{ background: module.color, color: 'white' }">Create</button>
-          <button  @click="toggleActionDropDown" type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" :style="{ background: module.color, color: 'white' }">
+        <div class="input-group">
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            aria-label="Text input with segmented dropdown button"
+            placeholder="Search in this list"
+            v-model="search"
+            @input="handleSearchInput"
+            @keydown.enter.prevent="performSearch(1)"
+          >
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            :style="{ background: module.color, color: 'white' }"
+          >
+            Create
+          </button>
+          <button
+            @click="toggleActionDropDown"
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            :style="{ background: module.color, color: 'white' }"
+          >
             <span class="visually-hidden">Toggle Dropdown</span>
           </button>
-        <transition name="fade">
-          <ul  v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-            <li ><a  class="dropdown-item " href="#">Module Settings</a></li>
-            <li><a class="dropdown-item disabled" href="#">Export</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Bulk Action</a></li>
-            <li><a class="dropdown-item " href="#" style="color: salmon">Delete</a></li>
-          </ul>
-        </transition>
-
+          <transition name="fade">
+            <ul v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
+              <li><a class="dropdown-item" href="#">Module Settings</a></li>
+              <li><a class="dropdown-item disabled" href="#">Export</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Bulk Action</a></li>
+              <li><a class="dropdown-item" href="#" style="color: salmon">Delete</a></li>
+            </ul>
+          </transition>
         </div>
       </div>
-
     </div>
-    <div v-if="meta && meta.total  !=0"  class="ar-main-container_content">
-      <div class="">
+
+    <div v-if="meta && meta.total != 0" class="ar-main-container_content">
+      <div>
         <table class="ar-main-container_content_table" :style="{ '--module-color': module.color}">
-          <thead  >
+          <thead>
             <tr>
               <th
                 v-for="col in listLayout?.columns || []"
@@ -130,18 +178,16 @@
                 </template>
 
                 <!-- Truncate long strings -->
-                  <template v-else-if="item[col.key] && item[col.key].length > 62">
-                    {{ item[col.key].substring(0, 64) + "..." }}
-                  </template>
+                <template v-else-if="item[col.key] && item[col.key].length > 62">
+                  {{ item[col.key].substring(0, 64) + '...' }}
+                </template>
 
                 <!-- Default: plain text with '-' fallback -->
                 <template v-else>
                   {{ item[col.key] ?? '-' }}
-
                 </template>
               </td>
-              </Link>
-
+            </Link>
           </tbody>
         </table>
       </div>

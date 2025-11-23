@@ -13,6 +13,8 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
 
     protected string $model;
 
+    protected array $searchable = [];
+    
     protected function getPerPage(array $params): int
     {
         return $params['perPage'] ?? 31;
@@ -23,45 +25,58 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
         return $items;
     }
 
-    public function getListData(array $params = []): array
-    {
-        $perPage   = $this->getPerPage($params);
-        $query     = $this->query($params);
-        $paginator = $query
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+public function getListData(array $params = []): array
+{
+    $perPage = $this->getPerPage($params);
+    $query   = $this->query($params);
 
-        $pages = [];
-        $last  = $paginator->lastPage();
+    // 🔍 Apply search filtering (ONLY NEW LOGIC)
+    if (!empty($params['search']) && !empty($this->searchable)) {
+        $search = trim($params['search']);
 
-        for ($p = 1; $p <= $last; $p++) {
-            $pages[] = [
-                'label'  => (string) $p,
-                'page'   => $p,
-                'url'    => $paginator->url($p),
-                'active' => $p === $paginator->currentPage(),
-            ];
-        }
+        $query->where(function ($q) use ($search) {
+            foreach ($this->searchable as $column) {
+                $q->orWhere($column, 'LIKE', "%{$search}%");
+            }
+        });
+    }
+    // 🔍 END of search logic
 
-        $items = $this->transformItems($paginator->items(), $params);
+    $paginator = $query
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage);
 
-        return [
-            'items' => $items,
-            'meta'  => [
-                'total'       => $paginator->total(),
-                'perPage'     => $paginator->perPage(),
-                'currentPage' => $paginator->currentPage(),
-                'lastPage'    => $last,
-                'from'        => $paginator->firstItem(),
-                'to'          => $paginator->lastItem(),
-                'links'       => [
-                    'prev' => $paginator->previousPageUrl(),
-                    'next' => $paginator->nextPageUrl(),
-                ],
-                'pages'       => $pages,
-            ],
+    $pages = [];
+    $last  = $paginator->lastPage();
+
+    for ($p = 1; $p <= $last; $p++) {
+        $pages[] = [
+            'label'  => (string) $p,
+            'page'   => $p,
+            'url'    => $paginator->url($p),
+            'active' => $p === $paginator->currentPage(),
         ];
     }
+
+    $items = $this->transformItems($paginator->items(), $params);
+
+    return [
+        'items' => $items,
+        'meta'  => [
+            'total'       => $paginator->total(),
+            'perPage'     => $paginator->perPage(),
+            'currentPage' => $paginator->currentPage(),
+            'lastPage'    => $last,
+            'from'        => $paginator->firstItem(),
+            'to'          => $paginator->lastItem(),
+            'links'       => [
+                'prev' => $paginator->previousPageUrl(),
+                'next' => $paginator->nextPageUrl(),
+            ],
+            'pages'       => $pages,
+        ],
+    ];
+}
 
     public function getRecordData(string $recordId, array $params = []): array
     {
