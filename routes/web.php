@@ -12,25 +12,20 @@
   use App\Http\Controllers\ModuleManagerController;
 
 
-  Route::get('/', fn () => Inertia::render('Home'))->name('home');
-  Route::get('/impressum', fn () => Inertia::render('Impressum'))->name('impressum');
-  Route::get('/datenschutz', fn () => Inertia::render('Datenschutz'))->name('datenschutz');
-  Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+
 
   Route::middleware(['auth'])
-  ->prefix('ar-admin')
-  ->name('admin.')
   ->group(function () {
 
-    Route::get('/', fn () => Inertia::render('Admin/Dashboard'))
+    Route::get('/', fn () => Inertia::render('Dashboard'))
         ->name('dashboard'); 
       Route::get('/modules', [ModuleManagerController::class, 'index'])
-          ->name('admin.modules.index');
+          ->name('modules.index');
 
       Route::get('/{module}/{recordId}', AdminModuleRecordController::class);
       
       Route::put('/{module}/{record}', [AdminModuleRecordController::class,'update'])
-      ->name('admin.modules.records.update');
+      ->name('modules.records.update');
 
       Route::get('/{module}', AdminModuleController::class)
         ->where('module', '^(?!login$|logout$).+')
@@ -45,6 +40,6 @@
 
 Route::middleware(['guest'])->group(function () {
  
-    Route::get('/ar-admin/login', [AuthController::class, 'index'])->name('login');
-    Route::post('/ar-admin/login', [AuthController::class, 'login']);
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
 });

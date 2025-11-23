@@ -1,11 +1,11 @@
 
 <script setup>
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import Layout from '@/Layouts/Layout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { computed, ref, onMounted, onBeforeUnmount, reactive } from 'vue'
 
 defineOptions({
-  layout: AdminLayout,
+  layout: Layout,
 });
 
 const props = defineProps({
@@ -76,7 +76,7 @@ const saveRecord = () => {
 
   // build URL manually, no Ziggy/route()
   const moduleSlug = props.module.slug ?? props.module
-  const url = `/ar-admin/${moduleSlug}/${props.record.id}`
+  const url = `/${moduleSlug}/${props.record.id}`
   form
     .transform(() => payload)
     .put(url, {

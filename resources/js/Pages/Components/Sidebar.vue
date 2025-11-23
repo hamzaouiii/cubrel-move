@@ -33,7 +33,7 @@ import { useForm, Link, usePage } from '@inertiajs/vue3'
 
 const form = useForm({})
 const logout = () => {
-  form.post('/ar-admin/logout')  
+  form.post('/logout')  
 }
 const page = usePage()
 const modules = computed(() => page.props.modules ?? [])

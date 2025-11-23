@@ -33,14 +33,14 @@ class AuthController extends Controller
     }
 
     $request->session()->regenerate();
-    return redirect()->to('/ar-admin');
+    return redirect()->to('/');
   }
 
   public function logout(Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->to('/ar-admin/login');
+    return redirect()->to('/login');
   }
 
 }

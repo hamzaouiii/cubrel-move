@@ -1,10 +1,10 @@
 
 <script setup>
 import { Head } from '@inertiajs/vue3'
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import Layout from '@/Layouts/Layout.vue';
 
 defineOptions({
-  layout: AdminLayout,
+  layout: Layout,
 });
 </script>
 

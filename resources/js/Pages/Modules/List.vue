@@ -4,11 +4,11 @@
   import { Head, usePage, Link } from '@inertiajs/vue3'
   import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
 
-  import AdminLayout from '@/Layouts/AdminLayout.vue';
+  import Layout from '@/Layouts/Layout.vue';
   import Pagination from '../Components/Pagination.vue';
 
   defineOptions({
-    layout: AdminLayout,
+    layout: Layout,
   });
 
   const { props } = usePage();
@@ -111,7 +111,7 @@
               :key="item.id"
               as="tr"
               class="clickable-row"
-              :href="`/ar-admin/${module.slug}/${item.id}`"
+              :href="`/${module.slug}/${item.id}`"
             >
               <td
                 v-for="col in listLayout?.columns || []"

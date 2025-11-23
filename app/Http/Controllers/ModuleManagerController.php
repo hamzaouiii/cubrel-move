@@ -22,7 +22,7 @@ class ModuleManagerController extends Controller
             ->orderBy('id')
             ->get();
 
-        return Inertia::render('Admin/Modules/Manager', [
+        return Inertia::render('Modules/Manager', [
             'modules' => $modules,
         ]);
     }

@@ -1,14 +1,22 @@
-<template>
-  <div>
-    <Header></Header>
-    <main>
-      <slot></slot>
-    </main>
-    <Footer></Footer>
-  </div>
-</template>
 
 <script setup>
-import Header from '@/Components/Header.vue'
-import Footer from '@/Components/Footer.vue'
+import Sidebar from '@/Pages/Components/Sidebar.vue';
+import Topbar from '@/Pages/Components/Topbar.vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const user = page.props.auth?.user ?? null;
+const csrf = page.props.csrf_token ?? document
+  .querySelector('meta[name="csrf-token"]')
+  ?.getAttribute('content');
 </script>
+
+<template>
+  <div class="admin d-flex">
+    <sidebar></sidebar>
+    <main class="content flex-grow-1">
+      <Topbar></Topbar>
+      <slot />
+    </main>
+  </div>
+</template>

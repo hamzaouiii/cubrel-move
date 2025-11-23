@@ -3,7 +3,7 @@
 
   <div class="top-bar">
   <div class="logo">
-    <Link href="/ar-admin" class="logo">
+    <Link href="/" class="logo">
     <img src="/img/logo/logo.svg" alt="logo"  width="240"height="180" />
   </Link>
   </div>
@@ -34,7 +34,7 @@
           <!-- Dropdown -->
         <transition name="fade">
           <ul v-if="showProfile" class="profile-dropdown card-shadow">
-            <li><Link href="/ar-admin/modules">Module Manager</Link></li>
+            <li><Link href="/modules">Module Manager</Link></li>
             <li><a href="/settings">Settings</a></li>
             <li><a href="/profile">My Profile</a></li>
             <li @click="logout"><a href="#">Logout</a></li>
@@ -53,7 +53,7 @@ import { useForm, Link} from '@inertiajs/vue3'
 
 const form = useForm({})
 const logout = () => {
-  form.post('/ar-admin/logout')  
+  form.post('/logout')  
 }
 const showSearch = ref(false)
 const showProfile = ref(false)

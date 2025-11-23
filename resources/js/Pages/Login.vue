@@ -79,7 +79,7 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.post('/ar-admin/login')
+  form.post('/login')
 }
 </script>
 

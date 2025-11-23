@@ -20,7 +20,7 @@ class InquiriesModuleSeeder extends Seeder
                 'label'          => 'Inquiries',
                 'color'          => '#cceb34',
                 'icon'          => 'fa-envelopes-bulk',
-                'path'          => '/ar-admin/inquiries',
+                'path'          => '/inquiries',
                 'description'          => 'Manage messages from the contact form',
                 'slug'          => 'inquiries',
                 'table_name'    => 'contact_messages',

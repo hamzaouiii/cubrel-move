@@ -41,7 +41,7 @@ class AdminModuleController extends Controller
         $listLayout = optional($moduleModel->listLayout())->definition;
 
 
-        return Inertia::render('Admin/Modules/List', array_merge([
+        return Inertia::render('Modules/List', array_merge([
             'module' => $moduleModel,
             'title'  => $moduleModel->name,
             'listLayout' => $listLayout,

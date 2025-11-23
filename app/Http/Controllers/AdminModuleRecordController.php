@@ -36,7 +36,7 @@ class AdminModuleRecordController extends Controller
         $recordLayout = optional($moduleModel->recordLayout())->definition;
 
 
-        return Inertia::render('Admin/Modules/Record', array_merge([
+        return Inertia::render('Modules/Record', array_merge([
             'module'   => $moduleModel,
             'title'    => $moduleModel->name,
             'recordId' => $recordId,
