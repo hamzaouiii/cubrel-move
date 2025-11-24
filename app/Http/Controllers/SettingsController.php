@@ -10,7 +10,8 @@ use App\Models\Modules\Settings;
 class SettingsController extends Controller
 {
     public function index(){
-    $settings = Settings::orderBy('created_at')->get();
+    $settings = Settings::with('items')
+    ->orderBy('created_at')->get();
       return Inertia::render('Settings', [
         'settings'     => $settings]);
     }

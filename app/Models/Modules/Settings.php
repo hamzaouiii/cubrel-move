@@ -5,7 +5,6 @@ namespace App\Models\Modules;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
-
 class Settings extends Model
 {
     use HasFactory;
@@ -39,4 +38,9 @@ class Settings extends Model
             }
         });
     }
+        public function items()
+    {
+        return $this->hasMany(SettingItem::class, 'setting_id');
+    }
 }
+
