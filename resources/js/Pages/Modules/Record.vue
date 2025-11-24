@@ -15,10 +15,8 @@ const props = defineProps({
   recordLayout: Object
 })
 
-// Use Inertia form as editable state
 const form = useForm({ ...props.record })
 
-// State for editing mode
 const isEditing = ref(false)
 const showActionDropDown = ref(false)
 const actionDropDownref = ref(null)
@@ -47,9 +45,7 @@ const hasRecordChanged = (original, edited) => {
   return false
 }
 
-// compare original record with form state
 const isDirty = computed(() => hasRecordChanged(props.record, form))
-
 const enableEditing = () => {
   isEditing.value = true
 }
@@ -74,7 +70,6 @@ const saveRecord = () => {
     return
   }
 
-  // build URL manually, no Ziggy/route()
   const moduleSlug = props.module.slug ?? props.module
   const url = `/${moduleSlug}/${props.record.id}`
   form
@@ -84,7 +79,6 @@ const saveRecord = () => {
         isEditing.value = false
       },
       onError: () => {
-        // validation errors available in form.errors
         console.error('Error saving record:', form.errors)
       },
     })
@@ -148,34 +142,29 @@ const formatDate = (value) => {
       <div class="ar-main-container_header_details">
         <h1 class="ar-main-container_header_details_title">{{ record.name }}</h1>
       </div>
-      <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group">
+      <div class="ar-main-container_header_actions" ref="actionDropDownref" >
+        <div class="input-group"  :style="{ '--background-color': module.color}">
           <button 
             v-if="isEditing"
             type="button" 
-            class="btn btn-outline-secondary" 
-            :style="{ color: module.color }"
+            class="record-main-btn cancel-btn" 
             @click="cancelEditing"
           >
             Cancel
           </button>
           
-          <!-- Edit/Save Button -->
           <button 
             v-if="!isEditing"
             type="button" 
-            class="btn btn-outline-secondary" 
-            :style="{ background: module.color, color: 'white' }"
+            class="record-main-btn" 
             @click="enableEditing"
           >
             Edit
           </button>
           
-          <!-- Save/Cancel Buttons when editing -->
             <button   v-else
               type="button" 
-              class="btn btn-outline-secondary" 
-              :style="{ background: module.color, color: 'white' }"
+              class="record-main-btn" 
                 :disabled="!isDirty"
                 @click="saveRecord"
             >
@@ -186,11 +175,12 @@ const formatDate = (value) => {
           <button 
             @click="toggleActionDropDown" 
             type="button" 
-            class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
+            class="record-dropdown-btn" 
             data-bs-toggle="dropdown" 
             aria-expanded="false" 
-            :style="{ background: module.color, color: 'white' }"
+            
           >
+            <i :class="showActionDropDown ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>
             <span class="visually-hidden">Toggle Dropdown</span>
           </button>
           

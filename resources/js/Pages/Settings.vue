@@ -31,12 +31,10 @@ const filteredSettings = computed(() => {
         )
       })
 
-      // If the setting itself matches, keep all its items
       if (matchesSetting) {
         return { ...setting, items: setting.items || [] }
       }
 
-      // Otherwise only keep it if any items matched
       if (filteredItems.length > 0) {
         return { ...setting, items: filteredItems }
       }
@@ -82,7 +80,7 @@ const filteredSettings = computed(() => {
         <div  class="settings_content_section_links">
           <Link v-for="i in s.items" :href="i.path">
             <i :class="i.icon"></i>
-            {{ i.name }}
+            <span class="label">{{ i.name }}</span>
           </Link>
         </div>
       </div>

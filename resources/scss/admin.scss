@@ -339,11 +339,21 @@
             border-right: none;
           }
           .dropdown-btn{
-           
             border-left: 1px solid lightgray;
             border-radius: 0 8px 8px 0 !important;
-
-
+          }
+          .record-main-btn{
+            border: none; 
+            padding: 8px;
+            border-right: 2px solid lightblue;
+            border-radius: 5px;
+          }
+          .record-dropdown-btn{
+            border-radius: 5px;
+            border: none !important;
+          }
+          .cancel-btn{
+            background: rgb(170, 170, 170) !important;
           }
         }
       }

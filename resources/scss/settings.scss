@@ -49,16 +49,21 @@
         a{
           all: unset;
           color: #0d6efd;
-          transition: all 0.1s ease-in-out ;
-          border-bottom: 2px solid transparent;
+
           width: max-content;
           align-self: flex-start;
           cursor: pointer;
           padding: 5px 5px 0px 5px;
           margin-bottom: 5px;
-          &:hover{
-            border-color: #0d6efd;
+          span{
+            transition: all 0.3s ease-in-out ;
+            border-bottom: 2px solid transparent;
+            margin: 5px;
+            &:hover{
+              border-color: #0d6efd;
+            }
           }
+
 
         }
       }
