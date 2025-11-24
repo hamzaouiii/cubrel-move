@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Module;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Modules\SettingItem;
+
 
 class ModuleManagerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $modules = Module::query()
             ->with([
@@ -21,9 +24,12 @@ class ModuleManagerController extends Controller
             ])
             ->orderBy('id')
             ->get();
+    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
 
-        return Inertia::render('Modules/Manager', [
-            'modules' => $modules,
-        ]);
+      return Inertia::render('Settings/Page', [
+        'item'     => $item,
+       'modules' => $modules
+      ]);
     }
+      
 }

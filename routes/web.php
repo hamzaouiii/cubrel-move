@@ -20,11 +20,14 @@
 
     Route::get('/', fn () => Inertia::render('Dashboard'))
         ->name('dashboard'); 
-      Route::get('/modules', [ModuleManagerController::class, 'index'])
-          ->name('modules.index');
+      Route::get('/settings/customisation/modules', [ModuleManagerController::class, 'index'])
+          ->name('settings.index');
 
       Route::get('/settings', [SettingsController::class, 'index'])
         ->name('settings.index');
+
+      Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])
+        ->name('settings.show');
 
       Route::get('/{module}/{recordId}', RecordController::class);
       
@@ -34,8 +37,7 @@
       Route::get('/{module}', ListController::class)
         ->where('module', '^(?!login$|logout$).+')
         ->name('modules.index');
-      
-
+    
       Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout'); 
   });

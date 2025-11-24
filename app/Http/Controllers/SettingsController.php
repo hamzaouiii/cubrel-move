@@ -6,13 +6,23 @@ use Inertia\Inertia;
 use App\Contracts\ModuleHandler;
 use Illuminate\Http\Request;
 use App\Models\Modules\Settings;
+use App\Models\Modules\SettingItem;
 
 class SettingsController extends Controller
 {
     public function index(){
     $settings = Settings::with('items')
     ->orderBy('created_at')->get();
-      return Inertia::render('Settings', [
+      return Inertia::render('Settings/List', [
         'settings'     => $settings]);
     }
+
+public function show(Request $request)
+{
+    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
+
+    return Inertia::render('Settings/Page', [
+        'item' => $item,
+    ]);
+}
 }

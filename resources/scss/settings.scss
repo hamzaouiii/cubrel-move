@@ -19,11 +19,23 @@
     }
 
     }
+    &_title{
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      h6, span{
+        margin: 5px 0 0 5px;
+        font-size: 0.8rem;
+      }
+      h5{
+        font-size: 1rem;
+      }
+    }
   }
   &_content{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;                          /* spacing */
+    gap: 20px;
     &_section{
       margin: 20px;
       padding: 20px;
@@ -68,6 +80,31 @@
         }
       }
 
+    }
+
+
+  }
+  &_items{
+    &_modules{
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 50px;
+      li{
+        display: flex;
+        align-items: center;
+        font-size: 2rem;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        margin: 10px;
+        &:hover{
+          color: var(--module-color);
+
+        }
+        i{
+          margin-right: 10px;
+        }
+      }
     }
   }
 }
