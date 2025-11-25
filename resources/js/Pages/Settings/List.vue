@@ -79,7 +79,8 @@ const filteredSettings = computed(() => {
         </div>
         <div  class="settings_content_section_links">
           <Link v-for="i in s.items" 
-          :href="i.path">
+          :href="i.path"
+          >
             <i :class="i.icon"></i>
             <span class="label">{{ i.name }}</span>
           </Link>

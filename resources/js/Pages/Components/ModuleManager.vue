@@ -11,19 +11,18 @@ const props = defineProps({
   modules: Object
 })
 
-
 const page = usePage()
+const currentPath = page.url;
+console.log(page.url) // full URL path with slash, e.g. "/settings/users/roles"
 const module = computed(() => page.props.receivedItem || page.props)
-console.log(props.modules)
 
 </script>
 
 <template >
     <ul class="settings_items_modules">
-      <li v-for="m in modules" :style="{'--module-color': m.color}">
+      <Link v-for="m in modules" :style="{'--module-color': m.color}" :href="currentPath+'/'+m.id" >
         <i :class="['fa-solid', m.icon]"></i>
         {{ m.name }}
-
-      </li>
+      </Link>
     </ul>
 </template>

@@ -90,7 +90,8 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
       padding: 50px;
-      li{
+      a{
+        all: unset;
         display: flex;
         align-items: center;
         font-size: 2rem;
@@ -107,4 +108,70 @@
       }
     }
   }
+}
+.edit-module form{
+  margin: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5)!important;
+  border-radius: 8px;
+  .edit-element{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    margin: 10px;
+    label{
+      min-width: 150px;
+    }
+    input[type="text"]{
+      all: unset;
+      font-family: 'Fira Sans', 'Heebo', sans-serif;
+      border: 2px solid lightgray;
+      padding-left: 10px;
+      padding-top:5px ;
+      padding-bottom:5px ;
+      border-radius: 5px;
+    }
+    textarea{
+      all: unset;
+      font-family: 'Fira Sans', 'Heebo', sans-serif;
+      border: 2px solid lightgray;
+      padding: 10px;
+      border-radius: 5px;
+      width: 250px;
+      resize:vertical;
+
+    }
+  }
+  .actions{
+    display: flex;
+    justify-content: flex-end;
+    button{
+      all: unset;
+      border: 2px solid var(--module-color);
+      color: var(--module-color);
+      padding: 5px 20px;
+      margin-right: 50px;
+      transition: all 0.2s ease-in-out;
+      border-radius: 5px;
+      cursor: pointer;
+      &:hover{
+        background-color: var(--module-color);
+        color: white;
+      }    
+      &:disabled{
+        background-color: rgb(218, 218, 218);
+        color: white;
+        border-color:rgb(218, 218, 218);
+        cursor: not-allowed;
+
+      }  
+      .reset-btn{
+        border-color: salmon !important;
+      }
+    }
+  }
+
 }

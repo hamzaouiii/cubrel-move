@@ -55,7 +55,7 @@ class RecordController extends Controller
         // Load record
         $record = $modelClass::findOrFail($id);
         // Validate
-$data = $request->except('_token', '_method');
+        $data = $request->except('_token', '_method');
         // Save
         $record->fill($data)->save();
 
