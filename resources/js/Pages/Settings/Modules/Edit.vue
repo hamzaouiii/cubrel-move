@@ -67,16 +67,18 @@ const resetForm= () =>{
     <title>{{ module.name }} - Automatisierung Regensburg</title>
   </Head>
 
-  <div class="edit-module">
+  <div class="module-manager edit-module">
+    <div class="settings_header">
       <div class="settings_header_title">
         <h5><Link href="/settings">Settings</Link></h5>
         <span>></span> 
         <h5><Link href="/settings/customisation/modules">Modules</Link></h5>
         <span>></span> 
         <h6>{{module.name }}</h6>
+      </div>
     </div>
-    <form @submit.prevent="saveRecord">
 
+    <form @submit.prevent="saveRecord">
       <div
         v-for="[key, value] in editableFields"
         :key="key"
@@ -108,7 +110,7 @@ const resetForm= () =>{
       <div class="actions" :style="{'--module-color': editableModule.color}">
         <button @click="resetForm()" class="reset-btn" type="reset" :disabled="!isDirty" >Reset</button>
 
-        <button   type="submit" :disabled="!isDirty">Save</button>
+        <button type="submit" :disabled="!isDirty">Save</button>
       </div>
     </form>
   </div>

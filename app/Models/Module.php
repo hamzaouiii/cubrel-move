@@ -23,6 +23,7 @@ class Module extends BaseModule
         'can_delete',
         'model_class',
         'table_name',
+        'show_in_sidebar',
     ];
 
     protected $casts = [

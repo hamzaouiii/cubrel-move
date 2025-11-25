@@ -25,8 +25,11 @@
      */
     // module manager
     Route::get('/settings/customisation/modules', [ModuleManagerController::class, 'index'])->name('settings.modules.index');
+    Route::get('/settings/customisation/modules/create', [ModuleManagerController::class,'create'])->name('settings.modules.create');
+    Route::post('/settings/customisation/modules/create', [ModuleManagerController::class,'store'])->name('settings.modules.store');
     Route::get('/settings/customisation/modules/{module}', [ModuleManagerController::class, 'show'])->name('settings.modules.show');
     Route::put('/settings/customisation/modules/{module}', [ModuleManagerController::class,'update'])->name('settings.modules.update');
+
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');

@@ -13,7 +13,6 @@ const props = defineProps({
 
 const page = usePage()
 const currentPath = page.url;
-console.log(page.url) // full URL path with slash, e.g. "/settings/users/roles"
 const module = computed(() => page.props.receivedItem || page.props)
 
 </script>

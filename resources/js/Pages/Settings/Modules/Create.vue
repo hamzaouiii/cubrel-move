@@ -1,0 +1,176 @@
+<script setup>
+import { computed } from 'vue'
+import Layout from '@/Layouts/Layout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3'
+
+defineOptions({
+  layout: Layout,
+})
+
+const defaultValues = {
+  name: '',
+  label: '',
+  icon: '',
+  color: '',
+  show_in_sidebar: false,
+  description: '',
+  slug: ''
+}
+
+const form = useForm({ ...defaultValues })
+
+const isDirty = computed(() => {
+  return Object.keys(defaultValues).some((key) => {
+    const value = form[key]
+    if (value === null || value === '' || value === false) return false
+    return true
+  })
+})
+const slug = computed(() => {
+  return form.name
+    .toLowerCase()
+    .normalize("NFD")                 // split accented chars
+    .replace(/[\u0300-\u036f]/g, "")  // remove diacritics
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")      // replace non-url chars with dash
+    .replace(/^-+|-+$/g, "")          // trim leading/trailing dashes
+})
+const resetModule = () => {
+  Object.keys(defaultValues).forEach((key) => {
+    form[key] = defaultValues[key]
+  })
+
+  form.clearErrors()
+}
+
+// submit to create new module
+const saveModule = () => {
+  form.transform(data => ({ ...data, slug: slug.value }))
+  .post('/settings/customisation/modules/create')
+}
+</script>
+
+<template>
+  <Head>
+    <title>Create New Module</title>
+  </Head>
+
+  <div class="module-manager create-module">
+    <div class="settings_header">
+      <div class="settings_header_title">
+        <h5><Link href="/settings">Settings</Link></h5>
+        <span>></span>
+        <h5><Link href="/settings/customisation/modules">Modules</Link></h5>
+        <span>></span>
+        <h6>Create New Module</h6>
+      </div>
+    </div>
+
+    <form @submit.prevent="saveModule">
+      <div>
+        <div class="create-element">
+          <label>
+            Name
+          </label>
+          <input
+            class=""
+            type="text"
+            name="name"
+            v-model="form.name"
+          />
+        </div>
+        <div class="create-element">
+          <label>
+            Slug
+          </label>
+          <input
+            class="slug"
+            type="text"
+            name="slug"
+            :value="slug"
+            disabled
+
+          />
+        </div>
+
+        <div class="create-element">
+          <label>
+            Label
+          </label>
+          <input
+            class=""
+            type="text"
+            name="label"
+            v-model="form.label"
+          />
+        </div>
+
+        <div class="create-element">
+          <label>
+            Icon
+          </label>
+          <input
+            class=""
+            type="text"
+            name="icon"
+            v-model="form.icon"
+          />
+        </div>
+
+        <div class="create-element">
+          <label>
+            Color
+          </label>
+          <input
+            class=""
+            type="color"
+            name="color"
+              v-model="form.color"
+          />
+        </div>
+
+        <div class="create-element">
+          <label>
+            Show In Sidebar
+          </label>
+          <input
+            class=""
+            type="checkbox"
+            v-model="form.show_in_sidebar"
+          />
+        </div>
+
+        <div class="create-element">
+          <label>
+            Description
+          </label>
+          <textarea
+            class=""
+            v-model="form.description"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="create-actions">
+        <button
+          class="reset-btn"
+          type="button"
+          @click="resetModule"
+          v-if="isDirty"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          :disabled="!isDirty"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
