@@ -152,7 +152,7 @@ const recordsNumberPhrase = computed(() => {
                 :key="col.key"
                 scope="col"
               >
-                {{ col.label }}
+                {{ col.name }}
               </th>
             </tr>
           </thead>

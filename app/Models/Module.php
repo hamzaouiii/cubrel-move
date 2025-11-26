@@ -10,7 +10,6 @@ class Module extends BaseModule
     protected $fillable = [
         'slug',
         'name',
-        'label',
         'icon',
         'color',
         'path',

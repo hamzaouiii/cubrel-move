@@ -12,7 +12,7 @@ const defaultValues = {
   label: '',
   icon: '',
   color: '',
-  show_in_sidebar: false,
+  show_in_sidebar: true,
   description: '',
   slug: ''
 }
@@ -20,23 +20,21 @@ const defaultValues = {
 const form = useForm({ ...defaultValues })
 
 const isDirty = computed(() => {
-  return Object.keys(defaultValues).some((key) => {
-    const value = form[key]
-    if (value === null || value === '' || value === false) return false
-    return true
-  })
+  if(form.name.length < 4) return false
+  return true
 })
+
 const slug = computed(() => {
   return form.name
     .toLowerCase()
-    .normalize("NFD")                 // split accented chars
-    .replace(/[\u0300-\u036f]/g, "")  // remove diacritics
+    .normalize("NFD")                
+    .replace(/[\u0300-\u036f]/g, "") 
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "-")      // replace non-url chars with dash
-    .replace(/^-+|-+$/g, "")          // trim leading/trailing dashes
+    .replace(/[^a-z0-9]+/g, "-")     
+    .replace(/^-+|-+$/g, "")          
 })
 const resetModule = () => {
   Object.keys(defaultValues).forEach((key) => {
@@ -46,7 +44,6 @@ const resetModule = () => {
   form.clearErrors()
 }
 
-// submit to create new module
 const saveModule = () => {
   form.transform(data => ({ ...data, slug: slug.value }))
   .post('/settings/customisation/modules/create')
@@ -80,6 +77,7 @@ const saveModule = () => {
             type="text"
             name="name"
             v-model="form.name"
+            placeholder="Module Name"
           />
         </div>
         <div class="create-element">
@@ -95,19 +93,6 @@ const saveModule = () => {
 
           />
         </div>
-
-        <div class="create-element">
-          <label>
-            Label
-          </label>
-          <input
-            class=""
-            type="text"
-            name="label"
-            v-model="form.label"
-          />
-        </div>
-
         <div class="create-element">
           <label>
             Icon
@@ -116,6 +101,8 @@ const saveModule = () => {
             class=""
             type="text"
             name="icon"
+            placeholder="Font Awesome icons (TODO)"
+
             v-model="form.icon"
           />
         </div>

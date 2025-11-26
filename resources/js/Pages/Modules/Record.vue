@@ -207,7 +207,7 @@ const formatDate = (value) => {
         <div class="ar-main-container_content_section_layout">
           <div v-for="f in s.layout" class="ar-main-container_content_section_layout_field">
             <span class="label">
-              {{ f.label }}:
+              {{ f.name }}:
             </span>
             
             <!-- Dynamic field - span when viewing, input when editing -->

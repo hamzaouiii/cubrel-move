@@ -14,7 +14,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'accounts',
                 'name'        => 'Accounts',
-                'label'       => 'Accounts',
                 'icon'        => 'fa-building',
                 'color'       => '#0d6efd',
                 'path'        => '/accounts',
@@ -32,7 +31,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'contacts',
                 'name'        => 'Contacts',
-                'label'       => 'Contacts',
                 'icon'        => 'fa-user',
                 'color'       => '#6610f2',
                 'path'        => '/contacts',
@@ -50,7 +48,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'leads',
                 'name'        => 'Leads',
-                'label'       => 'Leads',
                 'icon'        => 'fa-user-plus',
                 'color'       => '#20c997',
                 'path'        => '/leads',
@@ -68,7 +65,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'invoices',
                 'name'        => 'Invoices',
-                'label'       => 'Invoices',
                 'icon'        => 'fa-file-invoice',
                 'color'       => '#fd7e14',
                 'path'        => '/invoices',
@@ -86,7 +82,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'quotes',
                 'name'        => 'Quotes',
-                'label'       => 'Quotes',
                 'icon'        => 'fa-file-lines',
                 'color'       => '#ffc107',
                 'path'        => '/quotes',
@@ -104,7 +99,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'cases',
                 'name'        => 'Cases',
-                'label'       => 'Cases',
                 'icon'        => 'fa-life-ring',
                 'color'       => '#dc3545',
                 'path'        => '/cases',
@@ -122,7 +116,6 @@ class ModulesSeeder extends Seeder
             [
                 'slug'        => 'emails',
                 'name'        => 'Emails',
-                'label'       => 'Emails',
                 'icon'        => 'fa-envelope',
                 'color'       => '#0dcaf0',
                 'path'        => '/emails',

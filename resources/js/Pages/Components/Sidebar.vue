@@ -17,7 +17,7 @@
           </div>
           <div  :class="['link-label',{ active: currentUrl.startsWith(mod.path)  }]">
             <i v-if="mod.icon" :class="['fa-solid', mod.icon]"></i>
-            <span v-if="!collapsedSidebar" >{{ mod.label }}</span>
+            <span v-if="!collapsedSidebar" >{{ mod.name }}</span>
           </div>
         </Link>
       </div>

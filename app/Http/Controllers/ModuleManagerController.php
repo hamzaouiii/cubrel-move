@@ -7,7 +7,7 @@ use App\Models\Module;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Modules\SettingItem;
-
+use App\Services\ModuleScaffolder;
 
 class ModuleManagerController extends Controller
 {
@@ -66,7 +66,6 @@ class ModuleManagerController extends Controller
     {
         $validated = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
-            'label'       => ['nullable', 'string', 'max:255'],
             'icon'        => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -74,10 +73,6 @@ class ModuleManagerController extends Controller
             'show_in_sidebar' => ['boolean'],
         ]);
 
-        // If label is empty, use name
-        if (empty($validated['label'])) {
-            $validated['label'] = $validated['name'];
-        }
 
         // ----- DEFAULTS -----
         $DEFAULT_ICON          = 'fa-file-lines';
@@ -90,7 +85,6 @@ class ModuleManagerController extends Controller
         $module = Module::create([
             'slug'        => $validated['slug'],
             'name'        => $validated['name'],
-            'label'       => $validated['label'],
             'icon'        => $validated['icon'] ?? $DEFAULT_ICON,
             'color'       => $validated['color'] ?: $DEFAULT_COLOR,
             'path'        => '/' . $validated['slug'],
@@ -102,11 +96,13 @@ class ModuleManagerController extends Controller
             'can_edit'    => $DEFAULT_PERMISSION,
             'can_delete'  => $DEFAULT_PERMISSION,
             'model_class' => null,
-            'table_name'  => null,
+            'table_name'  => $validated['slug']."_cstm",
             'show_in_sidebar' => $request->boolean('show_in_sidebar', $DEFAULT_SHOW_SIDEBAR),
         ]);
-
-        return redirect("/settings/customisation/modules/{$module->id}");
+        // $scaffolder->scaffold($module);
+        app(ModuleScaffolder::class)->scaffold($module);
+        return redirect("/settings/customisation/modules/{$module->id}")
+        ->with('success', 'Module created and backend scaffolding generated.');
     }
 
 

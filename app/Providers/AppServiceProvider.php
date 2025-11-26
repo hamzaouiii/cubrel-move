@@ -14,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+      $this->app->singleton(ModuleScaffolder::class, function ($app) {
+        return new ModuleScaffolder($app['files']);
+      });
     }
 
     /**
@@ -34,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'slug'  => $module->slug,
-                        'label' => $module->label,
+                        'name' => $module->name,
                         'icon'  => $module->icon,
                         'color' => $module->color,
                         'path'  => $module->path,

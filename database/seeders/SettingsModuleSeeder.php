@@ -17,7 +17,6 @@ class SettingsModuleSeeder extends Seeder
             [
                 'id'            => Str::uuid(),
                 'name'          => 'Settings',
-                'label'          => 'Settings',
                 'color'          => '#1f2420',
                 'icon'          => 'fa-gears',
                 'path'          => '/setting',
