@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'
-
+import IconPicker from '@/Pages/Components/IconPicker.vue';
 defineOptions({
   layout: Layout,
 })
@@ -97,14 +97,7 @@ const saveModule = () => {
           <label>
             Icon
           </label>
-          <input
-            class=""
-            type="text"
-            name="icon"
-            placeholder="Font Awesome icons (TODO)"
-
-            v-model="form.icon"
-          />
+          <IconPicker v-model="form.icon"   :color="form.color"/>
         </div>
 
         <div class="create-element">
@@ -115,7 +108,7 @@ const saveModule = () => {
             class=""
             type="color"
             name="color"
-              v-model="form.color"
+            v-model="form.color"
           />
         </div>
 
