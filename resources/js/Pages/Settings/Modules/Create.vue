@@ -11,7 +11,7 @@ const defaultValues = {
   name: '',
   label: '',
   icon: '',
-  color: '',
+  color: '#0d6efd',
   show_in_sidebar: true,
   description: '',
   slug: ''

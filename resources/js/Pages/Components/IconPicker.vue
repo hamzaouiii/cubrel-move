@@ -21,8 +21,7 @@ const icons = ref([])
 const meta = ref(null)
 const loading = ref(false)
 const page = ref(1)
-const selected = ref('fa solid fa-bahai')
-
+const selected = ref(props.modelValue || 'fa-solid fa-bahai')
 const fetchIcons = async () => {
   loading.value = true
   try {
@@ -87,7 +86,7 @@ const toggleSelector = () => {
 
     <input
       type="search"
-      placeholder="Search icon..."
+      :placeholder="selected ? selected : 'Search for Icon...'"
       v-model="search"
       @click="toggleSelector"
     />

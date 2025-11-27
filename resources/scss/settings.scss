@@ -29,6 +29,8 @@
       }
       h5{
         font-size: 1rem;
+        margin: 5px 0 0 5px;
+
       }
     }
     &_action{
@@ -146,6 +148,7 @@
       padding-top:5px ;
       padding-bottom:5px ;
       border-radius: 5px;
+      width: 250px;
     }
     textarea{
       all: unset;
@@ -216,6 +219,7 @@
       padding-top:5px ;
       padding-bottom:5px ;
       border-radius: 5px;
+      width: 250px;
     }
     textarea{
       all: unset;
@@ -229,7 +233,7 @@
     }
     input[name="slug"]{
       cursor: not-allowed !important;
-      background-color: darkgray !important;
+      background-color: rgba(169, 169, 169, 0.712) !important;
       color: lightgray;
     }
     .create-actions{

@@ -2,6 +2,8 @@
 import { reactive, computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
+import IconPicker from '@/Pages/Components/IconPicker.vue';
+
 
 defineOptions({
   layout: Layout,
@@ -26,6 +28,7 @@ const labelFor = (key) => {
 
 const inputTypeFor = (key, value) => {
   if (key === 'show_in_sidebar') return 'checkbox'
+  if (key === 'icon') return 'icon'
   if (typeof value === 'number') return 'number'
   if (key === 'color') return 'color'
   if ( key === 'description') return 'textarea'
@@ -63,7 +66,7 @@ const resetForm= () =>{
 </script>
 
 <template >
-    <Head>
+  <Head>
     <title>{{ module.name }} - Automatisierung Regensburg</title>
   </Head>
 
@@ -94,12 +97,16 @@ const resetForm= () =>{
             type="checkbox"
             v-model="editableModule[key]"
           />
+          <IconPicker
+            v-else-if="inputTypeFor(key, value) === 'icon'" 
+            v-model="editableModule[key]"
+            :color="editableModule.color"
+          />
           <textarea
            v-else-if="inputTypeFor(key, value) === 'textarea'"
             class=""
             v-model="editableModule[key]"
           ></textarea>
-
           <input
             v-else
             class=""
