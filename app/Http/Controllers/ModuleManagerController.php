@@ -24,7 +24,7 @@ class ModuleManagerController extends Controller
         ->get();
       $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
 
-      return Inertia::render('Settings/Page', [
+      return Inertia::render('Settings/Modules/List', [
         'item'     => $item,
         'setting_modules' => $modules
       ]);
@@ -48,12 +48,9 @@ class ModuleManagerController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Load module config from DB
         $module = Module::where('id', $id)->firstOrFail();
 
-        // Validate
         $data = $request->except('_token', '_method');
-        // Save
         $module->fill($data)->save();
         return redirect()->to('/settings/customisation/modules');
     }
@@ -74,7 +71,6 @@ class ModuleManagerController extends Controller
         ]);
 
 
-        // ----- DEFAULTS -----
         $DEFAULT_ICON          = 'fa-file-lines';
         $DEFAULT_COLOR         = '#000000';
         $DEFAULT_SORT_ORDER    = (Module::max('sort_order') ?? 0) + 1;
@@ -99,7 +95,6 @@ class ModuleManagerController extends Controller
             'table_name'  => $validated['slug']."_cstm",
             'show_in_sidebar' => $request->boolean('show_in_sidebar', $DEFAULT_SHOW_SIDEBAR),
         ]);
-        // $scaffolder->scaffold($module);
         app(ModuleScaffolder::class)->scaffold($module);
         return redirect("/settings/customisation/modules/{$module->id}")
         ->with('success', 'Module created and backend scaffolding generated.');

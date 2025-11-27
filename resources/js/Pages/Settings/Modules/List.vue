@@ -3,7 +3,7 @@
 import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link } from '@inertiajs/vue3'
-import ModuleManager from '../Components/ModuleManager.vue';
+import ModuleManager from '@/Pages/Components/ModuleManager.vue';
 
 defineOptions({
   layout: Layout,
@@ -31,10 +31,13 @@ const module = computed(() => page.props.item || page.props)
         <h6>{{item.name }}</h6>
     </div>
       <div class="settings_header_action">
+        <Link class="create-btn" :href="page.url + '/create'">Create New Module</Link>
       </div>
     </div>
     <div class="settings_items">
-
+      <ModuleManager v-if="setting_modules" :modules="setting_modules">
+      
+      </ModuleManager>
     </div>
   </div>
 </template>
