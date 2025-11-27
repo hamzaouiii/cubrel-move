@@ -170,7 +170,7 @@ const highlightMatch = (text) => {
                 :key="col.key"
                 scope="col"
               >
-                {{ col.name }}
+                {{ col.label }}
               </th>
             </tr>
           </thead>
