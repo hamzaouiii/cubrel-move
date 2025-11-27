@@ -15,6 +15,8 @@ const props = defineProps({
   recordLayout: Object
 })
 
+console.log(props.record)
+console.log(props.recordLayout)
 const form = useForm({ ...props.record })
 
 const isEditing = ref(false)
@@ -206,11 +208,10 @@ const formatDate = (value) => {
         </div>
         <div class="ar-main-container_content_section_layout">
           <div v-for="f in s.layout" class="ar-main-container_content_section_layout_field">
-            <span class="label">
-              {{ f.name }}:
+            <span class="ar-main-container_content_section_layout_field_label">
+              {{ f.label }}:
             </span>
             
-            <!-- Dynamic field - span when viewing, input when editing -->
             <div  v-if="!isEditing" class="field" @click="enableEditing">
                 <!-- View Mode -->
                 <template v-if="f.format === 'datetime' && record[f.key]">

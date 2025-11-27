@@ -86,6 +86,24 @@ const recordsNumberPhrase = computed(() => {
   onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutsideActionDropDown)
   })
+
+
+
+  const escapeRegExp = (str) =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const highlightMatch = (text) => {
+  if (!text) return '-'
+  if (!search.value || !search.value.trim()) return text
+
+  const term = escapeRegExp(search.value.trim())
+  const regex = new RegExp(`(${term})`, 'gi')
+
+  return text.toString().replace(
+    regex,
+    '<span class="search-highlight">$1</span>'
+  )
+}
 </script>
 
 <template>
@@ -172,7 +190,7 @@ const recordsNumberPhrase = computed(() => {
                 <!-- Email as mailto-link -->
                 <template v-if="col.key === 'email' && item[col.key]">
                   <a :href="'mailto:' + item[col.key]">
-                    {{ item[col.key] }}
+                    <span v-html="highlightMatch(item[col.key])"></span>
                   </a>
                 </template>
 
@@ -188,7 +206,7 @@ const recordsNumberPhrase = computed(() => {
 
                 <!-- Default: plain text with '-' fallback -->
                 <template v-else>
-                  {{ item[col.key] ?? '-' }}
+                   <span v-html="highlightMatch(item[col.key] ?? '-')"></span>
                 </template>
               </td>
             </Link>
