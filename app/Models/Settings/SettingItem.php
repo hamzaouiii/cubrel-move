@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Modules;
+namespace App\Models\Settings;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,5 +24,9 @@ class SettingItem extends Model
     public function setting()
     {
         return $this->belongsTo(\App\Models\Modules\Settings::class, 'setting_id');
+    }
+    public function values()
+    {
+        return $this->hasMany(SettingValue::class);
     }
 }

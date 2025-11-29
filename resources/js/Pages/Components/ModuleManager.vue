@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import {  usePage, Link } from '@inertiajs/vue3'
 
@@ -15,11 +15,13 @@ const page = usePage()
 const currentPath = page.url;
 const module = computed(() => page.props.receivedItem || page.props)
 
+const useModuleColors = inject('useModuleColors', () => false)
+console.log(useModuleColors.value)
 </script>
 
 <template >
     <ul class="settings_items_modules">
-      <Link v-for="m in modules" :style="{'--module-color': m.color}" :href="currentPath+'/'+m.id" >
+      <Link v-for="m in modules"  :style="useModuleColors ? { '--module-color': m.color } : {'--module-color': '#000'}" :href="currentPath+'/'+m.id" >
         <i :class="['fa-solid', m.icon]"></i>
         {{ m.name }}
       </Link>

@@ -11,6 +11,8 @@
   use App\Http\Controllers\RecordController;
   use App\Http\Controllers\SettingsController;
   use App\Http\Controllers\ModuleManagerController;
+  use App\Http\Controllers\SystemSettingsController;
+  use App\Http\Controllers\SettingValueController;
 
   Route::middleware(['auth'])->group(function () {
     
@@ -30,9 +32,14 @@
     Route::get('/settings/customisation/modules/{module}', [ModuleManagerController::class, 'show'])->name('settings.modules.show');
     Route::put('/settings/customisation/modules/{module}', [ModuleManagerController::class,'update'])->name('settings.modules.update');
 
+    //System Settings
+    // Route::get('/settings/system/style', [SystemSettingsController::class, 'style'])->name('settings.system.style');
+
+
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
+    Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
 
     /**
      * Modules routes

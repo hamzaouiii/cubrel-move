@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Module;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use App\Models\Modules\SettingItem;
+use App\Models\Settings\SettingItem;
 use App\Services\ModuleScaffolder;
 
 class ModuleManagerController extends Controller
