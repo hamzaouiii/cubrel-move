@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
       // $this->call(SettingsModuleSeeder::class);
       // $this->call(SettingItemsSeeder::class);
       // $this->call(IconSeeder::class);
-      $this->call(SettingValuesTableSeeder::class);
+      $this->call(settingvalueSeeder::class);
 
     }
 }

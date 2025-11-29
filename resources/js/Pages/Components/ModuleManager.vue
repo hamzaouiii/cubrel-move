@@ -16,7 +16,6 @@ const currentPath = page.url;
 const module = computed(() => page.props.receivedItem || page.props)
 
 const useModuleColors = inject('useModuleColors', () => false)
-console.log(useModuleColors.value)
 </script>
 
 <template >

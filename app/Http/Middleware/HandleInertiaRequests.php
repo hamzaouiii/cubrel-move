@@ -35,8 +35,10 @@ class HandleInertiaRequests extends Middleware
         'auth' => [
             'user' => $request->user(),
         ],
+        'locale' => app()->getLocale(),
         'appSettings' => [
           'useModuleColors' => Settings::bool('use_individual_module_colors', true),
+          'locale' => Settings::get('app_locale', config('app.locale')),
         ],
       ];
     }

@@ -40,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
                         'icon'  => $module->icon,
                         'color' => $module->color,
                         'path'  => $module->path,
+                        'label' => $module->label
                     ];
                 })
                 ->values();

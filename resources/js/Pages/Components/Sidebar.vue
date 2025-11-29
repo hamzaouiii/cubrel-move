@@ -17,7 +17,7 @@ const toggleSidebar = () => {
   collapsedSidebar.value = !collapsedSidebar.value
 }
 const useModuleColors = inject('useModuleColors', () => false)
-
+console.log(modules)
 </script>
 <template>
   
@@ -38,7 +38,7 @@ const useModuleColors = inject('useModuleColors', () => false)
           </div>
           <div  :class="['link-label',{ active: currentUrl.startsWith(mod.path)  }]">
             <i v-if="mod.icon" :class="['fa-solid', mod.icon]"></i>
-            <span v-if="!collapsedSidebar" >{{ mod.name }}</span>
+            <span v-if="!collapsedSidebar" >{{ mod.label }}</span>
           </div>
         </Link>
       </div>

@@ -36,15 +36,20 @@
     // Route::get('/settings/system/style', [SystemSettingsController::class, 'style'])->name('settings.system.style');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
-
     Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
 
+    // local
+    Route::post('/settings/locale', [LocaleController::class, 'update'])
+    ->name('locale.update');
     /**
      * Modules routes
      */
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class,'update'])->name('modules.records.update');
     Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$).+')->name('modules.index');
+
+
+
 
   });
 

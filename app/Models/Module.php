@@ -11,6 +11,7 @@ class Module extends BaseModule
         'slug',
         'name',
         'icon',
+        'label',
         'color',
         'path',
         'sort_order',
