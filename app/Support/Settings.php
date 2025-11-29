@@ -8,8 +8,7 @@ class Settings
 {
     protected static array $cache = [];
 
-    public static function get(string $key, $default = null)
-    {
+    public static function get(string $key, $default = null) {
         static::$cache =  SettingValue::where('autoload', true)
                 ->get()
                 ->pluck('value', 'key')
@@ -18,8 +17,7 @@ class Settings
 
     }
 
-    public static function set(string $key, $value): void
-    {
+    public static function set(string $key, $value): void{
         $record = SettingValue::firstOrNew(['key' => $key]);
         $record->value = $value;
         $record->save();
@@ -27,13 +25,15 @@ class Settings
         Cache::forget('app_settings');
         static::$cache = [];
     }
-    public static function bool(string $key, bool $default = false): bool
-    {
+    public static function bool(string $key, bool $default = false): bool{
         $value = static::get($key);
         if ($value === null) {
             return $default;
         }
 
         return (bool) (int) $value;
+    }
+    public static function locale(): string{
+      return static::get('app_locale', config('app.locale'));
     }
 }

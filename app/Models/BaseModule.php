@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Concerns\HasTranslatableLabel;
 
 abstract class BaseModule extends Model
 {
     use HasUuids;
-
+    use HasTranslatableLabel;
     /**
      * IDs are not auto incrementing integers.
      */

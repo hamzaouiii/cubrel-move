@@ -13,7 +13,6 @@ const props = defineProps({
   item: Object,
 })
 
-console.log(props.item)
 const page = usePage()
 const module = computed(() => page.props.item || page.props)
 

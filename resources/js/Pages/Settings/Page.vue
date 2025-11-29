@@ -35,7 +35,6 @@ const inputTypeFor = (type) => {
   if (type === 'int') return 'number'
   return 'text'
 }
-console.log(props.item)
 const saveSetting = () => {
   form.put(`/settings/${props.item.id}`, {
     preserveScroll: true,

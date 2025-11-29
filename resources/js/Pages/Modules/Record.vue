@@ -15,8 +15,6 @@ const props = defineProps({
   recordLayout: Object
 })
 
-console.log(props.record)
-console.log(props.recordLayout)
 const form = useForm({ ...props.record })
 
 const isEditing = ref(false)
