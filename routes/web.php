@@ -34,12 +34,10 @@
 
     //System Settings
     // Route::get('/settings/system/style', [SystemSettingsController::class, 'style'])->name('settings.system.style');
-
-
-
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
     Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
+
+    Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
 
     /**
      * Modules routes
