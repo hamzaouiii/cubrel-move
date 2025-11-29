@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'
-import IconPicker from '@/Pages/Components/IconPicker.vue';
+import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
 defineOptions({
   layout: Layout,
 })

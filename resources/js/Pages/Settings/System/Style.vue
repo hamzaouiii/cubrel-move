@@ -3,7 +3,7 @@
 import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link } from '@inertiajs/vue3'
-import ModuleManager from '@/Pages/Components/ModuleManager.vue';
+import ModuleManager from '@/Pages/Components/Settings/ModuleManager.vue';
 
 defineOptions({
   layout: Layout,
