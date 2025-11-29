@@ -3,6 +3,9 @@ import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 
+import Switcher from '../Components/Settings/FiledTypes/Switcher.vue';
+
+
 defineOptions({
   layout: Layout,
 });
@@ -28,6 +31,8 @@ const form = useForm({
 })
 
 const inputTypeFor = (type) => {
+  console.log(type)
+  if (type === 'lang_switcher') return 'switcher'
   if (type === 'string') return 'text'
   if (type === 'bool') return 'checkbox'
   if (type === 'color') return 'color'
@@ -66,6 +71,7 @@ const isDirty = () => form.isDirty
     </div>
 
     <div class="settings_system">
+
       <form @submit.prevent="saveSetting" class="settings_system_form">
         <div
           v-for="(i, index) in form.values"
@@ -73,6 +79,7 @@ const isDirty = () => form.isDirty
           class="settings_system_form_field"
         >
           <label>{{ i.label || i.key }}</label>
+
 
           <!-- bool → checkbox -->
           <template v-if="i.type === 'bool'">
@@ -82,6 +89,11 @@ const isDirty = () => form.isDirty
             />
           </template>
 
+          <template v-else-if="inputTypeFor(i.type) === 'switcher'">
+            <switcher
+              v-model="form.values[index].value"
+            />
+          </template>
           <!-- other types -->
           <template v-else>
             <input
