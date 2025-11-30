@@ -1,7 +1,7 @@
 
 <script setup>
 import Layout from '@/Layouts/Layout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3'
+import { Head, usePage, useForm } from '@inertiajs/vue3'
 import { computed, ref, onMounted, onBeforeUnmount, reactive } from 'vue'
 
 defineOptions({
@@ -130,6 +130,9 @@ const formatDate = (value) => {
     day: '2-digit'
   });
 };
+
+const appSettings = usePage().props.appSettings
+
 </script>
 
 <template>
@@ -137,7 +140,7 @@ const formatDate = (value) => {
     <title>{{ record.name }} - {{ title }} - Automatisierung Regensburg</title>
   </Head>
   
-  <div class="ar-main-container" :style="{ '--module-color': module.color }" >
+  <div class="ar-main-container"  :style="appSettings.use_individual_module_colors == '0' ? {'--module-color': appSettings.primary_color} : { '--module-color': module.color } " >
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
         <h1 class="ar-main-container_header_details_title">{{ record.name }}</h1>

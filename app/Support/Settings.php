@@ -36,4 +36,15 @@ class Settings
     public static function locale(): string{
       return static::get('app_locale', config('app.locale'));
     }
+
+    public static function all(): array
+    {
+      return SettingValue::where('autoload', true)
+      ->get()
+      ->pluck('value', 'key')
+      ->toArray();
+    }
+
+
+
 }

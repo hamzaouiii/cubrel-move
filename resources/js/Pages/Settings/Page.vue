@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
-import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
+import { Head, usePage, Link, useForm , router} from '@inertiajs/vue3'
 
 import Switcher from '../Components/Settings/FiledTypes/Switcher.vue';
 
@@ -31,7 +31,6 @@ const form = useForm({
 })
 
 const inputTypeFor = (type) => {
-  console.log(type)
   if (type === 'lang_switcher') return 'switcher'
   if (type === 'string') return 'text'
   if (type === 'bool') return 'checkbox'
@@ -42,7 +41,9 @@ const inputTypeFor = (type) => {
 }
 const saveSetting = () => {
   form.put(`/settings/${props.item.id}`, {
-    preserveScroll: true,
+      onSuccess: () => {
+    router.reload({ only: ['appSettings'] })
+  }
   })
 }
 

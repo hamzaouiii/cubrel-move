@@ -1,6 +1,6 @@
 <script setup>
   import { Head, usePage, Link, router } from '@inertiajs/vue3'
-  import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
+  import { computed, ref, onMounted, onBeforeUnmount, inject} from 'vue'
 
   import Layout from '@/Layouts/Layout.vue';
   import Pagination from '../Components/Pagination.vue';
@@ -92,18 +92,19 @@ const recordsNumberPhrase = computed(() => {
   const escapeRegExp = (str) =>
   str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-const highlightMatch = (text) => {
-  if (!text) return '-'
-  if (!search.value || !search.value.trim()) return text
+  const highlightMatch = (text) => {
+    if (!text) return '-'
+    if (!search.value || !search.value.trim()) return text
 
-  const term = escapeRegExp(search.value.trim())
-  const regex = new RegExp(`(${term})`, 'gi')
+    const term = escapeRegExp(search.value.trim())
+    const regex = new RegExp(`(${term})`, 'gi')
 
-  return text.toString().replace(
-    regex,
-    '<span class="search-highlight">$1</span>'
-  )
-}
+    return text.toString().replace(
+      regex,
+      '<span class="search-highlight">$1</span>'
+    )
+  }
+const appSettings = usePage().props.appSettings
 </script>
 
 <template>
@@ -117,7 +118,7 @@ const highlightMatch = (text) => {
         <span class="ar-main-container_header_details_meta">{{ recordsNumberPhrase  }}</span>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group"  :style="{ '--background-color': module.color}">
+        <div class="input-group"  :style="appSettings.use_individual_module_colors == '0' ? {'--module-color': appSettings.primary_color} : { '--module-color': module.color } ">
           <input
             type="text"
             name="search"
@@ -160,9 +161,9 @@ const highlightMatch = (text) => {
       </div>
     </div>
 
-    <div v-if="meta && meta.total != 0" class="ar-main-container_content">
+    <div v-if="meta && meta.total != 0" class="ar-main-container_content"  :style="appSettings.use_individual_module_colors  == '0' ? {'--module-color': appSettings.primary_color} : { '--module-color': module.color }">
       <div>
-        <table class="ar-main-container_content_table" :style="{ '--module-color': module.color}">
+        <table class="ar-main-container_content_table" >
           <thead>
             <tr>
               <th

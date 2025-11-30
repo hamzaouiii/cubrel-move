@@ -16,8 +16,9 @@ const collapsedSidebar = ref(false);
 const toggleSidebar = () => {
   collapsedSidebar.value = !collapsedSidebar.value
 }
-const useModuleColors = inject('useModuleColors', () => false)
-console.log(modules)
+
+const appSettings = usePage().props.appSettings
+console.log(appSettings);
 </script>
 <template>
   
@@ -32,7 +33,7 @@ console.log(modules)
         </div>
       </div>
       <div class="module_list">
-        <Link class="link-item" v-for="mod in modules" :key="mod.slug" :href="mod.path" :style="useModuleColors ? { '--module-color': mod.color } : {'--module-color': '#000'}" >
+        <Link class="link-item" v-for="mod in modules" :key="mod.slug" :href="mod.path" :style="appSettings.use_individual_module_colors == '0'? {'--module-color': appSettings.primary_color} : { '--module-color': mod.color } ">
           <div  v-if="!collapsedSidebar" class="module-color" >
             <i v-if="mod.icon" :class="['fa-solid', mod.icon]" ></i>
           </div>
