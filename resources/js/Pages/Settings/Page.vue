@@ -5,8 +5,8 @@ import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 
 import Switcher from '../Components/Settings/FiledTypes/Switcher.vue';
 
-import { useTrans } from '@/Composables/useTrans'
-const { t } = useTrans()
+
+ 
 
 defineOptions({
   layout: Layout,
@@ -60,13 +60,13 @@ const isDirty = () => form.isDirty
 
 <template>
   <Head>
-    <title>{{ item.name }} - {{ t('settings.label')  }} - Automatisierung Regensburg</title>
+    <title>{{ item.name }} - {{ $t('settings.label')  }} - Automatisierung Regensburg</title>
   </Head>
 
   <div class="settings">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">{{ t('settings.label')  }} </Link></h5>
+        <h5><Link href="/settings">{{ $t('settings.label')  }} </Link></h5>
         <span>></span>
         <h6>{{ item.label }}</h6>
       </div>
@@ -125,14 +125,14 @@ const isDirty = () => form.isDirty
               @click="resetForm"
               :disabled="!isDirty()"
             >
-              {{ t('settings.reset')  }} 
+              {{ $t('settings.reset')  }} 
             </button>
 
             <button
               type="submit"
               :disabled="!isDirty() || form.processing"
             >
-              {{ t('settings.save')  }} 
+              {{ $t('settings.save')  }} 
             </button>
           </div>
       </form>

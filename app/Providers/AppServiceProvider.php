@@ -46,9 +46,10 @@ class AppServiceProvider extends ServiceProvider
                 })
                 ->values();
         });
-            Inertia::share('translations', function () {
+        Inertia::share('translations', function () {
         return [
             'settings' => __('settings'),
+            'modules' => __('modules'),
         ];
     });
     }

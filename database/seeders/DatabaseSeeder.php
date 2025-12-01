@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
       // $this->call(SettingsModuleSeeder::class);
       // $this->call(SettingItemsSeeder::class);
       // $this->call(IconSeeder::class);
-      $this->call(settingvalueSeeder::class);
+      // $this->call(settingvalueSeeder::class);
+      $this->call(InsertLeadsRecordLayoutSeeder::class);
 
     }
 }

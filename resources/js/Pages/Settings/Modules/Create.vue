@@ -3,8 +3,7 @@ import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
-import { useTrans } from '@/Composables/useTrans'
-const { t } = useTrans()
+ 
 
 defineOptions({
   layout: Layout,
@@ -55,17 +54,17 @@ const saveModule = () => {
 
 <template>
   <Head>
-    <title>{{ t('settings.create_new_module')  }} - {{ t('settings.label')  }} </title>
+    <title>{{ $t('settings.create_new_module')  }} - {{ $t('settings.label')  }} </title>
   </Head>
 
   <div class="module-manager create-module">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">{{ t('settings.label')  }} </Link></h5>
+        <h5><Link href="/settings">{{ $t('settings.label')  }} </Link></h5>
         <span>></span>
-        <h5><Link href="/settings/customisation/modules">{{ t('settings.modules.label')  }} </Link></h5>
+        <h5><Link href="/settings/customisation/modules">{{ $t('settings.modules.label')  }} </Link></h5>
         <span>></span>
-        <h6>{{ t('settings.create_new_module')  }}</h6>
+        <h6>{{ $t('settings.create_new_module')  }}</h6>
       </div>
     </div>
 
@@ -73,7 +72,7 @@ const saveModule = () => {
       <div>
         <div class="create-element">
           <label>
-            {{ t('settings.modules.name')  }}
+            {{ $t('settings.modules.name')  }}
           </label>
           <input
             class=""
@@ -85,7 +84,7 @@ const saveModule = () => {
         </div>
         <div class="create-element">
           <label>
-            {{ t('settings.modules.slug')  }}
+            {{ $t('settings.modules.slug')  }}
           </label>
           <input
             class="slug"
@@ -98,14 +97,14 @@ const saveModule = () => {
         </div>
         <div class="create-element">
           <label>
-            {{ t('settings.modules.icon')  }}
+            {{ $t('settings.modules.icon')  }}
           </label>
           <IconPicker v-model="form.icon"   :color="form.color"/>
         </div>
 
         <div class="create-element">
           <label>
-            {{ t('settings.modules.color')  }}
+            {{ $t('settings.modules.color')  }}
           </label>
           <input
             class=""
@@ -117,7 +116,7 @@ const saveModule = () => {
 
         <div class="create-element">
           <label>
-            {{ t('settings.modules.show_in_sidebar')  }}
+            {{ $t('settings.modules.show_in_sidebar')  }}
           </label>
           <input
             class=""
@@ -128,7 +127,7 @@ const saveModule = () => {
 
         <div class="create-element">
           <label>
-            {{ t('settings.modules.description')  }}
+            {{ $t('settings.modules.description')  }}
           </label>
           <textarea
             class=""

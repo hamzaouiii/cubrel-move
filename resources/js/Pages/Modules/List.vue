@@ -5,10 +5,10 @@
   import Layout from '@/Layouts/Layout.vue';
   import Pagination from '../Components/Pagination.vue';
 
+   
   defineOptions({
     layout: Layout,
   });
-
   const { props } = usePage();
 
 const pageProps = defineProps({
@@ -171,7 +171,7 @@ const appSettings = usePage().props.appSettings
                 :key="col.key"
                 scope="col"
               >
-                {{ col.label }}
+                {{ $t(col.label) }}
               </th>
             </tr>
           </thead>

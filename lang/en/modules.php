@@ -2,7 +2,7 @@
 
 return [
     'accounts' => [
-        'label' => 'Companies',
+        'label' => 'Accounts',
     ],
 
     'contacts' => [
@@ -11,7 +11,6 @@ return [
 
     'leads' => [
         'label' => 'Leads',
-
         'fields' => [
             'id'          => 'ID',
             'name'        => 'Name',

@@ -18,7 +18,7 @@ return [
             'name'        => 'Name',
             'first_name'  => 'Vorname',
             'last_name'   => 'Nachname',
-            'email'       => 'E Mail',
+            'email'       => 'E-Mail',
             'phone'       => 'Telefon',
             'company'     => 'Firma',
             'street'      => 'Straße',

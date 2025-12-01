@@ -4,8 +4,8 @@ import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
 
-import { useTrans } from '@/Composables/useTrans'
-const { t } = useTrans()
+
+ 
 
 
 
@@ -73,15 +73,15 @@ const resetForm= () =>{
 
 <template >
   <Head>
-    <title>{{ module.label }} - {{ t('settings.label')  }} - Automatisierung Regensburg</title>
+    <title>{{ module.label }} - {{ $t('settings.label')  }} - Automatisierung Regensburg</title>
   </Head>
 
   <div class="module-manager edit-module">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">{{ t('settings.label')  }} </Link></h5>
+        <h5><Link href="/settings">{{ $t('settings.label')  }} </Link></h5>
         <span>></span> 
-        <h5><Link href="/settings/customisation/modules">{{ t('settings.modules.label')  }} </Link></h5>
+        <h5><Link href="/settings/customisation/modules">{{ $t('settings.modules.label')  }} </Link></h5>
         <span>></span> 
         <h6>{{module.label }}</h6>
       </div>
@@ -94,7 +94,7 @@ const resetForm= () =>{
         class="edit-element"
       >
         <label class="">
-          {{ t("settings.modules."+key) }}
+          {{ $t("settings.modules."+key) }}
         </label>
 
           <input

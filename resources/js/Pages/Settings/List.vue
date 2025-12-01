@@ -4,8 +4,8 @@ import { Head, Link, usePage } from '@inertiajs/vue3'
 import Layout from '@/Layouts/Layout.vue';
 import { ref, computed } from 'vue'
 
-import { useTrans } from '@/Composables/useTrans'
-const { t } = useTrans()
+
+ 
 
 defineOptions({
   layout: Layout,
@@ -53,12 +53,12 @@ const filteredSettings = computed(() => {
 
 <template>
   <Head>
-    <title>{{ t('settings.label') }} - Automatisierung Regensburg</title>
+    <title>{{ $t('settings.label') }} - Automatisierung Regensburg</title>
   </Head>
   <div class="settings">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h3>{{ t('settings.label') }}</h3>
+        <h3>{{ $t('settings.label') }}</h3>
     </div>
       <div class="settings_header_search">
 
@@ -79,7 +79,7 @@ const filteredSettings = computed(() => {
             <h6>{{ s.label }}</h6>
           </div>
           <div class="settings_content_section_header_desc">
-            <p>{{ t(s.description) }}</p>
+            <p>{{ $t(s.description) }}</p>
           </div>
         </div>
         <div  class="settings_content_section_links">

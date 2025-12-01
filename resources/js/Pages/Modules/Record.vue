@@ -14,6 +14,12 @@ const props = defineProps({
   record: Object,
   recordLayout: Object
 })
+import { getCurrentInstance } from 'vue'
+
+const { proxy } = getCurrentInstance()
+const t = proxy.$t
+
+console.log(t('module.leads.fields.first_name'))
 
 const form = useForm({ ...props.record })
 
@@ -210,7 +216,7 @@ const appSettings = usePage().props.appSettings
         <div class="ar-main-container_content_section_layout">
           <div v-for="f in s.layout" class="ar-main-container_content_section_layout_field">
             <span class="ar-main-container_content_section_layout_field_label">
-              {{ f.label }}:
+              {{ $t((f.label)) }}:
             </span>
             
             <div  v-if="!isEditing" class="field" @click="enableEditing">

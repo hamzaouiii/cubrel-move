@@ -1,11 +1,9 @@
-import './bootstrap';
+import './bootstrap'
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
-import '../scss/app.scss'; 
-import '../scss/lib.min.css'; 
-
-
-
+import { useTrans } from '@/Composables/useTrans'
+import '../scss/app.scss'
+import '../scss/lib.min.css'
 
 createInertiaApp({
   resolve: name => {
@@ -13,8 +11,17 @@ createInertiaApp({
     return pages[`./Pages/${name}.vue`]
   },
   setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(App, props) })
-      .use(plugin)
-      .mount(el)
+    const app = createApp({ render: () => h(App, props) })
+
+    app.use(plugin)
+
+    // ❗ Do NOT call useTrans() here directly
+    // Instead, create a global function that grabs it when used.
+    app.config.globalProperties.$t = (key, fallback = '') => {
+      const { t } = useTrans()
+      return t(key, fallback)
+    }
+
+    app.mount(el)
   },
 })
