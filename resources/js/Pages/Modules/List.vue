@@ -105,6 +105,11 @@ const recordsNumberPhrase = computed(() => {
     )
   }
 const appSettings = usePage().props.appSettings
+
+const resetSearchValue = () => {
+  search.value = ''
+  handleSearchInput()
+}
 </script>
 
 <template>
@@ -124,17 +129,18 @@ const appSettings = usePage().props.appSettings
             name="search"
             class="search-input"
             aria-label="Text input with segmented dropdown button"
-            placeholder="Search in this list"
+            :placeholder="$t('modules.leads.actions.search_placeholder')"
             v-model="search"
             @input="handleSearchInput"
             @keydown.enter.prevent="performSearch(1)"
           >
+          <span @click="resetSearchValue()" :class="['search-reseter', {'hide-reseter' : !search}] "><i class="fa-regular fa-circle-xmark"></i></span>
           <button
             type="button"
             class="main-btn"
            
           >
-            Create
+            {{ $t('modules.leads.actions.create') }}
           </button>
           <button
             @click="toggleActionDropDown"
@@ -149,12 +155,11 @@ const appSettings = usePage().props.appSettings
           </button>
           <transition name="fade">
             <ul v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-              <li><a class="dropdown-item" href="#">Module Settings</a></li>
-              <li><a class="dropdown-item disabled" href="#">Export</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.share') }}</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.export') }}</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.placeholder') }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Bulk Action</a></li>
-              <li><a class="dropdown-item" href="#" style="color: salmon">Delete</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.bulk_action') }}</a></li>
             </ul>
           </transition>
         </div>

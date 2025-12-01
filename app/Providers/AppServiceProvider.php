@@ -50,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         return [
             'settings' => __('settings'),
             'modules' => __('modules'),
+            'pagination' => __('pagination')
         ];
     });
     }

@@ -317,7 +317,22 @@
         }
 
         &_actions {
+          .search-reseter{
+            border: 2px solid lightgray;
+            border-left: none;
+            border-right:none;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            cursor: pointer;
+            &:hover i{
+              color: var(--module-color);
+            }
+          }
+          .hide-reseter i{
+            visibility: hidden;
 
+          }
           .search-input{
             all: unset;
             border: 2px solid lightgray;

@@ -1,69 +1,7 @@
-<template>
-  <nav v-if="meta" class="mt-3" aria-label="Pagination">
-    <ul class="pagination">
-
-      <!-- Prev -->
-      <li class="page-item" :class="{ disabled: !meta.links?.prev }">
-        <a
-          class="page-link"
-          href="#"
-          @click.prevent="meta.links?.prev && goTo(meta.links.prev)"
-          :aria-disabled="!meta.links?.prev"
-        >
-          Previous
-        </a>
-      </li>
-
-      <!-- Numbered pages -->
-      <li
-        v-for="page in pagesToShow"
-        :key="pageKey(page)"
-        class="page-item"
-        :class="{ active: page.active, disabled: page.ellipsis }"
-      >
-        <!-- Ellipsis -->
-        <span
-          v-if="page.ellipsis"
-          class="page-link"
-          aria-hidden="true"
-        >
-          {{ page.label }}
-        </span>
-
-        <!-- Normal pages -->
-        <a
-          v-else-if="!page.active"
-          class="page-link"
-          href="#"
-          @click.prevent="goTo(page.url)"
-        >
-          {{ page.label }}
-        </a>
-
-        <span v-else class="page-link">
-          {{ page.label }}
-        </span>
-      </li>
-
-      <!-- Next -->
-      <li class="page-item" :class="{ disabled: !meta.links?.next }">
-        <a
-          class="page-link"
-          href="#"
-          @click.prevent="meta.links?.next && goTo(meta.links.next)"
-          :aria-disabled="!meta.links?.next"
-        >
-          Next
-        </a>
-      </li>
-
-    </ul>
-  </nav>
-</template>
-
 <script setup>
 import { router } from '@inertiajs/vue3';
 import { computed } from 'vue'
+
 
 const props = defineProps({
   meta: { type: Object, required: true },
@@ -138,11 +76,61 @@ const goTo = (url) => {
 const pageKey = (page) => page.page;
 </script>
 
-<style scoped>
-.page-item.disabled .page-link {
-  pointer-events: none;
-}
-.page-link {
-  cursor: pointer;
-}
-</style>
+<template>
+  <nav v-if="meta" class="mt-3" aria-label="Pagination">
+    <ul class="pagination">
+
+      <!-- Prev -->
+      <li  :class="{ disabled: !meta.links?.prev }">
+        <a
+          
+          href="#"
+          @click.prevent="meta.links?.prev && goTo(meta.links.prev)"
+          :aria-disabled="!meta.links?.prev"
+        >
+          {{ $t('pagination.previous') }}
+        </a>
+      </li>
+
+      <li
+        v-for="page in pagesToShow"
+        :key="pageKey(page)"
+        
+        :class="{ active: page.active, disabled: page.ellipsis }"
+      >
+        <span
+          v-if="page.ellipsis"
+         
+          aria-hidden="true"
+        >
+          {{ page.label }}
+        </span>
+
+        <a
+          v-else-if="!page.active"
+          href="#"
+          @click.prevent="goTo(page.url)"
+        >
+          {{ page.label }}
+        </a>
+
+        <span v-else >
+          {{ page.label }}
+        </span>
+      </li>
+
+      <li  :class="{ disabled: !meta.links?.next }">
+        <a
+          href="#"
+          @click.prevent="meta.links?.next && goTo(meta.links.next)"
+          :aria-disabled="!meta.links?.next"
+        >
+      {{ $t('pagination.next') }}
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+</template>
+
+

@@ -30,11 +30,16 @@ return [
         ],
 
         'actions' => [
-            'module_settings'   => 'Moduleinstellungen',
+            'cancel'          => 'Abbrechen',
+            'edit'            => 'Bearbeiten',
+            'save'            => 'Speichern',
+            'share'           => 'Teilen',
             'export'            => 'Exportieren',
             'placeholder'       => 'Irgendetwas hier',
             'bulk_action'       => 'Sammelaktion',
             'delete'            => 'Löschen',
+            'create'          => 'Erstellen',
+            'search_placeholder' => 'In dieser Liste suchen'
         ],
 
       ],

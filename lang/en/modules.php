@@ -28,11 +28,16 @@ return [
         ],
 
         'actions' => [
-            'module_settings' => 'Module Settings',
+            'cancel'          => 'Cancel',
+            'edit'            => 'Edit',
+            'save'            => 'Save',
+            'share'           => 'Share',
             'export'          => 'Export',
             'placeholder'     => 'Something else here',
             'bulk_action'     => 'Bulk Action',
             'delete'          => 'Delete',
+            'create'          => 'Create',
+            'search_placeholder' => 'Search In This List'
         ],
     ],
 

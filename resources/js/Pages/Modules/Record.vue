@@ -152,14 +152,14 @@ const appSettings = usePage().props.appSettings
         <h1 class="ar-main-container_header_details_title">{{ record.name }}</h1>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref" >
-        <div class="input-group"  :style="{ '--background-color': module.color}">
+        <div class="input-group" >
           <button 
             v-if="isEditing"
             type="button" 
             class="record-main-btn cancel-btn" 
             @click="cancelEditing"
           >
-            Cancel
+            {{ $t('modules.leads.actions.cancel') }}
           </button>
           
           <button 
@@ -168,7 +168,7 @@ const appSettings = usePage().props.appSettings
             class="record-main-btn" 
             @click="enableEditing"
           >
-            Edit
+            {{ $t('modules.leads.actions.edit') }}
           </button>
           
             <button   v-else
@@ -177,7 +177,7 @@ const appSettings = usePage().props.appSettings
                 :disabled="!isDirty"
                 @click="saveRecord"
             >
-              Save
+              {{ $t('modules.leads.actions.save') }}
             </button>
 
 
@@ -195,13 +195,13 @@ const appSettings = usePage().props.appSettings
           
           <transition name="fade">
             <ul v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-              <li><a class="dropdown-item disabled" href="#">Share</a></li>
-              <li><a class="dropdown-item disabled" href="#">Export</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.share') }}</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.export') }}</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.placeholder') }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Convert</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.bulk_action') }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#" style="color: salmon">Delete</a></li>
+              <li><a class="dropdown-item" href="#" style="color: salmon">{{ $t('modules.leads.actions.delete') }}</a></li>
             </ul>
           </transition>
         </div>
