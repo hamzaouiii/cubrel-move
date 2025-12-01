@@ -161,8 +161,9 @@
   }
 
   .sidebar{
-    min-width: 350px;
-    width: 350px; 
+  min-width: 280px;
+  width: fit-content;
+  padding-right: 25px;
     .link-item{
         &:hover {
           & > .module-color{

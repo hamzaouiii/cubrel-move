@@ -31,7 +31,8 @@ const form = useForm({
 })
 
 const inputTypeFor = (type) => {
-  if (type === 'lang_switcher') return 'switcher'
+  if (type === 'lang_switcher') return 'lang_switcher'
+  if (type === 'theme_switcher') return 'theme_switcher'
   if (type === 'string') return 'text'
   if (type === 'bool') return 'checkbox'
   if (type === 'color') return 'color'
@@ -81,8 +82,6 @@ const isDirty = () => form.isDirty
         >
           <label>{{ i.label || i.key }}</label>
 
-
-          <!-- bool → checkbox -->
           <template v-if="i.type === 'bool'">
             <input
               type="checkbox"
@@ -90,12 +89,25 @@ const isDirty = () => form.isDirty
             />
           </template>
 
-          <template v-else-if="inputTypeFor(i.type) === 'switcher'">
+          <template v-else-if="inputTypeFor(i.type) === 'lang_switcher'">
             <switcher
               v-model="form.values[index].value"
+              :options="[
+                { label: 'EN', value: 'en' },
+                { label: 'DE', value: 'de' }
+              ]"
             />
           </template>
-          <!-- other types -->
+                    <template v-else-if="inputTypeFor(i.type) === 'theme_switcher'">
+            <switcher
+              v-model="form.values[index].value"
+              :options="[
+                { label: 'Light', value: 'light' },
+                { label: 'Dark', value: 'dark' }
+              ]"
+            />
+          </template>
+
           <template v-else>
             <input
               :type="inputTypeFor(i.type)"
@@ -104,23 +116,23 @@ const isDirty = () => form.isDirty
           </template>
         </div>
 
-        <div class="settings_system_form_actions">
-          <button
-            type="button"
-            class="reset-btn"
-            @click="resetForm"
-            :disabled="!isDirty()"
-          >
-            Reset
-          </button>
+          <div class="settings_system_form_actions">
+            <button
+              type="button"
+              class="reset-btn"
+              @click="resetForm"
+              :disabled="!isDirty()"
+            >
+              Reset
+            </button>
 
-          <button
-            type="submit"
-            :disabled="!isDirty() || form.processing"
-          >
-            Save
-          </button>
-        </div>
+            <button
+              type="submit"
+              :disabled="!isDirty() || form.processing"
+            >
+              Save
+            </button>
+          </div>
       </form>
     </div>
   </div>
