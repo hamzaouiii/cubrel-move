@@ -3,6 +3,9 @@ import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
+import { useTrans } from '@/Composables/useTrans'
+const { t } = useTrans()
+
 defineOptions({
   layout: Layout,
 })
@@ -52,17 +55,17 @@ const saveModule = () => {
 
 <template>
   <Head>
-    <title>Create New Module</title>
+    <title>{{ t('settings.create_new_module')  }} - {{ t('settings.label')  }} </title>
   </Head>
 
   <div class="module-manager create-module">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">Settings</Link></h5>
+        <h5><Link href="/settings">{{ t('settings.label')  }} </Link></h5>
         <span>></span>
-        <h5><Link href="/settings/customisation/modules">Modules</Link></h5>
+        <h5><Link href="/settings/customisation/modules">{{ t('settings.modules.label')  }} </Link></h5>
         <span>></span>
-        <h6>Create New Module</h6>
+        <h6>{{ t('settings.create_new_module')  }}</h6>
       </div>
     </div>
 
@@ -70,19 +73,19 @@ const saveModule = () => {
       <div>
         <div class="create-element">
           <label>
-            Name
+            {{ t('settings.modules.name')  }}
           </label>
           <input
             class=""
             type="text"
             name="name"
             v-model="form.name"
-            placeholder="Module Name"
+            :placeholder= "t('settings.modules.name_placeholder')"
           />
         </div>
         <div class="create-element">
           <label>
-            Slug
+            {{ t('settings.modules.slug')  }}
           </label>
           <input
             class="slug"
@@ -95,14 +98,14 @@ const saveModule = () => {
         </div>
         <div class="create-element">
           <label>
-            Icon
+            {{ t('settings.modules.icon')  }}
           </label>
           <IconPicker v-model="form.icon"   :color="form.color"/>
         </div>
 
         <div class="create-element">
           <label>
-            Color
+            {{ t('settings.modules.color')  }}
           </label>
           <input
             class=""
@@ -114,7 +117,7 @@ const saveModule = () => {
 
         <div class="create-element">
           <label>
-            Show In Sidebar
+            {{ t('settings.modules.show_in_sidebar')  }}
           </label>
           <input
             class=""
@@ -125,7 +128,7 @@ const saveModule = () => {
 
         <div class="create-element">
           <label>
-            Description
+            {{ t('settings.modules.description')  }}
           </label>
           <textarea
             class=""

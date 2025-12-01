@@ -3,6 +3,8 @@ import { computed, inject } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import {  usePage, Link } from '@inertiajs/vue3'
 
+const appSettings = usePage().props.appSettings
+
 defineOptions({
   layout: Layout,
 });
@@ -20,9 +22,12 @@ const useModuleColors = inject('useModuleColors', () => false)
 
 <template >
     <ul class="settings_items_modules">
-      <Link v-for="m in modules"  :style="useModuleColors ? { '--module-color': m.color } : {'--module-color': '#000'}" :href="currentPath+'/'+m.id" >
+      <Link v-for="m in modules"          :style="appSettings.use_individual_module_colors == '0'
+          ? { '--module-color': appSettings.primary_color }
+          : { '--module-color': m.color }
+        " :href="currentPath+'/'+m.id" >
         <i :class="['fa-solid', m.icon]"></i>
-        {{ m.name }}
+        {{ m.label }}
       </Link>
     </ul>
 </template>

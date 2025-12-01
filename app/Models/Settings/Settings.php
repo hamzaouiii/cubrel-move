@@ -5,9 +5,11 @@ namespace App\Models\Settings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use App\Concerns\HasTranslatableLabel;
+
 class Settings extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslatableLabel;
 
     /**
      * Use UUIDs instead of auto-incrementing integers.

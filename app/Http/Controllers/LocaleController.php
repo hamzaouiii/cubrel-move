@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use App\Models\Settings\SettingValue; // adjust namespace to your model
-
+use App\Models\Settings\SettingValue;
 class LocaleController extends Controller
 {
     public function update(Request $request)
@@ -19,7 +18,7 @@ class LocaleController extends Controller
             ['value' => $request->locale, 'autoload' => true]
         );
 
-        Cache::forget('app_settings'); // important so Settings::get sees the change
+        Cache::forget('app_settings');
 
         return back();
     }

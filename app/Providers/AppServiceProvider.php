@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use App\Models\Module;
@@ -45,5 +46,10 @@ class AppServiceProvider extends ServiceProvider
                 })
                 ->values();
         });
+            Inertia::share('translations', function () {
+        return [
+            'settings' => __('settings'),
+        ];
+    });
     }
 }

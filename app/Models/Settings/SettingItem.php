@@ -4,10 +4,12 @@ namespace App\Models\Settings;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Concerns\HasTranslatableLabel;
+
 
 class SettingItem extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslatableLabel;
 
     public $incrementing = false;     // UUID
     protected $keyType = 'string';    // UUID

@@ -4,6 +4,10 @@ import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
 
+import { useTrans } from '@/Composables/useTrans'
+const { t } = useTrans()
+
+
 
 defineOptions({
   layout: Layout,
@@ -19,6 +23,8 @@ const editableFields = computed(() => {
   const ignore = ['id', 'created_at', 'updated_at','can_view','can_create','can_edit', 'can_delete', 'path', 'sort_order','is_active','table_name', 'model_class', 'slug', 'handler_class']  
   return Object.entries(editableModule).filter(([key]) => !ignore.includes(key))
 })
+
+console.log(editableModule)
 
 const labelFor = (key) => {
   return key
@@ -67,17 +73,17 @@ const resetForm= () =>{
 
 <template >
   <Head>
-    <title>{{ module.name }} - Automatisierung Regensburg</title>
+    <title>{{ module.label }} - {{ t('settings.label')  }} - Automatisierung Regensburg</title>
   </Head>
 
   <div class="module-manager edit-module">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">Settings</Link></h5>
+        <h5><Link href="/settings">{{ t('settings.label')  }} </Link></h5>
         <span>></span> 
-        <h5><Link href="/settings/customisation/modules">Modules</Link></h5>
+        <h5><Link href="/settings/customisation/modules">{{ t('settings.modules.label')  }} </Link></h5>
         <span>></span> 
-        <h6>{{module.name }}</h6>
+        <h6>{{module.label }}</h6>
       </div>
     </div>
 
@@ -88,7 +94,7 @@ const resetForm= () =>{
         class="edit-element"
       >
         <label class="">
-          {{ labelFor(key) }}
+          {{ t("settings.modules."+key) }}
         </label>
 
           <input

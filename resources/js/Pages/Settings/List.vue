@@ -1,8 +1,12 @@
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, usePage } from '@inertiajs/vue3'
 import Layout from '@/Layouts/Layout.vue';
 import { ref, computed } from 'vue'
+
+import { useTrans } from '@/Composables/useTrans'
+const { t } = useTrans()
+
 defineOptions({
   layout: Layout,
 });
@@ -10,6 +14,7 @@ defineOptions({
 const pageProps = defineProps({
   settings: Object,
 })
+
 const search = ref('')
 const filteredSettings = computed(() => {
   if (!search.value) {
@@ -48,12 +53,12 @@ const filteredSettings = computed(() => {
 
 <template>
   <Head>
-    <title>Settings - Automatisierung Regensburg</title>
+    <title>{{ t('settings.label') }} - Automatisierung Regensburg</title>
   </Head>
   <div class="settings">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h3>Settings</h3>
+        <h3>{{ t('settings.label') }}</h3>
     </div>
       <div class="settings_header_search">
 
@@ -71,10 +76,10 @@ const filteredSettings = computed(() => {
       <div v-for="s in filteredSettings" class="settings_content_section">
         <div class="settings_content_section_header">
           <div class="settings_content_section_header_title">
-            <h6>{{ s.name }}</h6>
+            <h6>{{ s.label }}</h6>
           </div>
           <div class="settings_content_section_header_desc">
-            <p>{{ s.description }}</p>
+            <p>{{ t(s.description) }}</p>
           </div>
         </div>
         <div  class="settings_content_section_links">
@@ -82,7 +87,7 @@ const filteredSettings = computed(() => {
           :href="i.path"
           >
             <i :class="i.icon"></i>
-            <span class="label">{{ i.name }}</span>
+            <span class="label">{{ i.label }}</span>
           </Link>
         </div>
       </div>
