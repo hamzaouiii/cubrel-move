@@ -42,7 +42,7 @@ const inputTypeFor = (type) => {
 const saveSetting = () => {
   form.put(`/settings/${props.item.id}`, {
       onSuccess: () => {
-    router.reload({ only: ['appSettings'] })
+  window.location.reload()
   }
   })
 }

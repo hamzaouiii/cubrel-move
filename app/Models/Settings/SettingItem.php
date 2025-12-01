@@ -27,6 +27,6 @@ class SettingItem extends Model
     }
     public function values()
     {
-        return $this->hasMany(SettingValue::class);
+        return $this->hasMany(SettingValue::class)->where('autoload', true);
     }
 }
