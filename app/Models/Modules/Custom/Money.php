@@ -2,9 +2,9 @@
 
 namespace App\Models\Modules\Custom;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModule;
 
-class Money extends Model
+class Money extends BaseModule
 {
     protected $table = 'money_cstm';
 

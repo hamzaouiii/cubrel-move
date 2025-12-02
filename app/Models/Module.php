@@ -44,12 +44,36 @@ class Module extends BaseModule
         return $this->hasMany(Layout::class);
     }
 
-    public function listLayout()
-    {
-        return $this->layouts()
-            ->where('type', 'list')
-            ->first();
+public function listLayout()
+{
+    $layout = $this->layouts()
+        ->where('type', 'list')
+        ->first();
+
+    if ($layout) {
+        return $layout;
     }
+
+    $globalDefault = \App\Models\Layout::where('type', 'list')
+        ->where('module_name', 'global')
+        ->where('is_list_default', 1)
+        ->first();
+
+    if ($globalDefault) {
+        return $globalDefault;
+    }
+
+    $globalFallback = \App\Models\Layout::where('type', 'list')
+        ->where('module_name', 'global')
+        ->first();
+
+    if ($globalFallback) {
+        return $globalFallback;
+    }
+
+    throw new \Exception("No list layout found for module {$this->name} and no global fallback available.");
+}
+
 
     public function recordLayout()
     {
@@ -64,7 +88,6 @@ class Module extends BaseModule
         }
     }
 
-    // optional generic helper
     public function layoutFor(string $type)
     {
         return $this->layouts()

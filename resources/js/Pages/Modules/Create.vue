@@ -17,18 +17,21 @@ const props = defineProps({
 const { proxy } = getCurrentInstance()
 const t = proxy.$t
 
-const form = useForm({
-  first_name: '',
-  last_name: '',
-  email: '',
-  phone: '',
-  company: '',
-  street: '',
-  city: '',
-  zip: '',
-  description: '',
-})
+const buildInitialForm = () => {
+  const data = {}
 
+  if (props.recordLayout && props.recordLayout.sections) {
+    props.recordLayout.sections.forEach(section => {
+      section.layout.forEach(field => {
+        data[field.key] = ''
+      })
+    })
+  }
+
+  return data
+}
+
+const form = useForm(buildInitialForm())
 const showActionDropDown = ref(false)
 const actionDropDownref = ref(null)
 
@@ -45,7 +48,6 @@ const handleClickOutsideActionDropDown = (event) => {
 const saveRecord = () => {
   const moduleSlug = props.module.slug ?? props.module
   const url = `/${moduleSlug}`
-
   form.post(url, {
     onError: () => {
       console.error('Error creating record:', form.errors)

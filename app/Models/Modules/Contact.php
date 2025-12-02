@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Contact extends Model
+use App\Models\BaseModule;
+
+class Contact extends BaseModule
 {
     protected $fillable = [
+        'name',
         'account_id',
         'first_name',
         'last_name',

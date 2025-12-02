@@ -4,12 +4,15 @@ namespace App\Models\Modules;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\BaseModule;
 
-class SupportCase extends Model
+class SupportCase extends BaseModule
+
 {
     protected $table = 'cases';
 
     protected $fillable = [
+        'name',
         'account_id',
         'contact_id',
         'subject',
@@ -33,5 +36,13 @@ class SupportCase extends Model
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+     protected static function booted()  
+    {
+        static::saving(function ($case) {
+            if ($case->isDirty('name') ) {
+                $case->subject = $case->name ;
+            }
+        });
     }
 }

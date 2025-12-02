@@ -15,4 +15,6 @@ class EmailModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
+        protected string $model = Email::class;
+
 }

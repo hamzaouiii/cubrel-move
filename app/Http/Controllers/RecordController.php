@@ -10,23 +10,24 @@ use Illuminate\Support\Str;
 
 class RecordController extends Controller
 {
-    public function __invoke(string $module, string $recordId)
-    {
+    public function __invoke(string $module, string $recordId){
         $moduleModel = Module::query()
             ->where('slug', $module)
             ->where('is_active', true)
             ->firstOrFail();
 
         $props = [];
-        $handlerClass = $module->handlerClass ?? "App\Handlers\Modules\\".ucwords($module)."ModuleHandler";
-        if (empty($handlerClass)) {
+        $handler_class = $moduleModel->handler_class ?? "App\Handlers\Modules\\".ucwords($module)."ModuleHandler";
+
+
+        if (empty($handler_class)) {
           dd("No Handler Class found for module $module");
         }
 
-        if (!class_exists($handlerClass)) {
+        if (!class_exists($handler_class)) {
             $props = [];
         } else {
-            $handler = app($handlerClass);
+            $handler = app($handler_class);
             
             if ($handler instanceof ModuleHandler || method_exists($handler, 'getRecordData')) {
                 $props = $handler->getRecordData($recordId, request()->all());                    
@@ -37,7 +38,6 @@ class RecordController extends Controller
 
         $recordLayout = optional($moduleModel->recordLayout())->definition;
 
-
         return Inertia::render('Modules/Record', array_merge([
             'module'   => $moduleModel,
             'title'    => $moduleModel->name,
@@ -46,20 +46,7 @@ class RecordController extends Controller
         ], $props));
     }
 
-    // public function update(Request $request, $module, $id)
-    // {
-    //     $module = Module::where('slug', $module)->firstOrFail();
-
-    //     $modelClass = $module->model_class;
-
-    //     $record = $modelClass::findOrFail($id);
-    //     $data = $request->except('_token', '_method');
-    //     $record->fill($data)->save();
-
-    //     return back()->with('success', 'Record updated successfully.');
-    // }
-    public function create(string $module)
-    {
+    public function create(string $module){
         $moduleModel = Module::query()
             ->where('slug', $module)
             ->where('is_active', true)
@@ -67,15 +54,11 @@ class RecordController extends Controller
 
         $props = [];
 
-        $handlerClass = $moduleModel->handler_class
+        $handler_class = $moduleModel->handler_class
             ?? "App\\Handlers\\Modules\\" . Str::studly($module) . "ModuleHandler";
 
-        if (class_exists($handlerClass)) {
-            $handler = app($handlerClass);
-
-            // if (method_exists($handler, 'getCreateData')) {
-            //     $props = $handler->getCreateData(request()->all());
-            // }
+        if (class_exists($handler_class)) {
+            $handler = app($handler_class);
         }
 
         $recordLayout = optional($moduleModel->recordLayout())->definition;
@@ -83,13 +66,11 @@ class RecordController extends Controller
         return Inertia::render('Modules/Create', array_merge([
             'module'       => $moduleModel,
             'title'        => $moduleModel->name,
-            'recordId'     => null,
             'recordLayout' => $recordLayout,
         ], $props));
     }
 
-      public function store(Request $request, string $module) {
-        // dd($request->all());
+    public function store(Request $request, string $module) {
         $moduleModel = Module::where('slug', $module)->firstOrFail();
         $modelClass  = $moduleModel->model_class;
 
@@ -101,15 +82,14 @@ class RecordController extends Controller
             ->with('success', 'Record created successfully.');
     }
 
-        public function update(Request $request, string $module, string $id)
-    {
-        $moduleModel = Module::where('slug', $module)->firstOrFail();
-        $modelClass  = $moduleModel->model_class;
+    public function update(Request $request, string $module, string $id){
+      $moduleModel = Module::where('slug', $module)->firstOrFail();
+      $modelClass  = $moduleModel->model_class;
 
-        $record = $modelClass::findOrFail($id);
-        $record->fill($request->except('_token', '_method'))->save();
+      $record = $modelClass::findOrFail($id);
+      $record->fill($request->except('_token', '_method'))->save();
 
-        return back()->with('success', 'Record updated successfully.');
+      return back()->with('success', 'Record updated successfully.');
     }
 
   }

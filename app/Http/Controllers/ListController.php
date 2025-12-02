@@ -16,7 +16,6 @@ public function __invoke(string $module)
             ->where('is_active', true)
             ->firstOrFail();
 
-        // Resolve handler class: prefer DB field, fallback to convention
         $handlerClass = $moduleModel->handler_class
             ?? "App\\Handlers\\Modules\\" . Str::studly($moduleModel->slug) . "ModuleHandler";
 
@@ -30,7 +29,6 @@ public function __invoke(string $module)
             $handler = app($handlerClass);
 
             if ($handler instanceof ModuleHandler && method_exists($handler, 'getListData')) {
-                // Collect all request params (search, perPage, etc.)
                 $params = request()->all();
                 $params['perPage'] = $params['perPage'] ?? request()->query('perPage', 18);
 

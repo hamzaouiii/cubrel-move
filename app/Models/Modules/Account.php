@@ -4,8 +4,9 @@ namespace App\Models\Modules;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\BaseModule;
 
-class Account extends Model
+class Account extends BaseModule
 {
     protected $fillable = [
         'name',

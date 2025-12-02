@@ -4,10 +4,12 @@ namespace App\Models\Modules;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\BaseModule;
 
-class Invoice extends Model
+class Invoice extends BaseModule
 {
     protected $fillable = [
+        'name',
         'account_id',
         'contact_id',
         'quote_id',

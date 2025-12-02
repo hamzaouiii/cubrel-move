@@ -15,4 +15,6 @@ class CasesModuleHandler extends BasePaginatedModuleHandler
 
         return $query;
     }
+    protected string $model = SupportCase::class;
+
 }
