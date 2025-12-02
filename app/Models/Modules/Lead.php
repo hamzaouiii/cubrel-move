@@ -30,7 +30,6 @@ class Lead extends Model
     protected static function booted()  
     {
         static::saving(function ($lead) {
-            // Only regenerate if first or last name changed
             if ($lead->isDirty('first_name') || $lead->isDirty('last_name')) {
                 $lead->name = trim($lead->first_name . ' ' . $lead->last_name);
             }

@@ -14,6 +14,7 @@
   use App\Http\Controllers\SystemSettingsController;
   use App\Http\Controllers\SettingValueController;
 
+
   Route::middleware(['auth'])->group(function () {
     
     /**
@@ -44,6 +45,10 @@
     /**
      * Modules routes
      */
+    Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
+    Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
+
+
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class,'update'])->name('modules.records.update');
     Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$).+')->name('modules.index');

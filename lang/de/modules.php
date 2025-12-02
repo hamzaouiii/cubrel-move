@@ -1,6 +1,19 @@
 <?php
 
 return [
+    'of' => 'von',
+    'actions' => [
+      'share'           => 'Teilen',
+      'export'          => 'Exportieren',
+      'placeholder'     => 'Irgendetwas hier',
+      'bulk_action'     => 'Sammelaktion',
+      'delete'          => 'Löschen',
+      'create'          => 'Erstellen',
+      'search_placeholder'  => 'In dieser Liste suchen',
+      'cancel'          => 'Abbrechen',
+      'edit'            => 'Bearbeiten',
+      'save'            => 'Speichern',      
+    ],
     'accounts' => 
     [
       'label'    => 'Firmen',
@@ -30,16 +43,7 @@ return [
         ],
 
         'actions' => [
-            'cancel'          => 'Abbrechen',
-            'edit'            => 'Bearbeiten',
-            'save'            => 'Speichern',
-            'share'           => 'Teilen',
-            'export'            => 'Exportieren',
-            'placeholder'       => 'Irgendetwas hier',
-            'bulk_action'       => 'Sammelaktion',
-            'delete'            => 'Löschen',
-            'create'          => 'Erstellen',
-            'search_placeholder' => 'In dieser Liste suchen'
+
         ],
 
       ],

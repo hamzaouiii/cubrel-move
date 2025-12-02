@@ -19,7 +19,6 @@ import { getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
 const t = proxy.$t
 
-console.log(t('module.leads.fields.first_name'))
 
 const form = useForm({ ...props.record })
 
@@ -159,7 +158,7 @@ const appSettings = usePage().props.appSettings
             class="record-main-btn cancel-btn" 
             @click="cancelEditing"
           >
-            {{ $t('modules.leads.actions.cancel') }}
+            {{ $t('modules.actions.cancel') }}
           </button>
           
           <button 
@@ -168,7 +167,7 @@ const appSettings = usePage().props.appSettings
             class="record-main-btn" 
             @click="enableEditing"
           >
-            {{ $t('modules.leads.actions.edit') }}
+            {{ $t('modules.actions.edit') }}
           </button>
           
             <button   v-else
@@ -177,7 +176,7 @@ const appSettings = usePage().props.appSettings
                 :disabled="!isDirty"
                 @click="saveRecord"
             >
-              {{ $t('modules.leads.actions.save') }}
+              {{ $t('modules.actions.save') }}
             </button>
 
 
@@ -195,13 +194,13 @@ const appSettings = usePage().props.appSettings
           
           <transition name="fade">
             <ul v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.share') }}</a></li>
-              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.export') }}</a></li>
-              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.placeholder') }}</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.actions.share') }}</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.actions.export') }}</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.actions.placeholder') }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.bulk_action') }}</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.actions.bulk_action') }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#" style="color: salmon">{{ $t('modules.leads.actions.delete') }}</a></li>
+              <li><a class="dropdown-item" href="#" style="color: salmon">{{ $t('modules.actions.delete') }}</a></li>
             </ul>
           </transition>
         </div>
@@ -248,7 +247,7 @@ const appSettings = usePage().props.appSettings
                     v-model="form[f.key]"
                   />
                 </template>
-              </div>
+           </div>
           </div>
         </div>
       </div>

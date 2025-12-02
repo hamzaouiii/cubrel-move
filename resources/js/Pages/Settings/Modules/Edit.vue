@@ -24,7 +24,6 @@ const editableFields = computed(() => {
   return Object.entries(editableModule).filter(([key]) => !ignore.includes(key))
 })
 
-console.log(editableModule)
 
 const labelFor = (key) => {
   return key

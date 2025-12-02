@@ -1,6 +1,6 @@
 <script setup>
   import { Head, usePage, Link, router } from '@inertiajs/vue3'
-  import { computed, ref, onMounted, onBeforeUnmount, inject} from 'vue'
+  import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
 
   import Layout from '@/Layouts/Layout.vue';
   import Pagination from '../Components/Pagination.vue';
@@ -20,6 +20,13 @@ const pageProps = defineProps({
   filters: Object
 })
 
+
+import { getCurrentInstance } from 'vue'
+
+const { proxy } = getCurrentInstance()
+const t = proxy.$t
+
+
 const recordsNumber = computed(() => pageProps.items?.length ?? 0)
 
 const recordsNumberPhrase = computed(() => {
@@ -27,7 +34,7 @@ const recordsNumberPhrase = computed(() => {
     return '(0)'
   }
 
-  return `${recordsNumber.value} of ${pageProps.meta.total}`
+  return `${recordsNumber.value} ${t('modules.of')} ${pageProps.meta.total}`
 })
 
   const formatDate = (value) => {
@@ -110,6 +117,12 @@ const resetSearchValue = () => {
   search.value = ''
   handleSearchInput()
 }
+
+
+function goToCreateView() {
+  const moduleName = usePage().props.module.slug   // example: "leads"
+  router.visit(`/${moduleName}/create`)
+}
 </script>
 
 <template>
@@ -119,7 +132,7 @@ const resetSearchValue = () => {
   <div class="ar-main-container">
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
-        <h1 class="ar-main-container_header_details_title">{{title}}</h1> 
+        <h1 class="ar-main-container_header_details_title">{{$t(module.label)}}</h1> 
         <span class="ar-main-container_header_details_meta">{{ recordsNumberPhrase  }}</span>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
@@ -129,7 +142,7 @@ const resetSearchValue = () => {
             name="search"
             class="search-input"
             aria-label="Text input with segmented dropdown button"
-            :placeholder="$t('modules.leads.actions.search_placeholder')"
+            :placeholder="$t('modules.actions.search_placeholder')"
             v-model="search"
             @input="handleSearchInput"
             @keydown.enter.prevent="performSearch(1)"
@@ -138,9 +151,9 @@ const resetSearchValue = () => {
           <button
             type="button"
             class="main-btn"
-           
+            @click="goToCreateView()"
           >
-            {{ $t('modules.leads.actions.create') }}
+            {{ $t('modules.actions.create') }}
           </button>
           <button
             @click="toggleActionDropDown"
@@ -155,11 +168,11 @@ const resetSearchValue = () => {
           </button>
           <transition name="fade">
             <ul v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.share') }}</a></li>
-              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.leads.actions.export') }}</a></li>
-              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.placeholder') }}</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.actions.share') }}</a></li>
+              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.actions.export') }}</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.actions.placeholder') }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">{{ $t('modules.leads.actions.bulk_action') }}</a></li>
+              <li><a class="dropdown-item" href="#">{{ $t('modules.actions.bulk_action') }}</a></li>
             </ul>
           </transition>
         </div>

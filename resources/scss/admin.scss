@@ -15,7 +15,7 @@
     justify-content: space-between;
     padding-top: 50px;
     transition: all 0.3s ease-in-out;
-    box-shadow: 5px 0px 15px -5px #000000;
+    box-shadow: 5px 0px 5px -5px #000000;
     .logo {
       display: flex;
       justify-content: center;
@@ -473,10 +473,15 @@
                 input{
                   all:unset;
                   width: 100%;
-                padding: 10px;
+                  padding: 10px;
                   cursor: text !important;
-
-
+                }
+                textarea{
+                  all: unset;
+                  resize: vertical;
+                  padding: 10px;
+                  width: 100%;
+                  cursor: text;
                 }
 
               }
