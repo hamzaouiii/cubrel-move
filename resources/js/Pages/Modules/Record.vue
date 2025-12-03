@@ -148,7 +148,7 @@ const appSettings = usePage().props.appSettings
   <div class="ar-main-container"  :style="appSettings.use_individual_module_colors == '0' ? {'--module-color': appSettings.primary_color} : { '--module-color': module.color } " >
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
-        <h1 class="ar-main-container_header_details_title">{{ record.name }}</h1>
+        <h1 class="ar-main-container_header_details_title">{{ record.label }}</h1>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref" >
         <div class="input-group" >

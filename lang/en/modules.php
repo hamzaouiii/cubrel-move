@@ -64,4 +64,6 @@ return [
     'money' => [
         'label' => 'Money',
     ],
+    'settings' => ['label' => 'Settings']
+
 ];

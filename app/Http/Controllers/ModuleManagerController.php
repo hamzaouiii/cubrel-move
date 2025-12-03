@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Settings\SettingItem;
 use App\Services\ModuleScaffolder;
+use Illuminate\Support\Str;
+
 
 class ModuleManagerController extends Controller
 {
@@ -71,18 +73,22 @@ class ModuleManagerController extends Controller
         ]);
 
 
-        $DEFAULT_ICON          = 'fa-file-lines';
+        $DEFAULT_ICON          = 'fa-solid fa-bahai';
         $DEFAULT_COLOR         = '#000000';
         $DEFAULT_SORT_ORDER    = (Module::max('sort_order') ?? 0) + 1;
         $DEFAULT_IS_ACTIVE     = true;
         $DEFAULT_PERMISSION    = true;
         $DEFAULT_SHOW_SIDEBAR  = true;
 
+        $handler_class = "App\\Handlers\\Modules\\Custom\\" . Str::studly($validated['slug']) . "ModuleHandler";
+        $model_class = "App\\Models\\Modules\\Custom\\" . Str::studly($validated['slug']);
         $module = Module::create([
             'slug'        => $validated['slug'],
             'name'        => $validated['name'],
             'icon'        => $validated['icon'] ?? $DEFAULT_ICON,
             'color'       => $validated['color'] ?: $DEFAULT_COLOR,
+            'label'       => 'modules.'.$validated['slug'].'.label',
+            'handler_class'=> $handler_class,
             'path'        => '/' . $validated['slug'],
             'sort_order'  => $DEFAULT_SORT_ORDER,
             'is_active'   => $DEFAULT_IS_ACTIVE,
@@ -91,9 +97,10 @@ class ModuleManagerController extends Controller
             'can_create'  => $DEFAULT_PERMISSION,
             'can_edit'    => $DEFAULT_PERMISSION,
             'can_delete'  => $DEFAULT_PERMISSION,
-            'model_class' => null,
+            'model_class' =>  $model_class,
             'table_name'  => $validated['slug']."_cstm",
             'show_in_sidebar' => $request->boolean('show_in_sidebar', $DEFAULT_SHOW_SIDEBAR),
+            'is_custom' => 1
         ]);
         app(ModuleScaffolder::class)->scaffold($module);
         return redirect("/settings/customisation/modules/{$module->id}")

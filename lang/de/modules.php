@@ -66,5 +66,6 @@ return [
     ],
     'money' => [
     'label'    => 'Geld',
-]
+    ],
+    'settings' => ['label' => 'Einstellungen']
 ];

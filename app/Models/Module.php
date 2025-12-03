@@ -22,8 +22,10 @@ class Module extends BaseModule
         'can_edit',
         'can_delete',
         'model_class',
+        'handler_class',
         'table_name',
         'show_in_sidebar',
+        'is_custom'
     ];
 
     protected $casts = [

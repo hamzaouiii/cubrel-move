@@ -79,7 +79,7 @@ const saveModule = () => {
             type="text"
             name="name"
             v-model="form.name"
-            :placeholder= "t('settings.modules.name_placeholder')"
+            :placeholder= "$t('settings.modules.name_placeholder')"
           />
         </div>
         <div class="create-element">

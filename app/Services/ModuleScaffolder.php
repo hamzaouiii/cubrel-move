@@ -21,7 +21,7 @@ class ModuleScaffolder
         $baseName = Str::studly(Str::singular($slug)); 
 
         $modelClass = "App\\Models\\Modules\\Custom\\{$baseName}";
-        $handlerClass = "App\\Handlers\\Modules\\Custom\\{$baseName}Handler";
+        $handlerClass = "App\\Handlers\\Modules\\Custom\\{$baseName}ModuleHandler";
 
         $module->update([
             'model_class' => $modelClass,
@@ -55,9 +55,9 @@ class ModuleScaffolder
 
         namespace App\Models\\Modules\\Custom;
 
-        use Illuminate\\Database\\Eloquent\\Model;
+        use App\\Models\\BaseModule;
 
-        class {$baseName} extends Model
+        class {$baseName} extends BaseModule
         {
             protected \$table = '{$table}';
 
