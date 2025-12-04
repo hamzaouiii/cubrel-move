@@ -16,12 +16,13 @@ const form = useForm({ ...props.settingModule })
 const editableModule = reactive({ display_label: '', ...props.settingModule,     })
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar)
 const editableFields = computed(() => {
-  const ignore = ['id', 'created_at', 'updated_at','can_view','can_create','can_edit', 'can_delete', 'path', 'sort_order','is_active','is_custom','table_name', 'model_class', 'slug', 'handler_class', 'label']  
+  const ignore = ['name', 'id', 'created_at', 'updated_at','can_view','can_create','can_edit', 'can_delete', 'path', 'sort_order','is_active','is_custom','table_name', 'model_class', 'slug', 'handler_class', 'label']  
   return Object.entries(editableModule).filter(([key]) => !ignore.includes(key))
 })
 
 const inputTypeFor = (key, value) => {
   if (key === 'show_in_sidebar') return 'checkbox'
+  if (key === 'display_label') return 'display_label'
   if (key === 'icon') return 'icon'
   if (typeof value === 'number') return 'number'
   if (key === 'color') return 'color'
@@ -30,6 +31,11 @@ const inputTypeFor = (key, value) => {
 
 }
 
+const disableThis = (key) => {
+  if (key === 'display_label') return true
+  return false
+
+}
 
 const isDirty = computed(() => {
   return editableFields.value.some(([key, value]) => {
@@ -96,13 +102,19 @@ const resetForm= () =>{
             v-model="editableModule[key]"
             :color="editableModule.color"
           />
+          <input
+            v-else-if="inputTypeFor(key, value) === 'display_label'"
+            :class="{'disabled': disableThis(key)}"
+            type="text"
+            :disabled="disableThis(key)"
+            v-model="settingModule.label"
+          />
           <textarea
            v-else-if="inputTypeFor(key, value) === 'textarea'"
             v-model="editableModule[key]"
           ></textarea>
           <input
             v-else
-            class=""
             :type="inputTypeFor(key, value)"
             v-model="editableModule[key]"
           />
