@@ -55,9 +55,9 @@ const enableEditing = () => {
   isEditing.value = true
 }
 
-const getChangedData = (original, edited) => {
+const getChangedData = (original, form) => {
   const changed = {}
-
+const edited = form.data()
   for (const key of Object.keys(edited)) {
     if (original[key] !== edited[key]) {
       changed[key] = edited[key]
