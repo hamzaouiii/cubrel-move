@@ -20,7 +20,6 @@ class ModuleManagerController extends Controller
             'layouts' => function ($q) {
                 $q->orderBy('type')->orderBy('name');
             },
-            
         ])
         ->orderBy('id')
         ->get();

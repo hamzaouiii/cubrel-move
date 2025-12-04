@@ -12,6 +12,8 @@
   use App\Http\Controllers\SettingsController;
   use App\Http\Controllers\ModuleManagerController;
   use App\Http\Controllers\SystemSettingsController;
+  use App\Http\Controllers\LayoutManagerController;
+  use App\Http\Controllers\LayoutListManagerController;
   use App\Http\Controllers\SettingValueController;
 
 
@@ -26,12 +28,17 @@
     /**
      * Settings routes
      */
-    // module manager
-    Route::get('/settings/customisation/modules', [ModuleManagerController::class, 'index'])->name('settings.modules.index');
-    Route::get('/settings/customisation/modules/create', [ModuleManagerController::class,'create'])->name('settings.modules.create');
-    Route::post('/settings/customisation/modules/create', [ModuleManagerController::class,'store'])->name('settings.modules.store');
-    Route::get('/settings/customisation/modules/{module}', [ModuleManagerController::class, 'show'])->name('settings.modules.show');
-    Route::put('/settings/customisation/modules/{module}', [ModuleManagerController::class,'update'])->name('settings.modules.update');
+        Route::prefix('settings/customisation')->name('settings.')->group(function () {
+        // Module Manager
+        Route::resource('modules', ModuleManagerController::class)->names('modules');
+
+        // Layout Manager
+        Route::get('layouts', [LayoutManagerController::class, 'index'])->name('layouts.index');
+        Route::get('layouts/{module}', [LayoutManagerController::class, 'show'])->name('layouts.show');
+
+        Route::get('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'edit'])->name('layouts.edit');
+      });
+
 
     //System Settings
     // Route::get('/settings/system/style', [SystemSettingsController::class, 'style'])->name('settings.system.style');
@@ -40,8 +47,8 @@
     Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
 
     // local
-    Route::post('/settings/locale', [LocaleController::class, 'update'])
-    ->name('locale.update');
+    // Route::post('/settings/locale', [LocaleController::class, 'update'])
+    // ->name('locale.update');
     /**
      * Modules routes
      */
