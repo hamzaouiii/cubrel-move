@@ -13,7 +13,7 @@
         v-if="showSearch"
         class="search-bar "
       >
-          <input placeholder="Global Search…" />
+          <input :placeholder="$t('topbar.global_search')" />
       </form>
     </transition>
 
@@ -34,10 +34,9 @@
           <!-- Dropdown -->
         <transition name="fade">
           <ul v-if="showProfile" class="profile-dropdown card-shadow">
-            <li><Link href="/modules">Module Manager</Link></li>
-            <li><a href="/settings">Settings</a></li>
-            <li><a href="/profile">My Profile</a></li>
-            <li @click="logout"><a href="#">Logout</a></li>
+            <li><Link href="/settings">{{$t('topbar.settings')}}</Link></li>
+            <li><Link href="/profile">{{$t('topbar.profile')}}</Link></li>
+            <li @click="logout"><a href="#">{{$t('topbar.logout')}}</a></li>
 
           </ul>
         </transition>
