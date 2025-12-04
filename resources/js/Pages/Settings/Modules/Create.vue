@@ -10,7 +10,7 @@ defineOptions({
 })
 
 const defaultValues = {
-  name: '',
+  display_label: '',
   label: '',
   icon: '',
   color: '#0d6efd',
@@ -22,12 +22,12 @@ const defaultValues = {
 const form = useForm({ ...defaultValues })
 
 const isDirty = computed(() => {
-  if(form.name.length < 4) return false
+  if(form.display_label.length < 4) return false
   return true
 })
 
 const slug = computed(() => {
-  return form.name
+  return form.display_label
     .toLowerCase()
     .normalize("NFD")                
     .replace(/[\u0300-\u036f]/g, "") 
@@ -72,13 +72,13 @@ const saveModule = () => {
       <div>
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.name')  }}
+            {{ $t('settings.modules.display_label')  }}
           </label>
           <input
             class=""
             type="text"
-            name="name"
-            v-model="form.name"
+            name="display_label"
+            v-model="form.display_label"
             :placeholder= "$t('settings.modules.name_placeholder')"
           />
         </div>

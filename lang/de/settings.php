@@ -9,9 +9,10 @@ return [
   'previous' => 'Zurück',
   'modules' => [
       'label' => 'Module',
+      'display_label' => 'Anzeigebezeichnung',
       'name' => 'Name',
       'name_placeholder' => 'Modul Name',
-      'slug' => 'URL Schlüssel',
+      'slug' => 'Systembezeichnung',
       'icon' => 'Symbol',
       'color' => 'Farbe',
       'show_in_sidebar' => 'Im Sidebar anzeigen',

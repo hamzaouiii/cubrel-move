@@ -4,32 +4,21 @@ import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
 
-
- 
-
-
-
 defineOptions({
   layout: Layout,
 });
 
 const props = defineProps({
-  module: Object
+  settingModule: Object
 })
-const form = useForm({ ...props.module })
-const editableModule = reactive({ ...props.module })
+
+const form = useForm({ ...props.settingModule })
+const editableModule = reactive({ display_label: '', ...props.settingModule,     })
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar)
 const editableFields = computed(() => {
-  const ignore = ['id', 'created_at', 'updated_at','can_view','can_create','can_edit', 'can_delete', 'path', 'sort_order','is_active','table_name', 'model_class', 'slug', 'handler_class']  
+  const ignore = ['id', 'created_at', 'updated_at','can_view','can_create','can_edit', 'can_delete', 'path', 'sort_order','is_active','is_custom','table_name', 'model_class', 'slug', 'handler_class', 'label']  
   return Object.entries(editableModule).filter(([key]) => !ignore.includes(key))
 })
-
-
-const labelFor = (key) => {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-}
 
 const inputTypeFor = (key, value) => {
   if (key === 'show_in_sidebar') return 'checkbox'
@@ -41,9 +30,10 @@ const inputTypeFor = (key, value) => {
 
 }
 
+
 const isDirty = computed(() => {
   return editableFields.value.some(([key, value]) => {
-    const original = props.module[key]
+    const original = props.settingModule[key]
     const current = editableModule[key]
 
     if (typeof original === 'number' && typeof current === 'boolean') {
@@ -54,7 +44,7 @@ const isDirty = computed(() => {
   })
 })
 const saveRecord = () =>{
-  const url = "/settings/customisation/modules/"+props.module.id
+  const url = "/settings/customisation/modules/"+props.settingModule.id
   const payload = editableModule
   form.transform(() => payload)
   .put(url, {
@@ -65,14 +55,14 @@ const saveRecord = () =>{
 
 const resetForm= () =>{
    Object.keys(editableModule).forEach(key => {
-    editableModule[key] = props.module[key]
+    editableModule[key] = props.settingModule[key]
   })
 }
 </script>
 
 <template >
   <Head>
-    <title>{{ module.label }} - {{ $t('settings.label')  }} - Automatisierung Regensburg</title>
+    <title>{{ settingModule.label }} - {{ $t('settings.label')  }} - Automatisierung Regensburg</title>
   </Head>
 
   <div class="module-manager edit-module">
@@ -82,7 +72,7 @@ const resetForm= () =>{
         <span>></span> 
         <h5><Link href="/settings/customisation/modules">{{ $t('settings.modules.label')  }} </Link></h5>
         <span>></span> 
-        <h6>{{module.label }}</h6>
+        <h6>{{settingModule.label }}</h6>
       </div>
     </div>
 
@@ -92,13 +82,12 @@ const resetForm= () =>{
         :key="key"
         class="edit-element"
       >
-        <label class="">
+        <label >
           {{ $t("settings.modules."+key) }}
         </label>
 
           <input
             v-if="inputTypeFor(key, value) === 'checkbox'" 
-            class=""
             type="checkbox"
             v-model="editableModule[key]"
           />
@@ -109,7 +98,6 @@ const resetForm= () =>{
           />
           <textarea
            v-else-if="inputTypeFor(key, value) === 'textarea'"
-            class=""
             v-model="editableModule[key]"
           ></textarea>
           <input
@@ -119,6 +107,7 @@ const resetForm= () =>{
             v-model="editableModule[key]"
           />
       </div>
+      
       <div class="actions" :style="{'--module-color': editableModule.color}">
         <button @click="resetForm()" class="reset-btn" type="reset" :disabled="!isDirty" >Reset</button>
 

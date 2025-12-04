@@ -15,7 +15,7 @@ class ModuleScaffolder
     ) {
     }
 
-    public function scaffold(Module $module): void
+    public function scaffold(Module $module, string $label): void
     {
         $slug = $module->slug; 
         $baseName = Str::studly(Str::singular($slug)); 
@@ -33,6 +33,7 @@ class ModuleScaffolder
 
         $this->createModelFile($baseName, $table);
         $this->createHandlerFile($baseName, $modelClass);
+        $this->createLangFiles($slug, $label);
         $this->createTable($table);
     }
 
@@ -128,4 +129,41 @@ class ModuleScaffolder
             $tableBlueprint->softDeletes();
         });
     }
+
+    protected function createLangFiles(string $slug, string $label): void
+    {
+        $langPath   = base_path('lang');
+        $locales    = array_filter(scandir($langPath), function ($item) use ($langPath) {
+            return $item !== '.' 
+                && $item !== '..' 
+                && is_dir($langPath . '/' . $item);
+        });
+
+        foreach ($locales as $locale) {
+
+          $directory = $langPath . "/{$locale}/custom/modules";
+
+          if (! $this->files->exists($directory)) {
+              $this->files->makeDirectory($directory, 0755, true);
+          }
+
+          $path = $directory . "/{$slug}.php";
+
+          if ($this->files->exists($path)) {
+              continue;
+          }
+
+$contents = <<<'PHP'
+<?php
+return [
+    'label' => 'LABEL_VALUE',
+];
+PHP;
+
+$contents = str_replace('LABEL_VALUE', $label, $contents);
+$this->files->put($path, $contents);
+
+        }
+    }
+
 }

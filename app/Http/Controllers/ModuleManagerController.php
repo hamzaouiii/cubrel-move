@@ -35,7 +35,7 @@ class ModuleManagerController extends Controller
     public function show(Request $request){
       $id = last($request->segments());
       $module = Module::where('id', $id)->firstOrFail();
-        //maybe I'll includse the layouts later
+        //maybe I'll include the layouts later
         // ->with([
         //     'layouts' => function ($q) {
         //         $q->orderBy('type')->orderBy('name');
@@ -43,7 +43,7 @@ class ModuleManagerController extends Controller
         // ])
 
       return Inertia::render('Settings/Modules/Edit', [
-        'module' => $module
+        'settingModule' => $module
       ]);
 
     }
@@ -64,14 +64,16 @@ class ModuleManagerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'        => ['required', 'string', 'max:255'],
+            'display_label'        => ['required', 'string', 'max:255'],
             'icon'        => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'slug'        => ['required', 'string', 'max:255', 'alpha_dash', 'unique:modules,slug'],
             'show_in_sidebar' => ['boolean'],
+            
         ]);
 
+        
 
         $DEFAULT_ICON          = 'fa-solid fa-bahai';
         $DEFAULT_COLOR         = '#000000';
@@ -84,10 +86,10 @@ class ModuleManagerController extends Controller
         $model_class = "App\\Models\\Modules\\Custom\\" . Str::studly($validated['slug']);
         $module = Module::create([
             'slug'        => $validated['slug'],
-            'name'        => $validated['name'],
+            'name'        => $validated['display_label'],
             'icon'        => $validated['icon'] ?? $DEFAULT_ICON,
             'color'       => $validated['color'] ?: $DEFAULT_COLOR,
-            'label'       => 'modules.'.$validated['slug'].'.label',
+            'label'       => 'custom/modules/'.$validated['slug'].'.label',
             'handler_class'=> $handler_class,
             'path'        => '/' . $validated['slug'],
             'sort_order'  => $DEFAULT_SORT_ORDER,
@@ -102,7 +104,8 @@ class ModuleManagerController extends Controller
             'show_in_sidebar' => $request->boolean('show_in_sidebar', $DEFAULT_SHOW_SIDEBAR),
             'is_custom' => 1
         ]);
-        app(ModuleScaffolder::class)->scaffold($module);
+
+        app(ModuleScaffolder::class)->scaffold($module, $validated['display_label']);
         return redirect("/settings/customisation/modules/{$module->id}")
         ->with('success', 'Module created and backend scaffolding generated.');
     }

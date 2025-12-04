@@ -9,6 +9,7 @@ return [
   'previous' => 'Previous',
   'modules' => [
     'label' => 'Modules',
+    'display_label' => 'Display Label',
     'name' => 'Name',
     'name_placeholder' => 'Module Name',
     'slug' => 'Slug',
