@@ -15,15 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-      // $this->call(ModulesSeeder::class);
-      // $this->call(LayoutsSeeder::class);
-      // // $this->call(UsersSeeder::class);
-      // $this->call(SettingsLayoutSeeder::class);
-      // $this->call(SettingsModuleSeeder::class);
-      // $this->call(SettingItemsSeeder::class);
-      // $this->call(IconSeeder::class);
-      // $this->call(settingvalueSeeder::class);
-      $this->call(InsertLeadsRecordLayoutSeeder::class);
 
+
+        $this->call(SettingsTableSeeder::class);
+        $this->call(ModulesTableSeeder::class);
+        $this->call(ContactMessagesTableSeeder::class);
+        $this->call(IconsTableSeeder::class);
+        $this->call(IpWhitelistsTableSeeder::class);
+        $this->call(LayoutsTableSeeder::class);
+        $this->call(LeadsTableSeeder::class);
+        $this->call(SettingItemsTableSeeder::class);
+        $this->call(SettingValuesTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
     }
 }

@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('cases', function (Blueprint $table) {
+            $table->char('id', 36)->primary();
+            $table->string('name');
+            $table->char('account_id', 36)->nullable()->index('cases_account_id_foreign');
+            $table->char('contact_id', 36)->nullable()->index('cases_contact_id_foreign');
+            $table->string('subject');
+            $table->text('description')->nullable();
+            $table->string('status')->default('open');
+            $table->string('priority')->default('normal');
+            $table->timestamp('opened_at')->useCurrent();
+            $table->timestamp('closed_at')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('cases');
+    }
+};
