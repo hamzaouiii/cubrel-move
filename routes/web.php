@@ -27,7 +27,7 @@
     /**
      * Settings routes
      */
-        Route::prefix('settings/customisation')->name('settings.')->group(function () {
+      Route::prefix('settings/customisation')->name('settings.')->group(function () {
         // Module Manager
         Route::resource('modules', ModuleManagerController::class)->names('modules');
 
@@ -36,7 +36,8 @@
         Route::get('layouts/{module}', [LayoutManagerController::class, 'show'])->name('layouts.show');
 
         Route::get('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'edit'])->name('layouts.edit');
-      });
+        Route::post('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'store'])->name('layouts.store');
+    });
 
 
     //System Settings

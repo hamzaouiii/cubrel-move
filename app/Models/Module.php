@@ -105,14 +105,10 @@ class Module extends BaseModule
             return [];
         }
 
-        // All columns in the module table
         $columns = Schema::getColumnListing($table);
 
-        // Columns we don't want to expose as "fields"
         $ignored = [
             'id',
-            'created_at',
-            'updated_at',
             'deleted_at',
         ];
 

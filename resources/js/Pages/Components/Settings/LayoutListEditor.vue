@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, getCurrentInstance } from 'vue'
+import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   columns: {
@@ -33,26 +33,23 @@ watch(
   { deep: true }
 )
 
-// --- translation helper for script side ---
 const { proxy } = getCurrentInstance()
 const t = proxy.$t
 
-// { list: 'columns' | 'available', index: number } | null
 const dragging = ref(null)
-// same shape, for current drop zone highlight
 const originOffset = ref({ x: 0, y: 0 })
 const dragOver = ref(null)
 const ghostWidth = ref(null)
 const ghostHeight = ref(null)
-// position of our custom ghost
 const dragPosition = ref({ x: 0, y: 0 })
-// small trailing dots
 const dragTrails = ref([])
-let trailCounter = 0
+const ghostRenderPos = ref({ x: 0, y: 0 })
 
-// tiny transparent image to hide native ghost
-const transparentPixel =
-  'data:image/gif;base64,R0lGODlhAQABAAAAACw='
+let trailCounter = 0
+let ghostAnimationFrame = null
+
+// transparent image to hide native ghost
+const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
 const dragImage = new Image()
 dragImage.src = transparentPixel
 
@@ -90,11 +87,12 @@ const startDrag = (listName, index, event) => {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top
     }
+     ghostRenderPos.value = { x: event.clientX, y: event.clientY }
   } else {
     ghostWidth.value = null
     ghostHeight.value = null
   }
-
+startGhostAnimation()
 }
 
 const endDrag = () => {
@@ -193,12 +191,9 @@ const emitUpdatedColumns = () => {
   emit('update:columns', clean)
 }
 
-// ---- custom ghost + trail ----
 const onGlobalDragOver = (event) => {
   if (!dragging.value) return
-  const x = event.clientX + 8
-  const y = event.clientY + 8
-  dragPosition.value = { x, y }
+  dragPosition.value = { x: event.clientX, y: event.clientY }
   createTrail(event.clientX, event.clientY)
 }
 
@@ -209,6 +204,35 @@ const createTrail = (x, y) => {
     dragTrails.value = dragTrails.value.filter((d) => d.id !== id)
   }, 400)
 }
+
+const stepGhost = () => {
+  const lerp = 0.2 // smaller = more inertia
+  const { x: tx, y: ty } = dragPosition.value
+  const { x, y } = ghostRenderPos.value
+
+  ghostRenderPos.value = {
+    x: x + (tx - x) * lerp,
+    y: y + (ty - y) * lerp,
+  }
+
+  ghostAnimationFrame = requestAnimationFrame(stepGhost)
+}
+
+const startGhostAnimation = () => {
+  if (ghostAnimationFrame !== null) return
+  ghostAnimationFrame = requestAnimationFrame(stepGhost)
+}
+
+const stopGhostAnimation = () => {
+  if (ghostAnimationFrame !== null) {
+    cancelAnimationFrame(ghostAnimationFrame)
+    ghostAnimationFrame = null
+  }
+}
+
+onBeforeUnmount(() => {
+  stopGhostAnimation()
+})
 </script>
 
 <template>
@@ -274,53 +298,53 @@ const createTrail = (x, y) => {
           <small>{{ $t('layouts.list_columns_hint') }}</small>
         </div>
 
-<ul
-  class="lle-list"
-  :class="{ 'lle-list--drag-target': isListDragTarget('columns') }"
->
-  <!-- Top drop zone (before first column) -->
-  <li
-    class="lle-drop-zone"
-    :class="{ 'lle-drop-zone--active': isDropZoneActive('columns', 0) }"
-    @dragover="setDragOver('columns', 0, $event)"
-    @drop="onDropOnColumns(0, $event)"
-  />
+        <ul
+          class="lle-list"
+          :class="{ 'lle-list--drag-target': isListDragTarget('columns') }"
+        >
+          <!-- Top drop zone (before first column) -->
+          <li
+            class="lle-drop-zone"
+            :class="{ 'lle-drop-zone--active': isDropZoneActive('columns', 0) }"
+            @dragover="setDragOver('columns', 0, $event)"
+            @drop="onDropOnColumns(0, $event)"
+          />
 
-  <!-- Column item + drop zone after -->
-  <template v-for="(col, index) in internalColumns" :key="col.key">
-    <li
-      class="lle-item"
-      :class="{ 'lle-item--dragging': isItemDragging('columns', index) }"
-      draggable="true"
-      @dragstart="startDrag('columns', index, $event)"
-      @dragend="endDrag"
-    >
-      <span class="lle-item-handle">
-        <i class="fa-solid fa-grip-vertical"></i>
-      </span>
+          <!-- Column item + drop zone after -->
+          <template v-for="(col, index) in internalColumns" :key="col.key">
+            <li
+              class="lle-item"
+              :class="{ 'lle-item--dragging': isItemDragging('columns', index) }"
+              draggable="true"
+              @dragstart="startDrag('columns', index, $event)"
+              @dragend="endDrag"
+            >
+              <span class="lle-item-handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
 
-      <div class="lle-item-main">
-        <span class="lle-item-label">
-          {{ $t(col.label) ?? col.key }}
-        </span>
+              <div class="lle-item-main">
+                <span class="lle-item-label">
+                  {{ $t(col.label) ?? col.key }}
+                </span>
 
-        <span class="lle-item-meta">
-          <!-- sortable badge later if you want -->
-        </span>
-      </div>
-    </li>
+                <span class="lle-item-meta">
+                  <!-- sortable badge later if you want -->
+                </span>
+              </div>
+            </li>
 
-    <!-- Drop zone *after* this column -->
-    <li
-      class="lle-drop-zone"
-      :class="{
-        'lle-drop-zone--active': isDropZoneActive('columns', index + 1),
-      }"
-      @dragover="setDragOver('columns', index + 1, $event)"
-      @drop="onDropOnColumns(index + 1, $event)"
-    />
-  </template>
-</ul>
+            <!-- Drop zone *after* this column -->
+            <li
+              class="lle-drop-zone"
+              :class="{
+                'lle-drop-zone--active': isDropZoneActive('columns', index + 1),
+              }"
+              @dragover="setDragOver('columns', index + 1, $event)"
+              @drop="onDropOnColumns(index + 1, $event)"
+            />
+          </template>
+        </ul>
 
       </div>
     </div>
@@ -330,8 +354,8 @@ const createTrail = (x, y) => {
       v-if="dragging"
       class="lle-drag-ghost"
       :style="{ 
-        top: dragPosition.y - originOffset.y + 'px',
-        left: dragPosition.x - originOffset.x + 'px',
+     top: ghostRenderPos.y - originOffset.y + 'px',
+      left: ghostRenderPos.x - originOffset.x + 'px',
         width: ghostWidth || 'auto', 
         height: ghostHeight || 'auto'  
         }"
