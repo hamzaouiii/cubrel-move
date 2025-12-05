@@ -24,7 +24,6 @@ class LayoutManagerController extends Controller
         ->orderBy('id')
         ->get();
       $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
-
  
       return Inertia::render('Settings/Layouts/List', [
         'item'     => $item,
@@ -54,7 +53,13 @@ class LayoutManagerController extends Controller
      */
     public function show(string $id)
     {
-      $module = Module::query()->where('id', $id)->firstOrFail();
+      $module = Module::query()->where('id', $id)
+      ->with([
+            'layouts' => function ($q) {
+                $q->orderBy('type')->orderBy('name');
+            },
+        ])
+      ->firstOrFail();
         return Inertia::render('Settings/Layouts/Record', ['module' => $module]);
     }
 
@@ -63,15 +68,24 @@ class LayoutManagerController extends Controller
      */
     public function edit(Request $request, string $id, string $type)
     {
-      $module = Module::query()->where('id', $id)->firstOrFail();
-      $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
+      $module = Module::query()->where('id', $id)
+       ->with([
+            'layouts' => function ($q) {
+                $q->orderBy('type')->orderBy('name');
+            },
+        ])->firstOrFail();
+        $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
+        $defaultLayout = Layout::getDefaultLayout($type);
+        $fields = $module->fields();
 
-        $string = "id: $id \t type: $type\t";
-      return Inertia::render('Settings/Layouts/Edit', [
-        'item'     => $item,
-        'module' => $module,
-        'type'  => $type
-      ]);
+
+        return Inertia::render('Settings/Layouts/Edit', [
+          'item'     => $item,
+          'module' => $module,
+          'type'  => $type,
+          'defaultLayout' => $defaultLayout,
+          'fields'   => $fields
+        ]);
     }
 
     /**

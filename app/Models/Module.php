@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
+use Illuminate\Support\Facades\Schema;
 
 class Module extends BaseModule
 {
@@ -96,6 +97,34 @@ class Module extends BaseModule
             ->where('type', $type)
             ->first();
     }
+    public function fields(): array
+    {
+        $table = $this->table_name;
 
+        if (!$table || !Schema::hasTable($table)) {
+            return [];
+        }
 
+        // All columns in the module table
+        $columns = Schema::getColumnListing($table);
+
+        // Columns we don't want to expose as "fields"
+        $ignored = [
+            'id',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ];
+
+        return collect($columns)
+            ->reject(fn ($column) => in_array($column, $ignored, true))
+            ->map(function ($column) {
+                return [
+                    'key'   => $column,
+                    'label' => __("modules.{$this->slug}.fields.{$column}"),
+                ];
+            })
+            ->values()
+            ->all();
+    }
 } 

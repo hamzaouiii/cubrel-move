@@ -17,7 +17,6 @@ const page = usePage()
 const currentPath = page.url;
 const module = computed(() => page.props.receivedItem || page.props)
 
-console.log(props.modules)
 
 </script>
 
