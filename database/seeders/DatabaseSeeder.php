@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingItemsTableSeeder::class);
         $this->call(SettingValuesTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+        $this->call(GlobalLayoutUpdater::class);
+        $this->call(GlobalRecordLayoutUpdater::class);
     }
 }
