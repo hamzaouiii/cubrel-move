@@ -3,6 +3,7 @@ import { computed, ref, watch, getCurrentInstance } from 'vue'
 import Layout from '@/Layouts/Layout.vue'
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import LayoutListEditor from '@/Pages/Components/Settings/LayoutListEditor.vue'
+import LayoutRecordEditor from '@/Pages/Components/Settings/LayoutRecordEditor.vue'
 
 const { proxy } = getCurrentInstance()
 const t = proxy.$t
@@ -12,22 +13,21 @@ defineOptions({
 })
 
 const props = defineProps({
-  item: Object,         // current Layout model if exists
-  module: Object,       // module config
-  type: String,         // 'list' | 'record'
+  module: Object,
+  type: String, // 'list' or 'record'
   defaultLayout: Object,
-  fields: Object,       // module fields
+  fields: Object,
 })
 
-/**
- * DB-backed layout definition (custom for this module & type,
- * or fallback to default/global).
- */
+// Reactive data
+const listColumns = ref([])
+const recordSections = ref([])
+
+// Computed properties
 const currentLayout = computed(() => {
   const custom = props.module.layouts?.find(
     (layout) => layout.type === props.type,
   )
-
   return custom?.definition || props.defaultLayout?.definition || null
 })
 
@@ -38,28 +38,21 @@ const moduleFields = computed(() => {
 const fieldByKey = computed(() => {
   const map = {}
   for (const field of moduleFields.value) {
-    map[field.key] = field
+    if (field?.key) map[field.key] = field
   }
   return map
 })
 
-/**
- * Columns as stored in DB layout definition.
- */
-const layoutColumnConfigs = computed(() => {
+// List layout specific
+const listLayoutColumnConfigs = computed(() => {
   const def = currentLayout.value
-  if (!def || !Array.isArray(def.columns)) return []
-  return def.columns
+  return def?.columns && Array.isArray(def.columns) ? def.columns : []
 })
 
-/**
- * Columns enriched with field metadata & label
- * – this reflects the DB state, not the live edited one.
- */
-const selectedColumnsFromDb = computed(() => {
-  return layoutColumnConfigs.value
+const selectedListColumnsFromDb = computed(() => {
+  return listLayoutColumnConfigs.value
     .map((col) => {
-      const field = fieldByKey.value[col.key]
+      const field = fieldByKey.value[col?.key]
       if (!field) return null
 
       return {
@@ -71,92 +64,134 @@ const selectedColumnsFromDb = computed(() => {
     .filter(Boolean)
 })
 
-/**
- * Editable columns used by the LayoutListEditor (v-model:columns).
- * We initialise from DB state and then let the child mutate this.
- */
-const columns = ref([])
+// Record layout specific
+const recordLayoutSectionConfigs = computed(() => {
+  if (props.type !== 'record') return []
+  const def = currentLayout.value
+  return def?.sections && Array.isArray(def.sections) ? def.sections : []
+})
 
+const recordLayoutFromDB = computed(() => {
+  if (props.type !== 'record') return []
+  
+  return recordLayoutSectionConfigs.value
+    .map((section) => {
+      const layout = (section.layout || [])
+        .map((col) => {
+          const field = fieldByKey.value[col?.key]
+          if (!field) return null
+
+          return {
+            ...col,
+            field,
+            label: col.label ?? field.label ?? col.key,
+          }
+        })
+        .filter(Boolean)
+
+      return {
+        ...section,
+        layout
+      }
+    })
+})
+
+// Watchers
 watch(
-  selectedColumnsFromDb,
+  selectedListColumnsFromDb,
   (val) => {
-    // on first load or DB change (e.g. reset), sync editable state
-    columns.value = [...val]
+    listColumns.value = [...val]
   },
-  { immediate: true },
+  { immediate: true }
 )
 
-/**
- * Available fields: all module fields that are NOT currently used
- * in the edited columns list.
- */
+watch(
+  recordLayoutFromDB,
+  (val) => {
+    recordSections.value = [...val]
+  },
+  { immediate: true }
+)
+
+// Available fields for list layout
 const availableFields = computed(() => {
-  const usedKeys = new Set(columns.value.map((col) => col.key))
+  if (props.type !== 'list') return []
+  
+  const usedKeys = new Set(listColumns.value.map((col) => col?.key).filter(Boolean))
   return moduleFields.value.filter((field) => !usedKeys.has(field.key))
 })
 
-/**
- * Clean helper: strip the attached "field" object before saving / comparing.
- */
-const cleanedColumns = computed(() =>
-  columns.value.map((col) => {
-    const { field, ...rest } = col
+// Clean data for comparison/saving
+const cleanedListColumns = computed(() => 
+  listColumns.value.map((col) => {
+    const { field, ...rest } = col || {}
     return rest
-  }),
+  })
+)
+
+const cleanedRecordSections = computed(() =>
+  recordSections.value.map((section) => ({
+    ...section,
+    layout: (section.layout || []).map((col) => {
+      const { field, ...rest } = col || {}
+      return rest
+    })
+  }))
 )
 
 const cleanedColumnsFromDb = computed(() =>
-  layoutColumnConfigs.value.map((col) => {
-    const { field, ...rest } = col
+  listLayoutColumnConfigs.value.map((col) => {
+    const { field, ...rest } = col || {}
     return rest
-  }),
+  })
 )
 
-/**
- * Dirty detection: compare current edited columns to DB columns
- * (keys, order & basic config).
- */
+// Dirty detection
 const isDirty = computed(() => {
-  const current = JSON.stringify(cleanedColumns.value)
-  const original = JSON.stringify(cleanedColumnsFromDb.value)
-  return current !== original
+  if (props.type === 'list') {
+    const current = JSON.stringify(cleanedListColumns.value)
+    const original = JSON.stringify(cleanedColumnsFromDb.value)
+    return current !== original
+  } else if (props.type === 'record') {
+    const current = JSON.stringify(cleanedRecordSections.value)
+    const original = JSON.stringify(recordLayoutSectionConfigs.value)
+    return current !== original
+  }
+  return false
 })
 
-/**
- * Inertia form for saving the layout.
- */
+// Form
 const form = useForm({
   module_id: props.module.id,
   type: props.type,
-  definition: currentLayout.value ?? { columns: cleanedColumnsFromDb.value },
+  definition: currentLayout.value || 
+    (props.type === 'list' ? { columns: [] } : { sections: [] }),
 })
 
-/**
- * Reset edited columns back to DB values.
- */
+// Reset function
 const resetToDatabaseValue = () => {
-  columns.value = [...selectedColumnsFromDb.value]
-
-  form.definition = currentLayout.value ?? {
-    columns: cleanedColumnsFromDb.value,
+  if (props.type === 'list') {
+    listColumns.value = [...selectedListColumnsFromDb.value]
+  } else if (props.type === 'record') {
+    recordSections.value = [...recordLayoutFromDB.value]
   }
-
+  
+  form.definition = currentLayout.value || {}
   form.clearErrors()
 }
 
-/**
- * Save current layout columns to backend.
- * Adjust the URL/route to match your app.
- */
+// Save function
 const saveLayout = () => {
-  const definition = {
-    ...(currentLayout.value || {}),
-    columns: cleanedColumns.value,
+  let definition = { ...(currentLayout.value || {}) }
+  
+  if (props.type === 'list') {
+    definition.columns = cleanedListColumns.value
+  } else if (props.type === 'record') {
+    definition.sections = cleanedRecordSections.value
   }
-
+  
   form.definition = definition
 
-  // TODO: adjust URL to your actual route
   const url = `/settings/customisation/layouts/${props.module.id}/${props.type}`
 
   form.post(url, {
@@ -166,12 +201,55 @@ const saveLayout = () => {
     },
   })
 }
-</script>
 
+const availableRecordFields = computed(() => {
+  if (props.type !== 'record') return []
+  
+  const usedKeys = new Set()
+  recordSections.value.forEach(section => {
+    (section.layout || []).forEach(col => {
+      if (col?.key) usedKeys.add(col.key)
+    })
+  })
+  
+  return moduleFields.value.filter(field => !usedKeys.has(field.key))
+})
+
+
+// Section management functions (for record layout)
+const addNewSection = () => {
+  recordSections.value.push({
+    name: `Section ${recordSections.value.length + 1}`,
+    layout: []
+  })
+}
+
+const removeSection = (index) => {
+  if (recordSections.value.length > 1) {
+    recordSections.value.splice(index, 1)
+  }
+}
+
+const addColumnToSection = (sectionIndex) => {
+  if (recordSections.value[sectionIndex]) {
+    recordSections.value[sectionIndex].layout.push({
+      key: '',
+      width: 100,
+      label: ''
+    })
+  }
+}
+
+const removeColumnFromSection = (sectionIndex, columnIndex) => {
+  if (recordSections.value[sectionIndex]?.layout) {
+    recordSections.value[sectionIndex].layout.splice(columnIndex, 1)
+  }
+}
+</script>
 
 <template>
   <Head>
-    <title>{{ module.label }} - {{ $t('settings.label') }}</title>
+    <title> {{ type }} > {{ module.label }} > {{ $t('layouts.label') }} > {{ $t('settings.label') }}</title>
   </Head>
 
   <div class="layout">
@@ -188,12 +266,22 @@ const saveLayout = () => {
     </div>
 
     <div class="layout_editor">
+      <!-- List Layout Editor -->
       <LayoutListEditor
         v-if="type === 'list'"
-        v-model:columns="columns"
+        v-model:columns="listColumns"
         :available-fields="availableFields"
       />
 
+      <div v-if="type === 'record'" class="record-layout-editor-wrapper">
+        <LayoutRecordEditor
+          v-model:sections="recordSections"
+          :available-fields="availableRecordFields"
+          :field-by-key="fieldByKey"
+        />
+      </div>
+
+      <!-- Common actions for both types -->
       <div class="layout_editor_actions">
         <button
           @click="resetToDatabaseValue()"
@@ -201,7 +289,7 @@ const saveLayout = () => {
           type="reset"
           :disabled="!isDirty"
         >
-          Reset
+          {{ form.processing ? 'Resetting...' : 'Reset' }}
         </button>
 
         <button
@@ -209,7 +297,7 @@ const saveLayout = () => {
           type="submit"
           :disabled="!isDirty || form.processing"
         >
-          Save
+          {{ form.processing ? 'Saving...' : 'Save Layout' }}
         </button>
       </div>
     </div>
