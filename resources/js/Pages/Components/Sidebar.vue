@@ -1,7 +1,8 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, reactive } from 'vue'
 import { useForm, Link, usePage } from '@inertiajs/vue3'
 import { getCurrentInstance } from 'vue'
+import AppTooltip from './AppTooltip.vue'
 
 const form = useForm({})
 const logout = () => {
@@ -28,43 +29,51 @@ onMounted(() => {
   collapsedSidebar.value = saved === '1'
 })
 
-const showTooltip = ref(false)
-const tooltipText = ref('')
-const tooltipcolor = ref('')
-const tooltipPosition = ref({ top: 0, left: 0 })
+const tooltip = reactive({
+  show: false,
+  text: '',
+  color: '',
+  top: 0,
+  left: 0,
+})
+
+const hideTooltip = () => {
+  tooltip.show = false
+}
 
 const onModuleMouseEnter = (event, mod) => {
   if (!collapsedSidebar.value) return
 
   const rect = event.currentTarget.getBoundingClientRect()
-  tooltipText.value = mod.label
-  tooltipcolor.value = mod.color
-  tooltipPosition.value = {
-    top: rect.top + rect.height / 2,
-    left: rect.right + 10,
-  }
-  showTooltip.value = true
+
+  tooltip.text = mod.label
+  tooltip.color = appSettings.use_individual_module_colors == '0'
+    ? appSettings.primary_color
+    : mod.color
+  tooltip.top = rect.top + rect.height / 2
+  tooltip.left = rect.right + 10
+  tooltip.show = true
 }
 
 const onModuleMouseLeave = () => {
-  showTooltip.value = false
+  hideTooltip()
 }
 
 const onCollapserMouseEnter = (event) => {
   const rect = event.currentTarget.getBoundingClientRect()
-  tooltipText.value = collapsedSidebar.value ? t('sidebar.expand') : t('sidebar.close')
-  tooltipcolor.value = appSettings.primary_color
-  tooltipPosition.value = {
-    top: rect.top + rect.height / 2,
-    left: rect.right + 10,
-  }
-  showTooltip.value = true
+
+  tooltip.text = collapsedSidebar.value ? t('sidebar.expand') : t('sidebar.close')
+  tooltip.color = appSettings.primary_color
+  tooltip.top = rect.top + rect.height / 2
+  tooltip.left = rect.right + 10
+  tooltip.show = true
 }
 
 const onCollapserMouseLeave = () => {
-  showTooltip.value = false
+  hideTooltip()
 }
 </script>
+
 
 <template>
   <aside :class="{ 'open': !collapsedSidebar, 'collapsed': collapsedSidebar }">
@@ -102,19 +111,11 @@ const onCollapserMouseLeave = () => {
     <div class="sidebar-footer"></div>
   </aside>
 
-  <div
-    v-if="showTooltip"
-    class="sidebar-tooltip"
-    :style="[
-      {
-        top: tooltipPosition.top + 'px',
-        left: tooltipPosition.left + 'px'
-      },
-      appSettings.use_individual_module_colors == '0'
-        ? { '--module-color': appSettings.primary_color }
-        : { '--module-color': tooltipcolor }
-    ]"
-  >
-    {{ tooltipText }}
-  </div>
+  <AppTooltip
+    :show="tooltip.show"
+    :text="tooltip.text"
+    :top="tooltip.top"
+    :left="tooltip.left"
+    :color="tooltip.color"
+  />
 </template>

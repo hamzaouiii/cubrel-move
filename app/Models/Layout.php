@@ -48,12 +48,29 @@ class Layout extends Model
     {
         return self::whereNull('module_id')
             ->where('type', $type)
+            ->where('module_name', 'global')
             ->where(function ($q) use ($type) {
                 return $type === 'record'
                     ? $q->where('is_record_default', true)
                     : $q->where('is_list_default', true);
             })
             ->first();
+    }
+
+    public static function getGlobalListLayout(){
+      return self::whereNull('module_id')
+        ->where('type', 'list')
+        ->where('is_list_default', true)
+        ->where('module_name', 'global')
+        ->first();
+    }
+
+        public static function getGlobalRecordLayout(){
+      return self::whereNull('module_id')
+        ->where('type', 'record')
+        ->where('is_record_default', true)
+        ->where('module_name', 'global')
+        ->first();
     }
 
   }
