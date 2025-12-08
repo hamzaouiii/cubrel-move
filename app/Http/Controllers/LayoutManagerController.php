@@ -45,29 +45,33 @@ class LayoutManagerController extends Controller
      */
       public function store(Request $request, \App\Models\Module $module, string $layoutType)
       {
-          // Validate incoming request
+        if($layoutType == 'list'){
           $validated = $request->validate([
               'definition' => 'required|array',
               'definition.columns' => 'required|array',
           ]);
-
-          // Find existing layout or create new
+        }else if ($layoutType == 'record'){
+           $validated = $request->validate([
+              'definition' => 'required|array',
+              'definition.sections' => 'required|array'
+            ]);
+        }
           $layout = \App\Models\Layout::firstOrNew([
               'module_id' => $module->id,
               'type'      => $layoutType,
           ]);
 
-          // Assign values
+
           $layout->module_id   = $module->id;
-          $layout->module_name = $module->name; // keep convention from your model
+          $layout->module_name = $module->name; 
           $layout->type        = $layoutType;
           $layout->definition  = $validated['definition'];
 
           $layout->save();
-
+          // TODO check why translated message is not being sent
           return redirect()
               ->route('settings.layouts.edit', [$module->id, $layoutType])
-              ->with('success', __('Layout updated successfully.'));
+              ->with('success', __('layouts.record_creation_success'));
       }
 
 

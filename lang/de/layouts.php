@@ -19,6 +19,12 @@ return [
     'record_sections' => 'Datensatzabschnitte',
     'drop_here_to_remove' => 'Zum Entfernen hier ablegen',
     'drag_to_sections' => 'In Abschnitte ziehen',
-    'drop_fields_here'  => 'Felder hier ablegen'
+    'drop_fields_here'  => 'Felder hier ablegen',
+    'all_fields_used' => 'Alle Felder verwendet',
+    'record_creation_success' => 'Datensatz-Layout erfolgreich gespeichert.',
+    'save_layout' => 'Layout speichern',
+    'saving' => 'Wird gespeichert...',
+    'reset' => 'Zurücksetzen',
+    'resetting' => 'Wird zurückgesetzt...',
 
 ];

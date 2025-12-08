@@ -298,16 +298,17 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
 const onGlobalDragOver = (event) => {
   if (!dragging.value) return
   dragPosition.value = { x: event.clientX, y: event.clientY }
-  createTrail(event.clientX, event.clientY)
+  // createTrail(event.clientX, event.clientY)
+  // trail might be an overkill because it is so slow on safari
 }
 
-const createTrail = (x, y) => {
-  const id = trailCounter++
-  dragTrails.value.push({ id, x, y })
-  setTimeout(() => {
-    dragTrails.value = dragTrails.value.filter((d) => d.id !== id)
-  }, 400)
-}
+// const createTrail = (x, y) => {
+//   const id = trailCounter++
+//   dragTrails.value.push({ id, x, y })
+//   setTimeout(() => {
+//     dragTrails.value = dragTrails.value.filter((d) => d.id !== id)
+//   }, 400)
+// }
 
 // Ghost animation
 const stepGhost = () => {
@@ -346,13 +347,6 @@ const updateSectionName = (sectionIndex, name) => {
   emitUpdatedSections()
 }
 
-// Update column property
-const updateColumnProperty = (sectionIndex, columnIndex, property, value) => {
-  if (internalSections.value[sectionIndex]?.layout?.[columnIndex]) {
-    internalSections.value[sectionIndex].layout[columnIndex][property] = value
-    emitUpdatedSections()
-  }
-}
 
 onBeforeUnmount(() => {
   stopGhostAnimation()
@@ -544,11 +538,11 @@ onBeforeUnmount(() => {
     </div>
     
     <!-- Trail dots -->
-    <div
+    <!-- <div
       v-for="dot in dragTrails"
       :key="dot.id"
       class="rle-trail-dot"
       :style="{ top: dot.y + 'px', left: dot.x + 'px' }"
-    ></div>
+    ></div> -->
   </div>
 </template>

@@ -18,6 +18,12 @@ return [
     'record_sections' => 'Record sections',
     'drop_here_to_remove' => 'Drop here to remove',
     'drag_to_sections'  => 'Drag to sections',
-    'drop_fields_here'  => 'Drop fields here'
+    'drop_fields_here'  => 'Drop fields here',
+    'all_fields_used'   => 'No more fields',
+    'record_creation_success' => 'Record layout updated successfully.',
+    'save_layout' => 'Save Layout',
+    'saving'  =>'Saving...',
+    'reset' => 'Reset',
+    'resetting' => 'Resetting...',
 
 ];
