@@ -216,7 +216,7 @@ const saveLayout = () => {
       if (flash?.success) {
         success(flash.success)
       } else {
-        success(t('layouts.record_creation_success'))
+        success(t('layouts.layout_update_success'))
       }
     },
     onError: (errors) => {
@@ -273,39 +273,16 @@ const manualAlerts = ref([
 
     <div class="layout_editor">
 
-      <!-- Form Errors Display -->
-      <div v-if="form.hasErrors" class="layout-editor_errors">
-        <div class="alert alert-error" role="alert">
-          <div class="alert-content">
-            <span class="alert-icon">
-              <i class="fa-solid fa-exclamation-triangle"></i>
-            </span>
-            <div class="error-list">
-              <div v-for="(error, field) in form.errors" :key="field" class="error-item">
-                {{ error }}
-              </div>
-            </div>
-          </div>
-          <button 
-            @click="form.clearErrors()" 
-            class="alert-close"
-            type="button"
-            aria-label="Clear errors"
-          >
-            <i class="fa-solid fa-times"></i>
-          </button>
-        </div>
-      </div>
 
-      <!-- List Layout Editor -->
+      <div v-if="type === 'list'">
+
       <LayoutListEditor
-        v-if="type === 'list'"
         v-model:columns="listColumns"
         :available-fields="availableFields"
       />
+      </div>
 
-      <!-- Record Layout Editor -->
-      <div v-if="type === 'record'" class="record-layout-editor-wrapper">
+      <div v-if="type === 'record'" >
         <LayoutRecordEditor
           v-model:sections="recordSections"
           :available-fields="availableRecordFields"
@@ -313,7 +290,6 @@ const manualAlerts = ref([
         />
       </div>
 
-      <!-- Common actions for both types -->
       <div class="layout_editor_actions">
         <button
           @click="resetToDatabaseValue()"

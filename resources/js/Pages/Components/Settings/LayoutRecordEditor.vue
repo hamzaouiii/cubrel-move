@@ -359,7 +359,6 @@ onBeforeUnmount(() => {
     @dragover="onGlobalDragOver"
   >
     <div class="rle-container">
-      <!-- Left sidebar - Available fields -->
       <div class="rle-sidebar">
         <div class="rle-sidebar-header">
           <h5>{{ $t('layouts.available_fields') }}</h5>
@@ -402,7 +401,6 @@ onBeforeUnmount(() => {
         </div>
       </div>
       
-      <!-- Main content - Sections -->
       <div class="rle-main">
         <div class="rle-sections-header">
           <h3>{{ $t('layouts.record_sections') }}</h3>
@@ -518,7 +516,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
     
-    <!-- Custom drag ghost -->
     <div
       v-if="dragging"
       class="rle-drag-ghost"
@@ -536,13 +533,5 @@ onBeforeUnmount(() => {
         {{ ghostLabel }}
       </span>
     </div>
-    
-    <!-- Trail dots -->
-    <!-- <div
-      v-for="dot in dragTrails"
-      :key="dot.id"
-      class="rle-trail-dot"
-      :style="{ top: dot.y + 'px', left: dot.x + 'px' }"
-    ></div> -->
   </div>
 </template>

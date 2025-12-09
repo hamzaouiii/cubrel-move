@@ -229,12 +229,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="layout-list-editor"
+    class="record-layout-editor"
     @dragover="onGlobalDragOver"
   >
-    <div class="lle-panels">
-      <!-- AVAILABLE FIELDS -->
-      <div class="lle-panel lle-panel--available">
+    <div class="rle-container">
+      <div class="rle-sidebar">
         <div class="lle-header">
           <h5>{{ $t('layouts.available_fields') }}</h5>
           <small>{{ $t('layouts.available_fields_hint') }}</small>
@@ -244,29 +243,28 @@ onBeforeUnmount(() => {
           class="lle-list"
           :class="{ 'lle-list--drag-target': isListDragTarget('available') }"
         >
-          <!-- Top drop zone (before first item) -->
           <div
-            class="lle-drop-zone_available"
-            :class="{ 'lle-drop-zone_available--active': isDropZoneActive('available', 0) }"
+            class="rle-empty-drop-zone"
+            :class="{ 'rle-empty-drop-zone--active': isDropZoneActive('available', 0) }"
             @dragover="setDragOver('available', 0, $event)"
             @drop="onDropOnAvailable(0, $event)"
           >
-                      {{ $t('layouts.drop_here_to_remove') }}
+            {{ $t('layouts.drop_here_to_remove') }}
           </div>
 
           <!-- Item + drop zone after it -->
           <template v-for="(field, index) in internalAvailable" :key="field.key">
             <li
-              class="lle-item"
-              :class="{ 'lle-item--dragging': isItemDragging('available', index) }"
+              class="rle-field-item"
+              :class="{ 'rle-field-item--dragging': isItemDragging('available', index) }"
               draggable="true"
               @dragstart="startDrag('available', index, $event)"
               @dragend="endDrag"
             >
-              <span class="lle-item-handle">
+              <span class="rle-field-handle">
                 <i class="fa-solid fa-grip-vertical"></i>
               </span>
-              <span class="lle-item-label">
+              <span class="rle-field-label">
                 {{ $t(field.label) ?? field.key }}
               </span>
             </li>
@@ -281,72 +279,90 @@ onBeforeUnmount(() => {
               @drop="onDropOnAvailable(index + 1, $event)"
             />
           </template>
+          <div
+            v-if="internalAvailable.length === 0"
+            class="rle-no-fields"
+          >
+            {{ $t('layouts.all_fields_used') }}
+          </div>
         </ul>
 
       </div>
 
-      <!-- SELECTED COLUMNS -->
-      <div class="lle-panel lle-panel--columns">
-        <div class="lle-header">
-          <h5>{{ $t('layouts.list_columns') }}</h5>
-          <small>{{ $t('layouts.list_columns_hint') }}</small>
-        </div>
-
-        <ul
-          class="lle-list"
-          :class="{ 'lle-list--drag-target': isListDragTarget('columns') }"
-        >
-          <!-- Top drop zone (before first column) -->
-          <li
-            class="lle-drop-zone"
-            :class="{ 'lle-drop-zone--active': isDropZoneActive('columns', 0) }"
-            @dragover="setDragOver('columns', 0, $event)"
-            @drop="onDropOnColumns(0, $event)"
-          />
-
-          <!-- Column item + drop zone after -->
-          <template v-for="(col, index) in internalColumns" :key="col.key">
-            <li
-              class="lle-item"
-              :class="{ 'lle-item--dragging': isItemDragging('columns', index) }"
-              draggable="true"
-              @dragstart="startDrag('columns', index, $event)"
-              @dragend="endDrag"
-            >
-              <span class="lle-item-handle">
-                <i class="fa-solid fa-grip-vertical"></i>
-              </span>
-
-              <div class="lle-item-main">
-                <span class="lle-item-label">
-                  {{ $t(col.label) ?? col.key }}
-                </span>
-
-                <span class="lle-item-meta">
-                  <!-- sortable badge later if you want -->
-                </span>
+      <div class="rle-main">        
+        <div class="rle-sections">
+          <div class="rle-section">
+            <!-- Section header - adapted from lle-header -->
+            <div class="rle-section-header">
+              <div class="rle-section-title">
+                <!-- Using h3 for consistency with rle-sections-header -->
+                <h3>{{ $t('layouts.list_columns') }}</h3>
+                <small>{{ $t('layouts.list_columns_hint') }}</small>
               </div>
-            </li>
-
-            <!-- Drop zone *after* this column -->
-            <li
-              class="lle-drop-zone"
-              :class="{
-                'lle-drop-zone--active': isDropZoneActive('columns', index + 1),
-              }"
-              @dragover="setDragOver('columns', index + 1, $event)"
-              @drop="onDropOnColumns(index + 1, $event)"
-            />
-          </template>
-        </ul>
-
+              <div class="rle-section-actions">
+                <!-- No actions in lle-main, keeping structure for consistency -->
+              </div>
+            </div>
+            
+            <!-- Section content - adapted from lle-list -->
+            <div class="rle-section-content">
+              <!-- Columns list - replacing the ul with rle-section-columns structure -->
+              <div class="rle-section-columns">
+                <!-- Top drop zone -->
+                <div
+                  class="rle-drop-zone rle-drop-zone--horizontal"
+                  :class="{ 'rle-drop-zone--active': isDropZoneActive('columns', 0) }"
+                  @dragover="setDragOver('columns', 0, $event)"
+                  @drop="onDropOnColumns(0, $event)"
+                />
+                
+                <!-- Column items -->
+                <template v-for="(col, index) in internalColumns" :key="col.key">
+                  <div
+                    class="rle-column-item"
+                    :class="{ 'rle-column-item--dragging': isItemDragging('columns', index) }"
+                  >
+                    <!-- Column content -->
+                    <div
+                      class="rle-column-content"
+                      draggable="true"
+                      @dragstart="startDrag('columns', index, $event)"
+                      @dragend="endDrag"
+                    >
+                      <span class="rle-column-handle">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                      </span>
+                      <span class="rle-column-label">
+                        {{ $t(col.label) ?? col.key }}
+                      </span>
+                      <button
+                        class="rle-column-remove"
+                        type="button"
+                        :title="$t('layouts.remove_column')"
+                      >
+                        <i class="fa-solid fa-times"></i>
+                      </button>
+                    </div>
+                    
+                    <!-- Drop zone after column -->
+                    <div
+                      class="rle-drop-zone rle-drop-zone--horizontal"
+                      :class="{ 'rle-drop-zone--active': isDropZoneActive('columns', index + 1) }"
+                      @dragover="setDragOver('columns', index + 1, $event)"
+                      @drop="onDropOnColumns(index + 1, $event)"
+                    />
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Custom drag ghost following the cursor -->
     <div
       v-if="dragging"
-      class="lle-drag-ghost"
+      class="rle-drag-ghost"
       :style="{ 
      top: ghostRenderPos.y - originOffset.y + 'px',
       left: ghostRenderPos.x - originOffset.x + 'px',
@@ -354,10 +370,10 @@ onBeforeUnmount(() => {
         height: ghostHeight || 'auto'  
         }"
     >
-      <span class="lle-item-handle">
+      <span class="rle-ghost-handle">
         <i class="fa-solid fa-grip-vertical"></i>
       </span>
-      <span class="lle-item-label">
+      <span class="rle-ghost-label">
         {{ ghostLabel }}
       </span>
     </div>

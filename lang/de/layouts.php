@@ -20,7 +20,7 @@ return [
     'drop_here_to_remove' => 'Zum Entfernen hier ablegen',
     'drag_to_sections' => 'In Abschnitte ziehen',
     'drop_fields_here'  => 'Felder hier ablegen',
-    'all_fields_used' => 'Alle Felder verwendet',
+    'all_fields_used' => 'Alle Felder sind bereits im Layout',
     'record_creation_success' => 'Datensatz-Layout erfolgreich gespeichert.',
     'save_layout' => 'Layout speichern',
     'saving' => 'Wird gespeichert...',

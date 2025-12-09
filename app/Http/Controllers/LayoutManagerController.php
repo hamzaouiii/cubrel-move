@@ -71,7 +71,7 @@ class LayoutManagerController extends Controller
           // TODO check why translated message is not being sent
           return redirect()
               ->route('settings.layouts.edit', [$module->id, $layoutType])
-              ->with('success', __('layouts.record_creation_success'));
+              ->with('success', __('layouts.layout_update_success'));
       }
 
 
