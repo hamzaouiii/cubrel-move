@@ -45,7 +45,6 @@ const dragPosition = ref({ x: 0, y: 0 })
 const dragTrails = ref([])
 const ghostRenderPos = ref({ x: 0, y: 0 })
 
-let trailCounter = 0
 let ghostAnimationFrame = null
 
 // transparent image to hide native ghost
@@ -194,16 +193,9 @@ const emitUpdatedColumns = () => {
 const onGlobalDragOver = (event) => {
   if (!dragging.value) return
   dragPosition.value = { x: event.clientX, y: event.clientY }
-  createTrail(event.clientX, event.clientY)
 }
 
-const createTrail = (x, y) => {
-  const id = trailCounter++
-  dragTrails.value.push({ id, x, y })
-  setTimeout(() => {
-    dragTrails.value = dragTrails.value.filter((d) => d.id !== id)
-  }, 400)
-}
+
 
 const stepGhost = () => {
   const lerp = 0.2 // smaller = more inertia
@@ -253,12 +245,14 @@ onBeforeUnmount(() => {
           :class="{ 'lle-list--drag-target': isListDragTarget('available') }"
         >
           <!-- Top drop zone (before first item) -->
-          <li
-            class="lle-drop-zone"
-            :class="{ 'lle-drop-zone--active': isDropZoneActive('available', 0) }"
+          <div
+            class="lle-drop-zone_available"
+            :class="{ 'lle-drop-zone_available--active': isDropZoneActive('available', 0) }"
             @dragover="setDragOver('available', 0, $event)"
             @drop="onDropOnAvailable(0, $event)"
-          />
+          >
+                      {{ $t('layouts.drop_here_to_remove') }}
+          </div>
 
           <!-- Item + drop zone after it -->
           <template v-for="(field, index) in internalAvailable" :key="field.key">
@@ -368,12 +362,5 @@ onBeforeUnmount(() => {
       </span>
     </div>
 
-    <!-- Trail dots -->
-    <div
-      v-for="dot in dragTrails"
-      :key="dot.id"
-      class="lle-trail-dot"
-      :style="{ top: dot.y + 'px', left: dot.x + 'px' }"
-    ></div>
   </div>
 </template>

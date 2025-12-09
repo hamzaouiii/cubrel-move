@@ -154,7 +154,28 @@
   margin: 2px 4px;
   border-radius: 6px;
   transition: all 0.2s ease, border-color 0.12s ease, height 0.12s ease;
+
 }
+
+.lle-drop-zone_available{
+  border: 2px dashed #dee2e6;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  background-color: #f8f9fa;
+  
+}
+
+.lle-drop-zone_available--active {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+  color: #dc3545;
+}
+
 
 .lle-drop-zone--active {
   height: 46px;

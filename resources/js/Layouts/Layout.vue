@@ -2,9 +2,10 @@
 <script setup>
 import Sidebar from '@/Pages/Components/Sidebar.vue';
 import Topbar from '@/Pages/Components/Topbar.vue';
+import Alerts from '@/Pages/Components/Alerts.vue';
+
 import { usePage } from '@inertiajs/vue3';
 import { computed, provide } from 'vue'
-
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;
@@ -24,6 +25,7 @@ provide('useModuleColors', useModuleColors)
 <template>
   <div class="admin d-flex">
     <sidebar></sidebar>
+    <Alerts />
     <main class="content flex-grow-1">
       <Topbar></Topbar>
       <slot />

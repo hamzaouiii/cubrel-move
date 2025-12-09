@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'of' => 'von',
+    'of' => 'of',
     'defaults' => [
       'name' => 'Name',
       'created_at' => 'Created At',
