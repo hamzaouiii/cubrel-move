@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref, watch, getCurrentInstance, onMounted, nextTick } from 'vue'
 import Layout from '@/Layouts/Layout.vue'
+import { computed, ref, watch, getCurrentInstance, onMounted, nextTick } from 'vue'
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import LayoutListEditor from '@/Pages/Components/Settings/LayoutListEditor.vue'
 import LayoutRecordEditor from '@/Pages/Components/Settings/LayoutRecordEditor.vue'
@@ -24,11 +24,6 @@ const props = defineProps({
 
 const listColumns = ref([])
 const recordSections = ref([])
-
-const showAlert = ref(false)
-const alertType = ref('') 
-const alertMessage = ref('')
-const alertTimeout = ref(null)
 
 const currentLayout = computed(() => {
   const custom = props.module.layouts?.find(
@@ -100,6 +95,13 @@ const recordLayoutFromDB = computed(() => {
     })
 })
 
+const cloneRecordSectionsFromDb = (sections) =>
+  (sections || []).map((section) => ({
+    ...section,
+    layout: (section.layout || []).map((col) => ({ ...col })),
+  }))
+
+
 watch(
   selectedListColumnsFromDb,
   (val) => {
@@ -111,7 +113,7 @@ watch(
 watch(
   recordLayoutFromDB,
   (val) => {
-    recordSections.value = [...val]
+    recordSections.value = cloneRecordSectionsFromDb(val)
   },
   { immediate: true }
 )
@@ -180,17 +182,17 @@ onMounted(() => {
   
 })
 
-// Reset function --------- not working, needed rewriting
+// Reset function --------- not working for record, needs rewriting
 const resetToDatabaseValue = () => {
   if (props.type === 'list') {
     listColumns.value = [...selectedListColumnsFromDb.value]
   } else if (props.type === 'record') {
-    recordSections.value = [...recordLayoutFromDB.value]
+    recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value)
   }
   form.definition = currentLayout.value || {}
   form.clearErrors()
   
-  success('Layout reset to original values.',{ autoDismiss: true })
+  success(t('layouts.layout_reset_success'))
 }
 
 // Save function
@@ -224,9 +226,6 @@ const saveLayout = () => {
       // Show error alert with the first error message
       const firstError = Object.values(errors)[0]
       error(firstError || 'An error occurred while saving the layout.')
-      
-      // Log errors for debugging
-      console.error('Save layout errors:', errors)
     }
   })
 }

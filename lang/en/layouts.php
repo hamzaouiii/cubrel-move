@@ -21,6 +21,7 @@ return [
     'drop_fields_here'  => 'Drop fields here',
     'all_fields_used'   => 'All fields are already in the layout',
     'layout_update_success' => 'Layout updated successfully.',
+    'layout_reset_success' => 'Layout reset to original values.',
     'save_layout' => 'Save Layout',
     'saving'  =>'Saving...',
     'reset' => 'Reset',
