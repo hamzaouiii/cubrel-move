@@ -4,10 +4,9 @@ import { computed, ref, watch, getCurrentInstance, onMounted, nextTick } from 'v
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import LayoutListEditor from '@/Pages/Components/Settings/LayoutListEditor.vue'
 import LayoutRecordEditor from '@/Pages/Components/Settings/LayoutRecordEditor.vue'
-import Alerts from '@/Pages/Components/Alerts.vue'
 import { useAlerts } from '@/Composables/useAlerts';
 
-const { alerts, success, error, info, removeAlert, clearAllAlerts } = useAlerts();
+const {  success, error, info, removeAlert, clearAllAlerts } = useAlerts();
 const { proxy } = getCurrentInstance()
 const t = proxy.$t
 
@@ -182,7 +181,7 @@ onMounted(() => {
   
 })
 
-// Reset function --------- not working for record, needs rewriting
+
 const resetToDatabaseValue = () => {
   if (props.type === 'list') {
     listColumns.value = [...selectedListColumnsFromDb.value]
@@ -256,7 +255,7 @@ const manualAlerts = ref([
   <Head>
     <title> {{ $t('layouts.'+type) }} > {{ module.label }} > {{ $t('layouts.label') }} > {{ $t('settings.label') }}</title>
   </Head>
-  <Alerts :alerts="alerts"/>
+  <!-- <Alerts :alerts="alerts"/> -->
   <div class="layout">
     <div class="settings_header">
       <div class="settings_header_title">

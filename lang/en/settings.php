@@ -3,10 +3,16 @@
 return [
   'label' => 'Settings',
   'reset' => 'Reset',
+  'cancel' => 'Cancel',
   'save' => 'Save',
-  'create_new_module' => 'Create New Module',
+  'create_new_module' => 'Create new module',
   'next' => 'Next',
   'previous' => 'Previous',
+  'saving'  => 'Saving...',
+  'loading' => 'Loading...',
+  'module_save_success' => 'Module saved successfuly',
+  'module_update_success' => 'Module updated successfuly',
+  'module_save_error' => 'An error occured while saving module',
   'modules' => [
     'label' => 'Modules',
     'display_label' => 'Display Label',

@@ -50,8 +50,7 @@ class ModuleManagerController extends Controller
     public function update(Request $request, $id)
     {
         $module = Module::where('id', $id)->firstOrFail();
-
-        $data = $request->except('_token', '_method');
+        $data = $request->except('_token', '_method', 'label');
         $module->fill($data)->save();
         return redirect()->to('/settings/customisation/modules');
     }

@@ -1,9 +1,14 @@
 <script setup>
-import { reactive, computed } from 'vue'
+import { reactive, computed, getCurrentInstance } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
+import { useAlerts } from '@/Composables/useAlerts';
 
+const { proxy } = getCurrentInstance()
+const t = proxy.$t
+
+const {  success, error, info, removeAlert, clearAllAlerts } = useAlerts();
 defineOptions({
   layout: Layout,
 });
@@ -39,6 +44,16 @@ const disableThis = (key) => {
 
 const isDirty = computed(() => {
   return editableFields.value.some(([key, value]) => {
+    // 1. Special case: display_label only lives on editableModule
+    if (key === 'display_label') {
+      // dirty if it's not empty (ignore pure whitespace)
+      if (typeof value === 'string') {
+        return value.trim() !== ''
+      }
+      return !!value
+    }
+
+    // 2. All other keys: compare editableModule vs settingModule as before
     const original = props.settingModule[key]
     const current = editableModule[key]
 
@@ -49,13 +64,20 @@ const isDirty = computed(() => {
     return original !== current
   })
 })
+
 const saveRecord = () =>{
+  info(t('settings.saving'))
   const url = "/settings/customisation/modules/"+props.settingModule.id
   const payload = editableModule
   form.transform(() => payload)
   .put(url, {
-     onSuccess: () => {null},
-     onError: () => {console.error('Error saving record:', form.errors)}
+     onSuccess: () => {
+      clearAllAlerts()
+      success(t('settings.module_update_success'))
+     },
+     onError: () => {
+      clearAllAlerts()
+      error(t('settings.module_save_error'+form.errors))}
   })
 }
 
@@ -64,6 +86,7 @@ const resetForm= () =>{
     editableModule[key] = props.settingModule[key]
   })
 }
+
 </script>
 
 <template >

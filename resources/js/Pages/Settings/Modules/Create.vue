@@ -1,9 +1,11 @@
 <script setup>
 import { computed } from 'vue'
 import Layout from '@/Layouts/Layout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3'
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
- 
+ import { useAlerts } from '@/Composables/useAlerts';
+
+const {  success, error, info, removeAlert, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
@@ -47,8 +49,23 @@ const resetModule = () => {
 }
 
 const saveModule = () => {
+  info(t('settings.saving'))
+
   form.transform(data => ({ ...data, slug: slug.value }))
-  .post('/settings/customisation/modules/create')
+  .post('/settings/customisation/modules/create', {
+     preserveScroll: true,
+    onSuccess: () => {
+      form.clearErrors()
+      clearAllAlerts()
+      const flash = usePage().props.flash
+      if (flash?.success) {
+        success(flash.success)
+      } else {
+        success(t('settings.module_save_success'))
+      } 
+    }
+  })
+  
 }
 </script>
 
@@ -143,14 +160,14 @@ const saveModule = () => {
           @click="resetModule"
           v-if="isDirty"
         >
-          Cancel
+          {{$t('settings.cancel')}}
         </button>
 
         <button
           type="submit"
           :disabled="!isDirty"
         >
-          Save
+        {{$t('settings.save')}}
         </button>
       </div>
     </form>

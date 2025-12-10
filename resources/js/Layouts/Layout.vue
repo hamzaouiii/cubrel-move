@@ -7,6 +7,10 @@ import Alerts from '@/Pages/Components/Alerts.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed, provide } from 'vue'
 
+import { useAlerts } from '@/Composables/useAlerts';
+
+const { alerts } = useAlerts();
+
 const page = usePage();
 const user = page.props.auth?.user ?? null;
 const csrf = page.props.csrf_token ?? document
@@ -25,7 +29,7 @@ provide('useModuleColors', useModuleColors)
 <template>
   <div class="admin d-flex">
     <sidebar></sidebar>
-    <Alerts />
+    <Alerts :alerts="alerts" />
     <main class="content flex-grow-1">
       <Topbar></Topbar>
       <slot />

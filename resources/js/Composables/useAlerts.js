@@ -1,68 +1,54 @@
-// composables/useAlerts.js
-import { ref } from 'vue';
+import { ref } from 'vue'
+
+
+const alerts = ref([])
+
+let nextId = 1
+
+const addAlert = (type, message, options = {}) => {
+  if (!message) return
+
+  const id = nextId++
+  alerts.value.push({
+    id,
+    type,
+    message,
+    dismissible: options.dismissible ?? true,
+    timeout: options.timeout ?? 5000,
+  })
+
+  if (options.timeout !== 0) {
+    setTimeout(() => {
+      removeAlert(id)
+    }, options.timeout ?? 5000)
+  }
+}
+
+const removeAlert = (id) => {
+  alerts.value = alerts.value.filter((a) => a.id !== id)
+}
+
+const clearAllAlerts = () => {
+  alerts.value = []
+}
+
+const success = (message, options = {}) =>
+  addAlert('success', message, options)
+
+const error = (message, options = {}) =>
+  addAlert('error', message, options)
+
+const info = (message, options = {}) =>
+  addAlert('info', message, options)
 
 export function useAlerts() {
-  const alerts = ref([]);
-  let nextId = 1;
-
-  const addAlert = (alert) => {
-    const alertWithId = {
-      id: nextId++,
-      message: alert.message,
-      type: alert.type || 'info',
-      dismissible: alert.dismissible,
-      autoDismiss: alert.autoDismiss || true,
-      timeout: alert.timeout || 5000
-    };
-
-    alerts.value.push(alertWithId);
-
-    // Auto-dismiss if enabled
-    if (alertWithId.autoDismiss) {
-      setTimeout(() => {
-        removeAlert(alertWithId.id);
-      }, alertWithId.timeout);
-    }
-
-    return alertWithId.id;
-  };
-
-  const removeAlert = (id) => {
-    const index = alerts.value.findIndex(alert => alert.id === id);
-    if (index !== -1) {
-      alerts.value.splice(index, 1);
-    }
-  };
-
-  const clearAllAlerts = () => {
-    alerts.value = [];
-  };
-
-  // Convenience methods for different alert types
-  const success = (message, options = {}) => {
-    return addAlert({ message, type: 'success', ...options });
-  };
-
-  const error = (message, options = {}) => {
-    return addAlert({ message, type: 'error', ...options });
-  };
-
-  const warning = (message, options = {}) => {
-    return addAlert({ message, type: 'warning', ...options });
-  };
-
-  const info = (message, options = {}) => {
-    return addAlert({ message, type: 'info', ...options });
-  };
-
+  // everyone gets the SAME alerts ref and helper functions
   return {
     alerts,
-    addAlert,
-    removeAlert,
-    clearAllAlerts,
     success,
     error,
-    warning,
-    info
-  };
+    info,
+    removeAlert,
+    clearAllAlerts,
+  }
 }
