@@ -1,8 +1,7 @@
 <script setup>
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, useForm, router } from '@inertiajs/vue3'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { getCurrentInstance } from 'vue'
+import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
 
 defineOptions({
   layout: Layout,

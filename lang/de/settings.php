@@ -3,8 +3,8 @@
 return [
   'label' => 'Einstellungen',
   'reset' => 'Zurücksetzen',
-  'cancel' => 'Speichern',
-  'save' => 'Abbrechen',
+  'cancel' => 'Abbrechen',
+  'save' => 'Speichern',
   'create_new_module' => 'Neues Modul erstellen',
   'next' => 'Weiter',
   'previous' => 'Zurück',

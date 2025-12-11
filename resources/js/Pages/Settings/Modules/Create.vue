@@ -1,87 +1,102 @@
 <script setup>
-import { computed } from 'vue'
-import Layout from '@/Layouts/Layout.vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
-import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
- import { useAlerts } from '@/Composables/useAlerts';
+import { computed, getCurrentInstance } from "vue";
+import Layout from "@/Layouts/Layout.vue";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
+import IconPicker from "@/Pages/Components/Settings/IconPicker.vue";
+import { useAlerts } from "@/Composables/useAlerts";
 
-const {  success, error, info, removeAlert, clearAllAlerts } = useAlerts();
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+
+const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
-})
+});
 
 const defaultValues = {
-  display_label: '',
-  label: '',
-  icon: '',
-  color: '#0d6efd',
+  display_label: "",
+  label: "",
+  icon: "",
+  color: "#0d6efd",
   show_in_sidebar: true,
-  description: '',
-  slug: ''
-}
+  description: "",
+  slug: "",
+};
 
-const form = useForm({ ...defaultValues })
+const form = useForm({ ...defaultValues });
 
 const isDirty = computed(() => {
-  if(form.display_label.length < 4) return false
-  return true
-})
+  return form.display_label.length >= 4;
+});
 
 const slug = computed(() => {
   return form.display_label
     .toLowerCase()
-    .normalize("NFD")                
-    .replace(/[\u0300-\u036f]/g, "") 
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "-")     
-    .replace(/^-+|-+$/g, "")          
-})
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+});
+
 const resetModule = () => {
   Object.keys(defaultValues).forEach((key) => {
-    form[key] = defaultValues[key]
-  })
-
-  form.clearErrors()
-}
+    form[key] = defaultValues[key];
+  });
+  form.clearErrors();
+};
 
 const saveModule = () => {
-  info(t('settings.saving'))
+  info(t("settings.saving"));
 
-  form.transform(data => ({ ...data, slug: slug.value }))
-  .post('/settings/customisation/modules/create', {
-     preserveScroll: true,
-    onSuccess: () => {
-      form.clearErrors()
-      clearAllAlerts()
-      const flash = usePage().props.flash
-      if (flash?.success) {
-        success(flash.success)
-      } else {
-        success(t('settings.module_save_success'))
-      } 
-    }
-  })
-  
-}
+  form
+    .transform((data) => ({ ...data, slug: slug.value }))
+    .post("/settings/customisation/modules", {
+      preserveScroll: true,
+      onSuccess: () => {
+        form.clearErrors();
+        clearAllAlerts();
+        const flash = usePage().props.flash;
+        if (flash?.success) {
+          success(flash.success);
+        } else {
+          success(t("settings.module_save_success"));
+        }
+      },
+      onError: (errors) => {
+        const serverError = Object.values(errors)[0];
+        clearAllAlerts();
+        error(t("settings.module_save_error") + ": " + serverError);
+      },
+    });
+};
 </script>
 
 <template>
   <Head>
-    <title>{{ $t('settings.create_new_module')  }} - {{ $t('settings.label')  }} </title>
+    <title>
+      {{ $t("settings.create_new_module") }} - {{ $t("settings.label") }}
+    </title>
   </Head>
 
   <div class="module-manager create-module">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">{{ $t('settings.label')  }} </Link></h5>
+        <h5>
+          <Link href="/settings">{{ $t("settings.label") }} </Link>
+        </h5>
         <span>></span>
-        <h5><Link href="/settings/customisation/modules">{{ $t('settings.modules.label')  }} </Link></h5>
+        <h5>
+          <Link href="/settings/customisation/modules"
+            >{{ $t("settings.modules.label") }}
+          </Link>
+        </h5>
         <span>></span>
-        <h6>{{ $t('settings.create_new_module')  }}</h6>
+        <h6>{{ $t("settings.create_new_module") }}</h6>
       </div>
     </div>
 
@@ -89,67 +104,48 @@ const saveModule = () => {
       <div>
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.display_label')  }}
+            {{ $t("settings.modules.display_label") }}
           </label>
           <input
             class=""
             type="text"
             name="display_label"
             v-model="form.display_label"
-            :placeholder= "$t('settings.modules.name_placeholder')"
+            :placeholder="$t('settings.modules.name_placeholder')"
           />
         </div>
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.slug')  }}
+            {{ $t("settings.modules.slug") }}
           </label>
-          <input
-            class="slug"
-            type="text"
-            name="slug"
-            :value="slug"
-            disabled
-
-          />
+          <input class="slug" type="text" name="slug" :value="slug" disabled />
         </div>
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.icon')  }}
+            {{ $t("settings.modules.icon") }}
           </label>
-          <IconPicker v-model="form.icon"   :color="form.color"/>
+          <IconPicker v-model="form.icon" :color="form.color" />
         </div>
 
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.color')  }}
+            {{ $t("settings.modules.color") }}
           </label>
-          <input
-            class=""
-            type="color"
-            name="color"
-            v-model="form.color"
-          />
+          <input class="" type="color" name="color" v-model="form.color" />
         </div>
 
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.show_in_sidebar')  }}
+            {{ $t("settings.modules.show_in_sidebar") }}
           </label>
-          <input
-            class=""
-            type="checkbox"
-            v-model="form.show_in_sidebar"
-          />
+          <input class="" type="checkbox" v-model="form.show_in_sidebar" />
         </div>
 
         <div class="create-element">
           <label>
-            {{ $t('settings.modules.description')  }}
+            {{ $t("settings.modules.description") }}
           </label>
-          <textarea
-            class=""
-            v-model="form.description"
-          ></textarea>
+          <textarea class="" v-model="form.description"></textarea>
         </div>
       </div>
 
@@ -160,14 +156,11 @@ const saveModule = () => {
           @click="resetModule"
           v-if="isDirty"
         >
-          {{$t('settings.cancel')}}
+          {{ $t("settings.cancel") }}
         </button>
 
-        <button
-          type="submit"
-          :disabled="!isDirty"
-        >
-        {{$t('settings.save')}}
+        <button type="submit" :disabled="!isDirty">
+          {{ $t("settings.save") }}
         </button>
       </div>
     </form>

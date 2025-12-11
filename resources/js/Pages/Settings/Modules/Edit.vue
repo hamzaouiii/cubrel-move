@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, getCurrentInstance } from 'vue'
+import { reactive, computed, getCurrentInstance} from 'vue'
 import Layout from '@/Layouts/Layout.vue';
 import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
 import IconPicker from '@/Pages/Components/Settings/IconPicker.vue';
@@ -17,6 +17,7 @@ const props = defineProps({
   settingModule: Object
 })
 
+const page = usePage();
 const form = useForm({ ...props.settingModule })
 const editableModule = reactive({ display_label: '', ...props.settingModule,     })
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar)
@@ -75,9 +76,11 @@ const saveRecord = () =>{
       clearAllAlerts()
       success(t('settings.module_update_success'))
      },
-     onError: () => {
+     onError: (errors) => {
       clearAllAlerts()
-      error(t('settings.module_save_error'+form.errors))}
+        const serverError = Object.values(errors)[0]
+      error(t('settings.module_save_error')+': '+serverError) 
+     }
   })
 }
 
@@ -86,7 +89,6 @@ const resetForm= () =>{
     editableModule[key] = props.settingModule[key]
   })
 }
-
 </script>
 
 <template >

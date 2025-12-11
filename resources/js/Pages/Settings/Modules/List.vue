@@ -17,7 +17,9 @@ const props = defineProps({
 
 const page = usePage()
 const module = computed(() => page.props.item || page.props)
-
+const createUrl = computed(() => {
+  return `${page.url.replace(/\/+$/, '')}/create`
+})
 </script>
 <template>
     <Head>
@@ -31,7 +33,7 @@ const module = computed(() => page.props.item || page.props)
         <h6>{{item.label }}</h6>
     </div>
       <div class="settings_header_action">
-        <Link class="create-btn" :href="page.url + '/create'"> {{$t('settings.create_new_module')}}</Link>
+        <Link class="create-btn" :href="createUrl"> {{$t('settings.create_new_module')}}</Link>
       </div>
     </div>
     <div class="settings_items">

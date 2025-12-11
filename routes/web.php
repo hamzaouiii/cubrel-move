@@ -29,7 +29,11 @@
      */
       Route::prefix('settings/customisation')->name('settings.')->group(function () {
         // Module Manager
-        Route::resource('modules', ModuleManagerController::class)->names('modules');
+          // module manager
+      Route::resource('modules', ModuleManagerController::class)
+          ->names('modules')
+          ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+
 
         // Layout Manager
         Route::get('layouts', [LayoutManagerController::class, 'index'])->name('layouts.index');

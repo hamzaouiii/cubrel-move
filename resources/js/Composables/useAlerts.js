@@ -1,6 +1,4 @@
 import { ref } from 'vue'
-
-
 const alerts = ref([])
 
 let nextId = 1

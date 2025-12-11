@@ -6,52 +6,41 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Filesystem\Filesystem;
-use App\Models\Module; 
+use App\Models\Module;
 
 class ModuleScaffolder
 {
-    public function __construct(
-        protected Filesystem $files
-    ) {
+  public function __construct(protected Filesystem $files) {}
+
+  public function scaffold(Module $module, string $label): void
+  {
+    $slug = $module->slug;
+    $modelClass = $module->model_class;
+    $table = $module->table_name;
+
+    $baseName   = class_basename($modelClass);
+
+    $this->createModelFile($baseName, $table);
+    $this->createHandlerFile($baseName, $modelClass);
+    $this->createLangFiles($baseName, $label);
+    $this->createTable($table);
+  }
+
+  protected function createModelFile(string $baseName, string $table): void
+  {
+    $directory = app_path('Models/Modules/Custom');
+
+    if (! $this->files->exists($directory)) {
+      $this->files->makeDirectory($directory, 0755, true);
     }
 
-    public function scaffold(Module $module, string $label): void
-    {
-        $slug = $module->slug; 
-        $baseName = Str::studly(Str::singular($slug)); 
+    $path = $directory . "/{$baseName}.php";
 
-        $modelClass = "App\\Models\\Modules\\Custom\\{$baseName}";
-        $handlerClass = "App\\Handlers\\Modules\\Custom\\{$baseName}ModuleHandler";
-
-        $module->update([
-            'model_class' => $modelClass,
-            'handler_class' => $handlerClass ?? null, 
-            'table_name' => $module->table_name ?: Str::snake(Str::pluralStudly($slug))."_cstm",
-        ]);
-
-        $table = $module->table_name;
-
-        $this->createModelFile($baseName, $table);
-        $this->createHandlerFile($baseName, $modelClass);
-        $this->createLangFiles($slug, $label);
-        $this->createTable($table);
+    if ($this->files->exists($path)) {
+      return;
     }
 
-    protected function createModelFile(string $baseName, string $table): void
-    {
-        $directory = app_path('Models/Modules/Custom');
-
-        if (! $this->files->exists($directory)) {
-            $this->files->makeDirectory($directory, 0755, true);
-        }
-
-        $path = $directory . "/{$baseName}.php";
-
-        if ($this->files->exists($path)) {
-            return; 
-        }
-
-        $contents = <<<PHP
+    $contents = <<<PHP
         <?php
 
         namespace App\Models\\Modules\\Custom;
@@ -67,25 +56,25 @@ class ModuleScaffolder
 
         PHP;
 
-        $this->files->put($path, $contents);
+    $this->files->put($path, $contents);
+  }
+
+  protected function createHandlerFile(string $baseName, string $modelClass): void
+  {
+    $directory = app_path('Handlers/Modules/Custom');
+
+    if (! $this->files->exists($directory)) {
+      $this->files->makeDirectory($directory, 0755, true);
     }
 
-    protected function createHandlerFile(string $baseName, string $modelClass): void
-    {
-        $directory = app_path('Handlers/Modules/Custom');
+    $handlerName = "{$baseName}ModuleHandler";
+    $path = $directory . "/{$handlerName}.php";
 
-        if (! $this->files->exists($directory)) {
-            $this->files->makeDirectory($directory, 0755, true);
-        }
+    if ($this->files->exists($path)) {
+      return;
+    }
 
-        $handlerName = "{$baseName}ModuleHandler";
-        $path = $directory . "/{$handlerName}.php";
-
-        if ($this->files->exists($path)) {
-            return;
-        }
-
-        $contents = <<<PHP
+    $contents = <<<PHP
         <?php
 
         namespace App\Handlers\Modules\Custom;
@@ -110,60 +99,57 @@ class ModuleScaffolder
 
         PHP;
 
-        $this->files->put($path, $contents);
+    $this->files->put($path, $contents);
+  }
+
+  protected function createTable(string $table): void
+  {
+    if (Schema::hasTable($table)) {
+      return;
     }
 
+    Schema::create($table, function (Blueprint $tableBlueprint) {
+      $tableBlueprint->uuid('id')->primary();
+      $tableBlueprint->string('name')->nullable();
+      $tableBlueprint->text('description')->nullable();
+      $tableBlueprint->json('data')->nullable();
+      $tableBlueprint->timestamps();
+      $tableBlueprint->softDeletes();
+    });
+  }
 
-    protected function createTable(string $table): void
-    {
-        if (Schema::hasTable($table)) {
-            return;
-        }
+  protected function createLangFiles(string $baseName, string $label): void
+  {
+    $langPath   = base_path('lang');
+    $locales    = array_filter(scandir($langPath), function ($item) use ($langPath) {
+      return $item !== '.'
+        && $item !== '..'
+        && is_dir($langPath . '/' . $item);
+    });
 
-        Schema::create($table, function (Blueprint $tableBlueprint) {
-            $tableBlueprint->uuid('id')->primary();
-            $tableBlueprint->string('name')->nullable();
-            $tableBlueprint->text('description')->nullable();
-            $tableBlueprint->json('data')->nullable();
-            $tableBlueprint->timestamps();
-            $tableBlueprint->softDeletes();
-        });
-    }
+    foreach ($locales as $locale) {
 
-    protected function createLangFiles(string $slug, string $label): void
-    {
-        $langPath   = base_path('lang');
-        $locales    = array_filter(scandir($langPath), function ($item) use ($langPath) {
-            return $item !== '.' 
-                && $item !== '..' 
-                && is_dir($langPath . '/' . $item);
-        });
+      $directory = $langPath . "/{$locale}/custom/modules";
 
-        foreach ($locales as $locale) {
+      if (! $this->files->exists($directory)) {
+        $this->files->makeDirectory($directory, 0755, true);
+      }
 
-          $directory = $langPath . "/{$locale}/custom/modules";
+      $path = $directory . "/{$baseName}.php";
 
-          if (! $this->files->exists($directory)) {
-              $this->files->makeDirectory($directory, 0755, true);
-          }
+      if ($this->files->exists($path)) {
+        continue;
+      }
 
-          $path = $directory . "/{$slug}.php";
-
-          if ($this->files->exists($path)) {
-              continue;
-          }
-
-$contents = <<<'PHP'
+      $contents = <<<'PHP'
 <?php
 return [
     'label' => 'LABEL_VALUE',
 ];
 PHP;
 
-$contents = str_replace('LABEL_VALUE', $label, $contents);
-$this->files->put($path, $contents);
-
-        }
+      $contents = str_replace('LABEL_VALUE', $label, $contents);
+      $this->files->put($path, $contents);
     }
-
+  }
 }
