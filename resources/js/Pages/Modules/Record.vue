@@ -20,11 +20,11 @@ const props = defineProps({
   record: Object,
   recordLayout: Object,
 });
-console.log(props.record);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const form = useForm({ ...props.record });
+console.log(props.record);
 
 const isEditing = ref(false);
 const showActionDropDown = ref(false);
@@ -97,7 +97,6 @@ const saveRecord = () => {
 };
 
 function handleKeydown(e) {
-  // CTRL + S
   if (e.ctrlKey && e.key === "s") {
     e.preventDefault();
     if (isEditing.value) {
@@ -105,20 +104,18 @@ function handleKeydown(e) {
     }
   }
 
-  // CTRL + E -> enable editing
   if (e.ctrlKey && e.key === "e") {
     e.preventDefault();
     enableEditing();
   }
 
-  // ESC -> cancel editing
   if (e.key === "Escape") {
     cancelEditing();
   }
 }
 
 const cancelEditing = () => {
-  form.reset(); // reset to original props.record
+  form.reset();
   isEditing.value = false;
 };
 
@@ -279,7 +276,6 @@ const appSettings = usePage().props.appSettings;
               </template>
             </div>
             <div class="field editing-mode" v-else>
-              <!-- Edit Mode -->
               <template v-if="f.format === 'datetime'">
                 <input
                   type="date"

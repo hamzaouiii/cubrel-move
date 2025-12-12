@@ -112,7 +112,6 @@ class ModuleScaffolder
       $tableBlueprint->uuid('id')->primary();
       $tableBlueprint->string('name')->nullable();
       $tableBlueprint->text('description')->nullable();
-      $tableBlueprint->json('data')->nullable();
       $tableBlueprint->timestamps();
       $tableBlueprint->softDeletes();
     });

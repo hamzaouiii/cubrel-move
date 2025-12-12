@@ -1,79 +1,91 @@
 <script setup>
-import { computed } from 'vue'
-import Layout from '@/Layouts/Layout.vue';
-import { Head, usePage, Link, useForm } from '@inertiajs/vue3'
-
-import Switcher from '../Components/Settings/FiledTypes/Switcher.vue';
- 
+import { computed, getCurrentInstance } from "vue";
+import Layout from "@/Layouts/Layout.vue";
+import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
+import DropdownField from "../Components/Settings/FiledTypes/DropdownField.vue";
+import Switcher from "../Components/Settings/FiledTypes/Switcher.vue";
+import { useAlerts } from "@/Composables/useAlerts";
+const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
 });
 
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+
 const props = defineProps({
   item: Object,
-})
+  datetimeFormatOptions: { type: Array, default: [] },
+  timezoneOptions: { type: Array, default: [] },
+});
 
-const page = usePage()
-const module = computed(() => page.props.item || page.props)
+const page = usePage();
+const module = computed(() => page.props.item || page.props);
 
-// normalize initial values: convert 1/0 (string or int) → true/false for bools
-const normalizedValues = props.item.values.map(v => ({
+const normalizedValues = props.item.values.map((v) => ({
   ...v,
-  value:
-    v.type === 'bool'
-      ? v.value == 1 || v.value === '1'
-      : v.value
-}))
+  value: v.type === "bool" ? v.value == 1 || v.value === "1" : v.value,
+}));
 
 const form = useForm({
   values: normalizedValues,
-})
+});
 
 const inputTypeFor = (type) => {
-  if (type === 'lang_switcher') return 'lang_switcher'
-  if (type === 'theme_switcher') return 'theme_switcher'
-  if (type === 'string') return 'text'
-  if (type === 'bool') return 'checkbox'
-  if (type === 'color') return 'color'
-  if (type === 'json') return 'multiselect'
-  if (type === 'int') return 'number'
-  return 'text'
-}
+  if (type === "lang_switcher") return "lang_switcher";
+  if (type === "theme_switcher") return "theme_switcher";
+  if (type === "string") return "text";
+  if (type === "bool") return "checkbox";
+  if (type === "color") return "color";
+  if (type === "json") return "multiselect";
+  if (type === "int") return "number";
+  if (type === "datetime") return "datetime";
+  if (type === "timezone") return "timezone";
+  return "text";
+};
 const saveSetting = () => {
+  clearAllAlerts();
+  info(t("settings.saving"));
   form.put(`/settings/${props.item.id}`, {
-      onSuccess: () => {
-  window.location.reload()
-  }
-  })
-}
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("settings.setting_update_success"));
+    },
+    onError: () => {
+      clearAllAlerts();
+      error(t("settings.setting_update_error"));
+    },
+  });
+};
 
 const resetForm = () => {
-  form.reset()
-}
-
+  form.reset();
+};
 // explicit isDirty function for template usage
-const isDirty = () => form.isDirty
+const isDirty = () => form.isDirty;
 </script>
 
 <template>
   <Head>
-    <title>{{ item.name }} - {{ $t('settings.label')  }} - Automatisierung Regensburg</title>
+    <title>
+      {{ item.name }} - {{ $t("settings.label") }} - Automatisierung Regensburg
+    </title>
   </Head>
 
   <div class="settings">
     <div class="settings_header">
       <div class="settings_header_title">
-        <h5><Link href="/settings">{{ $t('settings.label')  }} </Link></h5>
+        <h5>
+          <Link href="/settings">{{ $t("settings.label") }} </Link>
+        </h5>
         <span>></span>
         <h6>{{ item.label }}</h6>
       </div>
-      <div class="settings_header_action">
-      </div>
+      <div class="settings_header_action"></div>
     </div>
 
     <div class="settings_system">
-
       <form @submit.prevent="saveSetting" class="settings_system_form">
         <div
           v-for="(i, index) in form.values"
@@ -83,27 +95,36 @@ const isDirty = () => form.isDirty
           <label>{{ i.label || i.key }}</label>
 
           <template v-if="i.type === 'bool'">
-            <input
-              type="checkbox"
-              v-model="form.values[index].value"
-            />
+            <input type="checkbox" v-model="form.values[index].value" />
           </template>
 
+          <template v-else-if="inputTypeFor(i.type) === 'datetime'">
+            <DropdownField
+              v-model="form.values[index].value"
+              :options="datetimeFormatOptions"
+            />
+          </template>
+          <template v-else-if="inputTypeFor(i.type) === 'timezone'">
+            <DropdownField
+              v-model="form.values[index].value"
+              :options="timezoneOptions"
+            />
+          </template>
           <template v-else-if="inputTypeFor(i.type) === 'lang_switcher'">
             <switcher
               v-model="form.values[index].value"
               :options="[
                 { label: 'EN', value: 'en' },
-                { label: 'DE', value: 'de' }
+                { label: 'DE', value: 'de' },
               ]"
             />
           </template>
-                    <template v-else-if="inputTypeFor(i.type) === 'theme_switcher'">
+          <template v-else-if="inputTypeFor(i.type) === 'theme_switcher'">
             <switcher
               v-model="form.values[index].value"
               :options="[
                 { label: 'Light', value: 'light' },
-                { label: 'Dark', value: 'dark' }
+                { label: 'Dark', value: 'dark' },
               ]"
             />
           </template>
@@ -116,23 +137,20 @@ const isDirty = () => form.isDirty
           </template>
         </div>
 
-          <div class="settings_system_form_actions">
-            <button
-              type="button"
-              class="reset-btn"
-              @click="resetForm"
-              :disabled="!isDirty()"
-            >
-              {{ $t('settings.reset')  }} 
-            </button>
+        <div class="settings_system_form_actions">
+          <button
+            type="button"
+            class="reset-btn"
+            @click="resetForm"
+            :disabled="!isDirty()"
+          >
+            {{ $t("settings.reset") }}
+          </button>
 
-            <button
-              type="submit"
-              :disabled="!isDirty() || form.processing"
-            >
-              {{ $t('settings.save')  }} 
-            </button>
-          </div>
+          <button type="submit" :disabled="!isDirty() || form.processing">
+            {{ $t("settings.save") }}
+          </button>
+        </div>
       </form>
     </div>
   </div>
