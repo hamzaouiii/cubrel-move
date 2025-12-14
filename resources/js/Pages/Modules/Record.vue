@@ -157,7 +157,7 @@ const appSettings = usePage().props.appSettings;
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
         <h1 class="ar-main-container_header_details_title">
-          {{ record.label }}
+          {{ record.name }}
         </h1>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">

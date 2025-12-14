@@ -1,15 +1,20 @@
 <script setup>
-  import { Head, usePage, Link, router } from '@inertiajs/vue3'
-  import { computed, ref, onMounted, onBeforeUnmount} from 'vue'
+import {
+  computed,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  getCurrentInstance,
+} from "vue";
+import { Head, usePage, Link, router } from "@inertiajs/vue3";
+import { formatDateTime } from "@/utils/datetime";
+import Layout from "@/Layouts/Layout.vue";
+import Pagination from "../Components/Pagination.vue";
 
-  import Layout from '@/Layouts/Layout.vue';
-  import Pagination from '../Components/Pagination.vue';
-
-   
-  defineOptions({
-    layout: Layout,
-  });
-  const { props } = usePage();
+defineOptions({
+  layout: Layout,
+});
+const { props } = usePage();
 
 const pageProps = defineProps({
   module: Object,
@@ -17,126 +22,117 @@ const pageProps = defineProps({
   items: Array,
   meta: Object,
   listLayout: Object,
-  filters: Object
-})
+  filters: Object,
+});
+console.log(props.listLayout);
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
-
-import { getCurrentInstance } from 'vue'
-
-const { proxy } = getCurrentInstance()
-const t = proxy.$t
-
-
-const recordsNumber = computed(() => pageProps.items?.length ?? 0)
-
+const recordsNumber = computed(() => pageProps.items?.length ?? 0);
 const recordsNumberPhrase = computed(() => {
   if (!pageProps.meta) {
-    return '(0)'
+    return "(0)";
   }
 
-  return `${recordsNumber.value} ${t('modules.of')} ${pageProps.meta.total}`
-})
+  return `${recordsNumber.value} ${t("modules.of")} ${pageProps.meta.total}`;
+});
 
-  const formatDate = (value) => {
-    if (!value) return '-';
-    return new Date(value).toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  };
+const showActionDropDown = ref(false);
+const actionDropDownref = ref(null);
 
-  const showActionDropDown = ref(false)
-  const actionDropDownref = ref(null)
+const toggleActionDropDown = () => {
+  showActionDropDown.value = !showActionDropDown.value;
+};
 
-  const toggleActionDropDown = () => {
-    showActionDropDown.value = !showActionDropDown.value
+const handleClickOutsideActionDropDown = (event) => {
+  if (
+    actionDropDownref.value &&
+    !actionDropDownref.value.contains(event.target)
+  ) {
+    showActionDropDown.value = false;
   }
+};
 
-  const handleClickOutsideActionDropDown = (event) => {
-    if (actionDropDownref.value && !actionDropDownref.value.contains(event.target)) {
-      showActionDropDown.value = false
+const search = ref(pageProps.filters.search ?? "");
+
+const performSearch = (page = 1) => {
+  router.get(
+    window.location.pathname,
+    {
+      search: search.value || undefined,
+      page,
+    },
+    {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
     }
+  );
+};
+
+const handleSearchInput = () => {
+  if (search.value.length >= 3 || search.value.length === 0) {
+    performSearch(1);
   }
+};
 
-  // --- SEARCH LOGIC ---
+onMounted(() => {
+  document.addEventListener("click", handleClickOutsideActionDropDown);
+});
 
-  const search = ref(pageProps.filters.search ?? '')
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutsideActionDropDown);
+});
 
-  const performSearch = (page = 1) => {
-    router.get(
-      window.location.pathname,
-      {
-        search: search.value || undefined,
-        page,
-      },
-      {
-        preserveState: true,
-        preserveScroll: true,
-        replace: true,
-      }
-    )
-  }
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const highlightMatch = (text) => {
+  if (!text) return "-";
+  if (!search.value || !search.value.trim()) return text;
 
-  const handleSearchInput = () => {
-    // Trigger search when at least 3 characters, or when cleared (0) to reset
-    if (search.value.length >= 3 || search.value.length === 0) {
-      performSearch(1)
-    }
-  }
+  const term = escapeRegExp(search.value.trim());
+  const regex = new RegExp(`(${term})`, "gi");
 
-  onMounted(() => {
-    document.addEventListener('click', handleClickOutsideActionDropDown)
-  })
-
-  onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutsideActionDropDown)
-  })
-
-
-
-  const escapeRegExp = (str) =>
-  str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-  const highlightMatch = (text) => {
-    if (!text) return '-'
-    if (!search.value || !search.value.trim()) return text
-
-    const term = escapeRegExp(search.value.trim())
-    const regex = new RegExp(`(${term})`, 'gi')
-
-    return text.toString().replace(
-      regex,
-      '<span class="search-highlight">$1</span>'
-    )
-  }
-const appSettings = usePage().props.appSettings
+  return text
+    .toString()
+    .replace(regex, '<span class="search-highlight">$1</span>');
+};
+const appSettings = usePage().props.appSettings;
 
 const resetSearchValue = () => {
-  search.value = ''
-  handleSearchInput()
-}
-
+  search.value = "";
+  handleSearchInput();
+};
 
 function goToCreateView() {
-  const moduleName = usePage().props.module.slug   // example: "leads"
-  router.visit(`/${moduleName}/create`)
+  const moduleName = usePage().props.module.slug;
+  router.visit(`/${moduleName}/create`);
 }
 </script>
 
 <template>
   <Head>
-    <title>{{title}} - Automatisierung Regensburg</title>
+    <title>{{ title }} - Automatisierung Regensburg</title>
   </Head>
   <div class="ar-main-container">
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
-        <h1 class="ar-main-container_header_details_title">{{$t(module.label)}}</h1> 
-        <span class="ar-main-container_header_details_meta">{{ recordsNumberPhrase  }}</span>
+        <h1 class="ar-main-container_header_details_title">
+          {{ $t(module.label) }}
+        </h1>
+        <span class="ar-main-container_header_details_meta">{{
+          recordsNumberPhrase
+        }}</span>
       </div>
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group"  :style="appSettings.use_individual_module_colors == '0' ? {'--module-color': appSettings.primary_color} : { '--module-color': module.color } ">
+        <div
+          class="input-group"
+          :style="
+            appSettings.use_individual_module_colors == '0'
+              ? { '--module-color': appSettings.primary_color }
+              : { '--module-color': module.color }
+          "
+        >
           <input
             type="text"
             name="search"
@@ -146,14 +142,14 @@ function goToCreateView() {
             v-model="search"
             @input="handleSearchInput"
             @keydown.enter.prevent="performSearch(1)"
-          >
-          <span @click="resetSearchValue()" :class="['search-reseter', {'hide-reseter' : !search}] "><i class="fa-regular fa-circle-xmark"></i></span>
-          <button
-            type="button"
-            class="main-btn"
-            @click="goToCreateView()"
-          >
-            {{ $t('modules.actions.create') }}
+          />
+          <span
+            @click="resetSearchValue()"
+            :class="['search-reseter', { 'hide-reseter': !search }]"
+            ><i class="fa-regular fa-circle-xmark"></i
+          ></span>
+          <button type="button" class="main-btn" @click="goToCreateView()">
+            {{ $t("modules.actions.create") }}
           </button>
           <button
             @click="toggleActionDropDown"
@@ -161,27 +157,59 @@ function goToCreateView() {
             class="dropdown-btn"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-            
           >
-            <i :class="showActionDropDown ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>
+            <i
+              :class="
+                showActionDropDown
+                  ? 'fa-solid fa-chevron-up'
+                  : 'fa-solid fa-chevron-down'
+              "
+            ></i>
             <span class="visually-hidden">Toggle Dropdown</span>
           </button>
           <transition name="fade">
-            <ul v-if="showActionDropDown" class="dropdown-menu dropdown-menu-end show">
-              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.actions.share') }}</a></li>
-              <li><a class="dropdown-item disabled" href="#">{{ $t('modules.actions.export') }}</a></li>
-              <li><a class="dropdown-item" href="#">{{ $t('modules.actions.placeholder') }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">{{ $t('modules.actions.bulk_action') }}</a></li>
+            <ul
+              v-if="showActionDropDown"
+              class="dropdown-menu dropdown-menu-end show"
+            >
+              <li>
+                <a class="dropdown-item disabled" href="#">{{
+                  $t("modules.actions.share")
+                }}</a>
+              </li>
+              <li>
+                <a class="dropdown-item disabled" href="#">{{
+                  $t("modules.actions.export")
+                }}</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">{{
+                  $t("modules.actions.placeholder")
+                }}</a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item" href="#">{{
+                  $t("modules.actions.bulk_action")
+                }}</a>
+              </li>
             </ul>
           </transition>
         </div>
       </div>
     </div>
 
-    <div v-if="meta && meta.total != 0" class="ar-main-container_content"  :style="appSettings.use_individual_module_colors  == '0' ? {'--module-color': appSettings.primary_color} : { '--module-color': module.color }">
+    <div
+      v-if="meta && meta.total != 0"
+      class="ar-main-container_content"
+      :style="
+        appSettings.use_individual_module_colors == '0'
+          ? { '--module-color': appSettings.primary_color }
+          : { '--module-color': module.color }
+      "
+    >
       <div>
-        <table class="ar-main-container_content_table" >
+        <table class="ar-main-container_content_table">
           <thead>
             <tr>
               <th
@@ -202,10 +230,7 @@ function goToCreateView() {
               class="clickable-row"
               :href="`/${module.slug}/${item.id}`"
             >
-              <td
-                v-for="col in listLayout?.columns || []"
-                :key="col.key"
-              >
+              <td v-for="col in listLayout?.columns || []" :key="col.key">
                 <!-- Email as mailto-link -->
                 <template v-if="col.key === 'email' && item[col.key]">
                   <a :href="'mailto:' + item[col.key]">
@@ -214,18 +239,20 @@ function goToCreateView() {
                 </template>
 
                 <!-- Datetime formatting based on layout definition -->
-                <template v-else-if="col.format === 'datetime' && item[col.key]">
-                  {{ formatDate(item[col.key]) }}
+                <template
+                  v-else-if="col.format === 'datetime' && item[col.key]"
+                >
+                  {{ formatDateTime(item[col.key], appSettings) }}
                 </template>
 
-                <!-- Truncate long strings -->
-                <template v-else-if="item[col.key] && item[col.key].length > 62">
-                  {{ item[col.key].substring(0, 64) + '...' }}
+                <template
+                  v-else-if="item[col.key] && item[col.key].length > 62"
+                >
+                  {{ item[col.key].substring(0, 64) + "..." }}
                 </template>
 
-                <!-- Default: plain text with '-' fallback -->
                 <template v-else>
-                   <span v-html="highlightMatch(item[col.key] ?? '-')"></span>
+                  <span v-html="highlightMatch(item[col.key] ?? '-')"></span>
                 </template>
               </td>
             </Link>
