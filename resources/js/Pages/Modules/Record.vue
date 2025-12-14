@@ -264,7 +264,7 @@ const appSettings = usePage().props.appSettings;
 
             <div v-if="!isEditing" class="field" @click="enableEditing">
               <!-- View Mode -->
-              <template v-if="f.format === 'datetime' && record[f.key]">
+              <template v-if="f.type === 'datetime' && record[f.key]">
                 <span>
                   {{ formatDate(record[f.key]) }}
                 </span>

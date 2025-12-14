@@ -24,6 +24,7 @@ const pageProps = defineProps({
   listLayout: Object,
   filters: Object,
 });
+
 console.log(props.listLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -240,7 +241,7 @@ function goToCreateView() {
 
                 <!-- Datetime formatting based on layout definition -->
                 <template
-                  v-else-if="col.format === 'datetime' && item[col.key]"
+                  v-else-if="col.type === 'datetime' && item[col.key]"
                 >
                   {{ formatDateTime(item[col.key], appSettings) }}
                 </template>
