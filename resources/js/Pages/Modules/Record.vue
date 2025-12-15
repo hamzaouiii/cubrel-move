@@ -85,7 +85,8 @@ const saveRecord = () => {
         success(t("modules.actions.update_success"));
       },
       onError: () => {
-        error(t("modules.actions.update_error"));
+        clearAllAlerts();
+        error(t("modules.actions.update_error") + form.errors);
       },
     });
 };
@@ -145,7 +146,7 @@ const getTextareaRows = (f) => {
     const val = form[f.key].split(" ").length;
     return val / 8;
   }
-  return 3;
+  return 5;
 };
 </script>
 

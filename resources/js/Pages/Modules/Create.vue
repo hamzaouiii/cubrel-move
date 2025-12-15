@@ -2,6 +2,9 @@
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from "vue";
+import { formatDateTime } from "@/utils/datetime";
+import { useAlerts } from "@/Composables/useAlerts";
+const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
@@ -12,7 +15,7 @@ const props = defineProps({
   title: String,
   recordLayout: Object,
 });
-
+console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -48,11 +51,18 @@ const handleClickOutsideActionDropDown = (event) => {
 };
 
 const saveRecord = () => {
+  info(t("modules.actions.saving"));
+
   const moduleSlug = props.module.slug ?? props.module;
   const url = `/${moduleSlug}`;
   form.post(url, {
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("modules.actions.save_success"));
+    },
     onError: () => {
-      console.error("Error creating record:", form.errors);
+      clearAllAlerts();
+      error(t("modules.actions.save_error") + form.errors);
     },
   });
 };
@@ -83,11 +93,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutsideActionDropDown);
   window.removeEventListener("keydown", handleKeydown);
 });
-
-const formatDate = (value) => {
-  if (!value) return "";
-  return new Date(value).toISOString().slice(0, 10); // yyyy-mm-dd for <input type="date">
-};
 
 const appSettings = usePage().props.appSettings;
 </script>
@@ -184,7 +189,7 @@ const appSettings = usePage().props.appSettings;
 
         <div class="ar-main-container_content_section_layout">
           <div
-            v-for="f in s.layout"
+            v-for="f in s.layout.filter((f) => !f.readonly)"
             :key="f.key"
             class="ar-main-container_content_section_layout_field"
           >
