@@ -1,6 +1,6 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
-import { Head, usePage, useForm } from "@inertiajs/vue3";
+import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
   computed,
   ref,
@@ -27,7 +27,6 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const form = useForm({ ...props.record });
-console.log(props.record);
 
 const isEditing = ref(false);
 const showActionDropDown = ref(false);
@@ -89,6 +88,20 @@ const saveRecord = () => {
         error(t("modules.actions.update_error") + form.errors);
       },
     });
+};
+const deleteRecord = () => {
+  info(t("modules.actions.deleting"));
+  if (!confirm("Are you sure?")) return;
+  form.delete(`/${props.module.slug}/${props.record.id}`, {
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("modules.actions.delete_success"));
+    },
+    onError: () => {
+      clearAllAlerts();
+      error(t("modules.actions.delete_error") + form.errors);
+    },
+  });
 };
 
 function handleKeydown(e) {
@@ -203,8 +216,6 @@ const getTextareaRows = (f) => {
             @click="toggleActionDropDown"
             type="button"
             class="record-dropdown-btn"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
           >
             <i
               :class="
@@ -244,9 +255,13 @@ const getTextareaRows = (f) => {
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item" href="#" style="color: salmon">{{
-                  $t("modules.actions.delete")
-                }}</a>
+                <a
+                  @click="deleteRecord()"
+                  class="dropdown-item"
+                  href="#"
+                  style="color: salmon"
+                  >{{ $t("modules.actions.delete") }}</a
+                >
               </li>
             </ul>
           </transition>

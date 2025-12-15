@@ -30,6 +30,10 @@ return [
     'update_error'      => 'Beim Aktualisieren des Datensatzes ist ein Fehler aufgetreten',
     'create_error'      => 'Beim Erstellen des Datensatzes ist ein Fehler aufgetreten',
     'save_error'        => 'Beim Speichern des Datensatzes ist ein Fehler aufgetreten',
+    'delete_success'    => "Datensatz wurde erfolgreich gelöscht",
+    'delete_error'      => "Beim Löschen des Datensatzes ist ein Fehler aufgetreten",
+    'deleting'          => "Wird gelöscht..."
+
   ],
 
   'accounts' => [

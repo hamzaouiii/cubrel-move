@@ -22,12 +22,15 @@ return [
     'saving'          => 'Saving...',
     'saved'          => 'Saved',
     'updating'        => 'Updating...',
-    'save_success'    => 'Record was saved successfully',
-    'update_success'    => 'Record was updated successfully',
-    'create_success'    => 'Record was created successfully',
+    'save_success'    => 'Record saved successfully',
+    'update_success'    => 'Record updated successfully',
+    'create_success'    => 'Record created successfully',
     'update_error'      => "An error occurred while updating the record",
     'create_error'      => "An error occurred while creating the record",
     'save_error'      => "An error occurred while saving the record",
+    'delete_success'  => "Record deleted successfully",
+    'delete_error'  => "An error occurred while deleting the record",
+    'deleting'          => "Deleting..."
   ],
   'accounts' => [
     'label'  => 'Accounts',
