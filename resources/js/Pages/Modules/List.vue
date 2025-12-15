@@ -201,7 +201,6 @@ function goToCreateView() {
     </div>
 
     <div
-      v-if="meta && meta.total != 0"
       class="ar-main-container_content"
       :style="
         appSettings.use_individual_module_colors == '0'
@@ -224,43 +223,55 @@ function goToCreateView() {
           </thead>
 
           <tbody>
-            <Link
-              v-for="item in items"
-              :key="item.id"
-              as="tr"
-              class="clickable-row"
-              :href="`/${module.slug}/${item.id}`"
-            >
-              <td v-for="col in listLayout?.columns || []" :key="col.key">
-                <!-- Email as mailto-link -->
-                <template v-if="col.key === 'email' && item[col.key]">
-                  <a :href="'mailto:' + item[col.key]">
-                    <span v-html="highlightMatch(item[col.key])"></span>
-                  </a>
-                </template>
+            <template v-if="meta && meta.total != 0">
+              <Link
+                v-for="item in items"
+                :key="item.id"
+                as="tr"
+                class="clickable-row"
+                :href="`/${module.slug}/${item.id}`"
+              >
+                <td v-for="col in listLayout?.columns || []" :key="col.key">
+                  <!-- Email as mailto-link -->
+                  <template v-if="col.key === 'email' && item[col.key]">
+                    <a :href="'mailto:' + item[col.key]">
+                      <span v-html="highlightMatch(item[col.key])"></span>
+                    </a>
+                  </template>
 
-                <!-- Datetime formatting based on layout definition -->
-                <template
-                  v-else-if="col.type === 'datetime' && item[col.key]"
+                  <!-- Datetime formatting based on layout definition -->
+                  <template
+                    v-else-if="col.type === 'datetime' && item[col.key]"
+                  >
+                    {{ formatDateTime(item[col.key], appSettings) }}
+                  </template>
+
+                  <template
+                    v-else-if="item[col.key] && item[col.key].length > 62"
+                  >
+                    {{ item[col.key].substring(0, 64) + "..." }}
+                  </template>
+
+                  <template v-else>
+                    <span v-html="highlightMatch(item[col.key] ?? '-')"></span>
+                  </template>
+                </td>
+              </Link>
+            </template>
+            <template v-else>
+              <tr class="no-data-row">
+                <td
+                  :colspan="listLayout?.columns.length"
+                  class="no_data_list_view"
                 >
-                  {{ formatDateTime(item[col.key], appSettings) }}
-                </template>
-
-                <template
-                  v-else-if="item[col.key] && item[col.key].length > 62"
-                >
-                  {{ item[col.key].substring(0, 64) + "..." }}
-                </template>
-
-                <template v-else>
-                  <span v-html="highlightMatch(item[col.key] ?? '-')"></span>
-                </template>
-              </td>
-            </Link>
+                  {{ $t("modules.defaults.no_data") }}
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
-      <Pagination :meta="meta" />
+      <Pagination v-if="meta && meta.total != 0" :meta="meta" />
     </div>
   </div>
 </template>

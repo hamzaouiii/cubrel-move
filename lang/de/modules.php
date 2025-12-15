@@ -5,6 +5,7 @@ return [
     'name' => 'Name',
     'created_at' => 'Erstellt am',
     'updated_at' => 'Aktualisiert am',
+    'no_data'   => 'Keine Daten gefunden',
 
   ],
   'of' => 'von',

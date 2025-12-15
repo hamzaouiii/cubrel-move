@@ -6,7 +6,7 @@ return [
     'name' => 'Name',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
-
+    'no_data'   => ' No data available',
   ],
   'actions' => [
     'share'           => 'Share',
