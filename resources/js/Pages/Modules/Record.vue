@@ -9,6 +9,9 @@ import {
   reactive,
   getCurrentInstance,
 } from "vue";
+import { formatDateTime } from "@/utils/datetime";
+import { useAlerts } from "@/Composables/useAlerts";
+const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
@@ -45,19 +48,7 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
-const hasRecordChanged = (original, edited) => {
-  for (const key of Object.keys(edited)) {
-    const originalValue = original[key];
-    const editedValue = edited[key];
-
-    if (originalValue !== editedValue) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const isDirty = computed(() => hasRecordChanged(props.record, form));
+const isDirty = computed(() => form.isDirty);
 const enableEditing = () => {
   isEditing.value = true;
 };
@@ -75,6 +66,7 @@ const getChangedData = (original, form) => {
 };
 
 const saveRecord = () => {
+  info(t("modules.actions.updating"));
   const payload = getChangedData(props.record, form);
 
   if (Object.keys(payload).length === 0) {
@@ -89,9 +81,11 @@ const saveRecord = () => {
     .put(url, {
       onSuccess: () => {
         isEditing.value = false;
+        clearAllAlerts();
+        success(t("modules.actions.update_success"));
       },
       onError: () => {
-        console.error("Error saving record:", form.errors);
+        error(t("modules.actions.update_error"));
       },
     });
 };
@@ -129,16 +123,30 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-const formatDate = (value) => {
-  if (!value) return "-";
-  return new Date(value).toLocaleDateString("de-DE", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+const appSettings = usePage().props.appSettings;
+
+const displayValueFor = (f) => {
+  const val = props.record[f.key];
+  if (val == null || val === "") return "";
+
+  if (f.type === "datetime") {
+    return formatDateTime(val, appSettings);
+  }
+  if (f.type === "textarea") {
+    if (val.length > 62) {
+      return val.substring(0, 64) + "...";
+    }
+  }
+  return val;
 };
 
-const appSettings = usePage().props.appSettings;
+const getTextareaRows = (f) => {
+  if (form[f.key]) {
+    const val = form[f.key].split(" ").length;
+    return val / 8;
+  }
+  return 3;
+};
 </script>
 
 <template>
@@ -183,7 +191,7 @@ const appSettings = usePage().props.appSettings;
           <button
             v-else
             type="button"
-            class="record-main-btn"
+            :class="['record-main-btn', { disabled: !isDirty }]"
             :disabled="!isDirty"
             @click="saveRecord"
           >
@@ -262,26 +270,33 @@ const appSettings = usePage().props.appSettings;
               {{ $t(f.label) }}:
             </span>
 
-            <div v-if="!isEditing" class="field" @click="enableEditing">
-              <!-- View Mode -->
-              <template v-if="f.type === 'datetime' && record[f.key]">
-                <span>
-                  {{ formatDate(record[f.key]) }}
-                </span>
-              </template>
-              <template v-else>
-                <span>
-                  {{ record[f.key] }}
-                </span>
-              </template>
+            <div
+              v-if="!isEditing"
+              :class="['field', { 'view-uneditable-field': f.readonly }]"
+              @click="!f.readonly && enableEditing()"
+            >
+              <span>
+                {{ displayValueFor(f) }}
+              </span>
             </div>
-            <div class="field editing-mode" v-else>
-              <template v-if="f.format === 'datetime'">
-                <input
-                  type="date"
+            <div
+              :class="[
+                'field',
+                'editing-mode',
+                { 'uneditable-field': f.readonly },
+              ]"
+              v-else
+            >
+              <template v-if="f.readonly">
+                <span>
+                  {{ displayValueFor(f) }}
+                </span>
+              </template>
+              <template v-else-if="f.type == 'textarea'">
+                <textarea
                   v-model="form[f.key]"
-                  :placeholder="form[f.key]"
-                />
+                  :rows="getTextareaRows(f)"
+                ></textarea>
               </template>
               <template v-else>
                 <input type="text" v-model="form[f.key]" />

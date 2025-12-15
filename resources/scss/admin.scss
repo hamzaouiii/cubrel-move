@@ -335,6 +335,10 @@
             padding: 8px;
             border-right: 2px solid lightblue;
             border-radius: 5px;
+            &:disabled{
+              cursor: not-allowed;
+               background: rgb(197, 197, 197)  !important;
+            }
           }
           .record-dropdown-btn{
             border-radius: 5px;
@@ -504,3 +508,30 @@
   z-index: 9999;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
+
+
+.uneditable-field{
+  background-color: rgb(248, 248, 248);
+  border: none !important;
+  cursor: not-allowed;
+  border-radius: 8px;
+  span{
+    cursor: not-allowed;
+  }
+        &:hover{
+    border-bottom-color: transparent !important;
+  }
+}
+
+.view-uneditable-field {
+  background-color: rgb(248, 248, 248);
+  cursor: not-allowed;
+  border-radius: 8px;
+  span{
+    cursor: not-allowed;
+  }
+        &:hover{
+    border-bottom-color: transparent !important;
+  }
+
+}
