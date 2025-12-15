@@ -11,8 +11,9 @@ import {
 } from "vue";
 import { formatDateTime } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useConfirm } from "@/Composables/useConfirm";
 const { success, error, info, clearAllAlerts } = useAlerts();
-
+const { confirm } = useConfirm();
 defineOptions({
   layout: Layout,
 });
@@ -89,9 +90,19 @@ const saveRecord = () => {
       },
     });
 };
-const deleteRecord = () => {
+
+const deleteRecord = async () => {
+  const ok = await confirm({
+    title: t("modules.actions.delete_title"),
+    message: t("modules.actions.delete_confirm"),
+    confirmText: t("modules.actions.delete_yes"),
+    cancelText: t("modules.actions.delete_no"),
+    danger: true,
+  });
+
+  if (!ok) return;
   info(t("modules.actions.deleting"));
-  if (!confirm("Are you sure?")) return;
+
   form.delete(`/${props.module.slug}/${props.record.id}`, {
     onSuccess: () => {
       clearAllAlerts();

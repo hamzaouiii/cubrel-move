@@ -30,7 +30,11 @@ return [
     'save_error'      => "An error occurred while saving the record",
     'delete_success'  => "Record deleted successfully",
     'delete_error'  => "An error occurred while deleting the record",
-    'deleting'          => "Deleting..."
+    'deleting'          => "Deleting...",
+    'delete_title'      => "Confirm deleting record",
+    'delete_confirm'      => "Are you sure you want to delete this record ?",
+    'delete_yes'      => "Yes",
+    'delete_no'      => "No",
   ],
   'accounts' => [
     'label'  => 'Accounts',
