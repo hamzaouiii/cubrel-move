@@ -6,10 +6,8 @@ return [
     'created_at' => 'Erstellt am',
     'updated_at' => 'Aktualisiert am',
     'no_data'   => 'Keine Daten gefunden',
-
   ],
   'of' => 'von',
-
   'actions' => [
     'share'              => 'Teilen',
     'export'             => 'Exportieren',
@@ -24,6 +22,9 @@ return [
     'saving'            => 'Wird gespeichert...',
     'saved'             => 'Gespeichert',
     'updating'          => 'Wird aktualisiert...',
+    'edit_module'     => 'Dieses Module bearbeiten',
+    'mass_delete'     => 'Löschen',
+    'mass_update'     => 'Massenänderung',
     'save_success'      => 'Datensatz wurde erfolgreich gespeichert',
     'update_success'    => 'Datensatz wurde erfolgreich aktualisiert',
     'create_success'    => 'Datensatz wurde erfolgreich erstellt',
@@ -32,10 +33,19 @@ return [
     'save_error'        => 'Beim Speichern des Datensatzes ist ein Fehler aufgetreten',
     'delete_success'    => "Datensatz wurde erfolgreich gelöscht",
     'delete_error'      => "Beim Löschen des Datensatzes ist ein Fehler aufgetreten",
-    'deleting'          => "Wird gelöscht..."
-
+    'deleting'          => "Wird gelöscht...",
+    'delete_yes'      => "Ja",
+    'delete_no'      => "Nein",
   ],
-
+  'delete' => [
+    'confirm_delete' => 'Löschen bestätigen',
+    'confirm_delete_message' => 'Du bist dabei, :count Datensätze zu löschen. Bist du sicher?',
+    'selected_count'   => 'Du hast :count Datensätze ausgewählt.',
+    'description'      => 'Wähle Datensätze zum Löschen aus',
+    'clear_selection'  => 'Auswahl löschen',
+    'select_all'       => 'Alle :total Datensätze im Ergebnis auswählen',
+    'delete'           => 'Löschen',
+  ],
   'accounts' => [
     'label'  => 'Firmen',
     'fields' => [

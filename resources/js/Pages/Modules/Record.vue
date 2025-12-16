@@ -110,7 +110,8 @@ const deleteRecord = async () => {
     },
     onError: () => {
       clearAllAlerts();
-      error(t("modules.actions.delete_error") + form.errors);
+      const serverError = JSON.stringify(form.errors);
+      error(t("modules.actions.delete_error") + serverError);
     },
   });
 };

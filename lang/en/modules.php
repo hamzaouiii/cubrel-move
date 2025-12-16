@@ -20,7 +20,10 @@ return [
     'edit'            => 'Edit',
     'save'            => 'Save',
     'saving'          => 'Saving...',
-    'saved'          => 'Saved',
+    'saved'           => 'Saved',
+    'edit_module'     => 'Edit this module',
+    'mass_delete'     => 'Delete',
+    'mass_update'     => 'Mass Update',
     'updating'        => 'Updating...',
     'save_success'    => 'Record saved successfully',
     'update_success'    => 'Record updated successfully',
@@ -35,6 +38,15 @@ return [
     'delete_confirm'      => "Are you sure you want to delete this record ?",
     'delete_yes'      => "Yes",
     'delete_no'      => "No",
+  ],
+  'delete' => [
+    'confirm_delete'  => 'Confirm Delete',
+    'confirm_delete_message' => 'You are about to delete :count records, are you sure ?',
+    'selected_count' => 'You have selected :count records.',
+    'description' =>  'Select records to delete',
+    'clear_selection' =>  'Clear selection',
+    'select_all'    => 'Select all :total records in the result set',
+    'delete'      => 'Delete'
   ],
   'accounts' => [
     'label'  => 'Accounts',

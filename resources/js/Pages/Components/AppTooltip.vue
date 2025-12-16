@@ -1,5 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+//TODO make this unversal
+
+import { computed } from "vue";
 
 const props = defineProps({
   show: {
@@ -8,7 +10,7 @@ const props = defineProps({
   },
   text: {
     type: String,
-    default: '',
+    default: "",
   },
   top: {
     type: Number,
@@ -20,30 +22,26 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: '',
+    default: "",
   },
-})
+});
 
 const styleObject = computed(() => {
   const style = {
-    top: props.top + 'px',
-    left: props.left + 'px',
-  }
+    top: props.top + "px",
+    left: props.left + "px",
+  };
 
   if (props.color) {
-    style['--module-color'] = props.color
+    style["--module-color"] = props.color;
   }
 
-  return style
-})
+  return style;
+});
 </script>
 
 <template>
-  <div
-    v-if="show"
-    class="sidebar-tooltip"
-    :style="styleObject"
-  >
+  <div v-if="show" class="sidebar-tooltip" :style="styleObject">
     {{ text }}
   </div>
 </template>

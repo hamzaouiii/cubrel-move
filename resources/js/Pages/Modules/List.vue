@@ -5,11 +5,19 @@ import {
   onMounted,
   onBeforeUnmount,
   getCurrentInstance,
+  watch,
 } from "vue";
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
 import { formatDateTime } from "@/utils/datetime";
+import { useAlerts } from "@/Composables/useAlerts";
+import { useConfirm } from "@/Composables/useConfirm";
+
 import Layout from "@/Layouts/Layout.vue";
-import Pagination from "../Components/Pagination.vue";
+import Pagination from "@/Pages/Components/Pagination.vue";
+import ListDeleteZone from "../Components/ListDeleteZone.vue";
+
+const { success, error, info, clearAllAlerts } = useAlerts();
+const { confirm } = useConfirm();
 
 defineOptions({
   layout: Layout,
@@ -25,16 +33,87 @@ const pageProps = defineProps({
   filters: Object,
 });
 
-console.log(props.listLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-const recordsNumber = computed(() => pageProps.items?.length ?? 0);
-const recordsNumberPhrase = computed(() => {
-  if (!pageProps.meta) {
-    return "(0)";
+const bulkActionmode = ref(false);
+const showDeleteZone = ref(false);
+const selectedIds = ref([]);
+
+// when true: "select all records in returned set (all pages, current filters)"
+const allMatchingSelected = ref(false);
+
+const isSelected = (id) => selectedIds.value.includes(id);
+
+const toggleRow = (id) => {
+  if (allMatchingSelected.value) allMatchingSelected.value = false;
+
+  if (isSelected(id)) {
+    selectedIds.value = selectedIds.value.filter((x) => x !== id);
+  } else {
+    selectedIds.value = [...selectedIds.value, id];
+  }
+};
+
+const allSelected = computed(() => {
+  if (!pageProps.items?.length) return false;
+
+  if (allMatchingSelected.value) return true;
+
+  return pageProps.items.every((i) => selectedIds.value.includes(i.id));
+});
+
+// selects all records in the returned set (across pages, current filters)
+const toggleAll = () => {
+  if (!pageProps.meta || pageProps.meta.total === 0) return;
+
+  if (allMatchingSelected.value) {
+    allMatchingSelected.value = false;
+    selectedIds.value = [];
+    return;
   }
 
+  allMatchingSelected.value = true;
+  selectedIds.value = pageProps.items?.map((i) => i.id) ?? [];
+};
+
+// selects only current page (old behavior)
+const toggleAllInView = () => {
+  if (!pageProps.items?.length) return;
+
+  allMatchingSelected.value = false;
+
+  const allInViewSelected = pageProps.items.every((i) =>
+    selectedIds.value.includes(i.id)
+  );
+
+  selectedIds.value = allInViewSelected
+    ? selectedIds.value.filter(
+        (id) => !pageProps.items.some((i) => i.id === id)
+      )
+    : Array.from(
+        new Set([...selectedIds.value, ...pageProps.items.map((i) => i.id)])
+      );
+};
+
+const clearSelection = () => {
+  allMatchingSelected.value = false;
+  selectedIds.value = [];
+};
+
+watch(
+  () => pageProps.items,
+  (newItems) => {
+    // keep current page ids when "all matching" is enabled (for checkbox rendering)
+    if (allMatchingSelected.value) {
+      selectedIds.value = (newItems ?? []).map((i) => i.id);
+    }
+  }
+);
+
+const recordsNumber = computed(() => pageProps.items?.length ?? 0);
+const recordsNumberPhrase = computed(() => {
+  if (!pageProps.meta) return "(0)";
   return `${recordsNumber.value} ${t("modules.of")} ${pageProps.meta.total}`;
 });
 
@@ -43,6 +122,13 @@ const actionDropDownref = ref(null);
 
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
+};
+
+const toggleBulkActionMode = () => {
+  bulkActionmode.value = !bulkActionmode.value;
+  clearSelection();
+  showActionDropDown.value = false;
+  showDeleteZone.value = !showDeleteZone.value;
 };
 
 const handleClickOutsideActionDropDown = (event) => {
@@ -98,6 +184,7 @@ const highlightMatch = (text) => {
     .toString()
     .replace(regex, '<span class="search-highlight">$1</span>');
 };
+
 const appSettings = usePage().props.appSettings;
 
 const resetSearchValue = () => {
@@ -109,12 +196,72 @@ function goToCreateView() {
   const moduleName = usePage().props.module.slug;
   router.visit(`/${moduleName}/create`);
 }
+const editModuleUrl = computed(() => {
+  const base = "settings/customisation/modules/";
+  return base + props.module.id;
+});
+
+const massUpdate = () => {
+  info("Mass update is not implemented yet");
+};
+
+const handleSelectingListItems = () => {
+  console.log({
+    allMatchingSelected: allMatchingSelected.value,
+    selectedIds: selectedIds.value,
+  });
+};
+
+const resetDeleteZone = () => {
+  toggleBulkActionMode();
+};
+const totalSelected = computed(() => {
+  return allMatchingSelected.value
+    ? pageProps.meta?.total ?? 0
+    : selectedIds.value.length;
+});
+
+const handleListDelete = async () => {
+  const count = totalSelected.value;
+
+  const ok = await confirm({
+    title: t("modules.delete.confirm_delete"),
+    message: t("modules.delete.confirm_delete_message", { count: count }),
+    confirmText: t("modules.actions.delete_yes"),
+    cancelText: t("modules.actions.delete_no"),
+    danger: true,
+  });
+
+  if (!ok) return;
+
+  info(t("modules.actions.deleting"));
+
+  router.delete(`/${pageProps.module.slug}`, {
+    data: {
+      allMatchingSelected: allMatchingSelected.value,
+      selectedIds: selectedIds.value,
+      filters: pageProps.filters ?? {},
+    },
+    preserveScroll: true,
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("modules.actions.delete_success"));
+      clearSelection();
+      resetDeleteZone();
+    },
+    onError: () => {
+      clearAllAlerts();
+      error(t("modules.actions.delete_error"));
+    },
+  });
+};
 </script>
 
 <template>
   <Head>
-    <title>{{ title }} - Automatisierung Regensburg</title>
+    <title>{{ title }}</title>
   </Head>
+
   <div class="ar-main-container">
     <div class="ar-main-container_header">
       <div class="ar-main-container_header_details">
@@ -125,6 +272,7 @@ function goToCreateView() {
           recordsNumberPhrase
         }}</span>
       </div>
+
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
         <div
           class="input-group"
@@ -144,14 +292,17 @@ function goToCreateView() {
             @input="handleSearchInput"
             @keydown.enter.prevent="performSearch(1)"
           />
+
           <span
             @click="resetSearchValue()"
             :class="['search-reseter', { 'hide-reseter': !search }]"
-            ><i class="fa-regular fa-circle-xmark"></i
-          ></span>
+            ><i class="fa-regular fa-circle-xmark"></i>
+          </span>
+
           <button type="button" class="main-btn" @click="goToCreateView()">
             {{ $t("modules.actions.create") }}
           </button>
+
           <button
             @click="toggleActionDropDown"
             type="button"
@@ -168,31 +319,33 @@ function goToCreateView() {
             ></i>
             <span class="visually-hidden">Toggle Dropdown</span>
           </button>
+
           <transition name="fade">
             <ul
               v-if="showActionDropDown"
-              class="dropdown-menu dropdown-menu-end show"
+              class="ar-dropdown ar-dropdown-end show"
             >
               <li>
-                <a class="dropdown-item disabled" href="#">{{
-                  $t("modules.actions.share")
-                }}</a>
+                <Link class="ar-dropdown-item" :href="editModuleUrl">
+                  <i class="fa-solid fa-wrench"></i>
+                  {{ $t("modules.actions.edit_module") }}
+                </Link>
               </li>
               <li>
-                <a class="dropdown-item disabled" href="#">{{
-                  $t("modules.actions.export")
-                }}</a>
+                <span class="ar-dropdown-item" @click="massUpdate()">
+                  <i class="fa-solid fa-square-pen"></i>
+                  {{ $t("modules.actions.mass_update") }}
+                </span>
               </li>
+              <li><hr class="ar-dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item" href="#">{{
-                  $t("modules.actions.placeholder")
-                }}</a>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a class="dropdown-item" href="#">{{
-                  $t("modules.actions.bulk_action")
-                }}</a>
+                <span
+                  class="ar-dropdown-item ar-dropdown-item-delete"
+                  @click.prevent="toggleBulkActionMode"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                  {{ $t("modules.actions.mass_delete") }}
+                </span>
               </li>
             </ul>
           </transition>
@@ -209,9 +362,28 @@ function goToCreateView() {
       "
     >
       <div>
+        <ListDeleteZone
+          v-if="showDeleteZone"
+          :selectedIds="selectedIds"
+          :meta="meta"
+          :allMatchingSelected="allMatchingSelected"
+          @toggleAll="toggleAll()"
+          @cancelClicked="resetDeleteZone()"
+          @clearSelection="clearSelection()"
+          @deleteClicked="handleListDelete()"
+        />
         <table class="ar-main-container_content_table">
           <thead>
             <tr>
+              <th v-if="bulkActionmode" scope="col" class="bulk-select-col">
+                <input
+                  type="checkbox"
+                  :checked="allSelected"
+                  @click.stop="handleSelectingListItems"
+                  @change="toggleAllInView"
+                />
+              </th>
+
               <th
                 v-for="col in listLayout?.columns || []"
                 :key="col.key"
@@ -231,15 +403,22 @@ function goToCreateView() {
                 class="clickable-row"
                 :href="`/${module.slug}/${item.id}`"
               >
+                <td v-if="bulkActionmode" class="bulk-select-col">
+                  <input
+                    type="checkbox"
+                    :checked="isSelected(item.id) || allMatchingSelected"
+                    @click.stop
+                    @change="toggleRow(item.id)"
+                  />
+                </td>
+
                 <td v-for="col in listLayout?.columns || []" :key="col.key">
-                  <!-- Email as mailto-link -->
                   <template v-if="col.key === 'email' && item[col.key]">
                     <a :href="'mailto:' + item[col.key]">
                       <span v-html="highlightMatch(item[col.key])"></span>
                     </a>
                   </template>
 
-                  <!-- Datetime formatting based on layout definition -->
                   <template
                     v-else-if="col.type === 'datetime' && item[col.key]"
                   >
@@ -249,7 +428,11 @@ function goToCreateView() {
                   <template
                     v-else-if="item[col.key] && item[col.key].length > 62"
                   >
-                    {{ item[col.key].substring(0, 64) + "..." }}
+                    <span
+                      v-html="
+                        highlightMatch(item[col.key].substring(0, 64) + '...')
+                      "
+                    ></span>
                   </template>
 
                   <template v-else>
@@ -258,10 +441,14 @@ function goToCreateView() {
                 </td>
               </Link>
             </template>
+
             <template v-else>
               <tr class="no-data-row">
                 <td
-                  :colspan="listLayout?.columns.length"
+                  :colspan="
+                    (listLayout?.columns?.length ?? 0) +
+                    (bulkActionmode ? 1 : 0)
+                  "
                   class="no_data_list_view"
                 >
                   {{ $t("modules.defaults.no_data") }}
@@ -271,6 +458,7 @@ function goToCreateView() {
           </tbody>
         </table>
       </div>
+
       <Pagination v-if="meta && meta.total != 0" :meta="meta" />
     </div>
   </div>
