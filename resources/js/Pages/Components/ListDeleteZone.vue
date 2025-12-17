@@ -53,9 +53,6 @@ const totalSelected = computed(() => {
         <span>
           {{ $t("modules.delete.selected_count", { count: totalSelected }) }}
         </span>
-        <span class="select-all-in-scope" @click="emitClearSelection()">
-          {{ $t("modules.delete.clear_selection") }}
-        </span>
       </div>
       <span
         v-if="!allMatchingSelected"
@@ -67,6 +64,13 @@ const totalSelected = computed(() => {
       <span v-else> </span>
     </div>
     <div class="delete-zone_actions">
+      <button
+        :disabled="!totalSelected"
+        class="cancle-delete-btn"
+        @click="emitClearSelection()"
+      >
+        {{ $t("modules.delete.clear_selection") }}
+      </button>
       <button class="cancle-delete-btn" @click="emitCancelClicked">
         {{ $t("modules.actions.cancel") }}
       </button>

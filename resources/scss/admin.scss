@@ -708,7 +708,7 @@
     }
   }
   &_actions {
-    width: 300px;
+    width: 500px;
     display: flex;
     justify-content: space-around;
     button {
@@ -746,6 +746,12 @@
       &:hover {
         color: white;
         background-color: var(--module-color);
+      }
+      &:disabled {
+        color: darkgray;
+        background-color: lightgray;
+        border-color: darkgray;
+        cursor: not-allowed;
       }
     }
   }

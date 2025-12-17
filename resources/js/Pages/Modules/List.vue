@@ -159,6 +159,7 @@ const performSearch = (page = 1) => {
 
 const handleSearchInput = () => {
   if (search.value.length >= 3 || search.value.length === 0) {
+    clearSelection();
     performSearch(1);
   }
 };
@@ -379,7 +380,6 @@ const handleListDelete = async () => {
                 <input
                   type="checkbox"
                   :checked="allSelected"
-                  @click.stop="handleSelectingListItems"
                   @change="toggleAllInView"
                 />
               </th>
