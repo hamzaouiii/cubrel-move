@@ -7,14 +7,24 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AccountsModuleHandler extends BasePaginatedModuleHandler
 {
-    protected string $model = Account::class;
+  protected string $model = Account::class;
+  protected array $searchable = [
+    'name',
+    'website',
+    'email',
+    'phone',
+    'billing_address',
+    'shipping_address',
+    'city',
+    'country',
+  ];
 
-    protected function query(array $params = []): Builder
-    {
-        $query = Account::query();
 
-        // apply filters here if needed
+  protected function query(array $params = []): Builder
+  {
+    $query = Account::query();
 
-        return $query;
-    }
+
+    return $query;
+  }
 }

@@ -275,7 +275,7 @@ const handleListDelete = async () => {
 
       <div class="ar-main-container_header_actions" ref="actionDropDownref">
         <div
-          class="input-group"
+          class="input-group actions_container"
           :style="
             appSettings.use_individual_module_colors == '0'
               ? { '--module-color': appSettings.primary_color }

@@ -13,7 +13,7 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
 
   protected string $model;
 
-  protected array $searchable = [];
+  protected array $searchable = ['name'];
 
   protected function getPerPage(array $params): int
   {
