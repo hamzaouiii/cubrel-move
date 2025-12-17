@@ -3,6 +3,9 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 
+import "dayjs/locale/en";
+import "dayjs/locale/de";
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(localizedFormat);
@@ -24,6 +27,11 @@ function isDateOnly(value) {
   return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
+function normalizeLocale(appLocale) {
+  if (!appLocale) return "en";
+  return String(appLocale).replace("_", "-").split("-")[0].toLowerCase();
+}
+
 export function formatDateTime(value, settings) {
   if (!value) return "";
 
@@ -31,9 +39,11 @@ export function formatDateTime(value, settings) {
   const phpFmt = settings?.datetime_format || "Y-m-d H:i";
   const fmt = PHP_TO_DAYJS[phpFmt] || "YYYY-MM-DD HH:mm";
 
+  const locale = normalizeLocale(settings?.app_locale);
+
   if (isDateOnly(value)) {
-    return dayjs(value).format(fmt);
+    return dayjs(value).locale(locale).format(fmt);
   }
 
-  return dayjs(value).tz(tz).format(fmt);
+  return dayjs(value).tz(tz).locale(locale).format(fmt);
 }
