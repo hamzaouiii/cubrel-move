@@ -117,7 +117,6 @@ class RecordController extends Controller
     $moduleModel = Module::where('slug', $module)->firstOrFail();
     $modelClass  = $moduleModel->model_class;
 
-    // resolve handler (same style as ListController)
     $handlerClass = $moduleModel->handler_class
       ?? "App\\Handlers\\Modules\\" . Str::studly($moduleModel->slug) . "ModuleHandler";
 
@@ -125,47 +124,33 @@ class RecordController extends Controller
     $allMatchingSelected = (bool) $request->input('allMatchingSelected', false);
     $filters = (array) $request->input('filters', []);
 
-    // Basic safety
     if (!class_exists($modelClass)) {
       abort(500, "Model class not found for module {$moduleModel->slug}");
     }
 
-    // Ensure array of ints/strings
     $selectedIds = array_values(array_filter($selectedIds, fn($id) => $id !== null && $id !== ''));
 
-    // Nothing selected and not in "all matching" mode
     if (!$allMatchingSelected && count($selectedIds) === 0) {
       return back()->with('error', 'No records selected.');
     }
 
-    // Build a base query:
-    // - If handler supports query($params), reuse it so search/filter logic stays consistent.
-    // - Otherwise fall back to model::query().
+
     $baseQuery = $modelClass::query();
 
     if (class_exists($handlerClass)) {
       $handler = app($handlerClass);
 
-      // if your module handlers extend BasePaginatedModuleHandler, they have query($params)
       if ($handler instanceof ModuleHandler && method_exists($handler, 'query')) {
-        // IMPORTANT: query() in your BasePaginatedModuleHandler is protected,
-        // so you can't call it directly. If you want reuse, see note below.
-        // For now, use handler->getListData() style filters only if you expose a method.
+        // if module handlers extends BasePaginatedModuleHandler, they have query($params)
+        // query() is protrected, so we eather make it public or create an alternative
       }
     }
 
-    // Apply filters (currently only "search" because that's what your UI sends)
-    // If you add more filters later, extend this part.
     if ($allMatchingSelected) {
       $search = trim((string) Arr::get($filters, 'search', ''));
 
       if ($search !== '') {
-        // Option A: if model has a $searchable definition
-        // Option B: use module layout columns as search fields
-        // For now: use a conservative default: search across all string-like columns is expensive.
-        // Best: store searchable fields per module in DB or handler.
-        //
-        // Minimal approach: try description/name/email if they exist:
+
         $columnsToTry = ['name', 'email', 'description'];
 
         $table = (new $modelClass)->getTable();
@@ -186,15 +171,12 @@ class RecordController extends Controller
         }
       }
 
-      // Delete all matching (filtered) records
       $count = 0;
       DB::transaction(function () use ($baseQuery, &$count) {
-        // chunk to avoid loading too much into memory
         $baseQuery->select('id')->chunkById(500, function ($chunk) use (&$count) {
           $ids = $chunk->pluck('id')->all();
           $count += count($ids);
           if (!empty($ids)) {
-            // bulk delete by ids
             (clone $chunk)->first()->newQuery()->whereIn('id', $ids)->delete();
           }
         });
@@ -203,7 +185,6 @@ class RecordController extends Controller
       return back()->with('success', "{$count} records deleted.");
     }
 
-    // Normal mode: delete only selected ids
     $deleted = $modelClass::whereIn('id', $selectedIds)->delete();
 
     return back()->with('success', "{$deleted} records deleted.");

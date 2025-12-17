@@ -15,6 +15,7 @@ import { useConfirm } from "@/Composables/useConfirm";
 import Layout from "@/Layouts/Layout.vue";
 import Pagination from "@/Pages/Components/Pagination.vue";
 import ListDeleteZone from "../Components/ListDeleteZone.vue";
+import MassUpdateZone from "../Components/MassUpdateZone.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -31,6 +32,7 @@ const pageProps = defineProps({
   meta: Object,
   listLayout: Object,
   filters: Object,
+  fields: Object,
 });
 
 const { proxy } = getCurrentInstance();
@@ -38,9 +40,10 @@ const t = proxy.$t;
 
 const bulkActionmode = ref(false);
 const showDeleteZone = ref(false);
+const showMassUpdateZone = ref(false);
 const selectedIds = ref([]);
-
-// when true: "select all records in returned set (all pages, current filters)"
+const showActionDropDown = ref(false);
+const actionDropDownref = ref(null);
 const allMatchingSelected = ref(false);
 
 const isSelected = (id) => selectedIds.value.includes(id);
@@ -55,6 +58,21 @@ const toggleRow = (id) => {
   }
 };
 
+const toggleMassUpdateZone = () => {
+  showMassUpdateZone.value = !showMassUpdateZone.value;
+  if (showDeleteZone.value == true) {
+    showDeleteZone.value = false;
+  }
+  toggleBulkActionMode();
+};
+const toggleDeleteZone = () => {
+  showDeleteZone.value = !showDeleteZone.value;
+  if (showMassUpdateZone.value == true) {
+    showMassUpdateZone.value = false;
+  }
+  toggleBulkActionMode();
+};
+
 const allSelected = computed(() => {
   if (!pageProps.items?.length) return false;
 
@@ -63,7 +81,6 @@ const allSelected = computed(() => {
   return pageProps.items.every((i) => selectedIds.value.includes(i.id));
 });
 
-// selects all records in the returned set (across pages, current filters)
 const toggleAll = () => {
   if (!pageProps.meta || pageProps.meta.total === 0) return;
 
@@ -77,7 +94,6 @@ const toggleAll = () => {
   selectedIds.value = pageProps.items?.map((i) => i.id) ?? [];
 };
 
-// selects only current page (old behavior)
 const toggleAllInView = () => {
   if (!pageProps.items?.length) return;
 
@@ -117,9 +133,6 @@ const recordsNumberPhrase = computed(() => {
   return `${recordsNumber.value} ${t("modules.of")} ${pageProps.meta.total}`;
 });
 
-const showActionDropDown = ref(false);
-const actionDropDownref = ref(null);
-
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
 };
@@ -128,7 +141,6 @@ const toggleBulkActionMode = () => {
   bulkActionmode.value = !bulkActionmode.value;
   clearSelection();
   showActionDropDown.value = false;
-  showDeleteZone.value = !showDeleteZone.value;
 };
 
 const handleClickOutsideActionDropDown = (event) => {
@@ -202,20 +214,14 @@ const editModuleUrl = computed(() => {
   return base + props.module.id;
 });
 
-const massUpdate = () => {
-  info("Mass update is not implemented yet");
+const resetActionZone = () => {
+  showDeleteZone.value = false;
+  showMassUpdateZone.value = false;
+  bulkActionmode.value = false;
+  showActionDropDown.value = false;
+  clearSelection();
 };
 
-const handleSelectingListItems = () => {
-  console.log({
-    allMatchingSelected: allMatchingSelected.value,
-    selectedIds: selectedIds.value,
-  });
-};
-
-const resetDeleteZone = () => {
-  toggleBulkActionMode();
-};
 const totalSelected = computed(() => {
   return allMatchingSelected.value
     ? pageProps.meta?.total ?? 0
@@ -255,6 +261,55 @@ const handleListDelete = async () => {
       error(t("modules.actions.delete_error"));
     },
   });
+};
+
+const handleMassUpdate = async (payload) => {
+  const count = payload.allMatchingSelected
+    ? meta.total
+    : payload.selectedIds.length;
+
+  const ok = await confirm({
+    title: t("modules.update.confirm_update") ?? "Confirm Update",
+    message:
+      t("modules.update.confirm_update_message", {
+        count,
+        field: payload.field_key,
+      }) ?? `You are about to update ${count} records. Continue?`,
+    confirmText: t("modules.update.update_yes") ?? "Update",
+    cancelText: t("modules.update.update_no") ?? "Cancel",
+    danger: true,
+  });
+
+  if (!ok) return;
+
+  // info(t("modules.actions.updating"));
+  error(
+    "Mass update will not be sent to the backend until field types are introduced "
+  );
+
+  // router.put(`/${pageProps.module.slug}`, {
+  //   // or: router.patch(...) OR router.put(`/${pageProps.module.slug}/mass-update`, { ... })
+  //   data: {
+  //     allMatchingSelected: payload.allMatchingSelected,
+  //     selectedIds: payload.selectedIds,
+  //     filters: payload.filters ?? {},
+
+  //     field_key: payload.field_key,
+  //     new_value: payload.new_value,
+  //   },
+  //   preserveScroll: true,
+  //   onSuccess: () => {
+  //     clearAllAlerts();
+  //     success(t("modules.actions.update_success"));
+  //     clearSelection();
+  //     // optional: reset your mass update UI
+  //     // resetMassUpdateZone();
+  //   },
+  //   onError: () => {
+  //     clearAllAlerts();
+  //     error(t("modules.actions.update_error"));
+  //   },
+  // });
 };
 </script>
 
@@ -333,7 +388,7 @@ const handleListDelete = async () => {
                 </Link>
               </li>
               <li>
-                <span class="ar-dropdown-item" @click="massUpdate()">
+                <span class="ar-dropdown-item" @click="toggleMassUpdateZone()">
                   <i class="fa-solid fa-square-pen"></i>
                   {{ $t("modules.actions.mass_update") }}
                 </span>
@@ -342,7 +397,7 @@ const handleListDelete = async () => {
               <li>
                 <span
                   class="ar-dropdown-item ar-dropdown-item-delete"
-                  @click.prevent="toggleBulkActionMode"
+                  @click.prevent="toggleDeleteZone()"
                 >
                   <i class="fa-solid fa-trash-can"></i>
                   {{ $t("modules.actions.mass_delete") }}
@@ -369,9 +424,22 @@ const handleListDelete = async () => {
           :meta="meta"
           :allMatchingSelected="allMatchingSelected"
           @toggleAll="toggleAll()"
-          @cancelClicked="resetDeleteZone()"
+          @cancelClicked="resetActionZone()"
           @clearSelection="clearSelection()"
           @deleteClicked="handleListDelete()"
+        />
+
+        <MassUpdateZone
+          v-else-if="showMassUpdateZone"
+          :selected-ids="selectedIds"
+          :meta="meta"
+          :all-matching-selected="allMatchingSelected"
+          :fields="fields"
+          :filters="pageProps.filters ?? {}"
+          @massUpdate="handleMassUpdate"
+          @toggleAll="toggleAll()"
+          @clearSelection="clearSelection()"
+          @cancelClicked="resetActionZone()"
         />
         <table class="ar-main-container_content_table">
           <thead>

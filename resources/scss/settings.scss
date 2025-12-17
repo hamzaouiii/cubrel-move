@@ -1,104 +1,100 @@
-.settings{
+.settings {
   display: flex;
   flex-direction: column;
-    input[type="text"]{
-      all: unset;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
-      border: 2px solid lightgray;
-      padding-left: 10px;
-      padding-top:5px ;
-      padding-bottom:5px ;
-      border-radius: 5px;
-      width: 450px;
-    }
-    input[type="number"]{
-            all: unset;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
-      border: 2px solid lightgray;
-      padding-left: 10px;
-      padding-top:5px ;
-      padding-bottom:5px ;
-      border-radius: 5px;
-      width: 250px;
-    }
-  &_header{
+  input[type="text"] {
+    all: unset;
+    font-family: "Fira Sans", "Heebo", sans-serif;
+    border: 2px solid lightgray;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+    width: 450px;
+  }
+  input[type="number"] {
+    all: unset;
+    font-family: "Fira Sans", "Heebo", sans-serif;
+    border: 2px solid lightgray;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+    width: 250px;
+  }
+  &_header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 20px;
-    &_search{
-    input{
-      all: unset;
-      border: 2px solid lightgrey ;
-      padding: 5px 15px;
-      width: 380px;
-      border-radius: 8px;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
-
+    &_search {
+      input {
+        all: unset;
+        border: 2px solid lightgrey;
+        padding: 5px 15px;
+        width: 380px;
+        border-radius: 8px;
+        font-family: "Fira Sans", "Heebo", sans-serif;
+      }
     }
-
-    }
-    &_title{
+    &_title {
       display: flex;
       flex-direction: row;
       align-items: baseline;
-      h6, span{
+      h6,
+      span {
         margin: 5px 0 0 5px;
         font-size: 0.8rem;
       }
-      h5{
+      h5 {
         font-size: 1rem;
         margin: 5px 0 0 5px;
-
       }
     }
-    &_action{
-      .create-btn{
+    &_action {
+      .create-btn {
         all: unset;
         border: 2px solid #0d6efd;
         padding: 10px 20px;
         color: #0d6efd;
-        font-family: 'Fira Sans', 'Heebo', sans-serif;
+        font-family: "Fira Sans", "Heebo", sans-serif;
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.3s ease-in-out;
-        &:hover{
+        &:hover {
           background-color: #0d6efd;
           color: white;
         }
-
       }
-        }
+    }
   }
-  &_content{
+  &_content {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-    &_section{
+    &_section {
       margin: 20px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       background-color: white;
-      box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5)!important;
+      box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
       border-radius: 8px;
-      &_header{
-        &_title{
+      &_header {
+        &_title {
           margin-bottom: 10px;
         }
-        &_desc p{
+        &_desc p {
           font-size: 0.8rem !important;
         }
-
       }
 
-      &_links{
+      &_links {
         display: flex;
         flex-direction: column;
         margin: 10px;
         padding: 10px;
 
-        a{
+        a {
           all: unset;
           color: #0d6efd;
 
@@ -107,30 +103,25 @@
           cursor: pointer;
           padding: 5px 5px 0px 5px;
           margin-bottom: 5px;
-          span{
-            transition: all 0.3s ease-in-out ;
+          span {
+            transition: all 0.3s ease-in-out;
             border-bottom: 2px solid transparent;
             margin: 5px;
-            &:hover{
+            &:hover {
               border-color: #0d6efd;
             }
           }
-
-
         }
       }
-
     }
-
-
   }
-  &_items{
-    &_modules{
+  &_items {
+    &_modules {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
       padding: 50px;
-      a{
+      a {
         all: unset;
         display: flex;
         align-items: center;
@@ -138,124 +129,113 @@
         cursor: pointer;
         transition: all 0.3s ease-in-out;
         margin: 10px;
-        &:hover{
+        &:hover {
           color: var(--module-color);
-
         }
-        i{
+        i {
           margin-right: 10px;
         }
       }
     }
   }
-  &_system{
+  &_system {
     margin: 20px;
     padding: 20px;
     background-color: white;
-    box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5)!important;
+    box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
     border-radius: 8px;
-    &_form{
+    &_form {
       display: flex;
       flex-direction: column;
-      &_field{
+      &_field {
         width: 600px;
         display: flex;
         align-items: baseline;
         margin: 10px;
-        label{
+        label {
           min-width: 250px;
         }
       }
-    &_actions{
-    display: flex;
-    justify-content: flex-end;
-      button{
-        all: unset;
-        border: 2px solid #0d6efd;
-        color: #0d6efd;
-        padding: 5px 20px;
-        margin-right: 50px;
-        transition: all 0.2s ease-in-out;
-        border-radius: 5px;
-        cursor: pointer;
-        &:hover{
-          background-color: #0d6efd;
-          color: white;
-        }    
-        &:disabled{
-          background-color: rgb(218, 218, 218);
-          color: white;
-          border-color:rgb(218, 218, 218);
-          cursor: not-allowed;
-
-        }  
-
-      }
-      .reset-btn{
-        border: 2px solid salmon ;
-        color: salmon;
-        &:hover{
-          background-color: salmon;
-          color: white;
-        }  
-                &:disabled{
-          background-color: rgb(218, 218, 218);
-          color: white;
-          border-color:rgb(218, 218, 218);
-          cursor: not-allowed;
-
-        }   
+      &_actions {
+        display: flex;
+        justify-content: flex-end;
+        button {
+          all: unset;
+          border: 2px solid #0d6efd;
+          color: #0d6efd;
+          padding: 5px 20px;
+          margin-right: 50px;
+          transition: all 0.2s ease-in-out;
+          border-radius: 5px;
+          cursor: pointer;
+          &:hover {
+            background-color: #0d6efd;
+            color: white;
+          }
+          &:disabled {
+            background-color: rgb(218, 218, 218);
+            color: white;
+            border-color: rgb(218, 218, 218);
+            cursor: not-allowed;
+          }
+        }
+        .reset-btn {
+          border: 2px solid salmon;
+          color: salmon;
+          &:hover {
+            background-color: salmon;
+            color: white;
+          }
+          &:disabled {
+            background-color: rgb(218, 218, 218);
+            color: white;
+            border-color: rgb(218, 218, 218);
+            cursor: not-allowed;
+          }
+        }
       }
     }
   }
-
-
-
-
-  }
 }
-.edit-module form{
-
-  .edit-element{
+.edit-module form {
+  .edit-element {
     display: flex;
     flex-direction: row;
     align-items: baseline;
     margin: 10px;
-    label{
+    label {
       min-width: 220px;
     }
-    input[type="text"]{
+    input[type="text"] {
       all: unset;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
+      font-family: "Fira Sans", "Heebo", sans-serif;
       border: 2px solid lightgray;
       padding-left: 10px;
-      padding-top:5px ;
-      padding-bottom:5px ;
+      padding-top: 5px;
+      padding-bottom: 5px;
       border-radius: 5px;
       width: 350px;
-            &:disabled{
+      &:disabled {
         background-color: rgb(218, 218, 218);
         color: white;
-        border-color:rgb(218, 218, 218);
+        border-color: rgb(218, 218, 218);
         cursor: not-allowed;
-
-      }  
+      }
     }
-    textarea{
+    textarea {
       all: unset;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
+      font-family: "Fira Sans", "Heebo", sans-serif;
       border: 2px solid lightgray;
       padding: 10px;
       border-radius: 5px;
       width: 350px;
-      resize:vertical;
-
+      resize: vertical;
     }
   }
-  .actions{
+  .actions {
     display: flex;
     justify-content: flex-end;
-    button{
+    button {
       all: unset;
       border: 2px solid var(--module-color);
       color: var(--module-color);
@@ -264,73 +244,71 @@
       transition: all 0.2s ease-in-out;
       border-radius: 5px;
       cursor: pointer;
-      &:hover{
+      &:hover {
         background-color: var(--module-color);
         color: white;
-      }    
-      &:disabled{
+      }
+      &:disabled {
         background-color: rgb(218, 218, 218);
         color: white;
-        border-color:rgb(218, 218, 218);
+        border-color: rgb(218, 218, 218);
         cursor: not-allowed;
-
-      }  
-      .reset-btn{
+      }
+      .reset-btn {
         border-color: salmon !important;
       }
     }
   }
-
 }
-.module-manager{
-  form{
-  margin: 20px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5)!important;
-  border-radius: 8px;
+.module-manager {
+  form {
+    margin: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
+    border-radius: 8px;
   }
 }
 .create-module {
-    .create-element{
+  .create-element {
     display: flex;
     flex-direction: row;
     align-items: baseline;
     margin: 10px;
-    label{
+    label {
       min-width: 150px;
     }
-    input[type="text"]{
+    input[type="text"] {
       all: unset;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
+      font-family: "Fira Sans", "Heebo", sans-serif;
       border: 2px solid lightgray;
       padding-left: 10px;
-      padding-top:5px ;
-      padding-bottom:5px ;
+      padding-top: 5px;
+      padding-bottom: 5px;
       border-radius: 5px;
       width: 250px;
     }
-    textarea{
+    textarea {
       all: unset;
-      font-family: 'Fira Sans', 'Heebo', sans-serif;
+      font-family: "Fira Sans", "Heebo", sans-serif;
       border: 2px solid lightgray;
       padding: 10px;
       border-radius: 5px;
       width: 250px;
-      resize:vertical;
+      resize: vertical;
     }
-    }
-    input[name="slug"]{
-      cursor: not-allowed !important;
-      background-color: rgba(169, 169, 169, 0.712) !important;
-      color: lightgray;
-    }
-    .create-actions{
+  }
+  input[name="slug"] {
+    cursor: not-allowed !important;
+    background-color: rgba(169, 169, 169, 0.712) !important;
+    color: lightgray;
+  }
+  .create-actions {
     display: flex;
     justify-content: flex-end;
-    button{
+    button {
       all: unset;
       border: 2px solid #0d6efd;
       color: #0d6efd;
@@ -339,58 +317,52 @@
       transition: all 0.2s ease-in-out;
       border-radius: 5px;
       cursor: pointer;
-      &:hover{
+      &:hover {
         background-color: #0d6efd;
         color: white;
-      }    
-      &:disabled{
+      }
+      &:disabled {
         background-color: rgb(218, 218, 218);
         color: white;
-        border-color:rgb(218, 218, 218);
+        border-color: rgb(218, 218, 218);
         cursor: not-allowed;
-
-      }  
-
+      }
     }
-    .reset-btn{
-      border: 2px solid salmon ;
+    .reset-btn {
+      border: 2px solid salmon;
       color: salmon;
-      &:hover{
+      &:hover {
         background-color: salmon;
         color: white;
-      }   
+      }
     }
   }
 }
 
-
-
 // fields
 
-.switcher{
+.switcher {
   display: flex;
-  .switch-option{
+  .switch-option {
     padding: 10px;
-    box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5)!important;
+    box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5) !important;
     border-radius: 5px;
     margin: 0 5px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
     background-color: lightgrey;
-    &:hover{
+    &:hover {
       transform: scale(1.05);
     }
-
   }
-  .selected{
+  .selected {
     background-color: white;
-
   }
 }
 
 //dropdown
 .dropdown-field {
-  font-family: 'Fira Sans', 'Heebo', sans-serif;
+  font-family: "Fira Sans", "Heebo", sans-serif;
   position: relative;
   width: 450px;
 
@@ -434,7 +406,6 @@
     line-height: 1;
   }
 
-  // dropdown panel
   &_menu {
     position: absolute;
     z-index: 20;
@@ -448,12 +419,9 @@
     border-radius: 0.25rem;
     box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
 
-    // keeps search visible while list scrolls
-    max-height: 260px;
     overflow: hidden;
   }
 
-  // search area (new)
   &_search {
     padding: 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -474,7 +442,6 @@
     }
   }
 
-  // list area (new wrapper ul class)
   &_list {
     margin: 0;
     padding: 0;

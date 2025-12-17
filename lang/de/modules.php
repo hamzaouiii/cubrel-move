@@ -46,6 +46,20 @@ return [
     'select_all'       => 'Alle :total Datensätze im Ergebnis auswählen',
     'delete'           => 'Löschen',
   ],
+  'update'     => [
+    'description'   => 'Wähle Datensätze zum Aktualisieren aus',
+    'update'        => 'Aktualisieren',
+    'cancel'        => 'Abbrechen',
+    'clear_selection'  => 'Auswahl löschen',
+    'selected_count'   => 'Du hast :count Datensätze ausgewählt.',
+    'select_all'       => 'Alle :total Datensätze im Ergebnis auswählen',
+    'confirm_update' => 'Aktualisierungsbestätigung ',
+    'confirm_update_message' => 'Du bist dabei, :count Datensätze zu aktualisieren. Bist du sicher?',
+    'update_yes'        => 'Ja',
+    'update_no'         => 'Nein'
+
+
+  ],
   'accounts' => [
     'label'  => 'Firmen',
     'fields' => [

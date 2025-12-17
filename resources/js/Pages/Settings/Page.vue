@@ -22,7 +22,7 @@ const props = defineProps({
 
 const page = usePage();
 const module = computed(() => page.props.item || page.props);
-
+console.log(props.datetimeFormatOptions);
 const normalizedValues = props.item.values.map((v) => ({
   ...v,
   value: v.type === "bool" ? v.value == 1 || v.value === "1" : v.value,
