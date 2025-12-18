@@ -55,7 +55,8 @@ class AppServiceProvider extends ServiceProvider
         'sidebar' => __('sidebar'),
         'topbar' => __('topbar'),
         'layouts' => __('layouts'),
-        'custom' => __('custom')
+        'custom' => __('custom'),
+        'fields' => __('fields')
       ];
     });
   }

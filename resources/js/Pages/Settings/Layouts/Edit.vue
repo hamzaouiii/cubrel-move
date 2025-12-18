@@ -265,7 +265,7 @@ const manualAlerts = ref([
       {{ $t("layouts.label") }} > {{ $t("settings.label") }}
     </title>
   </Head>
-  <!-- <Alerts :alerts="alerts"/> -->
+
   <div class="layout">
     <div class="settings_header">
       <div class="settings_header_title">

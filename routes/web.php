@@ -4,16 +4,13 @@ use Inertia\Inertia;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\ContactMessageController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ModuleManagerController;
-use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\LayoutManagerController;
-use App\Http\Controllers\SettingValueController;
+use App\Http\Controllers\FieldsManagerController;
 
 
 Route::middleware(['auth'])->group(function () {
@@ -27,8 +24,8 @@ Route::middleware(['auth'])->group(function () {
   /**
    * Settings routes
    */
-  Route::prefix('settings/customisation')->name('settings.')->group(function () {
-    // Module Manager
+  Route::prefix('settings/')->name('settings.')->group(function () {
+
     // module manager
     Route::resource('modules', ModuleManagerController::class)
       ->names('modules')
@@ -38,9 +35,12 @@ Route::middleware(['auth'])->group(function () {
     // Layout Manager
     Route::get('layouts', [LayoutManagerController::class, 'index'])->name('layouts.index');
     Route::get('layouts/{module}', [LayoutManagerController::class, 'show'])->name('layouts.show');
-
     Route::get('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'edit'])->name('layouts.edit');
     Route::post('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'store'])->name('layouts.store');
+
+    // Fields Manager
+    Route::get('fields', [FieldsManagerController::class, 'index'])->name('fields.index');
+    Route::get('fields/{module}', [FieldsManagerController::class, 'show'])->name('fields.show');
   });
 
 

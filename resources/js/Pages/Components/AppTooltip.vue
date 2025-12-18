@@ -1,5 +1,5 @@
 <script setup>
-//TODO make this unversal
+//TODO make this universal
 
 import { computed } from "vue";
 
