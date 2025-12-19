@@ -62,7 +62,7 @@ class FieldsManagerController extends Controller
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
 
-    return Inertia::render('Settings/Fields/Edit', [
+    return Inertia::render('Settings/Fields/Record', [
       'module'     => $module,
       'item'     => $item,
       'fields' => $module->fields()
@@ -72,9 +72,22 @@ class FieldsManagerController extends Controller
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit(string $id)
+  public function edit(Request $request, string $module, string $field)
   {
-    //
+    $module = Module::query()
+      ->where('id', $module)
+      ->firstOrFail();
+
+    $routeUri = $request->route()->uri();
+    $routeUri = explode("/", $routeUri);
+    $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
+    $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
+
+    return Inertia::render('Settings/Fields/Edit', [
+      'module'     => $module,
+      'item'     => $item,
+      'metadata' => $module->getFieldMetadata($field)
+    ]);
   }
 
   /**

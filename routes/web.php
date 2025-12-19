@@ -27,9 +27,13 @@ Route::middleware(['auth'])->group(function () {
   Route::prefix('settings/')->name('settings.')->group(function () {
 
     // module manager
-    Route::resource('modules', ModuleManagerController::class)
-      ->names('modules')
-      ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('modules', ModuleManagerController::class)->names('modules');
+
+    // Fields Manager
+    Route::resource('fields', FieldsManagerController::class)
+      ->names('fields')
+      ->except('edit');
+    Route::get('fields/{module}/{field}/edit', [FieldsManagerController::class, 'edit'])->name('fields.edit');
 
 
     // Layout Manager
@@ -37,10 +41,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('layouts/{module}', [LayoutManagerController::class, 'show'])->name('layouts.show');
     Route::get('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'edit'])->name('layouts.edit');
     Route::post('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'store'])->name('layouts.store');
-
-    // Fields Manager
-    Route::get('fields', [FieldsManagerController::class, 'index'])->name('fields.index');
-    Route::get('fields/{module}', [FieldsManagerController::class, 'show'])->name('fields.show');
   });
 
 

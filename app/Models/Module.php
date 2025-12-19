@@ -125,7 +125,11 @@ class Module extends BaseModule
       ->values()
       ->all();
   }
-
+  public function getFieldMetadata(string $fieldKey)
+  {
+    return collect($this->fields())
+      ->firstWhere('key', $fieldKey);
+  }
   protected function normalizeFieldType(string $dbType, string $column): string
   {
     return match ($dbType) {
