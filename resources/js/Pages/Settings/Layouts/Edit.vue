@@ -211,7 +211,7 @@ const saveLayout = () => {
   }
 
   form.definition = definition;
-  const url = `/settings/customisation/layouts/${props.module.id}/${props.type}`;
+  const url = `/settings/ /layouts/${props.module.id}/${props.type}`;
 
   form.post(url, {
     preserveScroll: true,
@@ -274,13 +274,13 @@ const manualAlerts = ref([
         </h5>
         <span>></span>
         <h5>
-          <Link href="/settings/customisation/layouts">{{
+          <Link href="/settings/layouts">{{
             $t("layouts.label")
           }}</Link>
         </h5>
         <span>></span>
         <h5>
-          <Link :href="'/settings/customisation/layouts/' + module.id">{{
+          <Link :href="'/settings/layouts/' + module.id">{{
             module.label
           }}</Link>
         </h5>

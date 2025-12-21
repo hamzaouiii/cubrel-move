@@ -4,5 +4,6 @@ return [
   'label' => 'Fields',
   'key'   => 'Key',
   'field_label' => 'Label',
-  'type'  => 'Type'
+  'type'  => 'Type',
+  'create_new_field' => 'Create new field'
 ];

@@ -86,7 +86,7 @@ const isDirty = computed(() => {
 
 const saveRecord = () => {
   info(t("settings.saving"));
-  const url = "/settings/customisation/modules/" + props.settingModule.id;
+  const url = "/settings/ /modules/" + props.settingModule.id;
   const payload = editableModule;
   form
     .transform(() => payload)
@@ -126,7 +126,7 @@ const resetForm = () => {
         </h5>
         <span>></span>
         <h5>
-          <Link href="/settings/customisation/modules"
+          <Link href="/settings/modules"
             >{{ $t("settings.modules.label") }}
           </Link>
         </h5>

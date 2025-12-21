@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('fields', FieldsManagerController::class)
       ->names('fields')
       ->except('edit');
+    Route::get('fields/{module}/create', [FieldsManagerController::class, 'create'])->name('fields.create');
     Route::get('fields/{module}/{field}/edit', [FieldsManagerController::class, 'edit'])->name('fields.edit');
 
 

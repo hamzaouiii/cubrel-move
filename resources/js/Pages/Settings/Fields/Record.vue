@@ -12,7 +12,8 @@ const props = defineProps({
   fields: Array,
   item: Object,
 });
-const appSettings = usePage().props.appSettings;
+const page = usePage();
+const appSettings = page.props.appSettings;
 
 const sortKey = ref(null);
 const sortDirection = ref("asc");
@@ -25,7 +26,9 @@ function sortBy(key) {
     sortDirection.value = "asc";
   }
 }
-
+const createUrl = computed(() => {
+  return `${page.url.replace(/\/+$/, "")}/create`;
+});
 const sortedFields = computed(() => {
   if (!sortKey.value) return props.fields;
 
@@ -58,11 +61,14 @@ const handleEditButton = (key) => {
       </h5>
       <span>></span>
       <h5>
-        <Link href="/settings/fields/">{{ $t("fields.label") }}</Link>
+        <Link href="/settings/fields">{{ $t("fields.label") }}</Link>
       </h5>
       <span>></span>
       <h6>{{ module.label }}</h6>
     </div>
+    <div class="settings_header_action">
+        <Link class="create-btn" :href="createUrl"> {{$t('fields.create_new_field')}}</Link>
+      </div>
   </div>
 
   <div class="fields">

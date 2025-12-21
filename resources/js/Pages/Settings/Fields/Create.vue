@@ -9,7 +9,6 @@ defineOptions({
 
 const props = defineProps({
   module: Object,
-  metadata: Object,
   item: Object,
 });
 const isDirty = () => {
@@ -20,7 +19,7 @@ const isDirty = () => {
 <template>
   <Head>
     <title>
-      {{ metadata.label }} - {{ module.label }} - {{ $t("fields.label") }} -
+      {{ $t("fields.create_new_field") }}- {{ module.label }} - {{ $t("fields.label") }} -
       {{ $t("settings.label") }}
     </title>
   </Head>
@@ -41,18 +40,16 @@ const isDirty = () => {
           }}</Link>
         </h5>
         <span>></span>
-        <h6>{{ metadata.label }}</h6>
+        <h6>{{ $t("fields.create_new_field") }}</h6>
       </div>
     </div>
     <div class="settings_system">
       <form @submit.prevent="saveSetting" class="settings_system_form">
         <div
-          v-for="(i, index) in metadata"
-          :key="i.id || i.key || index"
           class="settings_system_form_field"
         >
-          <label>{{ index }}</label>
-          <input type="text" v-model="metadata[index]"></input>
+          <label>{{ label }}</label>
+          <input type="text" ></input>
         </div>
         <div class="settings_system_form_actions">
           <button

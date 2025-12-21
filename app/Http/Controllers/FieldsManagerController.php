@@ -35,9 +35,21 @@ class FieldsManagerController extends Controller
   /**
    * Show the form for creating a new resource.
    */
-  public function create()
+  public function create(Request $request, string $module_id)
   {
-    //
+    $module = Module::query()
+    ->where('id', $module_id)
+    ->firstOrFail();
+
+  $routeUri = $request->route()->uri();
+  $routeUri = explode("/", $routeUri);
+  $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
+  $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
+
+  return Inertia::render('Settings/Fields/Create', [
+    'module'     => $module,
+    'item'     => $item
+    ]);
   }
 
   /**

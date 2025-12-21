@@ -81,7 +81,7 @@ const onItemMouseLeave = () => {
         </h5>
         <span>></span>
         <h5>
-          <Link href="/settings/customisation/layouts"
+          <Link href="/settings/layouts"
             >{{ $t("layouts.label") }}
           </Link>
         </h5>

@@ -55,7 +55,7 @@ const saveModule = () => {
 
   form
     .transform((data) => ({ ...data, slug: slug.value }))
-    .post("/settings/customisation/modules", {
+    .post("/settings/ /modules", {
       preserveScroll: true,
       onSuccess: () => {
         form.clearErrors();
@@ -91,7 +91,7 @@ const saveModule = () => {
         </h5>
         <span>></span>
         <h5>
-          <Link href="/settings/customisation/modules"
+          <Link href="/settings/modules"
             >{{ $t("settings.modules.label") }}
           </Link>
         </h5>
