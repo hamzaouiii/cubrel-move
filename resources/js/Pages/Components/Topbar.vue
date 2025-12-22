@@ -1,6 +1,4 @@
 <template>
-
-
   <div class="top-bar">
   <div class="logo">
     <Link href="/" class="logo">
@@ -31,12 +29,26 @@
           alt="avatar"
         />
         <i :class="showProfile ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>
-          <!-- Dropdown -->
         <transition name="fade">
           <ul v-if="showProfile" class="profile-dropdown card-shadow">
-            <li><Link href="/settings">{{$t('topbar.settings')}}</Link></li>
-            <li><Link href="/profile">{{$t('topbar.profile')}}</Link></li>
-            <li @click="logout"><a href="#">{{$t('topbar.logout')}}</a></li>
+            <li>
+              <Link href="/settings">
+                <i class="fa-solid fa-gears"></i>
+                {{$t('topbar.settings')}}
+              </Link>
+          </li>
+            <li>
+              <Link href="/profile">
+                <i class="fa-solid fa-id-card-clip"></i>
+                {{$t('topbar.profile')}}
+              </Link>
+            </li>
+            <li @click="logout">
+              <a href="#">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                {{$t('topbar.logout')}}
+              </a>
+            </li>
 
           </ul>
         </transition>
