@@ -16,7 +16,7 @@ const csrf =
   page.props.csrf_token ??
   document
     .querySelector('meta[name="csrf-token"]')
-    ?.getAttribute("admin__content");
+    ?.getAttribute("root__content");
 
 const appSettings = computed(() => page.props.appSettings || {});
 const useModuleColors = computed(() => appSettings.value.useModuleColors);
@@ -25,11 +25,11 @@ provide("useModuleColors", useModuleColors);
 </script>
 
 <template>
-  <div class="layout">
+  <div class="root">
     <ConfirmOverlay />
     <sidebar></sidebar>
     <Alerts :alerts="alerts" />
-    <main class="layout__content">
+    <main class="root__content">
       <Topbar></Topbar>
       <slot />
     </main>
