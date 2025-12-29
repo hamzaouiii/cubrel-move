@@ -3,6 +3,7 @@ import { computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/IconPicker.vue";
+import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { proxy } = getCurrentInstance();
@@ -55,7 +56,7 @@ const saveModule = () => {
 
   form
     .transform((data) => ({ ...data, slug: slug.value }))
-    .post("/settings/ /modules", {
+    .post("/settings/modules", {
       preserveScroll: true,
       onSuccess: () => {
         form.clearErrors();
@@ -138,7 +139,10 @@ const saveModule = () => {
           <label>
             {{ $t("settings.modules.show_in_sidebar") }}
           </label>
-          <input class="" type="checkbox" v-model="form.show_in_sidebar" />
+          <Checkbox
+            v-model="form.show_in_sidebar"
+            :module-color="form.color"
+          ></Checkbox>
         </div>
 
         <div class="create-element">

@@ -59,7 +59,7 @@ class ModuleManagerController extends Controller
     $data = $request->except('_token', '_method', 'label');
     $module->fill($data)->save();
 
-    return redirect()->to('/settings/customisation/modules');
+    return redirect()->to('/settings/modules');
   }
 
   public function create()

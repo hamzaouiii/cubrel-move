@@ -4,6 +4,7 @@ import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -63,16 +64,13 @@ const disableThis = (key) => {
 
 const isDirty = computed(() => {
   return editableFields.value.some(([key, value]) => {
-    // 1. Special case: display_label only lives on editableModule
     if (key === "display_label") {
-      // dirty if it's not empty (ignore pure whitespace)
       if (typeof value === "string") {
         return value.trim() !== "";
       }
       return !!value;
     }
 
-    // 2. All other keys: compare editableModule vs settingModule as before
     const original = props.settingModule[key];
     const current = editableModule[key];
 
@@ -86,7 +84,7 @@ const isDirty = computed(() => {
 
 const saveRecord = () => {
   info(t("settings.saving"));
-  const url = "/settings/ /modules/" + props.settingModule.id;
+  const url = "/settings/modules/" + props.settingModule.id;
   const payload = editableModule;
   form
     .transform(() => payload)
@@ -145,11 +143,11 @@ const resetForm = () => {
           {{ $t("settings.modules." + key) }}
         </label>
 
-        <input
+        <Checkbox
           v-if="inputTypeFor(key, value) === 'checkbox'"
-          type="checkbox"
           v-model="editableModule[key]"
-        />
+          :module-color="editableModule.color"
+        ></Checkbox>
         <IconPicker
           v-else-if="inputTypeFor(key, value) === 'icon'"
           v-model="editableModule[key]"
