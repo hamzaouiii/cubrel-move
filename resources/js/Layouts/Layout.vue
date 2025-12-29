@@ -14,7 +14,9 @@ const page = usePage();
 const user = page.props.auth?.user ?? null;
 const csrf =
   page.props.csrf_token ??
-  document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+  document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute("admin__content");
 
 const appSettings = computed(() => page.props.appSettings || {});
 const useModuleColors = computed(() => appSettings.value.useModuleColors);
@@ -23,11 +25,11 @@ provide("useModuleColors", useModuleColors);
 </script>
 
 <template>
-  <div class="admin d-flex">
+  <div class="layout">
     <ConfirmOverlay />
     <sidebar></sidebar>
     <Alerts :alerts="alerts" />
-    <main class="content flex-grow-1">
+    <main class="layout__content">
       <Topbar></Topbar>
       <slot />
     </main>

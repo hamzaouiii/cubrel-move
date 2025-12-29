@@ -1,36 +1,3 @@
-<template>
-  <teleport to="body">
-    <div
-      v-if="confirmState.isOpen"
-      class="confirm-overlay"
-      @keydown.esc.prevent="cancel"
-      tabindex="0"
-      ref="overlayRef"
-      @click.self="cancel"
-    >
-      <div class="confirm-dialog card-shadow" role="dialog" aria-modal="true">
-        <div class="confirm-title">{{ confirmState.title }}</div>
-        <div class="confirm-message">{{ confirmState.message }}</div>
-
-        <div class="confirm-actions">
-          <button type="button" class="btn btn-secondary" @click="cancel">
-            {{ confirmState.cancelText }}
-          </button>
-
-          <button
-            type="button"
-            class="btn"
-            :class="confirmState.danger ? 'btn-danger' : 'btn-primary'"
-            @click="accept"
-          >
-            {{ confirmState.confirmText }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </teleport>
-</template>
-
 <script setup>
 import { ref, watch, nextTick } from "vue";
 import { useConfirm } from "@/Composables/useConfirm";
@@ -52,3 +19,37 @@ watch(
   { immediate: true }
 );
 </script>
+
+<template>
+  <teleport to="body">
+    <div
+      v-if="confirmState.isOpen"
+      class="confirm-overlay"
+      @keydown.esc.prevent="cancel"
+      tabindex="0"
+      ref="overlayRef"
+      @click.self="cancel"
+    >
+      <div class="confirm-overlay__dialog">
+        <div class="confirm-overlay__title">{{ confirmState.title }}</div>
+        <div class="confirm-overlay__message">{{ confirmState.message }}</div>
+
+        <div class="confirm-overlay__actions">
+          <button
+            class="confirm-overlay__actions--cancel button-neutral"
+            @click="cancel"
+          >
+            {{ confirmState.cancelText }}
+          </button>
+
+          <button
+            :class="confirmState.danger ? ' button-danger' : 'button-primary'"
+            @click="accept"
+          >
+            {{ confirmState.confirmText }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </teleport>
+</template>

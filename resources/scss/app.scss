@@ -1,37 +1,46 @@
-@use 'fonts' as *;
-@use 'admin';
-@use 'settings';
-@use 'icons';
-@use 'pagination';
-@use 'layouts';
-@use 'alerts';
+@use "fonts" as *;
+@use "admin";
+@use "settings";
+@use "icons";
+@use "pagination";
+@use "layouts";
+@use "alerts";
+@use "globals";
 
-*{
+* {
   margin: 0;
   padding: 0;
 }
 
-
 body {
-  font-family: 'Fira Sans', 'Heebo', sans-serif;
+  font-family: "Fira Sans", "Heebo", sans-serif;
   margin-bottom: 0 !important;
 }
 
-.content   { min-width: 0; }
-.nav-link  { color: #4b5563; }
-.nav-link.active { background: #eef2ff; color: #4f46e5; }
-.placeholder-wave { opacity: .5; }
+.content {
+  min-width: 0;
+}
+.nav-link {
+  color: #4b5563;
+}
+.nav-link.active {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+.placeholder-wave {
+  opacity: 0.5;
+}
 
-.card-shadow{
-  box-shadow: 2px 5px 5px 0px rgba(51, 51, 51, 0.5)!important;
+.card-shadow {
+  box-shadow: 2px 5px 5px 0px rgba(51, 51, 51, 0.5) !important;
 }
-.card-border-radius{
-  border-radius: .45rem !important;
+.card-border-radius {
+  border-radius: 0.45rem !important;
 }
-.scale-at-hover{
+.scale-at-hover {
   transition: all 0.2s ease-out;
   cursor: pointer;
-  &:hover{
+  &:hover {
     transform: scale(1.04);
   }
 }
