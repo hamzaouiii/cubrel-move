@@ -10,7 +10,7 @@
   transition: all 0.3s ease;
   box-shadow: 5px 0px 5px -5px #000000;
   min-width: 280px;
-  @media (max-width: 1249px) {
+  @media (max-width: 1024px) {
     min-width: 200px;
   }
   &__logo {
@@ -124,7 +124,7 @@
   &--collapsed {
     min-width: 80px !important;
     transition: all 0.3s ease-in-out;
-    @media (max-width: 1249px) {
+    @media (max-width: 1024px) {
       min-width: 80px !important;
     }
     &__module-list {
