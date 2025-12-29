@@ -34,23 +34,23 @@ const closeAlert = (id) => {
 };
 </script>
 <template>
-  <div class="alerts-zone">
+  <div class="alerts">
     <div
-      v-for="(alert, index) in normalizedAlerts"
+      v-for="alert in normalizedAlerts"
       :key="alert.id"
-      class="alerts-zone_alert"
-      :class="`alerts-zone_alert-${alert.type}`"
+      class="alerts__item"
+      :class="`alerts__item--${alert.type}`"
     >
-      <span class="alerts-zone_alert_text">
-        {{ alert.message }}
-      </span>
-      <span
-        v-if="alert.dismissible !== false"
-        class="alerts-zone_alert_close"
-        @click="closeAlert(alert.id)"
-      >
-        <i class="fa-solid fa-times"></i>
-      </span>
+      <div class="alerts__item__message">
+        <span>
+          {{ alert.message }}
+        </span>
+      </div>
+      <div class="alerts__item__close">
+        <span v-if="alert.dismissible !== false" @click="closeAlert(alert.id)">
+          <i class="fa-solid fa-times"></i>
+        </span>
+      </div>
     </div>
   </div>
 </template>
