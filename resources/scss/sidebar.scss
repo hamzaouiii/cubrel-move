@@ -10,7 +10,9 @@
   transition: all 0.3s ease;
   box-shadow: 5px 0px 5px -5px #000000;
   min-width: 280px;
-  width: fit-content;
+  @media (max-width: 1249px) {
+    min-width: 200px;
+  }
   &__logo {
     display: flex;
     justify-content: center;
@@ -120,10 +122,11 @@
   }
 
   &--collapsed {
-    min-width: 80px;
-    width: 80px;
+    min-width: 80px !important;
     transition: all 0.3s ease-in-out;
-
+    @media (max-width: 1249px) {
+      min-width: 80px !important;
+    }
     &__module-list {
       display: flex;
       flex-direction: column;
