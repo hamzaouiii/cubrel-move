@@ -2,7 +2,7 @@
 import { computed, reactive } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
-import AppTooltip from "@/Pages/Components/AppTooltip.vue";
+import AppTooltip from "@/Pages/Components/Globals/AppTooltip.vue";
 import { getCurrentInstance } from "vue";
 
 defineOptions({
@@ -81,9 +81,7 @@ const onItemMouseLeave = () => {
         </h5>
         <span>></span>
         <h5>
-          <Link href="/settings/layouts"
-            >{{ $t("layouts.label") }}
-          </Link>
+          <Link href="/settings/layouts">{{ $t("layouts.label") }} </Link>
         </h5>
         <span>></span>
         <h6>{{ module.label }}</h6>

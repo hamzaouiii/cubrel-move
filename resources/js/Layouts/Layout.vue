@@ -1,8 +1,8 @@
 <script setup>
-import Sidebar from "@/Pages/Components/Sidebar.vue";
-import Topbar from "@/Pages/Components/Topbar.vue";
-import Alerts from "@/Pages/Components/Alerts.vue";
-import ConfirmOverlay from "@/Pages/Components/ConfirmOverlay.vue";
+import Sidebar from "@/Pages/Components/Globals/Sidebar.vue";
+import Topbar from "@/Pages/Components/Globals/Topbar.vue";
+import Alerts from "@/Pages/Components/Globals/Alerts.vue";
+import ConfirmOverlay from "@/Pages/Components/Globals/ConfirmOverlay.vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed, provide } from "vue";
 
