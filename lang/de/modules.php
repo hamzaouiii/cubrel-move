@@ -36,6 +36,7 @@ return [
     'deleting'          => "Wird gelöscht...",
     'delete_yes'      => "Ja",
     'delete_no'      => "Nein",
+    'no_data_entered' => "Sie haben keine neuen Daten eingegeben, es wird kein Datensatz gespeichert!"
   ],
   'delete' => [
     'confirm_delete' => 'Löschen bestätigen',

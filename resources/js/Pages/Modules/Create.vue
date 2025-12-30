@@ -3,7 +3,7 @@ import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
-const { success, error, info, clearAllAlerts } = useAlerts();
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
@@ -14,7 +14,6 @@ const props = defineProps({
   title: String,
   recordLayout: Object,
 });
-console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -46,20 +45,24 @@ const handleClickOutsideActionDropDown = (event) => {
 };
 
 const saveRecord = () => {
-  info(t("modules.actions.saving"));
+  if (!form.isDirty) {
+    warning(t("modules.actions.no_data_entered"));
+  } else {
+    info(t("modules.actions.saving"));
 
-  const moduleSlug = props.module.slug ?? props.module;
-  const url = `/${moduleSlug}`;
-  form.post(url, {
-    onSuccess: () => {
-      clearAllAlerts();
-      success(t("modules.actions.save_success"));
-    },
-    onError: () => {
-      clearAllAlerts();
-      error(t("modules.actions.save_error") + form.errors);
-    },
-  });
+    const moduleSlug = props.module.slug ?? props.module;
+    const url = `/${moduleSlug}`;
+    form.post(url, {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("modules.actions.save_success"));
+      },
+      onError: () => {
+        clearAllAlerts();
+        error(t("modules.actions.save_error") + form.errors);
+      },
+    });
+  }
 };
 
 const cancelCreate = () => {
@@ -69,6 +72,7 @@ const cancelCreate = () => {
 
 function handleKeydown(e) {
   if (e.ctrlKey && e.key === "s") {
+    console.log("Here");
     e.preventDefault();
     saveRecord();
   }
@@ -121,6 +125,7 @@ const appSettings = usePage().props.appSettings;
 
           <button
             class="module-layout__header__actions__create_save-btn"
+            :disabled="!form.isDirty"
             @click="saveRecord"
           >
             {{ $t("modules.actions.save") || "Save" }}

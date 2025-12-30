@@ -38,6 +38,7 @@ return [
     'delete_confirm'      => "Are you sure you want to delete this record ?",
     'delete_yes'      => "Yes",
     'delete_no'      => "No",
+    'no_data_entered' => "You have enetered no new data, No record will be saved!"
   ],
   'delete' => [
     'confirm_delete'  => 'Confirm Delete',
