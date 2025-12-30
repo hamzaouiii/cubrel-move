@@ -280,7 +280,10 @@ const getTextareaRows = (f) => {
 
             <div
               v-if="!isEditing"
-              :class="['field', { 'view-uneditable-field': f.readonly }]"
+              :class="[
+                'module-layout__content__section__layout__field__content',
+                { 'view-uneditable-field': f.readonly },
+              ]"
               @click="!f.readonly && enableEditing()"
             >
               <span>

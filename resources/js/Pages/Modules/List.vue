@@ -318,20 +318,20 @@ const handleMassUpdate = async (payload) => {
     <title>{{ title }}</title>
   </Head>
 
-  <div class="ar-main-container">
-    <div class="ar-main-container_header">
-      <div class="ar-main-container_header_details">
-        <h1 class="ar-main-container_header_details_title">
+  <div class="module-layout">
+    <div class="module-layout__header">
+      <div class="module-layout__header__details">
+        <h3 class="module-layout__header__details__title">
           {{ $t(module.label) }}
-        </h1>
-        <span class="ar-main-container_header_details_meta">{{
+        </h3>
+        <span class="module-layout__header__details__meta">{{
           recordsNumberPhrase
         }}</span>
       </div>
 
-      <div class="ar-main-container_header_actions" ref="actionDropDownref">
+      <div class="module-layout__header__actions" ref="actionDropDownref">
         <div
-          class="input-group actions_container"
+          class="module-layout__header__actions__list"
           :style="
             appSettings.use_individual_module_colors == '0'
               ? { '--module-color': appSettings.primary_color }
@@ -341,8 +341,7 @@ const handleMassUpdate = async (payload) => {
           <input
             type="text"
             name="search"
-            class="search-input"
-            aria-label="Text input with segmented dropdown button"
+            class="module-layout__header__actions__list__search"
             :placeholder="$t('modules.actions.search_placeholder')"
             v-model="search"
             @input="handleSearchInput"
@@ -351,21 +350,18 @@ const handleMassUpdate = async (payload) => {
 
           <span
             @click="resetSearchValue()"
-            :class="['search-reseter', { 'hide-reseter': !search }]"
+            :class="[
+              'module-layout__header__actions__list__search-reseter',
+              { 'hide-reseter': !search },
+            ]"
             ><i class="fa-regular fa-circle-xmark"></i>
           </span>
 
-          <button type="button" class="main-btn" @click="goToCreateView()">
+          <button @click="goToCreateView()">
             {{ $t("modules.actions.create") }}
           </button>
 
-          <button
-            @click="toggleActionDropDown"
-            type="button"
-            class="dropdown-btn"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
+          <button @click="toggleActionDropDown">
             <i
               :class="
                 showActionDropDown
@@ -373,30 +369,35 @@ const handleMassUpdate = async (payload) => {
                   : 'fa-solid fa-chevron-down'
               "
             ></i>
-            <span class="visually-hidden">Toggle Dropdown</span>
           </button>
 
           <transition name="fade">
             <ul
               v-if="showActionDropDown"
-              class="ar-dropdown ar-dropdown-end show"
+              class="module-layout__header__actions__list__dropdown show"
             >
               <li>
-                <Link class="ar-dropdown-item" :href="editModuleUrl">
+                <Link
+                  class="module-layout__header__actions__list__dropdown__item"
+                  :href="editModuleUrl"
+                >
                   <i class="fa-solid fa-wrench"></i>
                   {{ $t("modules.actions.edit_module") }}
                 </Link>
               </li>
               <li>
-                <span class="ar-dropdown-item" @click="toggleMassUpdateZone()">
+                <span
+                  class="module-layout__header__actions__list__dropdown__item"
+                  @click="toggleMassUpdateZone()"
+                >
                   <i class="fa-solid fa-square-pen"></i>
                   {{ $t("modules.actions.mass_update") }}
                 </span>
               </li>
-              <li><hr class="ar-dropdown-divider" /></li>
+
               <li>
                 <span
-                  class="ar-dropdown-item ar-dropdown-item-delete"
+                  class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
                   @click.prevent="toggleDeleteZone()"
                 >
                   <i class="fa-solid fa-trash-can"></i>
@@ -410,7 +411,7 @@ const handleMassUpdate = async (payload) => {
     </div>
 
     <div
-      class="ar-main-container_content"
+      class="module-layout__content"
       :style="
         appSettings.use_individual_module_colors == '0'
           ? { '--module-color': appSettings.primary_color }
@@ -441,10 +442,15 @@ const handleMassUpdate = async (payload) => {
           @clearSelection="clearSelection()"
           @cancelClicked="resetActionZone()"
         />
-        <table class="ar-main-container_content_table">
+        <table class="module-layout__content__table">
           <thead>
             <tr>
-              <th v-if="bulkActionmode" scope="col" class="bulk-select-col">
+              <th
+                v-if="bulkActionmode"
+                scope="col"
+                class="module-layout__content__table__bulk-select"
+                @click="preventDefault()"
+              >
                 <input
                   type="checkbox"
                   :checked="allSelected"
@@ -471,7 +477,11 @@ const handleMassUpdate = async (payload) => {
                 class="clickable-row"
                 :href="`/${module.slug}/${item.id}`"
               >
-                <td v-if="bulkActionmode" class="bulk-select-col">
+                <td
+                  v-if="bulkActionmode"
+                  @click.stop
+                  class="module-layout__content__table__bulk-select"
+                >
                   <input
                     type="checkbox"
                     :checked="isSelected(item.id) || allMatchingSelected"

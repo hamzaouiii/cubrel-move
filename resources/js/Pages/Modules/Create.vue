@@ -134,27 +134,29 @@ const appSettings = usePage().props.appSettings;
       </div>
     </div>
 
-    <div class="module-layout_content">
+    <div class="module-layout__content">
       <div
-        class="module-layout_content_section"
+        class="module-layout__content__section"
         v-for="s in recordLayout.sections"
         :key="s.name"
       >
-        <div class="module-layout_content_section_title">
+        <div class="module-layout__content__section__title">
           {{ s.name }}
         </div>
 
-        <div class="module-layout_content_section_layout">
+        <div class="module-layout__content__section__layout">
           <div
             v-for="f in s.layout.filter((f) => !f.readonly)"
             :key="f.key"
-            class="module-layout_content_section_layout_field"
+            class="module-layout__content__section__layout__field"
           >
-            <span class="module-layout_content_section_layout_field_label">
+            <span class="module-layout__content__section__layout__field__label">
               {{ $t(f.label) }}:
             </span>
 
-            <div class="field editing-mode">
+            <div
+              class="module-layout__content__section__layout__field__content editing-mode"
+            >
               <template v-if="f.format === 'datetime'">
                 <input type="date" v-model="form[f.key]" />
               </template>
