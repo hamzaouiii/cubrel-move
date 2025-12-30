@@ -552,12 +552,7 @@ $color-white: #ffffff;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-      90deg,
-      $color-body-bg 25%,
-      lighten($color-body-bg, 5%) 50%,
-      $color-body-bg 75%
-    );
+    background: linear-gradient(90deg, $color-body-bg 25%, $color-body-bg 75%);
     background-size: 200% 100%;
     animation: placeholder-wave 1.5s linear infinite;
   }
