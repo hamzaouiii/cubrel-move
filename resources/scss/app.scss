@@ -4,7 +4,7 @@
 @use "settings";
 @use "layouts";
 @use "globals"; // cleaned
-
+@use "temp";
 * {
   margin: 0;
   padding: 0;
@@ -14,7 +14,9 @@ body {
   font-family: "Fira Sans", "Heebo", sans-serif;
   margin-bottom: 0 !important;
 }
-
+.unsupported-device {
+  display: none;
+}
 @media (max-width: 1024px) {
   .unsupported-device {
     display: flex;

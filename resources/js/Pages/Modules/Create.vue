@@ -2,7 +2,6 @@
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from "vue";
-import { formatDateTime } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
@@ -36,10 +35,6 @@ const buildInitialForm = () => {
 const form = useForm(buildInitialForm());
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-
-const toggleActionDropDown = () => {
-  showActionDropDown.value = !showActionDropDown.value;
-};
 
 const handleClickOutsideActionDropDown = (event) => {
   if (
@@ -103,97 +98,54 @@ const appSettings = usePage().props.appSettings;
   </Head>
 
   <div
-    class="ar-main-container"
+    class="module-layout"
     :style="
       appSettings.use_individual_module_colors == '0'
         ? { '--module-color': appSettings.primary_color }
         : { '--module-color': module.color }
     "
   >
-    <div class="ar-main-container_header">
-      <div class="ar-main-container_header_details">
-        <h1 class="ar-main-container_header_details_title"></h1>
+    <div class="module-layout__header">
+      <div class="module-layout__header__details">
+        <h1 class="module-layout__header__details__title"></h1>
       </div>
 
-      <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group">
+      <div class="module-layout__header__actions" ref="actionDropDownref">
+        <div class="module-layout__header__actions__create">
           <button
-            type="button"
-            class="record-main-btn cancel-btn"
+            class="module-layout__header__actions__create__cancel-btn"
             @click="cancelCreate"
           >
             {{ $t("modules.actions.cancel") || "Cancel" }}
           </button>
 
-          <button type="button" class="record-main-btn" @click="saveRecord">
+          <button
+            class="module-layout__header__actions__create_save-btn"
+            @click="saveRecord"
+          >
             {{ $t("modules.actions.save") || "Save" }}
           </button>
-
-          <button
-            @click="toggleActionDropDown"
-            type="button"
-            class="record-dropdown-btn"
-            aria-expanded="false"
-          >
-            <i
-              :class="
-                showActionDropDown
-                  ? 'fa-solid fa-chevron-up'
-                  : 'fa-solid fa-chevron-down'
-              "
-            ></i>
-            <span class="visually-hidden">Toggle Dropdown</span>
-          </button>
-
-          <transition name="fade">
-            <ul
-              v-if="showActionDropDown"
-              class="dropdown-menu dropdown-menu-end show"
-            >
-              <li>
-                <a class="dropdown-item disabled" href="#">{{
-                  $t("modules.actions.share")
-                }}</a>
-              </li>
-              <li>
-                <a class="dropdown-item disabled" href="#">{{
-                  $t("modules.actions.export")
-                }}</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">{{
-                  $t("modules.actions.placeholder")
-                }}</a>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a class="dropdown-item" href="#">{{
-                  $t("modules.actions.bulk_action")
-                }}</a>
-              </li>
-            </ul>
-          </transition>
         </div>
       </div>
     </div>
 
-    <div class="ar-main-container_content">
+    <div class="module-layout_content">
       <div
-        class="ar-main-container_content_section card-shadow"
+        class="module-layout_content_section"
         v-for="s in recordLayout.sections"
         :key="s.name"
       >
-        <div class="ar-main-container_content_section_title">
+        <div class="module-layout_content_section_title">
           {{ s.name }}
         </div>
 
-        <div class="ar-main-container_content_section_layout">
+        <div class="module-layout_content_section_layout">
           <div
             v-for="f in s.layout.filter((f) => !f.readonly)"
             :key="f.key"
-            class="ar-main-container_content_section_layout_field"
+            class="module-layout_content_section_layout_field"
           >
-            <span class="ar-main-container_content_section_layout_field_label">
+            <span class="module-layout_content_section_layout_field_label">
               {{ $t(f.label) }}:
             </span>
 
