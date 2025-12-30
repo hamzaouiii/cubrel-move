@@ -15,8 +15,8 @@
 
       &__title {
         font-size: 2.5rem;
-        margin-right: 20px;
-        @media (max-width: 1200px) {
+        margin-left: 50px;
+        @media (max-width: 1250px) {
           font-size: 2rem;
         }
         @media (max-width: 988px) {
@@ -43,14 +43,53 @@
         border-radius: 5px;
         overflow: hidden;
         &__cancel-btn {
-          background: rgb(170, 170, 170) !important;
+          background: rgb(170, 170, 170);
+        }
+      }
+      &__edit {
+        position: relative;
+        border-radius: 5px;
+        overflow: hidden;
+        &__cancel-btn {
+          background: rgb(170, 170, 170);
+        }
+        &__dropdown-btn {
+          border-top-right-radius: 5px !important;
+          border-bottom-right-radius: 5px !important;
+          border: none !important;
+        }
+        &__dropdown {
+          background: white;
+          border-radius: 8px;
+          position: fixed;
+          padding: 0.5rem 0;
+          list-style: none;
+          min-width: 160px;
+          font-size: 1rem;
+          box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+            rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+          right: 25px;
+          margin-top: 5px;
+          &__item {
+            display: flex;
+            padding: 8px 14px;
+            color: #333;
+            text-decoration: none;
+            align-items: center;
+            cursor: pointer;
+            &:hover {
+              background: #f5f5f5;
+            }
+            i {
+              width: 33px;
+            }
+          }
         }
       }
       button {
         background-color: var(--module-color);
         color: white;
         padding: 8px;
-
         border: none;
         cursor: pointer;
         @media (max-width: 780px) {
@@ -66,7 +105,7 @@
         }
         &:disabled {
           cursor: not-allowed;
-          background: rgb(197, 197, 197) !important;
+          background: rgb(197, 197, 197);
         }
       }
 
@@ -122,19 +161,14 @@
         padding: 8px;
         border-right: 2px solid lightblue;
       }
-      .record-dropdown-btn {
-        border-radius: 5px;
-        border-top-right-radius: 5px !important;
-        border-bottom-right-radius: 5px !important;
-        border: none !important;
-      }
+
       .cancel-btn {
         background: rgb(170, 170, 170) !important;
       }
     }
   }
 
-  &_content {
+  &__content {
     &_table {
       margin: 25px 25px;
       font-size: 0.9em;
@@ -189,7 +223,7 @@
         pointer-events: none;
       }
     }
-    &_section {
+    &__section {
       display: flex;
       flex-direction: column;
       margin: 25px 50px;
@@ -198,12 +232,12 @@
       border-radius: 8px;
       box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
         rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-      &_title {
+      &__title {
         display: block;
         font-size: 0.75rem;
         color: #323450;
       }
-      &_layout {
+      &__layout {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -211,12 +245,12 @@
         flex-wrap: wrap;
         gap: 1.25rem;
 
-        &_field {
+        &__field {
           display: flex;
           flex-direction: column;
           flex: 1 1 calc(50% - 0.625rem); // 2 per row, minus half the gap
 
-          .field {
+          &__content {
             width: 420px;
             font-size: 1.2rem;
             font-weight: 500;

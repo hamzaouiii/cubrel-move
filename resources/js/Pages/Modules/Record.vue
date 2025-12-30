@@ -24,7 +24,6 @@ const props = defineProps({
   record: Object,
   recordLayout: Object,
 });
-console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -182,53 +181,36 @@ const getTextareaRows = (f) => {
   </Head>
 
   <div
-    class="ar-main-container"
+    class="module-layout"
     :style="
       appSettings.use_individual_module_colors == '0'
         ? { '--module-color': appSettings.primary_color }
         : { '--module-color': module.color }
     "
   >
-    <div class="ar-main-container_header">
-      <div class="ar-main-container_header_details">
-        <h1 class="ar-main-container_header_details_title">
+    <div class="module-layout__header">
+      <div class="module-layout__header__details">
+        <h3 class="module-layout__header__details__title">
           {{ record.name }}
-        </h1>
+        </h3>
       </div>
-      <div class="ar-main-container_header_actions" ref="actionDropDownref">
-        <div class="input-group">
-          <button
-            v-if="isEditing"
-            type="button"
-            class="record-main-btn cancel-btn"
-            @click="cancelEditing"
-          >
+      <div class="module-layout__header__actions" ref="actionDropDownref">
+        <div class="module-layout__header__actions__edit">
+          <button v-if="isEditing" @click="cancelEditing">
             {{ $t("modules.actions.cancel") }}
           </button>
 
-          <button
-            v-if="!isEditing"
-            type="button"
-            class="record-main-btn"
-            @click="enableEditing"
-          >
+          <button v-if="!isEditing" @click="enableEditing">
             {{ $t("modules.actions.edit") }}
           </button>
 
-          <button
-            v-else
-            type="button"
-            :class="['record-main-btn', { disabled: !isDirty }]"
-            :disabled="!isDirty"
-            @click="saveRecord"
-          >
+          <button v-else :disabled="!isDirty" @click="saveRecord">
             {{ $t("modules.actions.save") }}
           </button>
 
           <button
             @click="toggleActionDropDown"
-            type="button"
-            class="record-dropdown-btn"
+            class="module-layout__header__actions__edit__dropdown-btn"
           >
             <i
               :class="
@@ -243,38 +225,35 @@ const getTextareaRows = (f) => {
           <transition name="fade">
             <ul
               v-if="showActionDropDown"
-              class="dropdown-menu dropdown-menu-end show"
+              class="module-layout__header__actions__edit__dropdown show"
             >
-              <li>
-                <a class="dropdown-item disabled" href="#">{{
-                  $t("modules.actions.share")
-                }}</a>
+              <li
+                class="module-layout__header__actions__edit__dropdown__item disabled"
+              >
+                <i class="fa-solid fa-share-from-square"></i>
+                <span>{{ $t("modules.actions.share") }}</span>
               </li>
-              <li>
-                <a class="dropdown-item disabled" href="#">{{
-                  $t("modules.actions.export")
-                }}</a>
+              <li
+                class="module-layout__header__actions__edit__dropdown__item disabled"
+              >
+                <i class="fa-solid fa-download"></i>
+                <span>{{ $t("modules.actions.export") }}</span>
               </li>
-              <li>
-                <a class="dropdown-item" href="#">{{
-                  $t("modules.actions.placeholder")
-                }}</a>
+              <li class="module-layout__header__actions__edit__dropdown__item">
+                <i class="fa-solid fa-hourglass-end"></i>
+                <span>{{ $t("modules.actions.placeholder") }}</span>
               </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a class="dropdown-item" href="#">{{
-                  $t("modules.actions.bulk_action")
-                }}</a>
+              <li class="module-layout__header__actions__edit__dropdown__item">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>{{ $t("modules.actions.bulk_action") }}</span>
               </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a
-                  @click="deleteRecord()"
-                  class="dropdown-item"
-                  href="#"
-                  style="color: salmon"
-                  >{{ $t("modules.actions.delete") }}</a
-                >
+              <li
+                @click="deleteRecord()"
+                class="module-layout__header__actions__edit__dropdown__item"
+                style="color: salmon"
+              >
+                <i class="fa-solid fa-trash-can"></i>
+                <span>{{ $t("modules.actions.delete") }}</span>
               </li>
             </ul>
           </transition>
@@ -282,20 +261,20 @@ const getTextareaRows = (f) => {
       </div>
     </div>
 
-    <div class="ar-main-container_content">
+    <div class="module-layout__content">
       <div
-        class="ar-main-container_content_section card-shadow"
+        class="module-layout__content__section"
         v-for="s in recordLayout.sections"
       >
-        <div class="ar-main-container_content_section_title">
+        <div class="module-layout__content__section__title">
           {{ s.name }}
         </div>
-        <div class="ar-main-container_content_section_layout">
+        <div class="module-layout__content__section__layout">
           <div
             v-for="f in s.layout"
-            class="ar-main-container_content_section_layout_field"
+            class="module-layout__content__section__layout__field"
           >
-            <span class="ar-main-container_content_section_layout_field_label">
+            <span class="module-layout__content__section__layout__field__label">
               {{ $t(f.label) }}:
             </span>
 
@@ -310,7 +289,7 @@ const getTextareaRows = (f) => {
             </div>
             <div
               :class="[
-                'field',
+                'module-layout__content__section__layout__field__content',
                 'editing-mode',
                 { 'uneditable-field': f.readonly },
               ]"
