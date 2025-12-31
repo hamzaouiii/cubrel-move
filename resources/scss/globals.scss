@@ -174,7 +174,11 @@
 }
 
 .pagination {
-  margin-left: 20px;
+  margin-left: 2rem;
+  margin-top: 1rem;
+  display: flex;
+  padding-left: 0;
+  list-style: none;
   &__item {
     background-color: white;
     padding: 10px;
@@ -182,6 +186,9 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+
+    color: var(--module-color);
+
     &:hover {
       background-color: lightgray;
     }
@@ -204,7 +211,7 @@
     }
     &--active {
       background-color: var(--module-color);
-      color: lightgray;
+      color: white !important;
       cursor: default;
       &:hover {
         background-color: var(--module-color);
@@ -475,4 +482,32 @@
   white-space: nowrap;
   z-index: 9999;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn {
+  cursor: pointer;
+  border: 2px solid;
+  padding: 5px 15px;
+  border-radius: 8px;
+  transition: all 0.15s ease-in-out;
+  background-color: white;
+
+  --btn-color: black;
+  --btn-bg-hover: black;
+
+  color: var(--btn-color);
+  border-color: var(--btn-color);
+
+  &:hover:not(:disabled) {
+    color: white;
+    background-color: var(--btn-bg-hover);
+    border-color: var(--btn-bg-hover);
+  }
+
+  &:disabled {
+    color: darkgray;
+    background-color: lightgray;
+    border-color: darkgray;
+    cursor: not-allowed;
+  }
 }

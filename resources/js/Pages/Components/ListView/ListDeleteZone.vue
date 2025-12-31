@@ -44,7 +44,7 @@ const totalSelected = computed(() => {
 
 <template>
   <div class="delete-zone">
-    <div class="delete-zone_text">
+    <div class="delete-zone__text">
       <div v-if="!totalSelected">
         <span>{{ $t("modules.delete.description") }}</span>
       </div>
@@ -63,19 +63,22 @@ const totalSelected = computed(() => {
       </span>
       <span v-else> </span>
     </div>
-    <div class="delete-zone_actions">
+    <div class="delete-zone__actions">
       <button
         :disabled="!totalSelected"
-        class="cancle-delete-btn"
+        class="btn delete-zone__actions__cancel"
         @click="emitClearSelection()"
       >
         {{ $t("modules.delete.clear_selection") }}
       </button>
-      <button class="cancle-delete-btn" @click="emitCancelClicked">
+      <button
+        class="delete-zone__actions__cancel btn"
+        @click="emitCancelClicked"
+      >
         {{ $t("modules.actions.cancel") }}
       </button>
       <button
-        class="confirm-delete-btn"
+        class="delete-zone__actions__delete btn"
         @click="emitDeleteClicked"
         :disabled="!totalSelected"
       >

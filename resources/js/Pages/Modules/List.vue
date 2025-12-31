@@ -449,7 +449,7 @@ const handleMassUpdate = async (payload) => {
                 v-if="bulkActionmode"
                 scope="col"
                 class="module-layout__content__table__bulk-select"
-                @click="preventDefault()"
+                @click.stop
               >
                 <input
                   type="checkbox"

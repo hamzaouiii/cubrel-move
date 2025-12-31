@@ -76,21 +76,23 @@ const pageKey = (page) => page.page;
 <template>
   <nav v-if="meta" class="mt-3" aria-label="Pagination">
     <ul class="pagination">
+      <!-- Previous -->
       <li
         :class="[
           'pagination__item',
           { 'pagination__item--disabled': !meta.links?.prev },
         ]"
+        role="link"
+        tabindex="0"
+        :aria-disabled="!meta.links?.prev"
+        @click="meta.links?.prev && goTo(meta.links.prev)"
+        @keydown.enter.prevent="meta.links?.prev && goTo(meta.links.prev)"
+        @keydown.space.prevent="meta.links?.prev && goTo(meta.links.prev)"
       >
-        <a
-          href="#"
-          @click.prevent="meta.links?.prev && goTo(meta.links.prev)"
-          :aria-disabled="!meta.links?.prev"
-        >
-          {{ $t("pagination.previous") }}
-        </a>
+        <span>{{ $t("pagination.previous") }}</span>
       </li>
 
+      <!-- Pages -->
       <li
         v-for="page in pagesToShow"
         :key="pageKey(page)"
@@ -101,33 +103,34 @@ const pageKey = (page) => page.page;
             'pagination__item--disabled': page.ellipsis,
           },
         ]"
+        role="link"
+        tabindex="0"
+        :aria-disabled="page.active || page.ellipsis"
+        @click="!page.active && !page.ellipsis && goTo(page.url)"
+        @keydown.enter.prevent="
+          !page.active && !page.ellipsis && goTo(page.url)
+        "
+        @keydown.space.prevent="
+          !page.active && !page.ellipsis && goTo(page.url)
+        "
       >
-        <span v-if="page.ellipsis" aria-hidden="true">
-          {{ page.label }}
-        </span>
-
-        <a v-else-if="!page.active" href="#" @click.prevent="goTo(page.url)">
-          {{ page.label }}
-        </a>
-
-        <span v-else>
-          {{ page.label }}
-        </span>
+        <span>{{ page.label }}</span>
       </li>
 
+      <!-- Next -->
       <li
         :class="[
           'pagination__item',
           { 'pagination__item--disabled': !meta.links?.next },
         ]"
+        role="link"
+        tabindex="0"
+        :aria-disabled="!meta.links?.next"
+        @click="meta.links?.next && goTo(meta.links.next)"
+        @keydown.enter.prevent="meta.links?.next && goTo(meta.links.next)"
+        @keydown.space.prevent="meta.links?.next && goTo(meta.links.next)"
       >
-        <a
-          href="#"
-          @click.prevent="meta.links?.next && goTo(meta.links.next)"
-          :aria-disabled="!meta.links?.next"
-        >
-          {{ $t("pagination.next") }}
-        </a>
+        <span>{{ $t("pagination.next") }}</span>
       </li>
     </ul>
   </nav>

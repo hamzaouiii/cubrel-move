@@ -219,7 +219,6 @@ const getTextareaRows = (f) => {
                   : 'fa-solid fa-chevron-down'
               "
             ></i>
-            <span class="visually-hidden">Toggle Dropdown</span>
           </button>
 
           <transition name="fade">

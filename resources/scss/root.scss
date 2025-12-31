@@ -28,80 +28,6 @@
   }
 }
 
-.delete-zone {
-  margin: 25px;
-  display: flex;
-  width: 95%;
-  padding: 20px;
-  justify-content: space-between;
-
-  &_text {
-    display: flex;
-    flex-direction: column;
-    width: 400px;
-    font-family: "Fira Sans", "Heebo", sans-serif;
-    .select-all-in-scope {
-      cursor: pointer;
-      color: deepskyblue;
-      transition: all 0.1s ease;
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-    .selected-count {
-      visibility: hidden;
-    }
-  }
-  &_actions {
-    width: 500px;
-    display: flex;
-    justify-content: space-around;
-    button {
-      all: unset;
-      cursor: pointer;
-      border: 2px solid;
-      padding: 5px 20px;
-      border-radius: 8px;
-      transition: all 0.15s ease-in-out;
-      height: 35px;
-      &:disabled {
-        color: darkgray;
-        background-color: lightgray;
-        border-color: darkgray;
-        cursor: not-allowed;
-      }
-    }
-    .confirm-delete-btn {
-      color: salmon;
-      border-color: salmon;
-      &:hover {
-        color: white;
-        background-color: salmon;
-        &:disabled {
-          color: darkgray;
-          background-color: lightgray;
-          border-color: darkgray;
-          cursor: not-allowed;
-        }
-      }
-    }
-    .cancle-delete-btn {
-      border-color: var(--module-color);
-      color: var(--module-color);
-      &:hover {
-        color: white;
-        background-color: var(--module-color);
-      }
-      &:disabled {
-        color: darkgray;
-        background-color: lightgray;
-        border-color: darkgray;
-        cursor: not-allowed;
-      }
-    }
-  }
-}
-
 .mass-update-zone {
   margin: 25px;
   width: 95%;
@@ -180,13 +106,4 @@
 
 .hide-this {
   visibility: hidden;
-}
-
-.select-all-in-scope {
-  cursor: pointer;
-  color: deepskyblue;
-  transition: all 0.1s ease;
-  &:hover {
-    text-decoration: underline;
-  }
 }
