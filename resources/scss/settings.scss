@@ -21,12 +21,12 @@
     border-radius: 5px;
     width: 250px;
   }
-  &_header {
+  &__header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 20px;
-    &_search {
+    &__search {
       input {
         all: unset;
         border: 2px solid lightgrey;
@@ -36,21 +36,12 @@
         font-family: "Fira Sans", "Heebo", sans-serif;
       }
     }
-    &_title {
+    &__title {
       display: flex;
       flex-direction: row;
       align-items: baseline;
-      h6,
-      span {
-        margin: 5px 0 0 5px;
-        font-size: 0.8rem;
-      }
-      h5 {
-        font-size: 1rem;
-        margin: 5px 0 0 5px;
-      }
     }
-    &_action {
+    &__action {
       .create-btn {
         all: unset;
         border: 2px solid #0d6efd;
@@ -68,6 +59,8 @@
     }
   }
   &_content {
+    // display: flex;
+    // flex-direction: column;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;

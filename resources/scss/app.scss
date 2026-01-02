@@ -1,9 +1,9 @@
-@use "sidebar"; // cleaned !
-@use "fonts"; // cleaned !
+@use "sidebar";
+@use "fonts";
 @use "settings";
 @use "layouts";
-@use "globals"; // cleaned
-@use "modules"; //  cleaned
+@use "globals";
+@use "modules";
 
 * {
   margin: 0;
@@ -13,6 +13,7 @@
 body {
   font-family: "Fira Sans", "Heebo", sans-serif;
   margin-bottom: 0 !important;
+  color: #323450;
 }
 
 .root {
@@ -20,6 +21,12 @@ body {
   background: #f5f6fa;
   background-size: 100% 100%;
   display: flex;
+  background-color: #f5f6fa;
+  background-image: radial-gradient(
+    #a0a0a029 1.2000000000000002px,
+    #f5f6fa3d 1.2000000000000002px
+  );
+  background-size: 24px 24px;
   &__content {
     padding-top: 20px;
     flex-grow: 1;
@@ -59,4 +66,22 @@ button,
 input,
 textarea {
   font-size: inherit;
+}
+
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  color: #323450;
+  margin-bottom: 0;
+  font-family: "Fira Sans", sans-serif;
 }

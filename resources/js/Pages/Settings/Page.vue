@@ -5,6 +5,7 @@ import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 import DropdownField from "../Components/Settings/FiledTypes/DropdownField.vue";
 import Switcher from "../Components/Settings/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import Checkbox from "../Components/Settings/FiledTypes/Checkbox.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -95,7 +96,7 @@ const isDirty = () => form.isDirty;
           <label>{{ i.label || i.key }}</label>
 
           <template v-if="i.type === 'bool'">
-            <input type="checkbox" v-model="form.values[index].value" />
+            <Checkbox v-model="form.values[index].value"></Checkbox>
           </template>
 
           <template v-else-if="inputTypeFor(i.type) === 'datetime'">
