@@ -1,6 +1,9 @@
 .settings {
   display: flex;
   flex-direction: column;
+  max-width: 1440px;
+  margin: auto;
+  justify-content: center;
   input[type="text"] {
     all: unset;
     font-family: "Fira Sans", "Heebo", sans-serif;
