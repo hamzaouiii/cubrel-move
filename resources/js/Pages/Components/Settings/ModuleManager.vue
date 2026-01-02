@@ -19,7 +19,7 @@ const module = computed(() => page.props.receivedItem || page.props);
 </script>
 
 <template>
-  <ul class="settings_items_modules">
+  <ul class="settings__items__modules">
     <Link
       v-for="m in modules"
       :style="
@@ -28,6 +28,7 @@ const module = computed(() => page.props.receivedItem || page.props);
           : { '--module-color': m.color }
       "
       :href="currentPath + '/' + m.id"
+      class="settings__items__modules__item"
     >
       <i :class="['fa-solid', m.icon]"></i>
       {{ m.label }}
