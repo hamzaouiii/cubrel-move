@@ -413,7 +413,7 @@
     font-family: "Fira Sans", "Heebo", sans-serif;
     .select-all-in-scope {
       cursor: pointer;
-      color: deepskyblue;
+      color: var(--module-color);
       transition: all 0.1s ease;
       &:hover {
         text-decoration: underline;
@@ -434,6 +434,59 @@
     &__cancel {
       --btn-color: var(--module-color);
       --btn-bg-hover: var(--module-color);
+    }
+  }
+}
+
+.mass-update-zone {
+  margin: 25px;
+  width: 95%;
+  &__form {
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+    flex-direction: row;
+    &__update {
+      --btn-color: var(--module-color);
+      --btn-bg-hover: var(--module-color);
+    }
+    &__value {
+      font-family: "Fira Sans", "Heebo", sans-serif;
+      border: 2px solid lightgray;
+      background: none;
+      padding-left: 10px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      border-radius: 5px;
+      width: 350px;
+      color: #585978;
+      &:disabled {
+        background-color: rgb(218, 218, 218);
+        color: white;
+        border-color: rgb(218, 218, 218);
+        cursor: not-allowed;
+      }
+    }
+    .dropdown-field_button {
+      padding-left: 10px;
+      padding-top: 10px;
+    }
+    .dropdown-field_selected {
+      padding-top: 2.5px;
+      padding-bottom: 2.5px;
+    }
+  }
+  &__summary {
+    .select-all-in-scope {
+      cursor: pointer;
+      color: var(--module-color);
+      transition: all 0.1s ease;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    .hide-this {
+      visibility: hidden;
     }
   }
 }

@@ -62,19 +62,26 @@ const emitMassUpdate = () => {
 
 <template>
   <div class="mass-update-zone">
-    <div class="mass-update-form">
+    <div class="mass-update-zone__form">
       <DropdownField v-model="form.field" :options="fieldDropDownOptions" />
-      <input v-model="form.inputValue" />
+      <input v-model="form.inputValue" class="mass-update-zone__form__value" />
 
-      <button :disabled="!totalSelected" @click="emitClearSelection">
+      <button
+        class="btn mass-update-zone__form__update"
+        :disabled="!totalSelected"
+        @click="emitClearSelection"
+      >
         {{ $t("modules.update.clear_selection") }}
       </button>
-      <button @click="emitCancelClicked">
+      <button
+        class="btn mass-update-zone__form__update"
+        @click="emitCancelClicked"
+      >
         {{ $t("modules.update.cancel") }}
       </button>
 
       <button
-        class="update_confirm"
+        class="btn mass-update-zone__form__update"
         :disabled="!canSubmit"
         @click="emitMassUpdate"
       >
@@ -82,7 +89,7 @@ const emitMassUpdate = () => {
       </button>
     </div>
 
-    <div class="mass-update-summary">
+    <div class="mass-update-zone__summary">
       <div v-if="!totalSelected">
         <span>{{ $t("modules.update.description") }}</span>
       </div>
