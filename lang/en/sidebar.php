@@ -1,5 +1,6 @@
 <?php
-return[
+return [
   'expand' => 'Open Sidebar',
-  'close'  => 'Close Sidebar'
+  'close'  => 'Close Sidebar',
+  'home'    => "Dashboard",
 ];

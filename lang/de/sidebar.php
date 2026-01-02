@@ -1,5 +1,7 @@
 <?php
-return[
+return [
   'expand' => 'Seitenleiste Öffnen',
-  'close'  => 'Seitenleiste Schließen'
+  'close'  => 'Seitenleiste Schließen',
+  'home'    => "Startseite",
+
 ];

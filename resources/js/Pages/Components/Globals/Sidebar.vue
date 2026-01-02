@@ -41,15 +41,24 @@ const hideTooltip = () => {
 };
 
 const onModuleMouseEnter = (event, mod) => {
+  let text;
+  let color;
   if (!collapsedSidebar.value) return;
-
+  if (mod === "home") {
+    text = t("sidebar.home");
+    color = appSettings.primary_color;
+  } else {
+    text = mod.label;
+    color =
+      appSettings.use_individual_module_colors == "0"
+        ? appSettings.primary_color
+        : mod.color;
+  }
   const rect = event.currentTarget.getBoundingClientRect();
 
-  tooltip.text = mod.label;
-  tooltip.color =
-    appSettings.use_individual_module_colors == "0"
-      ? appSettings.primary_color
-      : mod.color;
+  tooltip.text = text;
+  tooltip.color = color;
+
   tooltip.top = rect.top + rect.height / 2;
   tooltip.left = rect.right + 10;
   tooltip.show = true;
@@ -102,6 +111,32 @@ const onCollapserMouseLeave = () => {
     </div>
 
     <div class="sidebar__module-list">
+      <Link
+        class="sidebar__module-list__item sidebar__module-list__item--home"
+        href="/#"
+        @mouseenter="onModuleMouseEnter($event, 'home')"
+        @mouseleave="onModuleMouseLeave"
+        :style="{ '--module-color': appSettings.primary_color }"
+      >
+        <div
+          :class="[
+            'sidebar__module-list__item__label',
+            { active: currentUrl === '/' },
+          ]"
+        >
+          <i
+            class="sidebar__module-list__item__label__icon fa-solid fa-house"
+          ></i>
+          <span
+            :class="[
+              'sidebar__module-list__item__label__text',
+              { hide: collapsedSidebar },
+            ]"
+            >{{ $t("sidebar.home") }}</span
+          >
+        </div>
+      </Link>
+      <hr class="sidebar__module-list__divider" />
       <Link
         class="sidebar__module-list__item"
         v-for="mod in modules"

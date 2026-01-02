@@ -13,15 +13,7 @@
   @media (max-width: 1024px) {
     min-width: 200px;
   }
-  &__logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    img {
-      width: 10em;
-      height: 100px;
-    }
-  }
+
   &__collapser {
     width: 80px;
     text-align: center;
@@ -71,7 +63,11 @@
       align-self: first baseline;
       height: 40px;
       border-radius: 5px;
-
+      &--home {
+        margin-top: -15px;
+        margin-bottom: 15px;
+        color: #4b5563;
+      }
       &__label {
         display: flex;
         justify-content: center;
@@ -110,6 +106,10 @@
           font-weight: 600;
         }
       }
+    }
+    &__divider {
+      height: 0.001rem;
+      background: #4b5563;
     }
   }
 
