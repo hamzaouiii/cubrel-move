@@ -5,6 +5,8 @@ import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
+import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -18,7 +20,6 @@ defineOptions({
 const props = defineProps({
   settingModule: Object,
 });
-
 const page = usePage();
 const form = useForm({ ...props.settingModule });
 const editableModule = reactive({ display_label: "", ...props.settingModule });
@@ -115,8 +116,13 @@ const resetForm = () => {
   </Head>
 
   <div
-    class="settings module-manager edit-module"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    class="settings"
+    :style="[
+      appSettings.use_individual_module_colors == '0'
+        ? { '--module-color': appSettings.primary_color }
+        : { '--module-color': editableModule.color },
+      { '--primary-color': appSettings.primary_color },
+    ]"
   >
     <div class="settings__header">
       <div class="settings__header__title">
@@ -136,16 +142,10 @@ const resetForm = () => {
       </div>
     </div>
     <div class="settings__module">
-      <ul class="settings__module__tabs">
-        <li
-          class="settings__module__tabs__item settings__module__tabs__item--active"
-        >
-          Module Settings
-        </li>
-        <li class="settings__module__tabs__item">Layouts</li>
-        <li class="settings__module__tabs__item">Fields</li>
-        <li class="settings__module__tabs__item">Relationships</li>
-      </ul>
+      <ModuleSettingTabs
+        :setting-module="settingModule"
+        active-key="edit"
+      ></ModuleSettingTabs>
       <div class="settings__module__edit">
         <form @submit.prevent="saveRecord">
           <div
@@ -185,10 +185,7 @@ const resetForm = () => {
             />
           </div>
 
-          <div
-            class="actions"
-            :style="{ '--module-color': editableModule.color }"
-          >
+          <div class="actions">
             <button
               @click="resetForm()"
               class="reset-btn"

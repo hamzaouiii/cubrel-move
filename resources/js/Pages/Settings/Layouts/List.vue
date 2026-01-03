@@ -17,7 +17,7 @@ const page = usePage();
 <template>
   <Head>
     <title>
-      {{ item.label }} - {{ $t("settings.label") }} - Automatisierung Regensburg
+      {{ $t("settings.label") }}
     </title>
   </Head>
   <div class="settings">

@@ -37,14 +37,7 @@ class ModuleManagerController extends Controller
   {
     $id = last($request->segments());
     $module = Module::where('id', $id)->firstOrFail();
-    //maybe I'll include the layouts later
-    // ->with([
-    //     'layouts' => function ($q) {
-    //         $q->orderBy('type')->orderBy('name');
-    //     },
-    // ])
-
-    return Inertia::render('Settings/Modules/Edit', [
+    return Inertia::render('Settings/Modules/Record', [
       'settingModule' => $module
     ]);
   }
