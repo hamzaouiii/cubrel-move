@@ -141,7 +141,7 @@ const resetForm = () => {
           <div
             v-for="[key, value] in editableFields"
             :key="key"
-            class="edit-element"
+            class="settings__module__edit__element"
           >
             <label>
               {{ $t("settings.modules." + key) }}
@@ -175,17 +175,23 @@ const resetForm = () => {
             />
           </div>
 
-          <div class="actions">
+          <div class="settings__module__edit__actions">
             <button
               @click="resetForm()"
-              class="reset-btn"
+              class="settings__module__edit__actions__reset btn"
               type="reset"
               :disabled="!isDirty"
             >
               Reset
             </button>
 
-            <button type="submit" :disabled="!isDirty">Save</button>
+            <button
+              class="settings__module__edit__actions__save btn"
+              type="submit"
+              :disabled="!isDirty"
+            >
+              Save
+            </button>
           </div>
         </form>
       </div>
