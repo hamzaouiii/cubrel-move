@@ -322,6 +322,51 @@
         }
       }
     }
+    &__layouts {
+      margin-top: 20px;
+      border-radius: 8px;
+      background: white;
+      padding: 20px;
+      border: 2px solid;
+      box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      &__item {
+        all: unset;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        font-size: 1.5rem;
+        cursor: pointer;
+        &__content {
+          display: flex;
+          flex-direction: column;
+          min-width: 100px;
+          padding: 5px;
+          border-radius: 8px;
+          transition: all 0.1s ease-in-out;
+          &:hover {
+            transform: scale(1.1);
+          }
+          &__icon {
+            font-size: 2rem;
+            text-align: center;
+          }
+          &__label {
+            text-align: center;
+          }
+          &__modifier {
+            font-size: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            margin-left: 25px;
+          }
+        }
+      }
+    }
   }
 }
 

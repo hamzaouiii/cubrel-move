@@ -4,7 +4,8 @@ import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import AppTooltip from "@/Pages/Components/Globals/AppTooltip.vue";
 import { getCurrentInstance } from "vue";
-
+import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 defineOptions({
   layout: Layout,
 });
@@ -73,59 +74,68 @@ const onItemMouseLeave = () => {
     <title>{{ module.label }} - {{ $t("settings.label") }}</title>
   </Head>
 
-  <div class="layout">
-    <div class="settings_header">
-      <div class="settings_header_title">
-        <h5>
-          <Link href="/settings">{{ $t("settings.label") }} </Link>
-        </h5>
-        <span>></span>
-        <h5>
-          <Link href="/settings/layouts">{{ $t("layouts.label") }} </Link>
-        </h5>
-        <span>></span>
-        <h6>{{ module.label }}</h6>
+  <div
+    class="settings"
+    :style="{ '--primary-color': appSettings.primary_color }"
+  >
+    <div class="settings__header">
+      <div class="settings__header__title">
+        <ModuleSettingBreadcrumbs
+          :setting-module="module"
+        ></ModuleSettingBreadcrumbs>
       </div>
     </div>
 
-    <div class="layout_list">
-      <Link class="layout_list_item" :href="currentPath + '/list'">
-        <div
-          class="layout_list_item_content"
-          @mouseenter="onItemMouseEnter($event, 'list')"
-          @mouseleave="onItemMouseLeave"
+    <div class="settings__module">
+      <ModuleSettingTabs
+        :setting-module="module"
+        active-key="layouts"
+      ></ModuleSettingTabs>
+      <div class="settings__module__layouts">
+        <Link
+          class="settings__module__layouts__item"
+          :href="currentPath + '/list'"
         >
-          <div class="layout_list_item_content_modifier">
-            <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
-            <i v-else class="fa-regular fa-square-plus"></i>
+          <div
+            class="settings__module__layouts__item__content"
+            @mouseenter="onItemMouseEnter($event, 'list')"
+            @mouseleave="onItemMouseLeave"
+          >
+            <div class="settings__module__layouts__item__content__modifier">
+              <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
+              <i v-else class="fa-regular fa-square-plus"></i>
+            </div>
+            <div class="settings__module__layouts__item__content__icon">
+              <i class="fa-solid fa-table-list"></i>
+            </div>
+            <span class="settings__module__layouts__item__content__label">
+              {{ $t("layouts.list") }}
+            </span>
           </div>
-          <div class="layout_list_item_content_icon">
-            <i class="fa-solid fa-table-list"></i>
-          </div>
-          <span class="layout_list_item_content_label">
-            {{ $t("layouts.list") }}
-          </span>
-        </div>
-      </Link>
+        </Link>
 
-      <Link class="layout_list_item" :href="currentPath + '/record'">
-        <div
-          class="layout_list_item_content"
-          @mouseenter="onItemMouseEnter($event, 'record')"
-          @mouseleave="onItemMouseLeave"
+        <Link
+          class="settings__module__layouts__item"
+          :href="currentPath + '/record'"
         >
-          <div class="layout_list_item_content_modifier">
-            <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
-            <i v-else class="fa-regular fa-square-plus"></i>
+          <div
+            class="settings__module__layouts__item__content"
+            @mouseenter="onItemMouseEnter($event, 'record')"
+            @mouseleave="onItemMouseLeave"
+          >
+            <div class="settings__module__layouts__item__content__modifier">
+              <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
+              <i v-else class="fa-regular fa-square-plus"></i>
+            </div>
+            <div class="settings__module__layouts__item__content__icon">
+              <i class="fa-regular fa-address-card"></i>
+            </div>
+            <span class="settings__module__layouts__item__content__label">
+              {{ $t("layouts.record") }}
+            </span>
           </div>
-          <div class="layout_list_item_content_icon">
-            <i class="fa-regular fa-address-card"></i>
-          </div>
-          <span class="layout_list_item_content_label">
-            {{ $t("layouts.record") }}
-          </span>
-        </div>
-      </Link>
+        </Link>
+      </div>
     </div>
   </div>
   <AppTooltip

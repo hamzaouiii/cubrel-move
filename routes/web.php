@@ -44,6 +44,53 @@ Route::middleware(['auth'])->group(function () {
     Route::post('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'store'])->name('layouts.store');
   });
 
+  Route::prefix('settings')->name('settings.')->group(function () {
+
+    // Module manager
+    Route::resource('modules', ModuleManagerController::class)
+      ->names('modules');
+
+    // Module scoped resources
+    Route::prefix('modules/{module}')
+      ->group(function () {
+
+        // Fields
+        Route::get('fields', [FieldsManagerController::class, 'index'])
+          ->name('modules.fields.index');
+
+        Route::get('fields/create', [FieldsManagerController::class, 'create'])
+          ->name('modules.fields.create');
+
+        Route::get('fields/{field}/edit', [FieldsManagerController::class, 'edit'])
+          ->name('modules.fields.edit');
+
+        Route::post('fields', [FieldsManagerController::class, 'store'])
+          ->name('modules.fields.store');
+
+        Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
+          ->name('modules.fields.update');
+
+        Route::delete('fields/{field}', [FieldsManagerController::class, 'destroy'])
+          ->name('modules.fields.destroy');
+
+
+        // Layouts
+        Route::get('layouts',  [LayoutManagerController::class, 'show'])
+          ->name('modules.layouts.show');
+
+        Route::get('layouts/{layoutType}', [LayoutManagerController::class, 'edit'])
+          ->name('modules.layouts.edit');
+
+        Route::post('layouts/{layoutType}', [LayoutManagerController::class, 'store'])
+          ->name('modules.layouts.store');
+
+
+        // Relationships (future)
+        Route::get('relationships', fn() => null)
+          ->name('modules.relationships.index');
+      });
+  });
+
 
   //System Settings
   // Route::get('/settings/system/style', [SystemSettingsController::class, 'style'])->name('settings.system.style');
