@@ -252,7 +252,6 @@
       }
     }
     &__edit {
-      margin-top: 20px;
       border-radius: 8px;
       background: white;
       padding: 20px;
@@ -306,6 +305,18 @@
         &__save {
           --btn-color: var(--primary-color);
           --btn-bg-hover: var(--primary-color);
+        }
+      }
+    }
+    &__header {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      a {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        transition: border 0.1s ease;
+        &:hover {
+          border-bottom: 2px solid;
         }
       }
     }

@@ -1,8 +1,9 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
-
+import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 defineOptions({
   layout: Layout,
 });
@@ -12,9 +13,24 @@ const props = defineProps({
   metadata: Object,
   item: Object,
 });
+const page = usePage();
+const appSettings = page.props.appSettings;
+
 const isDirty = () => {
-  return true; //for now
+  return false; //for now
 }
+const fieldsUrl = () => {
+  const key = props.metadata?.key || '';
+  const url = page.url;
+  const segments = url.split("/").filter(Boolean);
+  if(segments.at(-1) === key){
+    segments.pop();
+  }
+  const u = ("/" + segments.join("/")).toString();
+return u;
+}
+
+
 </script>
 
 <template>
@@ -24,51 +40,47 @@ const isDirty = () => {
       {{ $t("settings.label") }}
     </title>
   </Head>
-  <div class="settings">
-    <div class="settings_header">
-      <div class="settings_header_title">
-        <h5>
-          <Link href="/settings">{{ $t("settings.label") }}</Link>
-        </h5>
-        <span>></span>
-        <h5>
-          <Link href="/settings/fields">{{ $t("fields.label") }}</Link>
-        </h5>
-        <span>></span>
-        <h5>
-          <Link :href="`/settings/fields/${module.id}`">{{
-            module.label
-          }}</Link>
-        </h5>
-        <span>></span>
-        <h6>{{ metadata.label }}</h6>
+  <div class="settings"
+  :style="  { '--primary-color': appSettings.primary_color }"
+  >
+    <div class="settings__header">
+      <div class="settings__header__title">
+        <ModuleSettingBreadcrumbs :setting-module="module"></ModuleSettingBreadcrumbs>
       </div>
     </div>
-    <div class="settings_system">
-      <form @submit.prevent="saveSetting" class="settings_system_form">
-        <div
-          v-for="(i, index) in metadata"
-          :key="i.id || i.key || index"
-          class="settings_system_form_field"
-        >
-          <label>{{ index }}</label>
-          <input type="text" v-model="metadata[index]"></input>
-        </div>
-        <div class="settings_system_form_actions">
-          <button
-            type="button"
-            class="reset-btn"
-            @click="resetForm"
-            :disabled="!isDirty()"
-          >
-            {{ $t("settings.reset") }}
-          </button>
+      <ModuleSettingTabs :setting-module="module" active-key="fields"></ModuleSettingTabs>
+      <div class="settings__module__header">
+        <Link :href="fieldsUrl()"> <i class="fa-solid fa-arrow-left"></i> {{ $t('fields.back_to_list') }}</Link>
+      </div>
+      <div class="settings__module__edit">
 
-          <button type="submit" :disabled="!isDirty() ">
-            {{ $t("settings.save") }}
-          </button>
-        </div>
-      </form>
-    </div>
+        <form @submit.prevent="saveSetting" >
+          <div
+            v-for="(i, index) in metadata"
+            :key="i.id || i.key || index"
+            class="settings__module__edit__element"
+          >
+            <label>{{ index }}</label>
+            <input type="text" v-model="metadata[index]"></input>
+          </div>
+          <div class="settings__module__edit__actions">
+            <button
+              type="button"
+                class="settings__module__edit__actions__reset btn"
+
+              @click="resetForm"
+              :disabled="!isDirty()"
+            >
+              {{ $t("settings.reset") }}
+            </button>
+
+            <button type="submit" 
+                class="settings__module__edit__actions__save btn"
+            :disabled="!isDirty() ">
+              {{ $t("settings.save") }}
+            </button>
+          </div>
+        </form>
+      </div>
   </div>
 </template>

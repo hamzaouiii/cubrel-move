@@ -28,7 +28,8 @@ const props = defineProps({
   defaultLayout: Object,
   fields: Object,
 });
-const appSettings = usePage().props.appSettings;
+const page = usePage();
+const appSettings = page.props.appSettings;
 
 const listColumns = ref([]);
 const recordSections = ref([]);
@@ -248,15 +249,16 @@ const availableRecordFields = computed(() => {
   return moduleFields.value.filter((field) => !usedKeys.has(field.key));
 });
 
-const manualAlerts = ref([
-  {
-    id: 1,
-    message: "Operation successful",
-    type: "success",
-    dismissible: true,
-  },
-  { id: 2, message: "Something went wrong", type: "error", dismissible: true },
-]);
+const layoutsUrl = () => {
+  const key = props.type;
+  const url = page.url;
+  const segments = url.split("/").filter(Boolean);
+  if (segments.at(-1) === key) {
+    segments.pop();
+  }
+  const u = ("/" + segments.join("/")).toString();
+  return u;
+};
 </script>
 
 <template>
@@ -283,6 +285,12 @@ const manualAlerts = ref([
         :setting-module="module"
         active-key="layouts"
       ></ModuleSettingTabs>
+    </div>
+    <div class="settings__module__header">
+      <Link :href="layoutsUrl()">
+        <i class="fa-solid fa-arrow-left"></i>
+        {{ $t("layouts.back_to_list") }}</Link
+      >
     </div>
     <div class="layouts__editor">
       <div v-if="type === 'list'">

@@ -29,12 +29,12 @@ Route::middleware(['auth'])->group(function () {
     // module manager
     Route::resource('modules', ModuleManagerController::class)->names('modules');
 
-    // Fields Manager
-    Route::resource('fields', FieldsManagerController::class)
-      ->names('fields')
-      ->except('edit');
-    Route::get('fields/{module}/create', [FieldsManagerController::class, 'create'])->name('fields.create');
-    Route::get('fields/{module}/{field}/edit', [FieldsManagerController::class, 'edit'])->name('fields.edit');
+    // // Fields Manager
+    // Route::resource('fields', FieldsManagerController::class)
+    //   ->names('fields')
+    //   ->except('edit');
+    // Route::get('fields/{module}/create', [FieldsManagerController::class, 'create'])->name('fields.create');
+    // Route::get('fields/{module}/{field}/edit', [FieldsManagerController::class, 'edit'])->name('fields.edit');
 
 
     // Layout Manager
@@ -61,8 +61,8 @@ Route::middleware(['auth'])->group(function () {
         // Route::get('fields/create', [FieldsManagerController::class, 'create'])
         //   ->name('modules.fields.create');
 
-        // Route::get('fields/{field}/edit', [FieldsManagerController::class, 'edit'])
-        //   ->name('modules.fields.edit');
+        Route::get('fields/{field}', [FieldsManagerController::class, 'edit'])
+          ->name('modules.fields.edit');
 
         // Route::post('fields', [FieldsManagerController::class, 'store'])
         //   ->name('modules.fields.store');

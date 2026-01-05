@@ -31,6 +31,9 @@ function sortBy(key) {
 const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
+const editUrl = (f) => {
+  return `${page.url.replace(/\/+$/, "")}/${f}`;
+};
 const sortedFields = computed(() => {
   if (!sortKey.value) return props.fields;
 
@@ -43,10 +46,6 @@ const sortedFields = computed(() => {
     return 0;
   });
 });
-
-const handleEditButton = (key) => {
-  router;
-};
 </script>
 
 <template>
@@ -129,10 +128,7 @@ const handleEditButton = (key) => {
             <td>{{ f.label }}</td>
             <td>{{ f.type }}</td>
             <td style="width: 70px">
-              <Link
-                class="fields__table__row__edit btn"
-                :href="`/settings/fields/${module.id}/${f.key}/edit`"
-              >
+              <Link class="fields__table__row__edit btn" :href="editUrl(f.key)">
                 <i
                   class="fields__table__row__edit__icon fa-regular fa-pen-to-square"
                 ></i>

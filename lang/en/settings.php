@@ -58,7 +58,6 @@ return [
       'customisations' => 'Create and manage: Layouts, fields and custom modules'
     ]
   ],
-
   'items' => [
     'role_management'     => 'Role Management',
     'inbound_email'       => 'Inbound Email',
