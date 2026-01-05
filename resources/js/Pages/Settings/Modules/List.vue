@@ -3,6 +3,7 @@ import { computed } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import ModuleManager from "@/Pages/Components/Settings/ModuleManager.vue";
+import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;
 
@@ -31,13 +32,7 @@ const createUrl = computed(() => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <div class="settings__header__title__breadcrumbs">
-          <h5>
-            <Link href="/settings">{{ $t("settings.label") }}</Link>
-          </h5>
-          <span><i class="fa-solid fa-angle-right"></i></span>
-          <h6>{{ item.label }}</h6>
-        </div>
+        <ModuleSettingBreadcrumbs></ModuleSettingBreadcrumbs>
       </div>
       <div class="settings__header__action">
         <Link class="settings__header__action__create" :href="createUrl">

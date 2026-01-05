@@ -5,6 +5,8 @@ import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/IconPicker.vue";
 import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -91,19 +93,7 @@ const saveModule = () => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <div class="settings__header__title__breadcrumbs">
-          <h5>
-            <Link href="/settings">{{ $t("settings.label") }} </Link>
-          </h5>
-          <span><i class="fa-solid fa-angle-right"></i></span>
-          <h5>
-            <Link href="/settings/modules"
-              >{{ $t("settings.modules.label") }}
-            </Link>
-          </h5>
-          <span><i class="fa-solid fa-angle-right"></i></span>
-          <h6>{{ $t("settings.create_new_module") }}</h6>
-        </div>
+        <ModuleSettingBreadcrumbs></ModuleSettingBreadcrumbs>
       </div>
     </div>
 
