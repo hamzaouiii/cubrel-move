@@ -724,37 +724,6 @@
   }
 }
 
-// .fields {
-//   &__table {
-//     width: 100%;
-//     border-collapse: collapse;
-//     background: #fff;
-//     font-size: 14px;
-//     th,
-//     td {
-//       padding: 10px 12px;
-//       border-bottom: 1px solid #e5e7eb;
-//       text-align: left;
-//     }
-//     thead th {
-//       background: #f9fafb;
-//       cursor: pointer;
-//       user-select: none;
-//       font-weight: 600;
-//       &:hover {
-//         background: #f3f4f6;
-//       }
-//     }
-//     span {
-//       margin-left: 6px;
-//       font-size: 11px;
-//       opacity: 0.7;
-//     }
-//   }
-// }
-// .fields_table .fields_table thead th .fields_table tbody tr:hover {
-//   background: #f9fafb;
-// }
 .fields {
   margin: 50px;
   border-radius: 8px;
