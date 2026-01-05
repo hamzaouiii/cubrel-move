@@ -25,7 +25,7 @@ class FieldsManagerController extends Controller
       ->orderBy('id')
       ->get();
     $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
-    return Inertia::render('Settings/Fields/List', [
+    return Inertia::render('Settings/Fields/Record', [
       'item'     => $item,
       'setting_modules' => $modules
     ]);
@@ -38,17 +38,17 @@ class FieldsManagerController extends Controller
   public function create(Request $request, string $module_id)
   {
     $module = Module::query()
-    ->where('id', $module_id)
-    ->firstOrFail();
+      ->where('id', $module_id)
+      ->firstOrFail();
 
-  $routeUri = $request->route()->uri();
-  $routeUri = explode("/", $routeUri);
-  $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
-  $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
+    $routeUri = $request->route()->uri();
+    $routeUri = explode("/", $routeUri);
+    $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
+    $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
 
-  return Inertia::render('Settings/Fields/Create', [
-    'module'     => $module,
-    'item'     => $item
+    return Inertia::render('Settings/Fields/Create', [
+      'module'     => $module,
+      'item'     => $item
     ]);
   }
 

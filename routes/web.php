@@ -55,23 +55,23 @@ Route::middleware(['auth'])->group(function () {
       ->group(function () {
 
         // Fields
-        Route::get('fields', [FieldsManagerController::class, 'index'])
+        Route::get('fields', [FieldsManagerController::class, 'show'])
           ->name('modules.fields.index');
 
-        Route::get('fields/create', [FieldsManagerController::class, 'create'])
-          ->name('modules.fields.create');
+        // Route::get('fields/create', [FieldsManagerController::class, 'create'])
+        //   ->name('modules.fields.create');
 
-        Route::get('fields/{field}/edit', [FieldsManagerController::class, 'edit'])
-          ->name('modules.fields.edit');
+        // Route::get('fields/{field}/edit', [FieldsManagerController::class, 'edit'])
+        //   ->name('modules.fields.edit');
 
-        Route::post('fields', [FieldsManagerController::class, 'store'])
-          ->name('modules.fields.store');
+        // Route::post('fields', [FieldsManagerController::class, 'store'])
+        //   ->name('modules.fields.store');
 
-        Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
-          ->name('modules.fields.update');
+        // Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
+        //   ->name('modules.fields.update');
 
-        Route::delete('fields/{field}', [FieldsManagerController::class, 'destroy'])
-          ->name('modules.fields.destroy');
+        // Route::delete('fields/{field}', [FieldsManagerController::class, 'destroy'])
+        //   ->name('modules.fields.destroy');
 
 
         // Layouts

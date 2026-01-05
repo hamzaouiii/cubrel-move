@@ -2,6 +2,8 @@
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
+import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 
 defineOptions({
   layout: Layout,
@@ -53,89 +55,92 @@ const handleEditButton = (key) => {
       {{ module.label }} - {{ $t("fields.label") }} - {{ $t("settings.label") }}
     </title>
   </Head>
-
-  <div class="settings_header">
-    <div class="settings_header_title">
-      <h5>
-        <Link href="/settings">{{ $t("settings.label") }}</Link>
-      </h5>
-      <span>></span>
-      <h5>
-        <Link href="/settings/fields">{{ $t("fields.label") }}</Link>
-      </h5>
-      <span>></span>
-      <h6>{{ module.label }}</h6>
-    </div>
-    <div class="settings_header_action">
-        <Link class="create-btn" :href="createUrl"> {{$t('fields.create_new_field')}}</Link>
+  <div
+    class="settings"
+    :style="{ '--primary-color': appSettings.primary_color }"
+  >
+    <div class="settings__header">
+      <div class="settings__header__title">
+        <ModuleSettingBreadcrumbs
+          :setting-module="module"
+        ></ModuleSettingBreadcrumbs>
       </div>
-  </div>
+    </div>
+    <div class="settings__module">
+      <ModuleSettingTabs
+        :setting-module="module"
+        active-key="fields"
+      ></ModuleSettingTabs>
+    </div>
 
-  <div class="fields">
-    <table
-      class="fields_table"
-      :style="{ '--module-color': appSettings.primary_color }"
-    >
-      <thead>
-        <tr>
-          <th @click="sortBy('key')">
-            {{ $t("fields.key") }}
+    <div class="fields">
+      <div class="fields__header">
+        <Link class="fields__header_create btn" :href="createUrl">
+          {{ $t("fields.create_new_field") }}</Link
+        >
+      </div>
+      <table class="fields__table">
+        <thead>
+          <tr>
+            <th @click="sortBy('key')">
+              {{ $t("fields.key") }}
 
-            <i
-              v-if="sortKey === 'key'"
-              class="fa-solid sort-icon"
-              :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
-            ></i>
+              <i
+                v-if="sortKey === 'key'"
+                class="fa-solid sort-icon is-active"
+                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+              ></i>
 
-            <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
-          </th>
+              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
+            </th>
 
-          <th @click="sortBy('label')">
-            {{ $t("fields.field_label") }}
+            <th @click="sortBy('label')">
+              {{ $t("fields.field_label") }}
 
-            <i
-              v-if="sortKey === 'label'"
-              class="fa-solid sort-icon"
-              :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
-            ></i>
+              <i
+                v-if="sortKey === 'label'"
+                class="fa-solid sort-icon is-active"
+                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+              ></i>
 
-            <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
-          </th>
+              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
+            </th>
 
-          <th @click="sortBy('type')">
-            {{ $t("fields.type") }}
+            <th @click="sortBy('type')">
+              {{ $t("fields.type") }}
 
-            <i
-              v-if="sortKey === 'type'"
-              class="fa-solid sort-icon"
-              :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
-            ></i>
+              <i
+                v-if="sortKey === 'type'"
+                class="fa-solid sort-icon is-active"
+                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+              ></i>
 
-            <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
-          </th>
-          <th style="width: 70px"></th>
-        </tr>
-      </thead>
+              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
+            </th>
+            <th style="width: 70px"></th>
+          </tr>
+        </thead>
 
-      <tbody>
-        <tr v-for="f in sortedFields" :key="f.key">
-          <td>
-            {{ f.key }}
-          </td>
-          <td>{{ f.label }}</td>
-          <td>{{ f.type }}</td>
-          <td style="width: 70px">
-            <Link
-              class="edit-btn"
-              :href="`/settings/fields/${module.id}/${f.key}/edit`"
-            >
-              <i class="edit-icon fa-regular fa-pen-to-square"></i>
-            </Link>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        <tbody>
+          <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
+            <td>
+              {{ f.key }}
+            </td>
+            <td>{{ f.label }}</td>
+            <td>{{ f.type }}</td>
+            <td style="width: 70px">
+              <Link
+                class="fields__table__row__edit btn"
+                :href="`/settings/fields/${module.id}/${f.key}/edit`"
+              >
+                <i
+                  class="fields__table__row__edit__icon fa-regular fa-pen-to-square"
+                ></i>
+              </Link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
-
-<style scoped></style>

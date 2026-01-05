@@ -6,7 +6,6 @@ const props = defineProps({
 
 const appSettings = usePage().props.appSettings;
 const currentLocation = usePage()?.url;
-console.log(currentLocation);
 </script>
 <template>
   <div v-if="settingModule">

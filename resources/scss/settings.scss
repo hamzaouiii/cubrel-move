@@ -725,80 +725,86 @@
 }
 
 .fields {
-  margin: 50px;
+  margin-top: 20px;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5);
-  font-family: "Fira Sans", "Heebo", sans-serif;
-
-  &_table {
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 20px 0;
+    .btn {
+      --btn-color: var(--primary-color);
+      --btn-bg-hover: var(--primary-color);
+    }
+  }
+  &__table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5);
+    font-family: "Fira Sans", "Heebo", sans-serif;
     width: 100%;
     border-collapse: collapse;
     background: #fff;
     font-size: 14px;
-  }
-
-  .fields_table th,
-  .fields_table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-  }
-
-  .fields_table thead th {
-    background: #f9fafb;
-    cursor: pointer;
-    user-select: none;
-    font-weight: 600;
-  }
-
-  .fields_table thead th:hover {
-    background: #f3f4f6;
-  }
-
-  .fields_table tbody tr:hover {
-    background: #f9fafb;
-  }
-
-  .fields_table span {
-    margin-left: 6px;
-    font-size: 11px;
-    opacity: 0.7;
-  }
-  .sort-icon {
-    margin-left: 6px;
-    font-size: 12px;
-    opacity: 0;
-    transform: rotate(0deg);
-    transition: opacity 0.15s ease, transform 0.2s ease;
-  }
-
-  .fields_table th:hover .sort-icon {
-    opacity: 0.4;
-  }
-
-  .sort-icon.is-active {
-    opacity: 1;
-  }
-  .edit-btn {
-    border: 2px solid var(--module-color);
-    display: flex;
-    justify-content: center;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    width: initial;
-    .edit-icon {
-      padding: 8px;
-      color: var(--module-color);
-      transition: all 0.3s ease;
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
     }
-    &:hover {
-      background-color: var(--module-color);
-      .edit-icon {
-        color: white;
+    thead th {
+      background: #f9fafb;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      &:hover {
+        background: #f3f4f6;
+      }
+    }
+    tbody tr:hover {
+      background: #f9fafb;
+    }
+    span {
+      margin-left: 6px;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    .sort-icon {
+      margin-left: 6px;
+      font-size: 12px;
+      opacity: 0;
+      transform: rotate(0deg);
+      transition: opacity 0.15s ease, transform 0.2s ease;
+    }
+    th:hover .sort-icon {
+      opacity: 0.4;
+    }
+    .is-active {
+      opacity: 1;
+    }
+    &__row {
+      &__edit {
+        display: flex;
+        justify-content: center;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        width: initial;
+        --btn-color: var(--primary-color);
+        --btn-bg-hover: var(--primary-color);
+        &__icon {
+          padding: 2px;
+          color: var(--module-color);
+          transition: all 0.3s ease;
+        }
+        &:hover {
+          background-color: var(--module-color);
+          .edit-icon {
+            color: white;
+          }
+        }
       }
     }
   }
