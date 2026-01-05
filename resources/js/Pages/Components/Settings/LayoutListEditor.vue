@@ -47,7 +47,6 @@ const ghostRenderPos = ref({ x: 0, y: 0 });
 
 let ghostAnimationFrame = null;
 
-// transparent image to hide native ghost
 const transparentPixel = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 const dragImage = new Image();
 dragImage.src = transparentPixel;
@@ -68,14 +67,10 @@ const startDrag = (listName, index, event) => {
   dragging.value = { list: listName, index };
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = "move";
-    // Firefox needs some data
     event.dataTransfer.setData("text/plain", `${listName}:${index}`);
-    // hide the default ghost; we render our own
     try {
       event.dataTransfer.setDragImage(dragImage, 0, 0);
-    } catch (e) {
-      // ignore if browser complains
-    }
+    } catch (e) {}
   }
   const el = event.target.closest(".lle-item");
   if (el) {
@@ -105,10 +100,6 @@ const setDragOver = (listName, index, event) => {
   dragOver.value = { list: listName, index };
 };
 
-const clearDragOver = () => {
-  dragOver.value = null;
-};
-
 const isItemDragging = (listName, index) => {
   return (
     dragging.value &&
@@ -123,10 +114,6 @@ const isDropZoneActive = (listName, index) => {
     dragOver.value.list === listName &&
     dragOver.value.index === index
   );
-};
-
-const isListDragTarget = (listName) => {
-  return dragOver.value && dragOver.value.list === listName;
 };
 
 const moveWithinList = (listRef, fromIndex, toIndex) => {
@@ -160,6 +147,17 @@ const onDropOnColumns = (targetIndex, event) => {
 
   emitUpdatedColumns();
   endDrag();
+};
+const removeColumnFromList = (columnIndex) => {
+  const columns = [...internalColumns.value];
+  const column = columns[columnIndex];
+  console.log(columns);
+  console.log(columnIndex);
+  if (column) {
+    columns.splice(columnIndex, 1);
+    internalColumns.value = columns;
+    emitUpdatedColumns();
+  }
 };
 
 const onDropOnAvailable = (targetIndex, event) => {
@@ -196,7 +194,7 @@ const onGlobalDragOver = (event) => {
 };
 
 const stepGhost = () => {
-  const lerp = 0.2; // smaller = more inertia
+  const lerp = 0.2;
   const { x: tx, y: ty } = dragPosition.value;
   const { x, y } = ghostRenderPos.value;
 
@@ -226,22 +224,22 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="record-layout-editor" @dragover="onGlobalDragOver">
-    <div class="rle-container">
-      <div class="rle-sidebar">
-        <div class="lle-header">
+  <div class="editor" @dragover="onGlobalDragOver">
+    <div class="editor__container">
+      <div class="editor__container__sidebar">
+        <div class="editor__container__sidebar__header">
           <h5>{{ $t("layouts.available_fields") }}</h5>
           <small>{{ $t("layouts.available_fields_hint") }}</small>
         </div>
 
-        <ul
-          class="lle-list"
-          :class="{ 'lle-list--drag-target': isListDragTarget('available') }"
-        >
+        <ul class="editor__available-fields">
           <div
-            class="rle-empty-drop-zone"
+            class="editor__empty-drop-zone"
             :class="{
-              'rle-empty-drop-zone--active': isDropZoneActive('available', 0),
+              'editor__empty-drop-zone--active': isDropZoneActive(
+                'available',
+                0
+              ),
             }"
             @dragover="setDragOver('available', 0, $event)"
             @drop="onDropOnAvailable(0, $event)"
@@ -249,24 +247,26 @@ onBeforeUnmount(() => {
             {{ $t("layouts.drop_here_to_remove") }}
           </div>
 
-          <!-- Item + drop zone after it -->
           <template
             v-for="(field, index) in internalAvailable"
             :key="field.key"
           >
             <li
-              class="rle-field-item"
+              class="editor__available-fields__item"
               :class="{
-                'rle-field-item--dragging': isItemDragging('available', index),
+                'editor__available-fields__item--dragging': isItemDragging(
+                  'available',
+                  index
+                ),
               }"
               draggable="true"
               @dragstart="startDrag('available', index, $event)"
               @dragend="endDrag"
             >
-              <span class="rle-field-handle">
+              <span class="editor__available-fields__item__handle">
                 <i class="fa-solid fa-grip-vertical"></i>
               </span>
-              <span class="rle-field-label">
+              <span class="editor__available-fields__item__label">
                 {{ $t(field.label) ?? field.key }}
               </span>
             </li>
@@ -290,30 +290,25 @@ onBeforeUnmount(() => {
         </ul>
       </div>
 
-      <div class="rle-main">
-        <div class="rle-sections">
-          <div class="rle-section">
-            <!-- Section header - adapted from lle-header -->
-            <div class="rle-section-header">
-              <div class="rle-section-title">
-                <!-- Using h3 for consistency with rle-sections-header -->
+      <div class="editor__container__main">
+        <div class="editor__sections">
+          <div class="editor__sections__item">
+            <div class="editor__sections__item__header">
+              <div class="editor__sections__item__title">
                 <h3>{{ $t("layouts.list_columns") }}</h3>
                 <small>{{ $t("layouts.list_columns_hint") }}</small>
               </div>
-              <div class="rle-section-actions">
-                <!-- No actions in lle-main, keeping structure for consistency -->
-              </div>
             </div>
 
-            <!-- Section content - adapted from lle-list -->
-            <div class="rle-section-content">
-              <!-- Columns list - replacing the ul with rle-section-columns structure -->
-              <div class="rle-section-columns">
-                <!-- Top drop zone -->
+            <div class="editor__sections__item__content">
+              <div class="editor__columns">
                 <div
-                  class="rle-drop-zone rle-drop-zone--horizontal"
+                  class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
                   :class="{
-                    'rle-drop-zone--active': isDropZoneActive('columns', 0),
+                    'editor__columns__drop-zone--active': isDropZoneActive(
+                      'columns',
+                      0
+                    ),
                   }"
                   @dragover="setDragOver('columns', 0, $event)"
                   @drop="onDropOnColumns(0, $event)"
@@ -325,9 +320,9 @@ onBeforeUnmount(() => {
                   :key="col.key"
                 >
                   <div
-                    class="rle-column-item"
+                    class="editor__columns__item"
                     :class="{
-                      'rle-column-item--dragging': isItemDragging(
+                      'editor__columns__item--dragging': isItemDragging(
                         'columns',
                         index
                       ),
@@ -335,21 +330,22 @@ onBeforeUnmount(() => {
                   >
                     <!-- Column content -->
                     <div
-                      class="rle-column-content"
+                      class="editor__columns__item__content"
                       draggable="true"
                       @dragstart="startDrag('columns', index, $event)"
                       @dragend="endDrag"
                     >
-                      <span class="rle-column-handle">
+                      <span class="editor__columns__item__handle">
                         <i class="fa-solid fa-grip-vertical"></i>
                       </span>
-                      <span class="rle-column-label">
+                      <span class="editor__columns__item__label">
                         {{ $t(col.label) ?? col.key }}
                       </span>
                       <button
-                        class="rle-column-remove"
+                        class="editor__columns__item__remove"
                         type="button"
                         :title="$t('layouts.remove_column')"
+                        @click="removeColumnFromList(index)"
                       >
                         <i class="fa-solid fa-times"></i>
                       </button>
@@ -357,9 +353,9 @@ onBeforeUnmount(() => {
 
                     <!-- Drop zone after column -->
                     <div
-                      class="rle-drop-zone rle-drop-zone--horizontal"
+                      class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
                       :class="{
-                        'rle-drop-zone--active': isDropZoneActive(
+                        'editor__columns__drop-zone--active': isDropZoneActive(
                           'columns',
                           index + 1
                         ),
@@ -378,7 +374,7 @@ onBeforeUnmount(() => {
 
     <div
       v-if="dragging"
-      class="rle-drag-ghost"
+      class="editor__ghost"
       :style="{
         top: ghostRenderPos.y - originOffset.y + 'px',
         left: ghostRenderPos.x - originOffset.x + 'px',
@@ -386,10 +382,10 @@ onBeforeUnmount(() => {
         height: ghostHeight || 'auto',
       }"
     >
-      <span class="rle-ghost-handle">
+      <span class="editor__ghost__handle">
         <i class="fa-solid fa-grip-vertical"></i>
       </span>
-      <span class="rle-ghost-label">
+      <span class="editor__ghost__label">
         {{ ghostLabel }}
       </span>
     </div>

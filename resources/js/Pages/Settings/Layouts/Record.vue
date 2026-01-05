@@ -91,46 +91,40 @@ const onItemMouseLeave = () => {
         :setting-module="module"
         active-key="layouts"
       ></ModuleSettingTabs>
-      <div class="settings__module__layouts">
-        <Link
-          class="settings__module__layouts__item"
-          :href="currentPath + '/list'"
-        >
+      <div class="layouts">
+        <Link class="layouts__item" :href="currentPath + '/list'">
           <div
-            class="settings__module__layouts__item__content"
+            class="layouts__item__content"
             @mouseenter="onItemMouseEnter($event, 'list')"
             @mouseleave="onItemMouseLeave"
           >
-            <div class="settings__module__layouts__item__content__modifier">
+            <div class="layouts__item__content__modifier">
               <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
               <i v-else class="fa-regular fa-square-plus"></i>
             </div>
-            <div class="settings__module__layouts__item__content__icon">
+            <div class="layouts__item__content__icon">
               <i class="fa-solid fa-table-list"></i>
             </div>
-            <span class="settings__module__layouts__item__content__label">
+            <span class="layouts__item__content__label">
               {{ $t("layouts.list") }}
             </span>
           </div>
         </Link>
 
-        <Link
-          class="settings__module__layouts__item"
-          :href="currentPath + '/record'"
-        >
+        <Link class="layouts__item" :href="currentPath + '/record'">
           <div
-            class="settings__module__layouts__item__content"
+            class="layouts__item__content"
             @mouseenter="onItemMouseEnter($event, 'record')"
             @mouseleave="onItemMouseLeave"
           >
-            <div class="settings__module__layouts__item__content__modifier">
+            <div class="layouts__item__content__modifier">
               <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
               <i v-else class="fa-regular fa-square-plus"></i>
             </div>
-            <div class="settings__module__layouts__item__content__icon">
+            <div class="layouts__item__content__icon">
               <i class="fa-regular fa-address-card"></i>
             </div>
-            <span class="settings__module__layouts__item__content__label">
+            <span class="layouts__item__content__label">
               {{ $t("layouts.record") }}
             </span>
           </div>

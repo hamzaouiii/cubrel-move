@@ -1,21 +1,22 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
-import {
-  computed,
-  ref,
-  watch,
-  getCurrentInstance,
-  onMounted,
-  nextTick,
-} from "vue";
+import { computed, ref, watch, getCurrentInstance, onMounted } from "vue";
+
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
+
+import Layout from "@/Layouts/Layout.vue";
+
 import LayoutListEditor from "@/Pages/Components/Settings/LayoutListEditor.vue";
 import LayoutRecordEditor from "@/Pages/Components/Settings/LayoutRecordEditor.vue";
+import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 import { useAlerts } from "@/Composables/useAlerts";
+import { useConfirm } from "@/Composables/useConfirm";
 
 const { success, error, info, removeAlert, clearAllAlerts } = useAlerts();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+const { confirm } = useConfirm();
 
 defineOptions({
   layout: Layout,
@@ -27,6 +28,7 @@ const props = defineProps({
   defaultLayout: Object,
   fields: Object,
 });
+const appSettings = usePage().props.appSettings;
 
 const listColumns = ref([]);
 const recordSections = ref([]);
@@ -41,7 +43,6 @@ const currentLayout = computed(() => {
 const moduleFields = computed(() => {
   return props.fields ?? [];
 });
-console.log(moduleFields.value);
 
 const fieldByKey = computed(() => {
   const map = {};
@@ -266,28 +267,24 @@ const manualAlerts = ref([
     </title>
   </Head>
 
-  <div class="layout">
-    <div class="settings_header">
-      <div class="settings_header_title">
-        <h5>
-          <Link href="/settings">{{ $t("settings.label") }}</Link>
-        </h5>
-        <span>></span>
-        <h5>
-          <Link href="/settings/layouts">{{ $t("layouts.label") }}</Link>
-        </h5>
-        <span>></span>
-        <h5>
-          <Link :href="'/settings/layouts/' + module.id">{{
-            module.label
-          }}</Link>
-        </h5>
-        <span>></span>
-        <h6>{{ $t("layouts." + type) }}</h6>
+  <div
+    class="settings"
+    :style="{ '--primary-color': appSettings.primary_color }"
+  >
+    <div class="settings__header">
+      <div class="settings__header__title">
+        <ModuleSettingBreadcrumbs
+          :setting-module="module"
+        ></ModuleSettingBreadcrumbs>
       </div>
     </div>
-
-    <div class="layout_editor">
+    <div class="settings__module">
+      <ModuleSettingTabs
+        :setting-module="module"
+        active-key="layouts"
+      ></ModuleSettingTabs>
+    </div>
+    <div class="layouts__editor">
       <div v-if="type === 'list'">
         <LayoutListEditor
           v-model:columns="listColumns"
@@ -303,10 +300,10 @@ const manualAlerts = ref([
         />
       </div>
 
-      <div class="layout_editor_actions">
+      <div class="layouts__editor__actions">
         <button
           @click="resetToDatabaseValue()"
-          class="reset-btn"
+          class="layouts__editor__actions__reset btn"
           type="reset"
           :disabled="!isDirty || form.processing"
         >
@@ -317,7 +314,7 @@ const manualAlerts = ref([
           @click="saveLayout()"
           type="submit"
           :disabled="!isDirty || form.processing"
-          class="save-btn"
+          class="layouts__editor__actions__save btn"
         >
           {{
             form.processing ? $t("layouts.saving") : $t("layouts.save_layout")
