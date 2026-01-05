@@ -86,7 +86,7 @@ const saveModule = () => {
   </Head>
 
   <div
-    class="settings module-manager create-module"
+    class="settings"
     :style="{ '--primary-color': appSettings.primary_color }"
   >
     <div class="settings__header">
@@ -107,9 +107,9 @@ const saveModule = () => {
       </div>
     </div>
 
-    <form @submit.prevent="saveModule">
+    <form class="settings__create" @submit.prevent="saveModule">
       <div>
-        <div class="create-element">
+        <div class="settings__create__element">
           <label>
             {{ $t("settings.modules.display_label") }}
           </label>
@@ -121,27 +121,27 @@ const saveModule = () => {
             :placeholder="$t('settings.modules.name_placeholder')"
           />
         </div>
-        <div class="create-element">
+        <div class="settings__create__element">
           <label>
             {{ $t("settings.modules.slug") }}
           </label>
           <input class="slug" type="text" name="slug" :value="slug" disabled />
         </div>
-        <div class="create-element">
+        <div class="settings__create__element">
           <label>
             {{ $t("settings.modules.icon") }}
           </label>
           <IconPicker v-model="form.icon" :color="form.color" />
         </div>
 
-        <div class="create-element">
+        <div class="settings__create__element">
           <label>
             {{ $t("settings.modules.color") }}
           </label>
           <input class="" type="color" name="color" v-model="form.color" />
         </div>
 
-        <div class="create-element">
+        <div class="settings__create__element">
           <label>
             {{ $t("settings.modules.show_in_sidebar") }}
           </label>
@@ -151,7 +151,7 @@ const saveModule = () => {
           ></Checkbox>
         </div>
 
-        <div class="create-element">
+        <div class="settings__create__element">
           <label>
             {{ $t("settings.modules.description") }}
           </label>
@@ -159,9 +159,12 @@ const saveModule = () => {
         </div>
       </div>
 
-      <div class="create-actions">
+      <div
+        class="settings__create__actions"
+        :style="{ '--module-color': form.color }"
+      >
         <button
-          class="reset-btn"
+          class="settings__create__actions__reset btn"
           type="button"
           @click="resetModule"
           v-if="isDirty"
@@ -169,7 +172,11 @@ const saveModule = () => {
           {{ $t("settings.cancel") }}
         </button>
 
-        <button type="submit" :disabled="!isDirty">
+        <button
+          class="settings__create__actions__save btn"
+          type="submit"
+          :disabled="!isDirty"
+        >
           {{ $t("settings.save") }}
         </button>
       </div>

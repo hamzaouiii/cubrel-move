@@ -310,6 +310,70 @@
       }
     }
   }
+  &__create {
+    margin: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
+    border-radius: 8px;
+
+    &__element {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      margin: 10px;
+      label {
+        min-width: 150px;
+      }
+      input[type="text"] {
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        border: 2px solid lightgray;
+        padding-left: 10px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-radius: 5px;
+        width: 250px;
+      }
+      textarea {
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        border: 2px solid lightgray;
+        padding: 10px;
+        border-radius: 5px;
+        width: 250px;
+        resize: vertical;
+      }
+      input[name="slug"] {
+        cursor: not-allowed !important;
+        background-color: rgba(169, 169, 169, 0.712) !important;
+        color: lightgray;
+      }
+    }
+
+    &__actions {
+      display: flex;
+      justify-content: flex-end;
+      .btn {
+        margin-right: 50px;
+
+        &:disabled {
+          background-color: rgb(218, 218, 218);
+          color: white;
+          border-color: rgb(218, 218, 218);
+          cursor: not-allowed;
+        }
+      }
+      &__reset {
+        --btn-color: salmon;
+        --btn-bg-hover: salmon;
+      }
+      &__save {
+        --btn-color: var(--module-color);
+        --btn-bg-hover: var(--module-color);
+      }
+    }
+  }
 }
 .layouts {
   margin-top: 20px;
@@ -656,83 +720,6 @@
     &__label {
       font-size: 14px;
       color: #212529;
-    }
-  }
-}
-
-.create-module {
-  form {
-    margin: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
-    border-radius: 8px;
-  }
-  .create-element {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    margin: 10px;
-    label {
-      min-width: 150px;
-    }
-    input[type="text"] {
-      all: unset;
-      font-family: "Fira Sans", "Heebo", sans-serif;
-      border: 2px solid lightgray;
-      padding-left: 10px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      border-radius: 5px;
-      width: 250px;
-    }
-    textarea {
-      all: unset;
-      font-family: "Fira Sans", "Heebo", sans-serif;
-      border: 2px solid lightgray;
-      padding: 10px;
-      border-radius: 5px;
-      width: 250px;
-      resize: vertical;
-    }
-  }
-  input[name="slug"] {
-    cursor: not-allowed !important;
-    background-color: rgba(169, 169, 169, 0.712) !important;
-    color: lightgray;
-  }
-  .create-actions {
-    display: flex;
-    justify-content: flex-end;
-    button {
-      all: unset;
-      border: 2px solid #0d6efd;
-      color: #0d6efd;
-      padding: 5px 20px;
-      margin-right: 50px;
-      transition: all 0.2s ease-in-out;
-      border-radius: 5px;
-      cursor: pointer;
-      &:hover {
-        background-color: #0d6efd;
-        color: white;
-      }
-      &:disabled {
-        background-color: rgb(218, 218, 218);
-        color: white;
-        border-color: rgb(218, 218, 218);
-        cursor: not-allowed;
-      }
-    }
-    .reset-btn {
-      border: 2px solid salmon;
-      color: salmon;
-      &:hover {
-        background-color: salmon;
-        color: white;
-      }
     }
   }
 }
