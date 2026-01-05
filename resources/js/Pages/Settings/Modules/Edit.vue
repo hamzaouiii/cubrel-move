@@ -115,7 +115,7 @@ const resetForm = () => {
   </Head>
 
   <div
-    class="settings module-manager edit-module"
+    class="settings"
     :style="{ '--primary-color': appSettings.primary_color }"
   >
     <div class="settings__header">
