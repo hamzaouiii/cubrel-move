@@ -35,15 +35,17 @@ watch(
         <div class="confirm-overlay__message">{{ confirmState.message }}</div>
 
         <div class="confirm-overlay__actions">
-          <button
-            class="confirm-overlay__actions--cancel button-neutral"
-            @click="cancel"
-          >
+          <button class="confirm-overlay__actions--cancel btn" @click="cancel">
             {{ confirmState.cancelText }}
           </button>
 
           <button
-            :class="confirmState.danger ? ' button-danger' : 'button-primary'"
+            :class="[
+              confirmState.danger
+                ? ' confirm-overlay__actions--danger'
+                : 'button-primary',
+              'btn',
+            ]"
             @click="accept"
           >
             {{ confirmState.confirmText }}

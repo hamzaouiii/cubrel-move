@@ -2,6 +2,7 @@ import "./bootstrap";
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { useTrans } from "@/Composables/useTrans";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import "../scss/app.scss";
 import "../scss/lib.min.css";
 

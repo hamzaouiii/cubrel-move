@@ -1,3 +1,30 @@
+.btn {
+  cursor: pointer;
+  border: 2px solid;
+  padding: 5px 15px;
+  border-radius: 8px;
+  transition: all 0.15s ease-in-out;
+  background-color: white;
+
+  --btn-color: black;
+  --btn-bg-hover: black;
+
+  color: var(--btn-color);
+  border-color: var(--btn-color);
+
+  &:hover:not(:disabled) {
+    color: white;
+    background-color: var(--btn-bg-hover);
+    border-color: var(--btn-bg-hover);
+  }
+
+  &:disabled {
+    color: darkgray;
+    background-color: lightgray;
+    border-color: darkgray;
+    cursor: not-allowed;
+  }
+}
 .confirm-overlay {
   position: fixed;
   inset: 0;
@@ -30,52 +57,10 @@
     justify-content: flex-end;
     gap: 10px;
     margin-top: 16px;
-    button {
-      all: unset;
-      min-width: 55px;
-      border: 1px solid;
-      border: 2px solid transparent;
-      transition: all 0.1s ease-in-out;
-      display: flex;
-      justify-content: center;
-      padding: 5px;
-      border-radius: 8px;
-    }
 
-    .button-neutral {
-      border-color: darkgrey;
-      color: darkgrey;
-      &:hover {
-        background-color: darkgrey;
-        color: white;
-      }
-    }
-
-    .button-danger {
-      border-color: salmon;
-      color: salmon;
-      &:hover {
-        background-color: salmon;
-        color: white;
-      }
-    }
-
-    .button-primary {
-      border-color: #0d6efd;
-      color: #0d6efd;
-      &:hover {
-        background-color: #0d6efd;
-        color: white;
-      }
-    }
-
-    &--cancel {
-      background-color: darkgray;
-      color: white;
-    }
     &--danger {
-      background-color: salmon;
-      color: white;
+      --btn-color: salmon;
+      --btn-bg-hover: salmon;
     }
   }
 }
@@ -84,7 +69,7 @@
   position: fixed;
   left: 50%;
   transform: translate(-50%, -50%);
-  top: 15%;
+  top: 10%;
   width: 25%;
   display: flex;
   flex-direction: column;
@@ -482,34 +467,6 @@
   white-space: nowrap;
   z-index: 9999;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.btn {
-  cursor: pointer;
-  border: 2px solid;
-  padding: 5px 15px;
-  border-radius: 8px;
-  transition: all 0.15s ease-in-out;
-  background-color: white;
-
-  --btn-color: black;
-  --btn-bg-hover: black;
-
-  color: var(--btn-color);
-  border-color: var(--btn-color);
-
-  &:hover:not(:disabled) {
-    color: white;
-    background-color: var(--btn-bg-hover);
-    border-color: var(--btn-bg-hover);
-  }
-
-  &:disabled {
-    color: darkgray;
-    background-color: lightgray;
-    border-color: darkgray;
-    cursor: not-allowed;
-  }
 }
 
 .fade-enter-active,

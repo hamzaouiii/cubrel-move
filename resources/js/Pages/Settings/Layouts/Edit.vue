@@ -1,7 +1,14 @@
 <script setup>
-import { computed, ref, watch, getCurrentInstance, onMounted } from "vue";
+import {
+  computed,
+  ref,
+  watch,
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+} from "vue";
 
-import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
+import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
 
 import Layout from "@/Layouts/Layout.vue";
 
@@ -12,8 +19,8 @@ import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingB
 
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
-
-const { success, error, info, removeAlert, clearAllAlerts } = useAlerts();
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+const { success, error, info, clearAllAlerts } = useAlerts();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const { confirm } = useConfirm();
@@ -30,7 +37,6 @@ const props = defineProps({
 });
 const page = usePage();
 const appSettings = page.props.appSettings;
-
 const listColumns = ref([]);
 const recordSections = ref([]);
 
@@ -171,7 +177,6 @@ const isDirty = computed(() => {
   return false;
 });
 
-// Form
 const form = useForm({
   module_id: props.module.id,
   type: props.type,
@@ -180,15 +185,85 @@ const form = useForm({
     (props.type === "list" ? { columns: [] } : { sections: [] }),
 });
 
-onMounted(() => {
-  // Check if there are any flash messages from the server
-  const flash = usePage().props.flash;
-  if (flash?.success) {
-    success(flash.success);
-  } else if (flash?.error) {
-    error(flash.error);
-  }
-});
+// let navigationGuardCleanup = null;
+
+// onMounted(() => {
+//   const flash = usePage().props.flash;
+//   if (flash?.success) {
+//     success(flash.success);
+//   } else if (flash?.error) {
+//     error(flash.error);
+//   }
+
+//   navigationGuardCleanup = router.on("before", (event) => {
+//     if (!isDirty.value) {
+//       return;
+//     }
+//     event.preventDefault();
+//     handleNavigationGuard(event);
+//   });
+// });
+
+// onUnmounted(() => {
+//   if (navigationGuardCleanup) {
+//     navigationGuardCleanup();
+//   }
+// });
+
+// window.addEventListener("beforeunload", handleBeforeUnload);
+
+// onUnmounted(() => {
+//   window.removeEventListener("beforeunload", handleBeforeUnload);
+// });
+
+// function handleBeforeUnload(event) {
+//   if (isDirty.value) {
+//     event.preventDefault();
+//     event.returnValue = "";
+//   }
+// }
+
+// async function handleNavigationGuard(event) {
+//   try {
+//     const ok = await confirm({
+//       title: t("settings.unsaved_changes_title"),
+//       message: t("settings.unsaved_changes_message"),
+//       confirmText: t("settings.unsaved_changes_leave"),
+//       cancelText: t("settings.unsaved_changes_stay"),
+//       danger: true,
+//     });
+
+//     if (ok) {
+//       if (navigationGuardCleanup) {
+//         navigationGuardCleanup();
+//       }
+
+//       // Navigate to the intended destination
+//       router.visit(event.detail.visit.url, {
+//         method: event.detail.visit.method,
+//         data: event.detail.visit.data,
+//         preserveScroll: event.detail.visit.preserveScroll,
+//         preserveState: event.detail.visit.preserveState,
+//         replace: event.detail.visit.replace,
+//         only: event.detail.visit.only,
+//         headers: event.detail.visit.headers,
+//       });
+
+//       // Reattach the guard after a short delay
+//       setTimeout(() => {
+//         navigationGuardCleanup = router.on("before", (event) => {
+//           if (!isDirty.value) return;
+//           event.preventDefault();
+//           handleNavigationGuard(event);
+//         });
+//       }, 100);
+//     }
+//   } catch (error) {
+//     console.error("Confirmation error:", error);
+//     // In case of error, stay on current page
+//     info(t("layouts.error_occurred"));
+//   }
+// }
 
 const resetToDatabaseValue = () => {
   if (props.type === "list") {
@@ -229,7 +304,6 @@ const saveLayout = () => {
     },
     onError: (errors) => {
       clearAllAlerts();
-      // Show error alert with the first error message
       const firstError = Object.values(errors)[0];
       error(firstError || "An error occurred while saving the layout.");
     },
@@ -259,6 +333,12 @@ const layoutsUrl = () => {
   const u = ("/" + segments.join("/")).toString();
   return u;
 };
+
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+  skipUrls: ["/settings/layouts/"], // Save actions - no confirmation needed
+  excludeUrls: ["/logout", "/login"], // Always allowed
+});
 </script>
 
 <template>
