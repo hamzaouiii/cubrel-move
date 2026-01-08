@@ -1,6 +1,9 @@
 import { ref, onUnmounted, getCurrentInstance } from "vue";
 import { router } from "@inertiajs/vue3";
 import { useConfirm } from "./useConfirm";
+import { useAlerts } from "@/Composables/useAlerts";
+const { warning } = useAlerts();
+
 export function useUnsavedChangesGuard(options = {}) {
   const { getIsDirty = () => false, excludeUrls = [], skipUrls = [] } = options;
 
@@ -9,9 +12,7 @@ export function useUnsavedChangesGuard(options = {}) {
 
   const instance = getCurrentInstance();
   const { confirm } = useConfirm();
-
-  let confirmFunc = confirm;
-
+  const confirmfunction = confirm;
   const shouldBlockNavigation = (visit) => {
     if (!isActive.value) return false;
     if (!getIsDirty()) return false;
@@ -55,8 +56,8 @@ export function useUnsavedChangesGuard(options = {}) {
 
       let confirmed = false;
 
-      if (confirmFunc) {
-        confirmed = await confirmFunc({
+      if (confirmfunction) {
+        confirmed = await confirmfunction({
           title: t("globals.unsaved_changes_title"),
           message: t("globals.unsaved_changes_message"),
           confirmText: t("globals.unsaved_changes_leave"),
@@ -79,7 +80,8 @@ export function useUnsavedChangesGuard(options = {}) {
           only: visit.only,
           headers: visit.headers,
         });
-
+        warning(t("globals.changes_discarded"));
+        console.log(t("globals.changes_discarded"));
         setTimeout(() => {
           isActive.value = true;
         }, 100);

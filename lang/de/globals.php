@@ -8,4 +8,5 @@ return [
   'unsaved_changes_message' => 'Sie haben ungespeicherte Änderungen. Möchten Sie diese Seite wirklich verlassen und die Änderungen verwerfen?',
   'unsaved_changes_leave' => 'Änderungen verwerfen',
   'unsaved_changes_stay' => 'Hier bleiben',
+  'changes_discarded' => 'Ihre Änderungen wurden verworfen.'
 ];

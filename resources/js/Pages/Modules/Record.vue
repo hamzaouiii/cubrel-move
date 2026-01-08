@@ -12,6 +12,8 @@ import {
 import { formatDateTime } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 defineOptions({
@@ -173,6 +175,10 @@ const getTextareaRows = (f) => {
   }
   return 5;
 };
+
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
 </script>
 
 <template>

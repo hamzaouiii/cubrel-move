@@ -8,5 +8,5 @@ return [
   'unsaved_changes_message' => 'You have unsaved changes, are you sure you want to leave this page and discard changes ?',
   'unsaved_changes_leave' => 'Discard Changes',
   'unsaved_changes_stay' => 'Stay',
-
+  'changes_discarded' => 'Your changes have been discarded.',
 ];

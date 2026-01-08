@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch } from "vue";
+import { watch } from "vue";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 const props = defineProps({
@@ -23,8 +23,6 @@ const props = defineProps({
 
 const { enableGuard, disableGuard } = useUnsavedChangesGuard({
   getIsDirty: () => props.isDirty,
-  confirmDialog: props.confirmDialog,
-  translationPrefix: props.translationPrefix,
   excludeUrls: props.excludeUrls,
 });
 

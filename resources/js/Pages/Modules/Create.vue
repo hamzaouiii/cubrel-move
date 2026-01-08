@@ -3,6 +3,8 @@ import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -94,6 +96,10 @@ onBeforeUnmount(() => {
 });
 
 const appSettings = usePage().props.appSettings;
+
+useUnsavedChangesGuard({
+  getIsDirty: () => form.isDirty,
+});
 </script>
 
 <template>
