@@ -18,6 +18,7 @@ class ModuleManagerController extends Controller
   public function index(Request $request)
   {
     $modules = Module::query()
+      ->where('is_active', 1)
       ->with([
         'layouts' => function ($q) {
           $q->orderBy('type')->orderBy('name');
@@ -47,8 +48,7 @@ class ModuleManagerController extends Controller
   {
     $module = Module::where('id', $id)->firstOrFail();
 
-
-    // this won't run if validation fails
+    // this wont run if validation fails
     $data = $request->except('_token', '_method', 'label');
     $module->fill($data)->save();
 
