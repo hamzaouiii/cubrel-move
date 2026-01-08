@@ -210,7 +210,7 @@ function goToCreateView() {
   router.visit(`/${moduleName}/create`);
 }
 const editModuleUrl = computed(() => {
-  const base = "settings/ /modules/";
+  const base = "settings/modules/";
   return base + props.module.id;
 });
 

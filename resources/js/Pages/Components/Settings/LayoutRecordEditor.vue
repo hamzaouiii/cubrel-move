@@ -275,14 +275,11 @@ const onDropOnSectionColumn = (sectionIndex, columnIndex, event) => {
   } = dragging.value;
 
   if (source === "available") {
-    // Field from available to section
     moveFieldToSection(dragColumnIndex, sectionIndex, columnIndex);
   } else if (source === "section") {
-    // Column within same section
     if (dragSectionIndex === sectionIndex) {
       moveColumnWithinSection(sectionIndex, dragColumnIndex, columnIndex);
     } else {
-      // Column between different sections
       moveColumnBetweenSections(
         dragSectionIndex,
         dragColumnIndex,
@@ -306,10 +303,8 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
   } = dragging.value;
 
   if (source === "available") {
-    // Field to empty section
     moveFieldToSection(dragColumnIndex, sectionIndex, 0);
   } else if (source === "section") {
-    // Column to empty section
     const sections = [...internalSections.value];
     const targetSection = sections[sectionIndex];
     const sourceSection = sections[dragSectionIndex];
@@ -326,23 +321,11 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
   endDrag();
 };
 
-// Global drag handling
 const onGlobalDragOver = (event) => {
   if (!dragging.value) return;
   dragPosition.value = { x: event.clientX, y: event.clientY };
-  // createTrail(event.clientX, event.clientY)
-  // trail might be an overkill because it is so slow on safari
 };
 
-// const createTrail = (x, y) => {
-//   const id = trailCounter++
-//   dragTrails.value.push({ id, x, y })
-//   setTimeout(() => {
-//     dragTrails.value = dragTrails.value.filter((d) => d.id !== id)
-//   }, 400)
-// }
-
-// Ghost animation
 const stepGhost = () => {
   const lerp = 0.2;
   const { x: tx, y: ty } = dragPosition.value;
@@ -368,12 +351,10 @@ const stopGhostAnimation = () => {
   }
 };
 
-// Emit updates
 const emitUpdatedSections = () => {
   emit("update:sections", internalSections.value);
 };
 
-// Update section name
 const updateSectionName = (sectionIndex, name) => {
   internalSections.value[sectionIndex].name = name;
   emitUpdatedSections();

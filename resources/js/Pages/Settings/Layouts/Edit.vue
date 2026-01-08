@@ -208,7 +208,7 @@ const saveLayout = () => {
   }
 
   form.definition = definition;
-  const url = `/settings/layouts/${props.module.id}/${props.type}`;
+  const url = page.url;
 
   form.post(url, {
     preserveScroll: true,

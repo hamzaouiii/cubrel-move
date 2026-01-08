@@ -101,7 +101,6 @@
     }
 
     &--error {
-      border: 3px solid salmon;
       background-color: rgba(250, 128, 114, 0.342);
       color: rgb(119, 20, 8);
 
@@ -115,8 +114,7 @@
     }
 
     &--success {
-      border: 3px solid lightgreen;
-      background-color: rgba(144, 238, 144, 0.342);
+      background-color: rgba(144, 238, 144, 0.9);
       color: darkgreen;
 
       &::before {
@@ -129,8 +127,7 @@
     }
 
     &--warning {
-      border: 3px solid gold;
-      background-color: rgba(255, 250, 205, 0.911);
+      background-color: rgba(255, 250, 205, 0.9);
       color: rgb(192, 138, 2);
 
       &::before {
@@ -143,8 +140,7 @@
     }
 
     &--info {
-      border: 3px solid dodgerblue;
-      background-color: rgba(25, 195, 252, 0.24);
+      background-color: rgba(25, 195, 252, 0.5);
       color: dodgerblue;
 
       &::before {
@@ -431,23 +427,25 @@
           right: 0;
           background: white;
           border-radius: 8px;
-          padding: 0.5rem 0;
           list-style: none;
           min-width: 160px;
           z-index: 50;
-          font-size: 1rem;
-
-          li a {
-            display: flex;
-            padding: 8px 14px;
-            color: #333;
-            text-decoration: none;
-            align-items: center;
-            &:hover {
-              background: #f5f5f5;
-            }
-            i {
-              width: 33px;
+          font-size: 1.2rem;
+          width: 180px;
+          overflow: hidden;
+          li {
+            a {
+              display: flex;
+              padding: 8px 14px;
+              color: #333;
+              text-decoration: none;
+              align-items: center;
+              &:hover {
+                background-color: #dfdddd;
+              }
+              i {
+                width: 33px;
+              }
             }
           }
         }

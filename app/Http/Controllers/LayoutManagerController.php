@@ -65,9 +65,8 @@ class LayoutManagerController extends Controller
     $layout->definition  = $validated['definition'];
 
     $layout->save();
-    // TODO check why translated message is not being sent
     return redirect()
-      ->route('settings.layouts.edit', [$module->id, $layoutType])
+      ->route('settings.modules.layouts.edit', [$module->id, $layoutType])
       ->with('success', __('layouts.layout_update_success'));
   }
 

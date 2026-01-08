@@ -21,29 +21,7 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/', fn() => Inertia::render('Dashboard'))->name('dashboard');
   Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-  /**
-   * Settings routes
-   */
-  Route::prefix('settings/')->name('settings.')->group(function () {
-
-    // module manager
-    Route::resource('modules', ModuleManagerController::class)->names('modules');
-
-    // // Fields Manager
-    // Route::resource('fields', FieldsManagerController::class)
-    //   ->names('fields')
-    //   ->except('edit');
-    // Route::get('fields/{module}/create', [FieldsManagerController::class, 'create'])->name('fields.create');
-    // Route::get('fields/{module}/{field}/edit', [FieldsManagerController::class, 'edit'])->name('fields.edit');
-
-
-    // Layout Manager
-    Route::get('layouts', [LayoutManagerController::class, 'index'])->name('layouts.index');
-    Route::get('layouts/{module}', [LayoutManagerController::class, 'show'])->name('layouts.show');
-    Route::get('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'edit'])->name('layouts.edit');
-    Route::post('layouts/{module}/{layoutType}', [LayoutManagerController::class, 'store'])->name('layouts.store');
-  });
-
+  // module Manager
   Route::prefix('settings')->name('settings.')->group(function () {
 
     // Module manager
@@ -58,8 +36,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('fields', [FieldsManagerController::class, 'show'])
           ->name('modules.fields.index');
 
-        // Route::get('fields/create', [FieldsManagerController::class, 'create'])
-        //   ->name('modules.fields.create');
+        Route::get('fields/create', [FieldsManagerController::class, 'create'])
+          ->name('modules.fields.create');
 
         Route::get('fields/{field}', [FieldsManagerController::class, 'edit'])
           ->name('modules.fields.edit');
@@ -93,7 +71,6 @@ Route::middleware(['auth'])->group(function () {
 
 
   //System Settings
-  // Route::get('/settings/system/style', [SystemSettingsController::class, 'style'])->name('settings.system.style');
   Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
   Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
   Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
