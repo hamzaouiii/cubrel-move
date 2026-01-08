@@ -74,7 +74,6 @@ const cancelCreate = () => {
 
 function handleKeydown(e) {
   if (e.ctrlKey && e.key === "s") {
-    console.log("Here");
     e.preventDefault();
     saveRecord();
   }

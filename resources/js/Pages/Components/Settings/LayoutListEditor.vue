@@ -151,8 +151,6 @@ const onDropOnColumns = (targetIndex, event) => {
 const removeColumnFromList = (columnIndex) => {
   const columns = [...internalColumns.value];
   const column = columns[columnIndex];
-  console.log(columns);
-  console.log(columnIndex);
   if (column) {
     columns.splice(columnIndex, 1);
     internalColumns.value = columns;

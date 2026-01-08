@@ -81,7 +81,6 @@ export function useUnsavedChangesGuard(options = {}) {
           headers: visit.headers,
         });
         warning(t("globals.changes_discarded"));
-        console.log(t("globals.changes_discarded"));
         setTimeout(() => {
           isActive.value = true;
         }, 100);
