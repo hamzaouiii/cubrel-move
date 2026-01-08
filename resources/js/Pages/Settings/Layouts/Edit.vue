@@ -35,6 +35,7 @@ const props = defineProps({
   defaultLayout: Object,
   fields: Object,
 });
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
@@ -130,7 +131,6 @@ watch(
   },
   { immediate: true }
 );
-
 const availableFields = computed(() => {
   if (props.type !== "list") return [];
 
@@ -163,6 +163,7 @@ const cleanedColumnsFromDb = computed(() =>
     return rest;
   })
 );
+console.log(recordSections.value);
 
 const isDirty = computed(() => {
   if (props.type === "list") {

@@ -97,6 +97,7 @@ class Module extends BaseModule
 
   public function fields(): array
   {
+    // when custom fields are introduced they should be taken into account as well
     $table = $this->table_name;
 
     if (!$table || !Schema::hasTable($table)) {
@@ -117,7 +118,7 @@ class Module extends BaseModule
 
         return [
           'key'      => $column,
-          'label'    => __("modules.{$this->slug}.fields.{$column}"),
+          'label'    => "modules.{$this->slug}.fields.{$column}",
           'type'     => $this->normalizeFieldType($dbType, $column),
           'db_type'  => $dbType,
         ];

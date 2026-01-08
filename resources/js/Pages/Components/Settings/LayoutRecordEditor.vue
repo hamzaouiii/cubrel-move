@@ -1,12 +1,5 @@
 <script setup>
-import {
-  ref,
-  watch,
-  computed,
-  getCurrentInstance,
-  onBeforeUnmount,
-  nextTick,
-} from "vue";
+import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
 
 const props = defineProps({
   sections: {
@@ -28,7 +21,6 @@ const emit = defineEmits(["update:sections"]);
 const internalSections = ref([...props.sections]);
 const internalAvailable = ref([...props.availableFields]);
 
-// Watch for external changes
 watch(
   () => props.sections,
   (val) => {
@@ -36,7 +28,6 @@ watch(
   },
   { deep: true }
 );
-
 watch(
   () => props.availableFields,
   (val) => {
@@ -48,7 +39,6 @@ watch(
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-// Drag and drop state
 const dragging = ref(null);
 const originOffset = ref({ x: 0, y: 0 });
 const dragOver = ref(null);
@@ -65,7 +55,6 @@ const transparentPixel = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 const dragImage = new Image();
 dragImage.src = transparentPixel;
 
-// Computed properties
 const usedFieldKeys = computed(() => {
   const used = new Set();
   internalSections.value.forEach((section) => {
@@ -97,7 +86,6 @@ const ghostLabel = computed(() => {
   return "";
 });
 
-// Section management
 const addNewSection = () => {
   internalSections.value.push({
     name: `Section ${internalSections.value.length + 1}`,
@@ -203,7 +191,7 @@ const moveFieldToSection = (
   const newColumn = {
     key: field.key,
     label: field.label,
-    width: 100,
+    type: field.type,
     field: props.fieldByKey[field.key],
   };
 
