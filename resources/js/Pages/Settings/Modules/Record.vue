@@ -7,6 +7,8 @@ import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -63,7 +65,6 @@ const disableThis = (key) => {
   if (key === "display_label") return true;
   return false;
 };
-
 const isDirty = computed(() => {
   return editableFields.value.some(([key, value]) => {
     if (key === "display_label") {
@@ -108,6 +109,10 @@ const resetForm = () => {
     editableModule[key] = props.settingModule[key];
   });
 };
+
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
 </script>
 
 <template>
@@ -182,7 +187,7 @@ const resetForm = () => {
               type="reset"
               :disabled="!isDirty"
             >
-              Reset
+              {{ $t("settings.reset") }}
             </button>
 
             <button
@@ -190,7 +195,7 @@ const resetForm = () => {
               type="submit"
               :disabled="!isDirty"
             >
-              Save
+              {{ $t("settings.save") }}
             </button>
           </div>
         </form>

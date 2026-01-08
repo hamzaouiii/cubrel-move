@@ -185,86 +185,6 @@ const form = useForm({
     (props.type === "list" ? { columns: [] } : { sections: [] }),
 });
 
-// let navigationGuardCleanup = null;
-
-// onMounted(() => {
-//   const flash = usePage().props.flash;
-//   if (flash?.success) {
-//     success(flash.success);
-//   } else if (flash?.error) {
-//     error(flash.error);
-//   }
-
-//   navigationGuardCleanup = router.on("before", (event) => {
-//     if (!isDirty.value) {
-//       return;
-//     }
-//     event.preventDefault();
-//     handleNavigationGuard(event);
-//   });
-// });
-
-// onUnmounted(() => {
-//   if (navigationGuardCleanup) {
-//     navigationGuardCleanup();
-//   }
-// });
-
-// window.addEventListener("beforeunload", handleBeforeUnload);
-
-// onUnmounted(() => {
-//   window.removeEventListener("beforeunload", handleBeforeUnload);
-// });
-
-// function handleBeforeUnload(event) {
-//   if (isDirty.value) {
-//     event.preventDefault();
-//     event.returnValue = "";
-//   }
-// }
-
-// async function handleNavigationGuard(event) {
-//   try {
-//     const ok = await confirm({
-//       title: t("settings.unsaved_changes_title"),
-//       message: t("settings.unsaved_changes_message"),
-//       confirmText: t("settings.unsaved_changes_leave"),
-//       cancelText: t("settings.unsaved_changes_stay"),
-//       danger: true,
-//     });
-
-//     if (ok) {
-//       if (navigationGuardCleanup) {
-//         navigationGuardCleanup();
-//       }
-
-//       // Navigate to the intended destination
-//       router.visit(event.detail.visit.url, {
-//         method: event.detail.visit.method,
-//         data: event.detail.visit.data,
-//         preserveScroll: event.detail.visit.preserveScroll,
-//         preserveState: event.detail.visit.preserveState,
-//         replace: event.detail.visit.replace,
-//         only: event.detail.visit.only,
-//         headers: event.detail.visit.headers,
-//       });
-
-//       // Reattach the guard after a short delay
-//       setTimeout(() => {
-//         navigationGuardCleanup = router.on("before", (event) => {
-//           if (!isDirty.value) return;
-//           event.preventDefault();
-//           handleNavigationGuard(event);
-//         });
-//       }, 100);
-//     }
-//   } catch (error) {
-//     console.error("Confirmation error:", error);
-//     // In case of error, stay on current page
-//     info(t("layouts.error_occurred"));
-//   }
-// }
-
 const resetToDatabaseValue = () => {
   if (props.type === "list") {
     listColumns.value = [...selectedListColumnsFromDb.value];
@@ -336,8 +256,6 @@ const layoutsUrl = () => {
 
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
-  skipUrls: ["/settings/layouts/"], // Save actions - no confirmation needed
-  excludeUrls: ["/logout", "/login"], // Always allowed
 });
 </script>
 
