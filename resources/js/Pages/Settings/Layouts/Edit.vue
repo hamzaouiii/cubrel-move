@@ -1,14 +1,6 @@
 <script setup>
-import {
-  computed,
-  ref,
-  watch,
-  getCurrentInstance,
-  onMounted,
-  onUnmounted,
-} from "vue";
-
-import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
+import { computed, ref, watch, getCurrentInstance } from "vue";
+import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 
 import Layout from "@/Layouts/Layout.vue";
 
@@ -18,12 +10,11 @@ import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
-import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-const { confirm } = useConfirm();
 
 defineOptions({
   layout: Layout,
@@ -34,6 +25,7 @@ const props = defineProps({
   type: String,
   defaultLayout: Object,
   fields: Object,
+  oldFields: Object,
 });
 
 const page = usePage();
@@ -41,13 +33,13 @@ const appSettings = page.props.appSettings;
 const listColumns = ref([]);
 const recordSections = ref([]);
 
+// setup layouts + record
 const currentLayout = computed(() => {
   const custom = props.module.layouts?.find(
     (layout) => layout.type === props.type
   );
   return custom?.definition || props.defaultLayout?.definition || null;
 });
-
 const moduleFields = computed(() => {
   return props.fields ?? [];
 });
@@ -60,6 +52,14 @@ const fieldByKey = computed(() => {
   return map;
 });
 
+const fieldByName = computed(() => {
+  const map = {};
+  for (const field of moduleFields.value) {
+    if (field?.name) map[field.name] = field;
+  }
+  return map;
+});
+// list layout
 const listLayoutColumnConfigs = computed(() => {
   const def = currentLayout.value;
   return def?.columns && Array.isArray(def.columns) ? def.columns : [];
@@ -68,7 +68,7 @@ const listLayoutColumnConfigs = computed(() => {
 const selectedListColumnsFromDb = computed(() => {
   return listLayoutColumnConfigs.value
     .map((col) => {
-      const field = fieldByKey.value[col?.key];
+      const field = fieldByName.value[col?.key];
       if (!field) return null;
 
       return {
@@ -79,7 +79,40 @@ const selectedListColumnsFromDb = computed(() => {
     })
     .filter(Boolean);
 });
+console.log(selectedListColumnsFromDb.value);
 
+watch(
+  selectedListColumnsFromDb,
+  (val) => {
+    listColumns.value = [...val];
+  },
+  { immediate: true }
+);
+
+const availableListFields = computed(() => {
+  if (props.type !== "list") return [];
+
+  const usedKeys = new Set(
+    listColumns.value.map((col) => col?.key).filter(Boolean)
+  );
+  return moduleFields.value.filter((field) => !usedKeys.has(field.key));
+});
+
+const cleanedListColumns = computed(() =>
+  listColumns.value.map((col) => {
+    const { field, ...rest } = col || {};
+    return rest;
+  })
+);
+
+const cleanedColumnsFromDb = computed(() =>
+  listLayoutColumnConfigs.value.map((col) => {
+    const { field, ...rest } = col || {};
+    return rest;
+  })
+);
+
+// record layout
 const recordLayoutSectionConfigs = computed(() => {
   if (props.type !== "record") return [];
   const def = currentLayout.value;
@@ -92,7 +125,7 @@ const recordLayoutFromDB = computed(() => {
   return recordLayoutSectionConfigs.value.map((section) => {
     const layout = (section.layout || [])
       .map((col) => {
-        const field = fieldByKey.value[col?.key];
+        const field = selectedListColumnsFromDb.value[col?.key];
         if (!field) return null;
 
         return {
@@ -117,34 +150,11 @@ const cloneRecordSectionsFromDb = (sections) =>
   }));
 
 watch(
-  selectedListColumnsFromDb,
-  (val) => {
-    listColumns.value = [...val];
-  },
-  { immediate: true }
-);
-
-watch(
   recordLayoutFromDB,
   (val) => {
     recordSections.value = cloneRecordSectionsFromDb(val);
   },
   { immediate: true }
-);
-const availableFields = computed(() => {
-  if (props.type !== "list") return [];
-
-  const usedKeys = new Set(
-    listColumns.value.map((col) => col?.key).filter(Boolean)
-  );
-  return moduleFields.value.filter((field) => !usedKeys.has(field.key));
-});
-
-const cleanedListColumns = computed(() =>
-  listColumns.value.map((col) => {
-    const { field, ...rest } = col || {};
-    return rest;
-  })
 );
 
 const cleanedRecordSections = computed(() =>
@@ -157,14 +167,20 @@ const cleanedRecordSections = computed(() =>
   }))
 );
 
-const cleanedColumnsFromDb = computed(() =>
-  listLayoutColumnConfigs.value.map((col) => {
-    const { field, ...rest } = col || {};
-    return rest;
-  })
-);
-console.log(recordSections.value);
+const availableRecordFields = computed(() => {
+  if (props.type !== "record") return [];
 
+  const usedKeys = new Set();
+  recordSections.value.forEach((section) => {
+    (section.layout || []).forEach((col) => {
+      if (col?.key) usedKeys.add(col.key);
+    });
+  });
+
+  return moduleFields.value.filter((field) => !usedKeys.has(field.key));
+});
+
+// both
 const isDirty = computed(() => {
   if (props.type === "list") {
     const current = JSON.stringify(cleanedListColumns.value);
@@ -231,19 +247,6 @@ const saveLayout = () => {
   });
 };
 
-const availableRecordFields = computed(() => {
-  if (props.type !== "record") return [];
-
-  const usedKeys = new Set();
-  recordSections.value.forEach((section) => {
-    (section.layout || []).forEach((col) => {
-      if (col?.key) usedKeys.add(col.key);
-    });
-  });
-
-  return moduleFields.value.filter((field) => !usedKeys.has(field.key));
-});
-
 const layoutsUrl = () => {
   const key = props.type;
   const url = page.url;
@@ -255,9 +258,9 @@ const layoutsUrl = () => {
   return u;
 };
 
-useUnsavedChangesGuard({
-  getIsDirty: () => isDirty.value,
-});
+// useUnsavedChangesGuard({
+//   getIsDirty: () => isDirty.value,
+// });
 </script>
 
 <template>
@@ -295,7 +298,7 @@ useUnsavedChangesGuard({
       <div v-if="type === 'list'">
         <LayoutListEditor
           v-model:columns="listColumns"
-          :available-fields="availableFields"
+          :available-fields="availableListFields"
         />
       </div>
 
@@ -303,7 +306,7 @@ useUnsavedChangesGuard({
         <LayoutRecordEditor
           v-model:sections="recordSections"
           :available-fields="availableRecordFields"
-          :field-by-key="fieldByKey"
+          :field-by-key="fieldByName"
         />
       </div>
 

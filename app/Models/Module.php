@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
+use App\Models\Field;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -95,7 +96,13 @@ class Module extends BaseModule
       ->first();
   }
 
-  public function fields(): array
+  public function fields()
+  {
+    return $this->hasMany(Field::class, 'module_id', 'id');
+  }
+
+  // debugging purposes :
+  function oldFields()
   {
     // when custom fields are introduced they should be taken into account as well
     $table = $this->table_name;
@@ -126,6 +133,7 @@ class Module extends BaseModule
       ->values()
       ->all();
   }
+
   public function getFieldMetadata(string $fieldKey)
   {
     return collect($this->fields())

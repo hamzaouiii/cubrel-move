@@ -30,5 +30,6 @@ class DatabaseSeeder extends Seeder
     $this->call(GlobalLayoutUpdater::class);
     $this->call(GlobalRecordLayoutUpdater::class);
     $this->call([AccountsTableSeeder::class]);
+    $this->call(StockFieldsSeeder::class);
   }
 }
