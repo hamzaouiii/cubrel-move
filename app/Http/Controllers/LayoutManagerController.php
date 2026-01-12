@@ -65,14 +65,12 @@ class LayoutManagerController extends Controller
     $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
     $defaultLayout = Layout::getDefaultLayout($type);
     $fields = $module->fields;
-    $old_fields = $module->oldFields();
     return Inertia::render('Settings/Layouts/Edit', [
       'item'     => $item,
       'module' => $module,
       'type'  => $type,
       'defaultLayout' => $defaultLayout,
       'fields'   => $fields,
-      'oldFields'   => $old_fields
     ]);
   }
 }

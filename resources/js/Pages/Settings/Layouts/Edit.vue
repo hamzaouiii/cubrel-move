@@ -27,7 +27,6 @@ const props = defineProps({
   fields: Object,
   oldFields: Object,
 });
-
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
@@ -79,7 +78,6 @@ const selectedListColumnsFromDb = computed(() => {
     })
     .filter(Boolean);
 });
-console.log(selectedListColumnsFromDb.value);
 
 watch(
   selectedListColumnsFromDb,
@@ -125,13 +123,15 @@ const recordLayoutFromDB = computed(() => {
   return recordLayoutSectionConfigs.value.map((section) => {
     const layout = (section.layout || [])
       .map((col) => {
-        const field = selectedListColumnsFromDb.value[col?.key];
+        if (!col?.key) return null;
+
+        const field = fieldByName.value[col.key];
         if (!field) return null;
 
         return {
           ...col,
           field,
-          label: col.label ?? field.label ?? col.key,
+          label: col.label ?? field.label ?? col.name,
         };
       })
       .filter(Boolean);

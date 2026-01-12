@@ -16,7 +16,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.fieldByKey);
 const emit = defineEmits(["update:sections"]);
 
 const internalSections = ref([...props.sections]);
