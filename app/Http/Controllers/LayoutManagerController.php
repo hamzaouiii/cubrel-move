@@ -10,36 +10,8 @@ use App\Models\Settings\SettingItem;
 
 class LayoutManagerController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
-  public function index(Request $request)
-  {
-    $modules = Module::query()
-      ->with([
-        'layouts' => function ($q) {
-          $q->orderBy('type')->orderBy('name');
-        },
-      ])
-      ->orderBy('id')
-      ->get();
-    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
-
-    return Inertia::render('Settings/Layouts/List', [
-      'item'     => $item,
-      'setting_modules' => $modules
-    ]);
-  }
 
 
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create() {}
-
-  /**
-   * Store a newly created resource in storage.
-   */
   public function store(Request $request, \App\Models\Module $module, string $layoutType)
   {
     if ($layoutType == 'list') {
@@ -70,11 +42,6 @@ class LayoutManagerController extends Controller
       ->with('success', __('layouts.layout_update_success'));
   }
 
-
-
-  /**
-   * Display the specified resource.
-   */
   public function show(string $id)
   {
     $module = Module::query()->where('id', $id)
@@ -87,9 +54,6 @@ class LayoutManagerController extends Controller
     return Inertia::render('Settings/Layouts/Record', ['module' => $module]);
   }
 
-  /**
-   * Show the form for editing the specified resource.
-   */
   public function edit(Request $request, string $id, string $type)
   {
     $module = Module::query()->where('id', $id)
@@ -100,31 +64,13 @@ class LayoutManagerController extends Controller
       ])->firstOrFail();
     $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
     $defaultLayout = Layout::getDefaultLayout($type);
-    $fields = $module->fields();
-
-
+    $fields = $module->fields;
     return Inertia::render('Settings/Layouts/Edit', [
       'item'     => $item,
       'module' => $module,
       'type'  => $type,
       'defaultLayout' => $defaultLayout,
-      'fields'   => $fields
+      'fields'   => $fields,
     ]);
-  }
-
-  /**
-   * Update the specified resource in storage.
-   */
-  public function update(Request $request, string $id)
-  {
-    //
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   */
-  public function destroy(string $id)
-  {
-    //
   }
 }

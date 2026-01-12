@@ -20,7 +20,6 @@ const emit = defineEmits(["update:sections"]);
 
 const internalSections = ref([...props.sections]);
 const internalAvailable = ref([...props.availableFields]);
-
 watch(
   () => props.sections,
   (val) => {
@@ -152,10 +151,6 @@ const setDragOver = (target, sectionIndex, columnIndex, event) => {
   dragOver.value = { target, sectionIndex, columnIndex };
 };
 
-const clearDragOver = () => {
-  dragOver.value = null;
-};
-
 const isItemDragging = (source, sectionIndex, columnIndex) => {
   if (!dragging.value) return false;
   return (
@@ -189,10 +184,10 @@ const moveFieldToSection = (
   if (!targetSection.layout) targetSection.layout = [];
 
   const newColumn = {
-    key: field.key,
+    name: field.name,
     label: field.label,
     type: field.type,
-    field: props.fieldByKey[field.key],
+    field: props.fieldByKey[field.name],
   };
 
   targetSection.layout.splice(targetColumnIndex, 0, newColumn);

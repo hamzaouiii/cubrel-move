@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
+use App\Models\Field;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -95,37 +96,11 @@ class Module extends BaseModule
       ->first();
   }
 
-  public function fields(): array
+  public function fields()
   {
-    // when custom fields are introduced they should be taken into account as well
-    $table = $this->table_name;
-
-    if (!$table || !Schema::hasTable($table)) {
-      return [];
-    }
-
-    $columns = Schema::getColumnListing($table);
-
-    $ignored = [
-      'id',
-      'deleted_at',
-    ];
-
-    return collect($columns)
-      ->reject(fn($column) => in_array($column, $ignored, true))
-      ->map(function ($column) use ($table) {
-        $dbType = Schema::getColumnType($table, $column);
-
-        return [
-          'key'      => $column,
-          'label'    => "modules.{$this->slug}.fields.{$column}",
-          'type'     => $this->normalizeFieldType($dbType, $column),
-          'db_type'  => $dbType,
-        ];
-      })
-      ->values()
-      ->all();
+    return $this->hasMany(Field::class, 'module_id', 'id');
   }
+
   public function getFieldMetadata(string $fieldKey)
   {
     return collect($this->fields())
