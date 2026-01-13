@@ -25,7 +25,6 @@ const props = defineProps({
   type: String,
   defaultLayout: Object,
   fields: Object,
-  oldFields: Object,
 });
 const page = usePage();
 const appSettings = page.props.appSettings;
@@ -67,6 +66,7 @@ const listLayoutColumnConfigs = computed(() => {
 const selectedListColumnsFromDb = computed(() => {
   return listLayoutColumnConfigs.value
     .map((col) => {
+      console.log(col);
       const field = fieldByName.value[col?.key];
       if (!field) return null;
 
@@ -93,7 +93,7 @@ const availableListFields = computed(() => {
   const usedKeys = new Set(
     listColumns.value.map((col) => col?.key).filter(Boolean)
   );
-  return moduleFields.value.filter((field) => !usedKeys.has(field.key));
+  return moduleFields.value.filter((field) => !usedKeys.has(field.name));
 });
 
 const cleanedListColumns = computed(() =>
@@ -170,14 +170,14 @@ const cleanedRecordSections = computed(() =>
 const availableRecordFields = computed(() => {
   if (props.type !== "record") return [];
 
-  const usedKeys = new Set();
+  const usedFields = new Set();
   recordSections.value.forEach((section) => {
     (section.layout || []).forEach((col) => {
-      if (col?.key) usedKeys.add(col.key);
+      if (col?.key) usedFields.add(col.key);
     });
   });
 
-  return moduleFields.value.filter((field) => !usedKeys.has(field.key));
+  return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
 
 // both
