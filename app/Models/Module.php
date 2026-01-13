@@ -52,26 +52,13 @@ class Module extends BaseModule
   public function listLayout()
   {
     $layout = $this->layouts()->where('type', 'list')->first();
-
     if ($layout) {
-      return $this->hydrateLayoutSchema($layout, 'list');
+      return $layout->definition;
     }
 
-    $globalDefault = \App\Models\Layout::where('type', 'list')
-      ->where('module_name', 'global')
-      ->where('is_list_default', 1)
-      ->first();
-
+    $globalDefault = Layout::getDefaultLayout('list');
     if ($globalDefault) {
-      return $this->hydrateLayoutSchema($globalDefault, 'list');
-    }
-
-    $globalFallback = \App\Models\Layout::where('type', 'list')
-      ->where('module_name', 'global')
-      ->first();
-
-    if ($globalFallback) {
-      return $this->hydrateLayoutSchema($globalFallback, 'list');
+      return $globalDefault;
     }
 
     throw new \Exception("No list layout found for module {$this->name} and no global fallback available.");
@@ -81,11 +68,14 @@ class Module extends BaseModule
   {
     $recordLayout = $this->layouts()->where('type', 'record')->first();
 
-    if (!empty($recordLayout)) {
-      return $this->hydrateLayoutSchema($recordLayout, 'record');
+    if ($recordLayout) {
+      return $recordLayout->definition;
     }
-
-    return $this->hydrateLayoutSchema(Layout::getDefaultLayout('record'), 'record');
+    $globalDefault = Layout::getDefaultLayout('record');
+    if ($globalDefault) {
+      return $globalDefault;
+    }
+    return $recordLayout;
   }
 
 
@@ -98,7 +88,14 @@ class Module extends BaseModule
 
   public function fields()
   {
-    return $this->hasMany(Field::class, 'module_id', 'id');
+    return $this->hasMany(Field::class, 'module_id', 'id')
+      ->select([
+        'name',
+        'type',
+        'readonly',
+        'sortable',
+        'label',
+      ]);
   }
 
   public function getFieldMetadata(string $fieldKey)
@@ -106,110 +103,7 @@ class Module extends BaseModule
     return collect($this->fields())
       ->firstWhere('key', $fieldKey);
   }
-  protected function normalizeFieldType(string $dbType, string $column): string
-  {
-    return match ($dbType) {
-      'string',       => 'string',
-      'text'          => 'textarea',
-      'integer', 'bigint',
-      'smallint'              => 'int',
-      'boolean'               => 'boolean',
-      'float', 'decimal'      => 'number',
-      'date'                  => 'date',
-      'datetime', 'timestamp' => 'datetime',
-      'time'                  => 'time',
-      'json'                  => 'json',
-      default                 => 'string',
-    };
-  }
 
-
-  protected function hydrateRecordFieldItem($item, $fields)
-  {
-    if (!is_array($item)) return $item;
-
-    $key = $item['key'] ?? $item['field'] ?? $item['name'] ?? null;
-    if (!$key) return $item;
-
-    $field = $fields->get($key);
-
-    $item['key'] = $key;
-    $item['label'] = $item['label'] ?? ($field['label'] ?? Str::headline($key));
-    $item['type'] = $item['type'] ?? ($field['type'] ?? 'string');
-    $item['format'] = $item['format'] ?? null;
-
-    return $item;
-  }
-
-
-  protected function hydrateLayoutSchema(Layout $layout, string $type): Layout
-  {
-    $fields = collect($this->fields())->keyBy('key');
-    $definition = $layout->definition ?? [];
-
-    if ($type === 'record') {
-      $definition = $this->hydrateRecordDefinition($definition, $fields);
-    } else {
-      $definition = $this->hydrateListDefinition($definition, $fields);
-    }
-
-    $layout->setAttribute('definition', $definition);
-    return $layout;
-  }
-
-  protected function hydrateListDefinition($definition, $fields): array
-  {
-    $columns = is_array($definition['columns'] ?? null) ? $definition['columns'] : [];
-
-    $definition['columns'] = collect($columns)->map(function ($col) use ($fields) {
-      if (!is_array($col)) return $col;
-
-      $key = $col['key'] ?? null;
-      if (!$key) return $col;
-
-      $fieldType = $col['type'] ?? ($fields->get($key)['type'] ?? 'string');
-
-      $col['type'] = $fieldType;
-      $col['readonly'] = $col['readonly'] ?? $this->defaultReadonlyFor($key, $fieldType);
-
-      $col['label'] = $col['label'] ?? ($fields->get($key)['label'] ?? Str::headline($key));
-
-      return $col;
-    })->values()->all();
-
-    return $definition;
-  }
-
-  protected function hydrateRecordDefinition($definition, $fields): array
-  {
-    $sections = is_array($definition['sections'] ?? null) ? $definition['sections'] : [];
-
-    $definition['sections'] = collect($sections)->map(function ($section) use ($fields) {
-      if (!is_array($section)) return $section;
-
-      $layoutItems = is_array($section['layout'] ?? null) ? $section['layout'] : [];
-
-      $section['layout'] = collect($layoutItems)->map(function ($item) use ($fields) {
-        if (!is_array($item)) return $item;
-
-        $key = $item['key'] ?? null;
-        if (!$key) return $item;
-
-        $fieldType = $item['type'] ?? ($fields->get($key)['type'] ?? 'string');
-
-        $item['type'] = $fieldType;
-        $item['readonly'] = $item['readonly'] ?? $this->defaultReadonlyFor($key, $fieldType);
-
-        $item['label'] = $item['label'] ?? ($fields->get($key)['label'] ?? Str::headline($key));
-
-        return $item;
-      })->values()->all();
-
-      return $section;
-    })->values()->all();
-
-    return $definition;
-  }
 
   protected function defaultReadonlyFor(string $key, string $type): bool
   {

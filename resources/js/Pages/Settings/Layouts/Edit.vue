@@ -26,6 +26,7 @@ const props = defineProps({
   defaultLayout: Object,
   fields: Object,
 });
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
@@ -36,18 +37,11 @@ const currentLayout = computed(() => {
   const custom = props.module.layouts?.find(
     (layout) => layout.type === props.type
   );
-  return custom?.definition || props.defaultLayout?.definition || null;
-});
-const moduleFields = computed(() => {
-  return props.fields ?? [];
+  return custom?.definition || props.defaultLayout || null;
 });
 
-const fieldByKey = computed(() => {
-  const map = {};
-  for (const field of moduleFields.value) {
-    if (field?.key) map[field.key] = field;
-  }
-  return map;
+const moduleFields = computed(() => {
+  return props.fields ?? [];
 });
 
 const fieldByName = computed(() => {
@@ -57,23 +51,22 @@ const fieldByName = computed(() => {
   }
   return map;
 });
+
 // list layout
 const listLayoutColumnConfigs = computed(() => {
-  const def = currentLayout.value;
-  return def?.columns && Array.isArray(def.columns) ? def.columns : [];
+  return Object.values(currentLayout?.value?.columns || {});
 });
 
 const selectedListColumnsFromDb = computed(() => {
   return listLayoutColumnConfigs.value
     .map((col) => {
-      console.log(col);
-      const field = fieldByName.value[col?.key];
+      const field = fieldByName.value[col?.name];
       if (!field) return null;
 
       return {
         ...col,
         field,
-        label: col.label ?? field.label ?? col.key,
+        label: col.label ?? field.label ?? col.name,
       };
     })
     .filter(Boolean);
@@ -86,12 +79,11 @@ watch(
   },
   { immediate: true }
 );
-
 const availableListFields = computed(() => {
   if (props.type !== "list") return [];
 
   const usedKeys = new Set(
-    listColumns.value.map((col) => col?.key).filter(Boolean)
+    listColumns.value.map((col) => col?.name).filter(Boolean)
   );
   return moduleFields.value.filter((field) => !usedKeys.has(field.name));
 });
@@ -113,8 +105,7 @@ const cleanedColumnsFromDb = computed(() =>
 // record layout
 const recordLayoutSectionConfigs = computed(() => {
   if (props.type !== "record") return [];
-  const def = currentLayout.value;
-  return def?.sections && Array.isArray(def.sections) ? def.sections : [];
+  return Object.values(currentLayout?.value?.sections || {});
 });
 
 const recordLayoutFromDB = computed(() => {
@@ -123,9 +114,9 @@ const recordLayoutFromDB = computed(() => {
   return recordLayoutSectionConfigs.value.map((section) => {
     const layout = (section.layout || [])
       .map((col) => {
-        if (!col?.key) return null;
+        if (!col?.name) return null;
 
-        const field = fieldByName.value[col.key];
+        const field = fieldByName.value[col.name];
         if (!field) return null;
 
         return {
@@ -223,7 +214,6 @@ const saveLayout = () => {
   } else if (props.type === "record") {
     definition.sections = cleanedRecordSections.value;
   }
-
   form.definition = definition;
   const url = page.url;
 

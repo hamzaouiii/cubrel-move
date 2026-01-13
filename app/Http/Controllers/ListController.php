@@ -36,7 +36,7 @@ class ListController extends Controller
       }
     }
 
-    $listLayout = optional($moduleModel->listLayout())->definition;
+    $listLayout = $moduleModel->listLayout();
     $fields = $moduleModel->fields();
 
     //TODO: make the fields list customizable

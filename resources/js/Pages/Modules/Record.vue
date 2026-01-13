@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
 const appSettings = usePage().props.appSettings;
 
 const displayValueFor = (f) => {
-  const val = props.record[f.key];
+  const val = props.record[f.name];
   if (val == null || val === "") return "";
 
   if (f.type === "datetime") {

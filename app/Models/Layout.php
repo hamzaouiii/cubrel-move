@@ -27,7 +27,6 @@ class Layout extends Model
     return $this->belongsTo(Module::class);
   }
 
-  // Small helper scopes
 
   public function scopeForType($query, string $type)
   {
@@ -41,32 +40,17 @@ class Layout extends Model
 
   public static function getDefaultLayout(string $type)
   {
-    return self::whereNull('module_id')
-      ->where('type', $type)
-      ->where('module_name', 'global')
-      ->where(function ($q) use ($type) {
-        return $type === 'record'
-          ? $q->where('is_record_default', true)
-          : $q->where('is_list_default', true);
-      })
-      ->first();
+    $layout = config("default_layouts.{$type}");
+    return $layout;
   }
 
   public static function getGlobalListLayout()
   {
-    return self::whereNull('module_id')
-      ->where('type', 'list')
-      ->where('is_list_default', true)
-      ->where('module_name', 'global')
-      ->first();
+    return config("default_layouts.list", []);
   }
 
   public static function getGlobalRecordLayout()
   {
-    return self::whereNull('module_id')
-      ->where('type', 'record')
-      ->where('is_record_default', true)
-      ->where('module_name', 'global')
-      ->first();
+    return config("default_layouts.record", []);
   }
 }

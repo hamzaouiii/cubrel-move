@@ -40,7 +40,7 @@ class RecordController extends Controller
       }
     }
 
-    $recordLayout = optional($moduleModel->recordLayout())->definition;
+    $recordLayout = $moduleModel->recordLayout();
     return Inertia::render('Modules/Record', array_merge([
       'module'   => $moduleModel,
       'title'    => $moduleModel->name,

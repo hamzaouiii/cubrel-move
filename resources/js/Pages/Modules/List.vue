@@ -34,10 +34,8 @@ const pageProps = defineProps({
   filters: Object,
   fields: Object,
 });
-
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-
 const bulkActionmode = ref(false);
 const showDeleteZone = ref(false);
 const showMassUpdateZone = ref(false);
@@ -45,6 +43,12 @@ const selectedIds = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const allMatchingSelected = ref(false);
+
+const listLayoutColumns = computed(() => {
+  return Object.values(props.listLayout?.columns || {}).filter(
+    (column) => column !== null
+  );
+});
 
 const isSelected = (id) => selectedIds.value.includes(id);
 
@@ -459,8 +463,8 @@ const handleMassUpdate = async (payload) => {
               </th>
 
               <th
-                v-for="col in listLayout?.columns || []"
-                :key="col.key"
+                v-for="col in listLayoutColumns || []"
+                :key="col?.name"
                 scope="col"
               >
                 {{ $t(col.label) }}
@@ -490,31 +494,31 @@ const handleMassUpdate = async (payload) => {
                   />
                 </td>
 
-                <td v-for="col in listLayout?.columns || []" :key="col.key">
-                  <template v-if="col.key === 'email' && item[col.key]">
-                    <a :href="'mailto:' + item[col.key]">
+                <td v-for="col in listLayoutColumns || []" :key="col.name">
+                  <template v-if="col?.name === 'email' && item[col?.name]">
+                    <a :href="'mailto:' + item[col.name]">
                       <span v-html="highlightMatch(item[col.key])"></span>
                     </a>
                   </template>
 
                   <template
-                    v-else-if="col.type === 'datetime' && item[col.key]"
+                    v-else-if="col.type === 'datetime' && item[col.name]"
                   >
-                    {{ formatDateTime(item[col.key], appSettings) }}
+                    {{ formatDateTime(item[col.name], appSettings) }}
                   </template>
 
                   <template
-                    v-else-if="item[col.key] && item[col.key].length > 62"
+                    v-else-if="item[col.name] && item[col.name].length > 62"
                   >
                     <span
                       v-html="
-                        highlightMatch(item[col.key].substring(0, 64) + '...')
+                        highlightMatch(item[col.name].substring(0, 64) + '...')
                       "
                     ></span>
                   </template>
 
                   <template v-else>
-                    <span v-html="highlightMatch(item[col.key] ?? '-')"></span>
+                    <span v-html="highlightMatch(item[col.name] ?? '-')"></span>
                   </template>
                 </td>
               </Link>
@@ -524,8 +528,7 @@ const handleMassUpdate = async (payload) => {
               <tr class="no-data-row">
                 <td
                   :colspan="
-                    (listLayout?.columns?.length ?? 0) +
-                    (bulkActionmode ? 1 : 0)
+                    (listLayoutColumns?.length ?? 0) + (bulkActionmode ? 1 : 0)
                   "
                   class="no_data_list_view"
                 >
