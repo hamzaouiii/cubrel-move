@@ -52,13 +52,6 @@ class FieldsManagerController extends Controller
     ]);
   }
 
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(Request $request)
-  {
-    //
-  }
 
   /**
    * Display the specified resource.
@@ -75,9 +68,9 @@ class FieldsManagerController extends Controller
     $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
 
     return Inertia::render('Settings/Fields/Record', [
-      'module'     => $module,
-      'item'     => $item,
-      'fields' => $module->fields()
+      'module' => $module,
+      'item'   => $item,
+      'fields' => $module->fields
     ]);
   }
 

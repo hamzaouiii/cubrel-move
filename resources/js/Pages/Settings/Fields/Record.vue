@@ -14,6 +14,8 @@ const props = defineProps({
   fields: Array,
   item: Object,
 });
+
+console.log(props.fields);
 const page = usePage();
 const appSettings = page.props.appSettings;
 
@@ -81,11 +83,11 @@ const sortedFields = computed(() => {
       <table class="fields__table">
         <thead>
           <tr>
-            <th @click="sortBy('key')">
-              {{ $t("fields.key") }}
+            <th @click="sortBy('name')">
+              {{ $t("fields.name") }}
 
               <i
-                v-if="sortKey === 'key'"
+                v-if="sortKey === 'name'"
                 class="fa-solid sort-icon is-active"
                 :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
               ></i>
@@ -123,10 +125,10 @@ const sortedFields = computed(() => {
         <tbody>
           <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
             <td>
-              {{ f.key }}
+              {{ f.name }}
             </td>
-            <td>{{ f.label }}</td>
-            <td>{{ f.type }}</td>
+            <td>{{ $t(f.label) }}</td>
+            <td>{{ $t("fields.types." + f.type) }}</td>
             <td style="width: 70px">
               <Link class="fields__table__row__edit btn" :href="editUrl(f.key)">
                 <i
