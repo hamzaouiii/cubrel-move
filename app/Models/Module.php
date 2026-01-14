@@ -98,10 +98,15 @@ class Module extends BaseModule
       ]);
   }
 
-  public function getFieldMetadata(string $fieldKey)
+  public function getFieldMetadata(string $field)
   {
-    return collect($this->fields())
-      ->firstWhere('key', $fieldKey);
+    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
+    $field = $this->hasMany(Field::class, 'module_id', 'id')
+      ->firstWhere('name', $field);
+    return array_diff_key(
+      $field->getAttributes(),
+      array_flip($excluded)
+    );
   }
 
 

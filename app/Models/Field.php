@@ -29,7 +29,6 @@ class Field extends Model
     'key',
     'type',
     'label',
-
     'is_custom',
     'is_active',
     'readonly',
@@ -39,7 +38,6 @@ class Field extends Model
     'searchable',
     'filterable',
     'sortable',
-
     'database_type',
     'default_value',
     'options',

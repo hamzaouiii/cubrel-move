@@ -130,7 +130,7 @@ class SettingsController extends Controller
         'value'       => $tz,
         'label'       => "{$city} (UTC{$offset})",
         'description' => $tz . ($abbr ? " • {$abbr}" : ''),
-        'isActive'    => $tz === $currentTz, // optional (if you want)
+        'isActive'    => $tz === $currentTz,
       ];
     }
 

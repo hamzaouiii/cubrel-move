@@ -15,5 +15,24 @@ return [
     'dropDownField' => 'Dropdown',
     'date' => 'Date',
     'number' => 'Number',
+    'relationship' => 'Relationship'
+
+  ],
+  'metadata' => [
+    'name' => 'Name',
+    'type' => 'Type',
+    'label' => 'Label',
+    'readonly' => 'Readonly',
+    'hidden' => 'Hidden',
+    'nullable' => 'Nullable',
+    'required' => 'Required',
+    'searchable' => 'Searchable',
+    'filterable' => 'Filterable',
+    'sortable' => 'Sortable',
+    'default_value' => 'Default Value',
+    'options' => 'Options',
+    'min_length' => 'Minimun Length',
+    'max_length' => 'Maximun Length',
+    'regex' => 'Regex Rules',
   ]
 ];

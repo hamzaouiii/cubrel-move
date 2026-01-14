@@ -1,4 +1,14 @@
 <script setup>
+/**
+ *
+ * for me to remember how to use without having to read the whole component everytime
+ * Send an array of options like this :options=array[] and bind it to via v-model
+ * options look like this:
+ * 'value'
+ * 'label'       => "{$city} (UTC{$offset})",
+ * 'description' => $tz . ($abbr ? " • {$abbr}" : ''),
+ *
+ */
 import {
   computed,
   ref,

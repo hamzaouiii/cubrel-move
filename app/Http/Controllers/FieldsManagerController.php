@@ -87,11 +87,12 @@ class FieldsManagerController extends Controller
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
-
+    $field_types = config("default_field_types");
     return Inertia::render('Settings/Fields/Edit', [
       'module'     => $module,
       'item'     => $item,
-      'metadata' => $module->getFieldMetadata($field)
+      'metadata' => $module->getFieldMetadata($field),
+      'field_types' => $field_types
     ]);
   }
 

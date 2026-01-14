@@ -15,5 +15,23 @@ return [
     'dropDownField' => 'Auswahlliste',
     'date' => 'Datum',
     'number' => 'Zahl',
+    'relationship' => 'Beziehung'
+  ],
+  'metadata' => [
+    'name' => 'Name',
+    'type' => 'Typ',
+    'label' => 'Bezeichnung',
+    'readonly' => 'Schreibgeschützt',
+    'hidden' => 'Ausgeblendet',
+    'nullable' => 'Nullable',
+    'required' => 'Pflichtfeld',
+    'searchable' => 'Durchsuchbar',
+    'filterable' => 'Filterbar',
+    'sortable' => 'Sortierbar',
+    'default_value' => 'Standardwert',
+    'options' => 'Optionen',
+    'min_length' => 'Minimale Länge',
+    'max_length' => 'Maximale Länge',
+    'regex' => 'Regex Regeln',
   ],
 ];

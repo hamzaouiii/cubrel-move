@@ -15,7 +15,6 @@ const props = defineProps({
   item: Object,
 });
 
-console.log(props.fields);
 const page = usePage();
 const appSettings = page.props.appSettings;
 
@@ -130,7 +129,10 @@ const sortedFields = computed(() => {
             <td>{{ $t(f.label) }}</td>
             <td>{{ $t("fields.types." + f.type) }}</td>
             <td style="width: 70px">
-              <Link class="fields__table__row__edit btn" :href="editUrl(f.key)">
+              <Link
+                class="fields__table__row__edit btn"
+                :href="editUrl(f.name)"
+              >
                 <i
                   class="fields__table__row__edit__icon fa-regular fa-pen-to-square"
                 ></i>
