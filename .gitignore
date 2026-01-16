@@ -28,3 +28,5 @@ Thumbs.db
 
 app/console/*
 *.ps1
+package-lock.json
+.prettierrc
