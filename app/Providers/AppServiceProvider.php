@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use App\Models\Module;
+use App\Models\Label;
 use App\Services\ModuleScaffolder;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +22,16 @@ class AppServiceProvider extends ServiceProvider
     });
   }
 
+  private function translate($key, $replace = [], $locale = null)
+  {
+    $customLabel = Label::where('key', $key)->first();
+    logger('Label accessed: ' . $key);
+    if ($customLabel && $customLabel->value) {
+      return $customLabel->value;
+    }
+
+    return __($key, $replace, $locale);
+  }
   /**
    * Bootstrap any application services.
    */
@@ -48,16 +59,17 @@ class AppServiceProvider extends ServiceProvider
         ->values();
     });
     Inertia::share('translations', function () {
+      $customLabels = Label::pluck('value', 'key')->toArray();
       return [
-        'settings' => __('settings'),
-        'modules' => __('modules'),
-        'pagination' => __('pagination'),
-        'sidebar' => __('sidebar'),
-        'topbar' => __('topbar'),
-        'layouts' => __('layouts'),
-        'custom' => __('custom'),
-        'fields' => __('fields'),
-        'globals' => __('globals'),
+        'settings' => $this->translate('settings'),
+        'modules' => $this->translate('modules'),
+        'pagination' => $this->translate('pagination'),
+        'sidebar' => $this->translate('sidebar'),
+        'topbar' => $this->translate('topbar'),
+        'layouts' => $this->translate('layouts'),
+        'fields' => $this->translate('fields'),
+        'globals' => $this->translate('globals'),
+        'custom' => $customLabels
       ];
     });
   }

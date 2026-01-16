@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Settings\SettingItem;
 use App\Models\Module;
 use App\Models\Field;
+use App\Models\Label;
 
 class FieldsManagerController extends Controller
 {
@@ -102,6 +103,17 @@ class FieldsManagerController extends Controller
       ->where('module_id', $module)
       ->where('name', $field_name)
       ->firstOrFail();
+
+    //handle language label seperately from the rest of metadata
+    if ($request->input('label') !== $field->label) {
+      $key = $field->label;
+      $value = $request->input('label');
+      Label::updateOrCreate(
+        ['key' => $key],
+        ['value' => $value],
+        ['module_id' => $module]
+      );
+    }
 
     $data = $request->validate([
       'readonly' => ['boolean'],

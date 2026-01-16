@@ -25,8 +25,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.modelValue);
-
 const value = computed({
   get: () => {
     if (

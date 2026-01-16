@@ -7,6 +7,9 @@ export function useTrans() {
   const t = (key, params = {}, fallback = "") => {
     if (!key) return fallback;
 
+    if (translations.custom && translations.custom.hasOwnProperty(key)) {
+      return translations.custom[key];
+    }
     const parts = key.split(".");
     let value = translations;
 

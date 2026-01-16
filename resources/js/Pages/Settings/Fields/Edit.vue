@@ -42,6 +42,7 @@ const form = useForm({
   max_length: props.metadata.max_length,
   regex: props.metadata.regex,
 });
+
 const isCheckbox = (field) => {
   const map = [
     "readonly",
@@ -91,9 +92,7 @@ const saveField = () => {
     preserveScroll: true,
     onSuccess: () => {
       clearAllAlerts();
-
       success(t("fields.field_update_success"));
-      form.reset();
     },
     onError: () => {
       error(t("fields.field_update_error"));
