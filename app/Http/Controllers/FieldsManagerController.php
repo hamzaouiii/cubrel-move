@@ -53,7 +53,7 @@ class FieldsManagerController extends Controller
       'module'     => $module,
       'item'     => $item,
       'field_types' => $field_types,
-      'field' => $field->getEmptyMetadata()  
+      'field' => $field->getEmptyMetadata()
     ]);
   }
 
@@ -99,9 +99,9 @@ class FieldsManagerController extends Controller
       'field_types' => $field_types
     ]);
   }
+
   public function update(Request $request, string $module, string $field_name)
   {
-
     $field = Field::query()
       ->where('module_id', $module)
       ->where('name', $field_name)
@@ -139,6 +139,64 @@ class FieldsManagerController extends Controller
     return back();
   }
 
+  public function store(Request $request, string $module_id)
+  {
+    $data = $request->validate([
+      'label' => ['required', 'string'],
+      'name' => ['required', 'string'],
+      'key' => ['required', 'string', 'unique:fields,key,except,id'],
+      'type' => ['required'],
+      'readonly' => ['boolean'],
+      'hidden' => ['boolean'],
+      'nullable' => ['boolean'],
+      'required' => ['boolean'],
+      'searchable' => ['boolean'],
+      'filterable' => ['boolean'],
+      'sortable' => ['boolean'],
+      'default_value' => ['nullable'],
+      'options' => ['nullable', 'array'],
+      'min_length' => ['nullable', 'integer'],
+      'max_length' => ['nullable', 'integer'],
+      'regex' => ['nullable', 'string'],
+    ]);
+
+    $module = Module::query()->where("id", $module_id)->first();
+    $field_name = $data['name'];
+    $label_key = "modules." . $module->slug . ".fields." . $field_name;
+    $label_value = $data['label'];
+
+    // $key = $module->slug . "_" . $field_name;
+    Label::updateOrCreate([
+      'key' => $label_key,
+      'value' => $label_value,
+      'module_id' => $module_id,
+      'is_custom' => true
+    ]);
+
+    Field::updateOrCreate([
+      'name'  => $field_name,
+      'module_id' => $module_id,
+      'label' =>  $label_key,
+      'key'  => $data['key'],
+      'type'  => $data['type'],
+      'readonly'  => $data['readonly'],
+      'hidden'  => $data['hidden'],
+      'nullable'  => $data['nullable'],
+      'required'  => $data['required'],
+      'searchable'  => $data['searchable'],
+      'filterable'  => $data['filterable'],
+      'sortable'  => $data['sortable'],
+      'default_value'  => $data['default_value'],
+      'options'  => $data['options'],
+      'min_length'  => $data['min_length'],
+      'max_length'  => $data['max_length'],
+      'regex'  => $data['regex']
+    ]);
+    return redirect()
+      ->route('settings.modules.fields.index', $module_id);
+    // ->with('success', __('settings.module_save_success'));
+    // still need to figure out where to store the values e.g custom_module_tables
+  }
   /**
    * Remove the specified resource from storage.
    */

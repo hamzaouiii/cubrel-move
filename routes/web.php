@@ -42,8 +42,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('fields/{field}', [FieldsManagerController::class, 'edit'])
           ->name('modules.fields.edit');
 
-        // Route::post('fields', [FieldsManagerController::class, 'store'])
-        //   ->name('modules.fields.store');
+        Route::post('fields/create', [FieldsManagerController::class, 'store'])
+          ->name('modules.fields.store');
 
         Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
           ->name('modules.fields.update');

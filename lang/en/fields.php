@@ -2,8 +2,8 @@
 
 return [
   'label' => 'Fields',
-  'name'   => 'Name',
-  'field_label' => 'Label',
+  'name'   => 'System Name',
+  'field_label' => 'Display Label',
   'type'  => 'Type',
   'create_new_field' => 'Create new field',
   'back_to_list' => 'Back to fields',
@@ -25,10 +25,10 @@ return [
 
   ],
   'metadata' => [
-    'name' => 'Name',
-    'key' => 'Key',
+    'name' => 'System Name',
+    // 'key' => 'Key',
     'type' => 'Type',
-    'label' => 'Label',
+    'label' => 'Display Label',
     'readonly' => 'Readonly',
     'hidden' => 'Hidden',
     'nullable' => 'Nullable',

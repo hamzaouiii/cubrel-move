@@ -1,6 +1,6 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
-import { Head, Link, usePage, useForm } from "@inertiajs/vue3";
+import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
 import { getCurrentInstance } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
@@ -93,6 +93,7 @@ const saveField = () => {
     onSuccess: () => {
       clearAllAlerts();
       success(t("fields.field_update_success"));
+      router.visit(fieldsUrl());
     },
     onError: () => {
       error(t("fields.field_update_error"));

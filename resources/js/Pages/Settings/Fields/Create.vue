@@ -6,6 +6,9 @@ import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingB
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/Settings/FiledTypes/DropdownField.vue";
+import { useAlerts } from "@/Composables/useAlerts";
+
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
@@ -15,20 +18,18 @@ const props = defineProps({
   module: Object,
   item: Object,
   field_types: Array,
-  field: Object, // Assuming this is an array of field names
+  field: Object,
 });
-
 const page = usePage();
 const appSettings = page.props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-// Initialize form with default values
 const default_values = {
-  name: "",
-  key: "", // This will be auto-generated
-  type: "",
   label: "",
+  name: "",
+  key: "",
+  type: "",
   readonly: false,
   hidden: false,
   nullable: false,
@@ -45,10 +46,10 @@ const default_values = {
 
 const form = useForm({ ...default_values });
 
-const generatedKey = computed(() => {
-  if (!form.name) return "";
+const generatedName = computed(() => {
+  if (!form.label) return "";
 
-  return form.name
+  const name = form.label
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -56,21 +57,36 @@ const generatedKey = computed(() => {
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/[^a-z0-9]+/g, "_")
     .replace(/^-+|-+$/g, "");
+
+  return name;
+});
+
+watch(
+  () => form.label,
+  (newName) => {
+    if (newName) {
+      form.name = generatedName.value;
+    }
+  },
+  { immediate: true }
+);
+
+const generatedKey = computed(() => {
+  return props.module.slug + "_" + generatedName.value;
 });
 
 watch(
   () => form.name,
-  (newName) => {
-    if (newName) {
+  (newKey) => {
+    if (newKey) {
       form.key = generatedKey.value;
     }
   },
   { immediate: true }
 );
 
-// Helper functions
 const isCheckbox = (field) => {
   const checkboxFields = [
     "readonly",
@@ -89,7 +105,7 @@ const isDropDown = (field) => {
 };
 
 const isReadonly = (field) => {
-  return field === "key";
+  return field === "name";
 };
 
 const typesList = () => {
@@ -114,6 +130,7 @@ const saveField = () => {
   // Make sure key is set before submitting
   if (!form.key && form.name) {
     form.key = generatedKey.value;
+    form.name = generatedName.value;
   }
 
   form.post(page.url, {
@@ -121,9 +138,17 @@ const saveField = () => {
     onSuccess: () => {
       clearAllAlerts();
       success(t("fields.field_create_success"));
+      // router.visit(fieldsUrl());
     },
-    onError: () => {
-      error(t("fields.field_create_error"));
+    onError: (Error) => {
+      clearAllAlerts();
+      if (Error) {
+        for (const [key, value] of Object.entries(Error)) {
+          error(key + " : " + value);
+        }
+      } else {
+        error(t("fields.field_create_error"));
+      }
     },
   });
 };
@@ -131,6 +156,10 @@ const saveField = () => {
 const resetForm = () => {
   form.reset();
   warning(t("fields.field_reset_success"));
+};
+
+const isDirty = () => {
+  return form.label?.length >= 4 && form.type;
 };
 </script>
 
@@ -178,7 +207,7 @@ const resetForm = () => {
           <label> {{ $t("fields.metadata." + fieldName) }} </label>
 
           <template v-if="isReadonly(fieldName)">
-            <input type="text" :name="fieldName" v-model="form.key" disabled />
+            <input type="text" :name="fieldName" v-model="form.name" disabled />
           </template>
 
           <template v-else-if="isCheckbox(fieldName)">
@@ -201,7 +230,7 @@ const resetForm = () => {
           <button
             class="settings__module__edit__actions__reset btn"
             @click="resetForm"
-            :disabled="!form.isDirty"
+            :disabled="!isDirty()"
             type="button"
           >
             {{ $t("settings.cancel") }}
@@ -210,7 +239,7 @@ const resetForm = () => {
           <button
             type="submit"
             class="settings__module__edit__actions__save btn"
-            :disabled="!form.isDirty"
+            :disabled="!isDirty()"
           >
             {{ $t("settings.save") }}
           </button>

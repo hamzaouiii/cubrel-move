@@ -82,11 +82,11 @@ const sortedFields = computed(() => {
       <table class="fields__table">
         <thead>
           <tr>
-            <th @click="sortBy('name')">
-              {{ $t("fields.name") }}
+            <th @click="sortBy('key')">
+              {{ $t("fields.key") }}
 
               <i
-                v-if="sortKey === 'name'"
+                v-if="sortKey === 'key'"
                 class="fa-solid sort-icon is-active"
                 :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
               ></i>

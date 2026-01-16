@@ -25,7 +25,6 @@ class AppServiceProvider extends ServiceProvider
   private function translate($key, $replace = [], $locale = null)
   {
     $customLabel = Label::where('key', $key)->first();
-    logger('Label accessed: ' . $key);
     if ($customLabel && $customLabel->value) {
       return $customLabel->value;
     }

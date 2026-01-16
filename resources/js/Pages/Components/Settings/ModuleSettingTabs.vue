@@ -43,13 +43,13 @@ const appSettings = usePage().props.appSettings;
       }"
       >Fields</Link
     >
-    <Link
+    <!-- <Link
       :href="getUrl('relationships')"
       class="settings__module__tabs__item"
       :class="{
         'settings__module__tabs__item--active': activeKey === 'relationship',
       }"
       >Relationships</Link
-    >
+    > -->
   </div>
 </template>
