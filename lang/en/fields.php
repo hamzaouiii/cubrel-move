@@ -7,6 +7,10 @@ return [
   'type'  => 'Type',
   'create_new_field' => 'Create new field',
   'back_to_list' => 'Back to fields',
+  'field_update_success' => 'Field updated successfully.',
+  'field_update_error' => 'An error occured while saving field.',
+  'field_reset_success' => 'Field reset to Database values.',
+
   'types' => [
     'longText' => 'Long text',
     'textField' => 'Text',

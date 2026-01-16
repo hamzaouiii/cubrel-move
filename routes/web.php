@@ -45,8 +45,8 @@ Route::middleware(['auth'])->group(function () {
         // Route::post('fields', [FieldsManagerController::class, 'store'])
         //   ->name('modules.fields.store');
 
-        // Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
-        //   ->name('modules.fields.update');
+        Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
+          ->name('modules.fields.update');
 
         // Route::delete('fields/{field}', [FieldsManagerController::class, 'destroy'])
         //   ->name('modules.fields.destroy');
@@ -61,11 +61,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('layouts/{layoutType}', [LayoutManagerController::class, 'store'])
           ->name('modules.layouts.store');
-
-
-        // Relationships (future)
-        Route::get('relationships', fn() => null)
-          ->name('modules.relationships.index');
       });
   });
 

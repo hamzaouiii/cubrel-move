@@ -7,8 +7,17 @@ const appSettings = usePage().props.appSettings;
 
 const props = defineProps({
   modelValue: {
-    type: Boolean,
+    type: [Boolean, Number, String],
     default: false,
+    validator: (value) => {
+      return (
+        typeof value === "boolean" ||
+        value === 0 ||
+        value === 1 ||
+        value === "0" ||
+        value === "1"
+      );
+    },
   },
   moduleColor: {
     type: String,
@@ -16,9 +25,28 @@ const props = defineProps({
   },
 });
 
+console.log(props.modelValue);
+
 const value = computed({
-  get: () => props.modelValue,
-  set: (val) => emit("update:modelValue", val),
+  get: () => {
+    if (
+      props.modelValue === true ||
+      props.modelValue === 1 ||
+      props.modelValue === "1"
+    ) {
+      return true;
+    }
+    return false;
+  },
+  set: (val) => {
+    if (typeof props.modelValue === "number") {
+      emit("update:modelValue", val ? 1 : 0);
+    } else if (typeof props.modelValue === "string") {
+      emit("update:modelValue", val ? "1" : "0");
+    } else {
+      emit("update:modelValue", val);
+    }
+  },
 });
 </script>
 

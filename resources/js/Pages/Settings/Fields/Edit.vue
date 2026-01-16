@@ -1,11 +1,14 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, usePage, useForm } from "@inertiajs/vue3";
-import { computed, getCurrentInstance } from "vue";
+import { getCurrentInstance } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/Settings/FiledTypes/DropdownField.vue";
+import { useAlerts } from "@/Composables/useAlerts";
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
+
 defineOptions({
   layout: Layout,
 });
@@ -16,7 +19,6 @@ const props = defineProps({
   item: Object,
   field_types: Array,
 });
-
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -83,7 +85,26 @@ const fieldsUrl = () => {
   return u;
 };
 
-const saveField = () => {};
+const saveField = () => {
+  info(t("settings.saving"));
+  form.put(page.url, {
+    preserveScroll: true,
+    onSuccess: () => {
+      clearAllAlerts();
+
+      success(t("fields.field_update_success"));
+      form.reset();
+    },
+    onError: () => {
+      error(t("fields.field_update_error"));
+    },
+  });
+};
+
+const resetForm = () => {
+  form.reset();
+  warning(t("fields.field_reset_success"));
+};
 </script>
 
 <template>
@@ -115,7 +136,7 @@ const saveField = () => {};
       >
     </div>
     <div class="settings__module__edit">
-      <form @submit.prevent="saveSetting">
+      <form @submit.prevent="saveField">
         <div
           v-for="(i, index) in metadata"
           class="settings__module__edit__element"

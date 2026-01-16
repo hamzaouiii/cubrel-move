@@ -7,6 +7,9 @@ return [
   'type' => 'Typ',
   'create_new_field' => 'Neues Feld erstellen',
   'back_to_list' => 'Zurück zu den Feldern',
+  'field_update_success' => 'Feld erfolgreich aktualisiert.',
+  'field_update_error' => 'Fehler beim Speichern des Feldes.',
+  'field_reset_success' => 'Feld auf Datenbank-Werte zurückgesetzt.',
   'types' => [
     'longText' => 'Langer Text',
     'textField' => 'Text',

@@ -29,6 +29,7 @@ return [
     'show_in_sidebar' => 'Show In Sidebar',
     'description' => 'Descrption'
   ],
+  // perhaps need to change this to system_fields not to conflict with settings.modules.fields
   'fields' => [
     'app_locale'                => 'Application Language',
     'show_language_switcher'    => 'Show Language Switcher',

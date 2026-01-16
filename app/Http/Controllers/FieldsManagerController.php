@@ -7,6 +7,7 @@ use App\Contracts\ModuleHandler;
 use Illuminate\Http\Request;
 use App\Models\Settings\SettingItem;
 use App\Models\Module;
+use App\Models\Field;
 
 class FieldsManagerController extends Controller
 {
@@ -66,7 +67,6 @@ class FieldsManagerController extends Controller
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
-
     return Inertia::render('Settings/Fields/Record', [
       'module' => $module,
       'item'   => $item,
@@ -95,13 +95,33 @@ class FieldsManagerController extends Controller
       'field_types' => $field_types
     ]);
   }
-
-  /**
-   * Update the specified resource in storage.
-   */
-  public function update(Request $request, string $id)
+  public function update(Request $request, string $module, string $field_name)
   {
-    //
+
+    $field = Field::query()
+      ->where('module_id', $module)
+      ->where('name', $field_name)
+      ->firstOrFail();
+
+    $data = $request->validate([
+      'readonly' => ['boolean'],
+      'hidden' => ['boolean'],
+      'nullable' => ['boolean'],
+      'required' => ['boolean'],
+      'searchable' => ['boolean'],
+      'filterable' => ['boolean'],
+      'sortable' => ['boolean'],
+      'default_value' => ['nullable'],
+      'options' => ['nullable', 'array'],
+      'min_length' => ['nullable', 'integer'],
+      'max_length' => ['nullable', 'integer'],
+      'regex' => ['nullable', 'string'],
+    ]);
+
+
+    $field->update($data);
+
+    return back();
   }
 
   /**
