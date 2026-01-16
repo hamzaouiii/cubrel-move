@@ -26,6 +26,7 @@ class Field extends Model
   protected $fillable = [
     'id',
     'module_id',
+    'name',
     'key',
     'type',
     'label',
@@ -45,7 +46,7 @@ class Field extends Model
     'max_length',
     'regex',
   ];
-
+  protected $excludedFromForms = ['id', 'module_id', 'is_custom', 'is_active', 'database_type'];
   /**
    * Attribute casting
    */
@@ -84,5 +85,8 @@ class Field extends Model
   public function hasOptions(): bool
   {
     return ! empty($this->options);
+  }
+  public function getEmptyMetadata(){
+    return array_diff($this->fillable, $this->excludedFromForms);
   }
 }

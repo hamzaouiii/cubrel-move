@@ -7,8 +7,10 @@ return [
   'type'  => 'Type',
   'create_new_field' => 'Create new field',
   'back_to_list' => 'Back to fields',
+  'field_create_success' => 'Field created successfully.',
   'field_update_success' => 'Field updated successfully.',
-  'field_update_error' => 'An error occured while saving field.',
+  'field_create_error' => 'An error occured while creating field.',
+  'field_update_error' => 'An error occured while updating field.',
   'field_reset_success' => 'Field reset to Database values.',
 
   'types' => [
@@ -24,6 +26,7 @@ return [
   ],
   'metadata' => [
     'name' => 'Name',
+    'key' => 'Key',
     'type' => 'Type',
     'label' => 'Label',
     'readonly' => 'Readonly',

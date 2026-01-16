@@ -47,10 +47,13 @@ class FieldsManagerController extends Controller
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
-
+    $field_types = config("default_field_types");
+    $field  = new Field();
     return Inertia::render('Settings/Fields/Create', [
       'module'     => $module,
-      'item'     => $item
+      'item'     => $item,
+      'field_types' => $field_types,
+      'field' => $field->getEmptyMetadata()  
     ]);
   }
 

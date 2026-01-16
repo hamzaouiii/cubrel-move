@@ -273,7 +273,7 @@
           padding-top: 5px;
           padding-bottom: 5px;
           border-radius: 5px;
-          width: 350px;
+          width: 438px;
           &:disabled {
             background-color: rgb(218, 218, 218);
             color: white;
@@ -847,6 +847,7 @@
 .dropdown-field {
   font-family: "Fira Sans", "Heebo", sans-serif;
   position: relative;
+
   width: 450px;
 
   // button (closed state)
@@ -854,6 +855,7 @@
     border: 2px solid lightgray;
     border-radius: 5px;
     padding: 5px 10px;
+
     cursor: pointer;
 
     display: flex;
