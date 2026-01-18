@@ -96,6 +96,8 @@ const saveField = () => {
       router.visit(fieldsUrl());
     },
     onError: () => {
+      clearAllAlerts();
+
       error(t("fields.field_update_error"));
     },
   });
@@ -148,6 +150,12 @@ const resetForm = () => {
           </template>
           <template v-else-if="isCheckbox(index)">
             <Checkbox v-model="form[index]"></Checkbox>
+            <span
+              v-if="form.errors[index]"
+              class="settings__module__edit__element__error"
+            >
+              {{ form.errors[index] }}
+            </span>
           </template>
           <template v-else-if="isDropDown(index)">
             <DropdownField
@@ -156,7 +164,20 @@ const resetForm = () => {
             ></DropdownField>
           </template>
           <template v-else>
-            <input type="text" v-model="form[index]" />
+            <input
+              type="text"
+              v-model="form[index]"
+              :class="{
+                'settings__module__edit__element--error-field':
+                  form.errors[index],
+              }"
+            />
+            <span
+              v-if="form.errors[index]"
+              class="settings__module__edit__element__error"
+            >
+              {{ form.errors[index] }}
+            </span>
           </template>
         </div>
         <div class="settings__module__edit__actions">

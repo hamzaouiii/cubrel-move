@@ -12,7 +12,7 @@ return [
   'field_create_error' => 'An error occured while creating field.',
   'field_update_error' => 'An error occured while updating field.',
   'field_reset_success' => 'Field reset to Database values.',
-
+  'key_is_taken_error'    => 'A field with the same system name already exists',
   'types' => [
     'longText' => 'Long text',
     'textField' => 'Text',

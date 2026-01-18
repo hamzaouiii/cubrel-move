@@ -83,7 +83,7 @@ const sortedFields = computed(() => {
         <thead>
           <tr>
             <th @click="sortBy('key')">
-              {{ $t("fields.key") }}
+              {{ $t("fields.name") }}
 
               <i
                 v-if="sortKey === 'key'"

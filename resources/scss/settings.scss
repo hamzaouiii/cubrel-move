@@ -263,6 +263,7 @@
         align-items: baseline;
         // justify-content: space-between;
         margin: 10px;
+
         label {
           min-width: 220px;
         }
@@ -280,6 +281,12 @@
             border-color: rgb(218, 218, 218);
             cursor: not-allowed;
           }
+          &.disabled {
+            background-color: rgb(218, 218, 218);
+            color: white;
+            border-color: rgb(218, 218, 218);
+            cursor: not-allowed;
+          }
         }
         textarea {
           font-family: "Fira Sans", "Heebo", sans-serif;
@@ -288,6 +295,20 @@
           border-radius: 5px;
           width: 350px;
           resize: vertical;
+        }
+        &--error-field {
+          border: 2px solid #dc3545 !important;
+          background-color: #dc354629 !important;
+          color: inherit !important;
+        }
+        &__error {
+          color: #7f020e;
+          border: 2px solid #dc3545;
+          background-color: #dc354635 !important;
+          margin-left: 20px;
+          padding: 4px;
+          font-size: 1.15rem;
+          border-radius: 8px 2px 8px 2px;
         }
       }
       &__actions {
@@ -789,7 +810,9 @@
       font-size: 12px;
       opacity: 0;
       transform: rotate(0deg);
-      transition: opacity 0.15s ease, transform 0.2s ease;
+      transition:
+        opacity 0.15s ease,
+        transform 0.2s ease;
     }
     th:hover .sort-icon {
       opacity: 0.4;
@@ -967,7 +990,9 @@
 
 .dropdown-fade-enter-active,
 .dropdown-fade-leave-active {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
 }
 .dropdown-fade-enter-from,
 .dropdown-fade-leave-to {

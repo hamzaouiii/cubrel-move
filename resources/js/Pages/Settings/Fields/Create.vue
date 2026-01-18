@@ -1,7 +1,7 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
-import { Head, Link, usePage, useForm } from "@inertiajs/vue3";
-import { getCurrentInstance, computed, watch } from "vue"; // ADD watch import
+import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
+import { getCurrentInstance, computed, watch } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
@@ -127,7 +127,6 @@ const fieldsUrl = () => {
 const saveField = () => {
   info(t("settings.saving"));
 
-  // Make sure key is set before submitting
   if (!form.key && form.name) {
     form.key = generatedKey.value;
     form.name = generatedName.value;
@@ -138,7 +137,7 @@ const saveField = () => {
     onSuccess: () => {
       clearAllAlerts();
       success(t("fields.field_create_success"));
-      // router.visit(fieldsUrl());
+      router.visit(fieldsUrl());
     },
     onError: (Error) => {
       clearAllAlerts();
@@ -155,11 +154,15 @@ const saveField = () => {
 
 const resetForm = () => {
   form.reset();
+  router.visit(fieldsUrl());
   warning(t("fields.field_reset_success"));
 };
-
 const isDirty = () => {
   return form.label?.length >= 4 && form.type;
+};
+
+const displayKeyError = () => {
+  return form.errors.key || form.errors.name;
 };
 </script>
 
@@ -207,11 +210,33 @@ const isDirty = () => {
           <label> {{ $t("fields.metadata." + fieldName) }} </label>
 
           <template v-if="isReadonly(fieldName)">
-            <input type="text" :name="fieldName" v-model="form.name" disabled />
+            <input
+              type="text"
+              :name="fieldName"
+              v-model="form.name"
+              :class="[
+                'disabled',
+                {
+                  'settings__module__edit__element--error-field':
+                    displayKeyError(),
+                },
+              ]"
+            />
+            <span
+              v-if="displayKeyError()"
+              class="settings__module__edit__element__error"
+              >{{ $t("fields.key_is_taken_error") }}</span
+            >
           </template>
 
           <template v-else-if="isCheckbox(fieldName)">
             <Checkbox v-model="form[fieldName]"></Checkbox>
+            <span
+              v-if="form.errors[fieldName]"
+              class="settings__module__edit__element__error"
+            >
+              {{ form.errors[fieldName] }}
+            </span>
           </template>
 
           <template v-else-if="isDropDown(fieldName)">
@@ -219,10 +244,30 @@ const isDirty = () => {
               v-model="form[fieldName]"
               :options="typesList()"
             ></DropdownField>
+            <span
+              v-if="form.errors[fieldName]"
+              class="settings__module__edit__element__error"
+            >
+              {{ form.errors[fieldName] }}
+            </span>
           </template>
 
           <template v-else>
-            <input type="text" v-model="form[fieldName]" :name="fieldName" />
+            <input
+              type="text"
+              v-model="form[fieldName]"
+              :name="fieldName"
+              :class="{
+                'settings__module__edit__element--error-field':
+                  form.errors[fieldName],
+              }"
+            />
+            <span
+              v-if="form.errors[fieldName]"
+              class="settings__module__edit__element__error"
+            >
+              {{ form.errors[fieldName] }}
+            </span>
           </template>
         </div>
 

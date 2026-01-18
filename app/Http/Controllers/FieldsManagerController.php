@@ -107,6 +107,22 @@ class FieldsManagerController extends Controller
       ->where('name', $field_name)
       ->firstOrFail();
 
+    $data = $request->validate([
+      'label' => ['required', 'string', 'min:4'],
+      'readonly' => ['boolean'],
+      'hidden' => ['boolean'],
+      'nullable' => ['boolean'],
+      'required' => ['boolean'],
+      'searchable' => ['boolean'],
+      'filterable' => ['boolean'],
+      'sortable' => ['boolean'],
+      'default_value' => ['nullable'],
+      'options' => ['nullable', 'array'],
+      'min_length' => ['nullable', 'integer'],
+      'max_length' => ['nullable', 'integer'],
+      'regex' => ['required', 'string'],
+    ]);
+
     //handle language label seperately from the rest of metadata
     if ($request->input('label') !== $field->label) {
       $key = $field->label;
@@ -130,7 +146,7 @@ class FieldsManagerController extends Controller
       'options' => ['nullable', 'array'],
       'min_length' => ['nullable', 'integer'],
       'max_length' => ['nullable', 'integer'],
-      'regex' => ['nullable', 'string'],
+      'regex' => ['required', 'string'],
     ]);
 
 
@@ -142,7 +158,7 @@ class FieldsManagerController extends Controller
   public function store(Request $request, string $module_id)
   {
     $data = $request->validate([
-      'label' => ['required', 'string'],
+      'label' => ['required', 'string', 'min:4'],
       'name' => ['required', 'string'],
       'key' => ['required', 'string', 'unique:fields,key,except,id'],
       'type' => ['required'],
