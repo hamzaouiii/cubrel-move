@@ -9,6 +9,8 @@ use App\Models\Settings\SettingItem;
 use App\Models\Module;
 use App\Models\Field;
 use App\Models\Label;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Schema;
 
 class FieldsManagerController extends Controller
 {
@@ -120,7 +122,7 @@ class FieldsManagerController extends Controller
       'options' => ['nullable', 'array'],
       'min_length' => ['nullable', 'integer'],
       'max_length' => ['nullable', 'integer'],
-      'regex' => ['required', 'string'],
+      'regex' => ['nullable', 'string'],
     ]);
 
     //handle language label seperately from the rest of metadata
@@ -134,21 +136,6 @@ class FieldsManagerController extends Controller
       );
     }
 
-    $data = $request->validate([
-      'readonly' => ['boolean'],
-      'hidden' => ['boolean'],
-      'nullable' => ['boolean'],
-      'required' => ['boolean'],
-      'searchable' => ['boolean'],
-      'filterable' => ['boolean'],
-      'sortable' => ['boolean'],
-      'default_value' => ['nullable'],
-      'options' => ['nullable', 'array'],
-      'min_length' => ['nullable', 'integer'],
-      'max_length' => ['nullable', 'integer'],
-      'regex' => ['required', 'string'],
-    ]);
-
 
     $field->update($data);
 
@@ -157,6 +144,14 @@ class FieldsManagerController extends Controller
 
   public function store(Request $request, string $module_id)
   {
+    $module = Module::query()->where("id", $module_id)->first();
+    $table = $module->table_name ?  $module->table_name : null;
+    if (!Schema::hasTable($table)) {
+      throw ValidationException::withMessages([
+        'table_missing' => "System error: the module " . $module->slug . " has no SQL Database table, Please Contact your System Admin"
+      ]);
+    }
+
     $data = $request->validate([
       'label' => ['required', 'string', 'min:4'],
       'name' => ['required', 'string'],
@@ -176,12 +171,10 @@ class FieldsManagerController extends Controller
       'regex' => ['nullable', 'string'],
     ]);
 
-    $module = Module::query()->where("id", $module_id)->first();
     $field_name = $data['name'];
     $label_key = "modules." . $module->slug . ".fields." . $field_name;
     $label_value = $data['label'];
 
-    // $key = $module->slug . "_" . $field_name;
     Label::updateOrCreate([
       'key' => $label_key,
       'value' => $label_value,
@@ -208,11 +201,12 @@ class FieldsManagerController extends Controller
       'max_length'  => $data['max_length'],
       'regex'  => $data['regex']
     ]);
+
+    // where do we store the value of these custom fields ?  
     return redirect()
       ->route('settings.modules.fields.index', $module_id);
-    // ->with('success', __('settings.module_save_success'));
-    // still need to figure out where to store the values e.g custom_module_tables
   }
+
   /**
    * Remove the specified resource from storage.
    */

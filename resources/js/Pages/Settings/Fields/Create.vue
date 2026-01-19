@@ -70,7 +70,7 @@ watch(
       form.name = generatedName.value;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const generatedKey = computed(() => {
@@ -84,7 +84,7 @@ watch(
       form.key = generatedKey.value;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const isCheckbox = (field) => {
@@ -141,7 +141,9 @@ const saveField = () => {
     },
     onError: (Error) => {
       clearAllAlerts();
-      if (Error) {
+      if (Error.table_missing) {
+        error(Error.table_missing);
+      } else if (Error) {
         for (const [key, value] of Object.entries(Error)) {
           error(key + " : " + value);
         }
