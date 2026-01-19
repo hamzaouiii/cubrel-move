@@ -35,7 +35,7 @@ const recordSections = ref([]);
 // setup layouts + record
 const currentLayout = computed(() => {
   const custom = props.module.layouts?.find(
-    (layout) => layout.type === props.type
+    (layout) => layout.type === props.type,
   );
   return custom?.definition || props.defaultLayout || null;
 });
@@ -77,13 +77,13 @@ watch(
   (val) => {
     listColumns.value = [...val];
   },
-  { immediate: true }
+  { immediate: true },
 );
 const availableListFields = computed(() => {
   if (props.type !== "list") return [];
 
   const usedKeys = new Set(
-    listColumns.value.map((col) => col?.name).filter(Boolean)
+    listColumns.value.map((col) => col?.name).filter(Boolean),
   );
   return moduleFields.value.filter((field) => !usedKeys.has(field.name));
 });
@@ -92,14 +92,14 @@ const cleanedListColumns = computed(() =>
   listColumns.value.map((col) => {
     const { field, ...rest } = col || {};
     return rest;
-  })
+  }),
 );
 
 const cleanedColumnsFromDb = computed(() =>
   listLayoutColumnConfigs.value.map((col) => {
     const { field, ...rest } = col || {};
     return rest;
-  })
+  }),
 );
 
 // record layout
@@ -145,7 +145,7 @@ watch(
   (val) => {
     recordSections.value = cloneRecordSectionsFromDb(val);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const cleanedRecordSections = computed(() =>
@@ -155,7 +155,7 @@ const cleanedRecordSections = computed(() =>
       const { field, ...rest } = col || {};
       return rest;
     }),
-  }))
+  })),
 );
 
 const availableRecordFields = computed(() => {
@@ -164,13 +164,14 @@ const availableRecordFields = computed(() => {
   const usedFields = new Set();
   recordSections.value.forEach((section) => {
     (section.layout || []).forEach((col) => {
-      if (col?.key) usedFields.add(col.key);
+      if (col?.name) usedFields.add(col.name);
     });
   });
 
   return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
-
+console.log(availableRecordFields.value);
+console.log(cleanedRecordSections.value);
 // both
 const isDirty = computed(() => {
   if (props.type === "list") {
