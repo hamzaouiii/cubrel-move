@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class BasePaginatedModuleHandler implements ModuleHandler
 {
-
   abstract protected function query(array $params = []): Builder;
 
   protected string $model;
@@ -87,12 +86,19 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
 
     try {
       $record = $model::findOrFail($recordId);
+      $customFields = $record->custom_fields ?? [];
+      $recordData = $record->toArray();
+      $mergedData = array_merge($recordData, $customFields);
+
+      return [
+        'record' => $mergedData
+      ];
     } catch (ModelNotFoundException $e) {
       throw $e;
     }
 
     return [
-      'record' => $record,        // full Eloquent object (auto-serialized by Inertia)
+      'record' => $record,
     ];
   }
 }

@@ -199,7 +199,8 @@ class FieldsManagerController extends Controller
       'options'  => $data['options'],
       'min_length'  => $data['min_length'],
       'max_length'  => $data['max_length'],
-      'regex'  => $data['regex']
+      'regex'  => $data['regex'],
+      'is_custom' => 1
     ]);
 
     // where do we store the value of these custom fields ?  

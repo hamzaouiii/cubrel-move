@@ -5,26 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Concerns\HasTranslatableLabel;
+use App\Concerns\HasCustomFields;
 
 abstract class BaseModule extends Model
 {
-    use HasUuids;
-    use HasTranslatableLabel;
-    /**
-     * IDs are not auto incrementing integers.
-     */
-    public $incrementing = false;
+  use HasUuids;
+  use HasTranslatableLabel;
+  use HasCustomFields;
 
-    /**
-     * IDs are stored as strings.
-     */
-    protected $keyType = 'string';
-
-    /**
-     * By default HasUuids will generate a UUID for the primary key.
-     */
-    public function uniqueIds()
-    {
-        return ['id'];
-    }
+  protected $casts = [
+    'custom_fields' => 'array',
+  ];
+  public $incrementing = false;
+  protected $keyType = 'string';
+  public function uniqueIds()
+  {
+    return ['id'];
+  }
 }

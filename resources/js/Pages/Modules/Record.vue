@@ -26,11 +26,12 @@ const props = defineProps({
   record: Object,
   recordLayout: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const form = useForm({ ...props.record });
-
+console.log(props.record);
 const isEditing = ref(false);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
@@ -183,7 +184,7 @@ useUnsavedChangesGuard({
 
 <template>
   <Head>
-    <title>{{ record.name }} - {{ title }} - Automatisierung Regensburg</title>
+    <title>{{ record.name }} - {{ title }}</title>
   </Head>
 
   <div
@@ -310,12 +311,12 @@ useUnsavedChangesGuard({
               </template>
               <template v-else-if="f.type == 'textarea'">
                 <textarea
-                  v-model="form[f.key]"
+                  v-model="form[f.name]"
                   :rows="getTextareaRows(f)"
                 ></textarea>
               </template>
               <template v-else>
-                <input type="text" v-model="form[f.key]" />
+                <input type="text" v-model="form[f.name]" />
               </template>
             </div>
           </div>

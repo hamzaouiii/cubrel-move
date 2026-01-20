@@ -22,9 +22,9 @@ return new class extends Migration
   public function up(): void
   {
     foreach ($this->getTables() as $tableName) {
-      if (Schema::hasTable($tableName) && !Schema::hasColumn($tableName, 'json')) {
+      if (Schema::hasTable($tableName) && !Schema::hasColumn($tableName, 'custom_fields')) {
         Schema::table($tableName, function (Blueprint $table) {
-          $table->json('json')->nullable();
+          $table->json('custom_fields')->nullable();
         });
       }
     }
@@ -33,9 +33,9 @@ return new class extends Migration
   public function down(): void
   {
     foreach ($this->getTables() as $tableName) {
-      if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'json')) {
+      if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'custom_fields')) {
         Schema::table($tableName, function (Blueprint $table) {
-          $table->dropColumn('json');
+          $table->dropColumn('custom_fields');
         });
       }
     }

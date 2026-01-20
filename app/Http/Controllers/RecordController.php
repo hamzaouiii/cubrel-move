@@ -39,7 +39,6 @@ class RecordController extends Controller
         $props = ['recordId' => $recordId];
       }
     }
-
     $recordLayout = $moduleModel->recordLayout();
     return Inertia::render('Modules/Record', array_merge([
       'module'   => $moduleModel,
@@ -65,7 +64,7 @@ class RecordController extends Controller
       $handler = app($handler_class);
     }
 
-    $recordLayout = optional($moduleModel->recordLayout())->definition;
+    $recordLayout = $moduleModel->recordLayout();
 
     return Inertia::render('Modules/Create', array_merge([
       'module'       => $moduleModel,
@@ -139,11 +138,6 @@ class RecordController extends Controller
 
     if (class_exists($handlerClass)) {
       $handler = app($handlerClass);
-
-      if ($handler instanceof ModuleHandler && method_exists($handler, 'query')) {
-        // if module handlers extends BasePaginatedModuleHandler, they have query($params)
-        // query() is protrected, so we eather make it public or create an alternative
-      }
     }
 
     if ($allMatchingSelected) {
