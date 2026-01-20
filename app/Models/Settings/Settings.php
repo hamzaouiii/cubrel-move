@@ -9,40 +9,22 @@ use App\Concerns\HasTranslatableLabel;
 
 class Settings extends Model
 {
-  use HasFactory, HasTranslatableLabel;
+  use HasTranslatableLabel;
 
-  /**
-   * Use UUIDs instead of auto-incrementing integers.
-   */
-  public $incrementing = false;
+  protected static  $settings;
 
-  /**
-   * The "type" of the primary key ID.
-   *
-   * @var string
-   */
-  protected $keyType = 'string';
 
-  /**
-   * The attributes that are mass assignable.
-   *
-   * @var array<int, string>
-   */
-  protected $fillable = [
-    // TODO: add your module fields here
-  ];
-
-  protected static function booted(): void
+  public static function all($columns = ['*'])
   {
-    static::creating(function (self $model) {
-      if (! $model->getKey()) {
-        $model->setAttribute($model->getKeyName(), (string) Str::uuid());
-      }
-    });
+    return config("settings");
   }
-  public function items()
+
+  public static function getItem($categorty, $slug)
   {
-    return $this->hasMany(SettingItem::class, 'setting_id')
-      ->where('active', true);
+    $settings = config("settings");
+    if (isset($settings[$categorty]['items'][$slug])) {
+      return $settings[$categorty]['items'][$slug];
+    }
+    return  null;
   }
 }

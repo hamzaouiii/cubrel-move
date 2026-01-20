@@ -170,8 +170,6 @@ const availableRecordFields = computed(() => {
 
   return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
-console.log(availableRecordFields.value);
-console.log(cleanedRecordSections.value);
 // both
 const isDirty = computed(() => {
   if (props.type === "list") {

@@ -15,27 +15,28 @@ class SettingsController extends Controller
 {
   public function index()
   {
-    $settings = Settings::with('items')
-      ->orderBy('created_at')->get();
+    $settings = Settings::all();
     return Inertia::render('Settings/List', [
       'settings'     => $settings
     ]);
   }
 
-  public function show(Request $request)
+  public function show(Request $request, string $category, string $slug)
   {
-    $item = SettingItem::where('path', 'like', '%' . $request->path())
-      ->with('values')
-      ->first();
+    $settingsItem = Settings::getItem($category, $slug);
 
+    $values = SettingValue::where('setting_item',  $slug)
+      ->where('autoload', 1)
+      ->get();
     return Inertia::render('Settings/Page', [
-      'item' => $item,
+      'item' => $settingsItem,
+      'values' => $values,
       'datetimeFormatOptions' => $this->datetimeFormatOptions(),
       'timezoneOptions' => $this->timezoneOptions(),
     ]);
   }
 
-  public function update(Request $request, SettingItem $item)
+  public function update(Request $request, string $item)
   {
     $data = $request->validate([
       'values' => 'array',
@@ -45,7 +46,7 @@ class SettingsController extends Controller
     foreach ($data['values'] as $valueData) {
       SettingValue::updateOrCreate(
         [
-          'setting_item_id' => $item->id,
+          'setting_item' => $item,
           'key' => $valueData['key'],
         ],
         [

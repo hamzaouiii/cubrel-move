@@ -31,7 +31,6 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const form = useForm({ ...props.record });
-console.log(props.record);
 const isEditing = ref(false);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);

@@ -6,6 +6,7 @@ import DropdownField from "../Components/Settings/FiledTypes/DropdownField.vue";
 import Switcher from "../Components/Settings/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/Settings/FiledTypes/Checkbox.vue";
+import SettingBreadcrumbs from "../Components/Settings/SettingBreadcrumbs.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -17,13 +18,13 @@ const t = proxy.$t;
 
 const props = defineProps({
   item: Object,
+  values: Object,
   datetimeFormatOptions: { type: Array, default: [] },
   timezoneOptions: { type: Array, default: [] },
 });
-
 const page = usePage();
 const module = computed(() => page.props.item || page.props);
-const normalizedValues = props.item.values.map((v) => ({
+const normalizedValues = props.values.map((v) => ({
   ...v,
   value: v.type === "bool" ? v.value == 1 || v.value === "1" : v.value,
 }));
@@ -47,7 +48,7 @@ const inputTypeFor = (type) => {
 const saveSetting = () => {
   clearAllAlerts();
   info(t("settings.saving"));
-  form.put(`/settings/${props.item.id}`, {
+  form.put(`/settings/${props.item.slug}`, {
     onSuccess: () => {
       clearAllAlerts();
       success(t("settings.setting_update_success"));
@@ -68,21 +69,14 @@ const isDirty = () => form.isDirty;
 
 <template>
   <Head>
-    <title>
-      {{ item.name }} - {{ $t("settings.label") }} - Automatisierung Regensburg
-    </title>
+    <title>{{ $t(item.label) }} - {{ $t("settings.label") }}</title>
   </Head>
 
   <div class="settings">
-    <div class="settings_header">
-      <div class="settings_header_title">
-        <h5>
-          <Link href="/settings">{{ $t("settings.label") }} </Link>
-        </h5>
-        <span>></span>
-        <h6>{{ item.label }}</h6>
+    <div class="settings__header">
+      <div class="settings__header__title">
+        <SettingBreadcrumbs :setting-item="item"></SettingBreadcrumbs>
       </div>
-      <div class="settings_header_action"></div>
     </div>
 
     <div class="settings_system">

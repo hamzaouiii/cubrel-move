@@ -3,32 +3,40 @@
 namespace App\Models\Settings;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Concerns\HasTranslatableLabel;
-
+use Illuminate\Support\Str;
 
 class SettingItem extends Model
 {
-    use HasFactory, HasTranslatableLabel;
+  use  HasTranslatableLabel;
 
-    public $incrementing = false;     // UUID
-    protected $keyType = 'string';    // UUID
 
-    protected $fillable = [
-        'id',
-        'setting_id',
-        'name',
-        'path',
-        'icon',
-        'category',
-    ];
+  protected $table = null;
 
-    public function setting()
-    {
-        return $this->belongsTo(\App\Models\Modules\Settings::class, 'setting_id');
+  public static function all($columns = ['*'])
+  {
+    $configItems = config('settings', []);
+    $items = [];
+
+    foreach ($configItems as $group) {
+      foreach ($group['items'] as $item) {
+        $items[] = new static([
+          'id' => Str::uuid()->toString(),
+          'name' => $item['name'],
+          'slug' => $item['slug'],
+          'label' => $item['label'],
+          'path' => $item['path'],
+          'icon' => $item['icon'],
+          'category' => $group['name'],
+        ]);
+      }
     }
-    public function values()
-    {
-        return $this->hasMany(SettingValue::class)->where('autoload', true);
-    }
+
+    return collect($items);
+  }
+  public function values()
+  {
+    return $this->hasMany(SettingValue::class,  'setting_item', 'slug')
+      ->where('autoload', true);
+  }
 }

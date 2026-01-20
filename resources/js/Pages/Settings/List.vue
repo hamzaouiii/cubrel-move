@@ -10,7 +10,6 @@ defineOptions({
 const pageProps = defineProps({
   settings: Object,
 });
-
 const search = ref("");
 const filteredSettings = computed(() => {
   if (!search.value) {
@@ -70,7 +69,7 @@ const filteredSettings = computed(() => {
       <div v-for="s in filteredSettings" class="settings_content_section">
         <div class="settings_content_section_header">
           <div class="settings_content_section_header_title">
-            <h6>{{ s.label }}</h6>
+            <h6>{{ $t(s.label) }}</h6>
           </div>
           <div class="settings_content_section_header_desc">
             <p>{{ $t(s.description) }}</p>
@@ -79,7 +78,7 @@ const filteredSettings = computed(() => {
         <div class="settings_content_section_links">
           <Link v-for="i in s.items" :href="i.path">
             <i :class="i.icon"></i>
-            <span class="label">{{ i.label }}</span>
+            <span class="label">{{ $t(i.label) }}</span>
           </Link>
         </div>
       </div>
