@@ -6,19 +6,19 @@ return [
     "columns" => [
       [
         "name" => "name",
-        "type" => "textfield",
+        "type" => "textField",
         "label" =>  "modules.defaults.name",
         "sortable" => true
       ],
       [
         "name" => "created_at",
-        "type" => "datetime",
+        "type" => "dateTime",
         "label" => "modules.defaults.created_at",
         "sortable" => true
       ],
       [
         "name" => "updated_at",
-        "type" => "datetime",
+        "type" => "dateTime",
         "label" => "modules.defaults.updated_at",
         "sortable" => true
       ],
@@ -34,22 +34,26 @@ return [
         'layout' => [
           [
             'name' => 'name',
-            'type' => 'string',
+            'type' => 'textField',
             'label' => 'modules.defaults.name',
+            'required' => true,
+            'readonly' => false,
             'sortable' => true
           ],
           [
             'name' => 'created_at',
-            'type' => 'datetime',
+            'type' => 'dateTime',
             'label' => 'modules.defaults.created_at',
             'readonly' => true,
+            'required' => true,
             'sortable' => true
           ],
           [
             'name' => 'updated_at',
-            'type' => 'datetime',
+            'type' => 'dateTime',
             'label' => 'modules.defaults.updated_at',
             'readonly' => true,
+            'required' => true,
             'sortable' => true
           ]
         ]

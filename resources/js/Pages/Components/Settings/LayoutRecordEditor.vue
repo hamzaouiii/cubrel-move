@@ -15,6 +15,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+console.log(props.sections);
 
 const emit = defineEmits(["update:sections"]);
 
@@ -25,14 +26,14 @@ watch(
   (val) => {
     internalSections.value = [...val];
   },
-  { deep: true }
+  { deep: true },
 );
 watch(
   () => props.availableFields,
   (val) => {
     internalAvailable.value = [...val];
   },
-  { deep: true }
+  { deep: true },
 );
 
 const { proxy } = getCurrentInstance();
@@ -47,7 +48,6 @@ const dragPosition = ref({ x: 0, y: 0 });
 const dragTrails = ref([]);
 const ghostRenderPos = ref({ x: 0, y: 0 });
 
-let trailCounter = 0;
 let ghostAnimationFrame = null;
 
 const transparentPixel = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
@@ -66,7 +66,7 @@ const usedFieldKeys = computed(() => {
 
 const filteredAvailableFields = computed(() => {
   return internalAvailable.value.filter(
-    (field) => !usedFieldKeys.value.has(field.key)
+    (field) => !usedFieldKeys.value.has(field.key),
   );
 });
 
@@ -76,11 +76,11 @@ const ghostLabel = computed(() => {
 
   if (source === "available") {
     const item = filteredAvailableFields.value[columnIndex];
-    return item ? t(item.label) ?? item.key : "";
+    return item ? (t(item.label) ?? item.key) : "";
   } else if (source === "section") {
     const section = internalSections.value[sectionIndex];
     const item = section?.layout?.[columnIndex];
-    return item ? t(item.label) ?? item.key : "";
+    return item ? (t(item.label) ?? item.key) : "";
   }
   return "";
 });
@@ -114,7 +114,7 @@ const startDrag = (source, sectionIndex, columnIndex, event) => {
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData(
       "text/plain",
-      `${source}:${sectionIndex}:${columnIndex}`
+      `${source}:${sectionIndex}:${columnIndex}`,
     );
     try {
       event.dataTransfer.setDragImage(dragImage, 0, 0);
@@ -173,7 +173,7 @@ const isDropZoneActive = (target, sectionIndex, columnIndex) => {
 const moveFieldToSection = (
   fieldIndex,
   targetSectionIndex,
-  targetColumnIndex
+  targetColumnIndex,
 ) => {
   const field = filteredAvailableFields.value[fieldIndex];
   if (!field) return;
@@ -187,6 +187,8 @@ const moveFieldToSection = (
     name: field.name,
     label: field.label,
     type: field.type,
+    readonly: field.readonly,
+    required: field.required,
     field: props.fieldByKey[field.name],
   };
 
@@ -211,7 +213,7 @@ const moveColumnBetweenSections = (
   fromSectionIndex,
   fromColumnIndex,
   toSectionIndex,
-  toColumnIndex
+  toColumnIndex,
 ) => {
   const sections = [...internalSections.value];
   const fromSection = sections[fromSectionIndex];
@@ -267,7 +269,7 @@ const onDropOnSectionColumn = (sectionIndex, columnIndex, event) => {
         dragSectionIndex,
         dragColumnIndex,
         sectionIndex,
-        columnIndex
+        columnIndex,
       );
     }
   }
@@ -364,7 +366,7 @@ onBeforeUnmount(() => {
               'editor__empty-drop-zone--active': isDropZoneActive(
                 'available',
                 0,
-                0
+                0,
               ),
             }"
             @dragover="setDragOver('available', 0, 0, $event)"
@@ -381,7 +383,7 @@ onBeforeUnmount(() => {
               'editor__available-fields__item--dragging': isItemDragging(
                 'available',
                 0,
-                index
+                index,
               ),
             }"
             draggable="true"
@@ -468,7 +470,7 @@ onBeforeUnmount(() => {
                     'editor__columns__drop-zone--active': isDropZoneActive(
                       'section-column',
                       sectionIndex,
-                      0
+                      0,
                     ),
                   }"
                   @dragover="
@@ -485,7 +487,7 @@ onBeforeUnmount(() => {
                     'editor__columns__item--dragging': isItemDragging(
                       'section',
                       sectionIndex,
-                      columnIndex
+                      columnIndex,
                     ),
                   }"
                 >
@@ -522,7 +524,7 @@ onBeforeUnmount(() => {
                       'editor__columns__drop-zone--active': isDropZoneActive(
                         'section-column',
                         sectionIndex,
-                        columnIndex + 1
+                        columnIndex + 1,
                       ),
                     }"
                     @dragover="
@@ -530,14 +532,14 @@ onBeforeUnmount(() => {
                         'section-column',
                         sectionIndex,
                         columnIndex + 1,
-                        $event
+                        $event,
                       )
                     "
                     @drop="
                       onDropOnSectionColumn(
                         sectionIndex,
                         columnIndex + 1,
-                        $event
+                        $event,
                       )
                     "
                   />

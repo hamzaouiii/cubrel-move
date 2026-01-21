@@ -26,7 +26,6 @@ const props = defineProps({
   defaultLayout: Object,
   fields: Object,
 });
-
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);

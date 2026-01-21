@@ -95,6 +95,7 @@ class Module extends BaseModule
         'readonly',
         'sortable',
         'label',
+        'required'
       ]);
   }
 
