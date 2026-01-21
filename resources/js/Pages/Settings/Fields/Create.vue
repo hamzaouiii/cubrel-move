@@ -4,8 +4,8 @@ import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
 import { getCurrentInstance, computed, watch } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-import Checkbox from "@/Pages/Components/Settings/FiledTypes/Checkbox.vue";
-import DropdownField from "@/Pages/Components/Settings/FiledTypes/DropdownField.vue";
+import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
+import DropdownField from "@/Pages/Components/FiledTypes/DropdownField.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
