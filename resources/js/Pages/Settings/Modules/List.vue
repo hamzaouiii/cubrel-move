@@ -34,11 +34,11 @@ const createUrl = computed(() => {
       <div class="settings__header__title">
         <ModuleSettingBreadcrumbs></ModuleSettingBreadcrumbs>
       </div>
-      <div class="settings__header__action">
+      <!-- <div class="settings__header__action">
         <Link class="settings__header__action__create" :href="createUrl">
           {{ $t("settings.create_new_module") }}</Link
         >
-      </div>
+      </div> -->
     </div>
     <div class="settings__items">
       <ModuleManager v-if="setting_modules" :modules="setting_modules">

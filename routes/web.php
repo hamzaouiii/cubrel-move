@@ -15,9 +15,7 @@ use App\Http\Controllers\FieldsManagerController;
 
 Route::middleware(['auth'])->group(function () {
 
-  /**
-   * Independent routes
-   */
+  // Independent routes
   Route::get('/', fn() => Inertia::render('Dashboard'))->name('dashboard');
   Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -62,18 +60,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('layouts/{layoutType}', [LayoutManagerController::class, 'store'])
           ->name('modules.layouts.store');
       });
+
+    Route::get('modulebuilder', [ModuleManagerController::class, 'create']);
   });
 
-
-  //System Settings
+  // System Settings
   Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
   Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
   Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
 
 
-  /**
-   * Modules routes
-   */
+  // Modules routes
   Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
   Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
 
