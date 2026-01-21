@@ -14,6 +14,8 @@ import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
+import ModuleDropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 defineOptions({
@@ -27,11 +29,12 @@ const props = defineProps({
   recordLayout: Object,
 });
 
+console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const form = useForm({ ...props.record });
-const isEditing = ref(false);
+const isEditing = ref(true);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 
@@ -157,10 +160,10 @@ const displayValueFor = (f) => {
   const val = props.record[f.name];
   if (val == null || val === "") return "";
 
-  if (f.type === "datetime") {
+  if (f.type === "dateTime") {
     return formatDateTime(val, appSettings);
   }
-  if (f.type === "textarea") {
+  if (f.type === "longText") {
     if (val.length > 62) {
       return val.substring(0, 64) + "...";
     }
@@ -175,10 +178,22 @@ const getTextareaRows = (f) => {
   }
   return 5;
 };
+const isDropDown = (f) => {
+  return f.type === "dropDownField";
+};
 
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
 });
+
+// for now! later we need to implement dynamic dropdown lists
+
+const priority_list = [
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+  { value: "urgent", label: "Urgent" },
+];
 </script>
 
 <template>
@@ -307,6 +322,12 @@ useUnsavedChangesGuard({
                 <span>
                   {{ displayValueFor(f) }}
                 </span>
+              </template>
+              <template v-else-if="isDropDown(f)">
+                <ModuleDropdownField
+                  :options="priority_list"
+                  v-model="form[f.name]"
+                ></ModuleDropdownField>
               </template>
               <template v-else-if="f.type == 'textarea'">
                 <textarea

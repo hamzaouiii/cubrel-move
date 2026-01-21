@@ -5,7 +5,7 @@ import { getCurrentInstance, computed, watch } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
-import DropdownField from "@/Pages/Components/FiledTypes/DropdownField.vue";
+import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();

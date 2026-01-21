@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
-import DropdownField from "../Components/FiledTypes/DropdownField.vue";
+import DropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
