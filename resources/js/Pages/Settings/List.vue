@@ -10,38 +10,77 @@ defineOptions({
 const pageProps = defineProps({
   settings: Object,
 });
+console.log(pageProps.settings);
+const flattenedSettings = computed(() => {
+  const settings = pageProps.settings;
+  if (!settings || typeof settings !== "object") return [];
+
+  const flat = [];
+
+  Object.entries(group.items).forEach(([itemKey, item]) => {
+    if (item && typeof item === "object") {
+      flat.push({
+        id: `${groupKey}.${itemKey}`,
+        groupKey,
+        itemKey,
+        name: item.name || item.label || itemKey,
+        category: group.label || groupKey,
+        path: item.path || `${groupKey}.${itemKey}`,
+        type: item.type,
+        label: item.label,
+        description: item.description,
+        groupLabel: group.label,
+        groupDescription: group.description,
+        items: item.items || [],
+        value: item.value,
+        options: item.options,
+        ...item,
+      });
+    }
+  });
+
+  return flat;
+});
 const search = ref("");
 const filteredSettings = computed(() => {
   if (!search.value) {
     return pageProps.settings;
   }
   const term = search.value.toLowerCase();
+  const filteredGroups = {};
+  Object.entries(pageProps.settings).forEach(([groupKey, group]) => {
+    if (!group || !group.items) return;
+    const groupMatches =
+      (group.label && group.label.toLowerCase().includes(term)) ||
+      (group.description && group.description.toLowerCase().includes(term)) ||
+      groupKey.toLowerCase().includes(term);
 
-  return pageProps.settings
-    .map((setting) => {
-      const matchesSetting =
-        (setting.name && setting.name.toLowerCase().includes(term)) ||
-        (setting.category && setting.category.toLowerCase().includes(term));
+    const filteredItems = {};
 
-      const filteredItems = (setting.items || []).filter((item) => {
-        return (
-          (item.name && item.name.toLowerCase().includes(term)) ||
-          (item.category && item.category.toLowerCase().includes(term)) ||
-          (item.path && item.path.toLowerCase().includes(term))
-        );
-      });
+    Object.entries(group.items).forEach(([itemKey, item]) => {
+      if (!item) return;
 
-      if (matchesSetting) {
-        return { ...setting, items: setting.items || [] };
+      const itemMatches =
+        (item.label && item.label.toLowerCase().includes(term)) ||
+        (item.description && item.description.toLowerCase().includes(term)) ||
+        (item.name && item.name.toLowerCase().includes(term)) ||
+        (item.path && item.path.toLowerCase().includes(term)) ||
+        itemKey.toLowerCase().includes(term);
+
+      if (itemMatches) {
+        filteredItems[itemKey] = item;
       }
+    });
 
-      if (filteredItems.length > 0) {
-        return { ...setting, items: filteredItems };
-      }
+    if (groupMatches || Object.keys(filteredItems).length > 0) {
+      filteredGroups[groupKey] = {
+        ...group,
+        items: groupMatches ? group.items : filteredItems,
+      };
+    }
+  });
 
-      return null;
-    })
-    .filter(Boolean);
+  return filteredGroups;
 });
 </script>
 
