@@ -11,7 +11,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ModuleManagerController;
 use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\FieldsManagerController;
-
+use App\Http\Controllers\DropDownListController;
 
 Route::middleware(['auth'])->group(function () {
 
@@ -62,6 +62,8 @@ Route::middleware(['auth'])->group(function () {
       });
 
     Route::get('modulebuilder', [ModuleManagerController::class, 'create']);
+
+    Route::get('dropdowns', [DropdownListController::class, 'index']);
   });
 
   // System Settings

@@ -29,5 +29,6 @@ class DatabaseSeeder extends Seeder
     $this->call([AccountsTableSeeder::class]);
     $this->call(StockFieldsSeeder::class);
     $this->call(FieldsUpdaterSeeder::class);
+    $this->call(dropdownListSeeder::class);
   }
 }

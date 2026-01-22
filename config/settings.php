@@ -96,7 +96,7 @@ return [
     ]
   ],
   'customisation'  => [
-    'label' =>  'settings.groups.customisation',
+    'label' =>  'settings.groups.customisations',
     'description' => 'settings.groups.description.customisation',
     'items' => [
       'modulebuilder' => [
@@ -112,6 +112,13 @@ return [
         'label' => 'settings.items.modules',
         'path' => '/settings/modules',
         'icon' => 'fa-solid fa-cubes'
+      ],
+      'dropdowns' => [
+        'name' => 'Dropdowns',
+        'slug' => 'dropdowns',
+        'label' => 'settings.items.dropdowns',
+        'path' => '/settings/dropdowns',
+        'icon' => 'fa-solid fa-list'
       ]
     ]
   ],

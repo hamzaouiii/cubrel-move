@@ -7,9 +7,12 @@ return [
   'type' => 'Typ',
   'create_new_field' => 'Neues Feld erstellen',
   'back_to_list' => 'Zurück zu den Feldern',
+  'field_create_success' => 'Feld erfolgreich erstellt.',
+  'field_create_error' => 'Beim Erstellen des Feldes ist ein Fehler aufgetreten..',
   'field_update_success' => 'Feld erfolgreich aktualisiert.',
   'field_update_error' => 'Fehler beim Speichern des Feldes.',
   'field_reset_success' => 'Feld auf Datenbank-Werte zurückgesetzt.',
+  'key_is_taken_error'    => 'Ein Feld mit demselben Systemnamen existiert bereits.',
   'types' => [
     'longText' => 'Langer Text',
     'textField' => 'Text',

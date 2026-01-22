@@ -6,9 +6,25 @@ const props = defineProps({
 
 const appSettings = usePage().props.appSettings;
 const currentLocation = usePage()?.url;
+
+const isDropdown = () => {
+  return props.settingModule?.slug === "dropdowns" || false;
+};
 </script>
 <template>
-  <div v-if="settingModule">
+  <div v-if="isDropdown()">
+    <div
+      class="settings__header__title__breadcrumbs"
+      :style="[{ '--primary-color': appSettings.primary_color }]"
+    >
+      <h5>
+        <Link href="/settings">{{ $t("settings.label") }} </Link>
+      </h5>
+      <span><i class="fa-solid fa-angle-right"></i></span>
+      <h6>{{ $t(settingModule.label) }}</h6>
+    </div>
+  </div>
+  <div v-else-if="settingModule">
     <div
       class="settings__header__title__breadcrumbs"
       :style="[{ '--primary-color': appSettings.primary_color }]"
@@ -24,7 +40,7 @@ const currentLocation = usePage()?.url;
       </h5>
 
       <span><i class="fa-solid fa-angle-right"></i></span>
-      <h6>{{ settingModule.label }}</h6>
+      <h6>{{ $t(settingModule.label) }}</h6>
     </div>
   </div>
   <div v-else>

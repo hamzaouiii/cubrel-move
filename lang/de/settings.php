@@ -73,5 +73,7 @@ return [
     'languages'             => 'Sprachen',
     'layouts'               => 'Layouts',
     'system_email_settings' => 'System-E-Mail-Einstellungen',
+    'dropdowns'           => 'Dropdown Editor'
+
   ],
 ];
