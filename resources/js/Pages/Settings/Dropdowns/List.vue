@@ -14,7 +14,7 @@ const props = defineProps({
   item: Object,
   list: Array,
 });
-console.log(props.item);
+console.log(props.list);
 const page = usePage();
 </script>
 <template>
@@ -39,6 +39,12 @@ const page = usePage();
         >
       </div>
     </div>
-    <div class="settings__edit"></div>
+    <div class="settings__dropdown">
+      <ul class="settings__dropdown__list">
+        <li class="settings__dropdown__list__item" v-for="item in list">
+          {{ item.key }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
