@@ -79,6 +79,7 @@ return [
   ],
   'dropdown' => [
     'create'  => 'Create new dropdown list',
+    'edit'  => 'Edit Dropdown list',
     'label'   => 'Dropdown Editor'
   ]
 

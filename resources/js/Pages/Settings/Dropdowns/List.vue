@@ -14,8 +14,10 @@ const props = defineProps({
   item: Object,
   list: Array,
 });
-console.log(props.list);
 const page = usePage();
+const currentUrl = computed(() => {
+  return page.url;
+});
 </script>
 <template>
   <Head>
@@ -42,7 +44,7 @@ const page = usePage();
     <div class="settings__dropdown">
       <ul class="settings__dropdown__list">
         <li class="settings__dropdown__list__item" v-for="item in list">
-          {{ item.key }}
+          <Link :href="currentUrl + '/' + item.key"> {{ item.key }}</Link>
         </li>
       </ul>
     </div>

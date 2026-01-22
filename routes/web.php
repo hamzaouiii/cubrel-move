@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('modulebuilder', [ModuleManagerController::class, 'create']);
 
     Route::get('dropdowns', [DropdownListController::class, 'index']);
+    Route::get('dropdowns/{dropdown_key}', [DropdownListController::class, 'show']);
   });
 
   // System Settings

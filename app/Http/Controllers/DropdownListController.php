@@ -41,9 +41,17 @@ class DropDownListController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(DropDownList $dropDownList)
+  public function show(String $dropDownList)
   {
-    //
+    $dropdown = DropdownList::query()
+    ->where('key', $dropDownList)
+    ->first();
+    $settingsItem = Settings::getItem('customisation', 'dropdowns');
+    return Inertia::render('Settings/Dropdowns/Record', [
+      'dropdown' => $dropdown,
+      'item'  => $settingsItem
+
+    ]);
   }
 
   /**

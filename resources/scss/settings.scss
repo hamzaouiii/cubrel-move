@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   max-width: 1440px;
-  margin: auto;
   justify-content: center;
+  margin: 0 20px;
   input[type="text"] {
     all: unset;
     font-family: "Fira Sans", "Heebo", sans-serif;
@@ -12,7 +12,6 @@
     padding-top: 5px;
     padding-bottom: 5px;
     border-radius: 5px;
-    width: 450px;
   }
   input[type="number"] {
     all: unset;
@@ -228,12 +227,61 @@
   &__dropdown {
     margin: 20px;
     padding: 20px;
-    background-color: white;
-    box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
-    border-radius: 8px;
     &__list {
-      border: 2px solid;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
       &__item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        text-decoration: underline;
+      }
+    }
+
+    &__edit {
+      &__header {
+        display: flex;
+        flex-direction: row;
+        margin: 10px 50px;
+        padding: 8px 20px;
+
+        &__info {
+          width: 100%;
+
+          &__indicator {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            span {
+              flex: 6;
+              width: 100%;
+            }
+            div {
+              flex: 1;
+            }
+          }
+        }
+      }
+      &__value {
+        display: flex;
+        flex-direction: row;
+        margin: 10px 50px;
+        box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5);
+        background-color: white;
+        padding: 8px 20px;
+        border-radius: 8px;
+        &__item {
+          flex: 6;
+          display: flex;
+          justify-content: flex-start;
+        }
+        &__actions {
+          flex: 1;
+          display: flex;
+          justify-content: space-around;
+        }
       }
     }
   }
@@ -822,9 +870,7 @@
       font-size: 12px;
       opacity: 0;
       transform: rotate(0deg);
-      transition:
-        opacity 0.15s ease,
-        transform 0.2s ease;
+      transition: opacity 0.15s ease, transform 0.2s ease;
     }
     th:hover .sort-icon {
       opacity: 0.4;
@@ -1002,9 +1048,7 @@
 
 .dropdown-fade-enter-active,
 .dropdown-fade-leave-active {
-  transition:
-    opacity 0.12s ease,
-    transform 0.12s ease;
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 .dropdown-fade-enter-from,
 .dropdown-fade-leave-to {
