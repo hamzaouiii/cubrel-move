@@ -306,6 +306,13 @@
           align-items: center;
           input {
             cursor: text !important;
+            &:focus {
+              border-color: var(--primary-color);
+            }
+          }
+          .error {
+            border: 2px solid #dc3545 !important;
+            color: #dc3545 !important;
           }
         }
         &__actions {
@@ -319,10 +326,18 @@
             padding: 2px 10px;
             border-radius: 5px;
             transition: all 0.1s ease-in;
-
             &:hover {
               background-color: var(--primary-color);
               color: white;
+            }
+            &.disabled {
+              all: unset;
+              border: 2px solid grey;
+              padding: 2px 10px;
+              border-radius: 5px;
+
+              color: grey;
+              cursor: not-allowed;
             }
           }
           &__delete {
@@ -341,6 +356,24 @@
               transform: scale(1.2);
             }
           }
+        }
+      }
+      &__actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+        .btn {
+          margin-right: 50px;
+          border-radius: 5px;
+          padding: 5px 15px;
+        }
+        &__reset {
+          --btn-color: salmon;
+          --btn-bg-hover: salmon;
+        }
+        &__save {
+          --btn-color: var(--primary-color);
+          --btn-bg-hover: var(--primary-color);
         }
       }
     }

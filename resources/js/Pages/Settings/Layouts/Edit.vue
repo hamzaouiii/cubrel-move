@@ -246,9 +246,9 @@ const layoutsUrl = () => {
   return u;
 };
 
-// useUnsavedChangesGuard({
-//   getIsDirty: () => isDirty.value,
-// });
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
 </script>
 
 <template>
