@@ -22,7 +22,7 @@ const currentUrl = computed(() => {
 <template>
   <Head>
     <title>
-      {{ $t("settings.dropdown.label") }} - {{ $t("settings.label") }}
+      {{ $t("settings.items.dropdowns") }} - {{ $t("settings.label") }}
     </title>
   </Head>
   <div

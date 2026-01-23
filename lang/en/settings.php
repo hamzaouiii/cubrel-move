@@ -80,7 +80,10 @@ return [
   'dropdown' => [
     'create'  => 'Create new dropdown list',
     'edit'  => 'Edit Dropdown list',
-    'label'   => 'Dropdown Editor'
+    'display_label'   => 'Display Label',
+    'value'   => 'Value',
+    'list_name' => 'List Name',
+    'related_field' => 'Related Field'
   ]
 
 ];

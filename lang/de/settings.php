@@ -75,6 +75,13 @@ return [
     'layouts'               => 'Layouts',
     'system_email_settings' => 'System-E-Mail-Einstellungen',
     'dropdowns'           => 'Dropdown Editor'
-
   ],
+  'dropdown' => [
+    'create'  => 'Neue Dropdown Liste erstellen',
+    'edit'  => 'Dropdown Liste bearbeiten',
+    'display_label'   => 'Anzeigebezeichnung',
+    'value'   => 'Elementname',
+    'list_name' => 'Listenname',
+    'related_field' => 'Zugehöriges Feld'
+  ]
 ];
