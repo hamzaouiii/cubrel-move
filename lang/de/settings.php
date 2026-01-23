@@ -68,6 +68,7 @@ return [
     'locale'                => 'Spracheinstellungen',
     'style'                 => 'Stil',
     'modules'               => 'Module',
+    'modulebuilder'         => 'Modul-Ersteller',
     'list_users'            => 'Benutzerliste',
     'system_settings'       => 'Systemeinstellungen',
     'languages'             => 'Sprachen',

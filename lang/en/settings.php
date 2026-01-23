@@ -69,7 +69,7 @@ return [
     'locale'              => 'Locale Settings',
     'style'               => 'Style',
     'modules'             => 'Modules',
-    'modulebuilder'       => 'Create a new module',
+    'modulebuilder'       => 'Module Builder',
     'list_users'          => 'List Users',
     'system_settings'     => 'System Settings',
     'languages'           => 'Languages',

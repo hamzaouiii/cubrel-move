@@ -3,7 +3,9 @@
   flex-direction: column;
   max-width: 1440px;
   justify-content: center;
-  margin: 0 20px;
+  margin: auto;
+  padding: 0 20px;
+
   input[type="text"] {
     all: unset;
     font-family: "Fira Sans", "Heebo", sans-serif;
@@ -870,7 +872,9 @@
       font-size: 12px;
       opacity: 0;
       transform: rotate(0deg);
-      transition: opacity 0.15s ease, transform 0.2s ease;
+      transition:
+        opacity 0.15s ease,
+        transform 0.2s ease;
     }
     th:hover .sort-icon {
       opacity: 0.4;
@@ -1048,7 +1052,9 @@
 
 .dropdown-fade-enter-active,
 .dropdown-fade-leave-active {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
 }
 .dropdown-fade-enter-from,
 .dropdown-fade-leave-to {

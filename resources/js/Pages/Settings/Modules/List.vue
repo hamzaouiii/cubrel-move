@@ -32,7 +32,9 @@ const createUrl = computed(() => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs></ModuleSettingBreadcrumbs>
+        <ModuleSettingBreadcrumbs
+          :setting-module="item"
+        ></ModuleSettingBreadcrumbs>
       </div>
       <!-- <div class="settings__header__action">
         <Link class="settings__header__action__create" :href="createUrl">

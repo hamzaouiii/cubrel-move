@@ -1,77 +1,61 @@
 <script setup>
 import { Link, usePage } from "@inertiajs/vue3";
-
+import { computed } from "vue";
 const props = defineProps({
   settingModule: Object,
 });
 
 const appSettings = usePage().props.appSettings;
-const currentLocation = usePage()?.url;
+
+const getLabel = (i) => {
+  return props.settingModule?.label || labelMapper[i];
+};
+// console.log(getLabel("settings"));
+
+const labelMapper = {
+  settings: "settings.label",
+  modules: "settings.items.modules",
+  dropdowns: "settings.items.dropdowns",
+  modulebuilder: "settings.items.modulebuilder",
+  fields: "settings.items.fields",
+  layouts: "settings.items.layouts",
+  list: "layouts.list",
+  record: "layouts.record",
+};
+const isUUID = (str) => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+};
+const breadcrumbs = computed(() => {
+  const { url } = usePage();
+  const segments = url.split("/").filter((segment) => segment);
+
+  let currentPath = "";
+  let label = "";
+  return segments
+    .map((segment, index) => {
+      currentPath += `/${segment}`;
+
+      if (isUUID(segment)) {
+        label = props.settingModule?.label || null;
+      } else {
+        label = labelMapper[segment];
+      }
+      if (label == undefined) return;
+      return {
+        label,
+        path: currentPath,
+        isCurrent: index === segments.length - 1,
+      };
+    })
+    .filter((segment) => segment);
+});
+console.log(breadcrumbs.value);
 
 const isDropdown = () => {
   return props.settingModule?.slug === "dropdowns" || false;
 };
-
-// Determine which breadcrumb items to show
-const getBreadcrumbItems = () => {
-  const items = [];
-
-  // Always start with Settings
-  items.push({
-    label: "settings.label",
-    href: "/settings",
-    isCurrent: false,
-  });
-
-  if (isDropdown()) {
-    // For dropdowns: Settings -> Current Module
-    if (currentLocation !== "/settings/dropdowns") {
-      items.push({
-        label: props.settingModule.label,
-        href: "settings/dropdowns",
-        isCurrent: false,
-      });
-      items.push({
-        label: "settings.dropdown.edit",
-        href: null,
-        isCurrent: true,
-      });
-    } else {
-      items.push({
-        label: props.settingModule.label,
-        href: null,
-        isCurrent: true,
-      });
-    }
-  } else if (props.settingModule) {
-    // For other modules: Settings -> Modules -> Current Module
-    items.push({
-      label: "settings.modules.label",
-      href: "/settings/modules",
-      isCurrent: false,
-    });
-    items.push({
-      label: props.settingModule.label,
-      href: null,
-      isCurrent: true,
-    });
-  } else {
-    // Default: Settings -> Modules (if not already on modules page)
-    if (currentLocation !== "/settings/modules") {
-      items.push({
-        label: "settings.modules.label",
-        href: "/settings/modules",
-        isCurrent: false,
-      });
-    } else {
-      items[items.length - 1].isCurrent = true;
-    }
-  }
-
-  return items;
-};
-
-const breadcrumbItems = getBreadcrumbItems();
 </script>
 
 <template>
@@ -79,14 +63,14 @@ const breadcrumbItems = getBreadcrumbItems();
     class="settings__header__title__breadcrumbs"
     :style="[{ '--primary-color': appSettings.primary_color }]"
   >
-    <template v-for="(item, index) in breadcrumbItems" :key="index">
+    <template v-for="(item, index) in breadcrumbs" :key="index">
       <h5 v-if="!item.isCurrent">
-        <Link v-if="item.href" :href="item.href">{{ $t(item.label) }}</Link>
+        <Link v-if="item.path" :href="item.path">{{ $t(item.label) }}</Link>
         <span v-else>{{ $t(item.label) }}</span>
       </h5>
       <h6 v-else>{{ $t(item.label) }}</h6>
 
-      <span v-if="index < breadcrumbItems.length - 1">
+      <span v-if="index < breadcrumbs.length - 1">
         <i class="fa-solid fa-angle-right"></i>
       </span>
     </template>

@@ -15,7 +15,6 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-console.log(props.sections);
 
 const emit = defineEmits(["update:sections"]);
 
