@@ -29,7 +29,6 @@ const props = defineProps({
   recordLayout: Object,
 });
 
-console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 

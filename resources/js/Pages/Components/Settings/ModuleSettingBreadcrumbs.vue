@@ -10,7 +10,6 @@ const appSettings = usePage().props.appSettings;
 const getLabel = (i) => {
   return props.settingModule?.label || labelMapper[i];
 };
-// console.log(getLabel("settings"));
 
 const labelMapper = {
   settings: "settings.label",
@@ -51,7 +50,6 @@ const breadcrumbs = computed(() => {
     })
     .filter((segment) => segment);
 });
-console.log(breadcrumbs.value);
 
 const isDropdown = () => {
   return props.settingModule?.slug === "dropdowns" || false;

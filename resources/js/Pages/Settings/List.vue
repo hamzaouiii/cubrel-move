@@ -10,7 +10,6 @@ defineOptions({
 const pageProps = defineProps({
   settings: Object,
 });
-console.log(pageProps.settings);
 const flattenedSettings = computed(() => {
   const settings = pageProps.settings;
   if (!settings || typeof settings !== "object") return [];
