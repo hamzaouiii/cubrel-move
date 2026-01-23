@@ -9,6 +9,7 @@ return [
         'slug' => 'currencies',
         'label' => 'settings.items.currencies',
         'path' => '/settings/system/currencies',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-coins'
       ],
       'locale' => [
@@ -16,6 +17,7 @@ return [
         'slug' => 'locale',
         'label' => 'settings.items.locale',
         'path' => '/settings/system/locale',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-globe'
       ],
       'style' => [
@@ -23,6 +25,7 @@ return [
         'slug' => 'style',
         'label' => 'settings.items.style',
         'path' => '/settings/system/style',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-paint-brush'
       ],
       'system-settings' => [
@@ -30,6 +33,7 @@ return [
         'slug' => 'system-settings',
         'label' => 'settings.items.system_settings',
         'path' => '/settings/system/general',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-gear'
       ],
       'languages' => [
@@ -37,6 +41,7 @@ return [
         'slug' => 'languages',
         'label' => 'settings.items.languages',
         'path' => '/settings/system/languages',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-language'
       ]
     ]
@@ -50,6 +55,7 @@ return [
         'slug' => 'inbound-email',
         'label' => 'settings.items.inbound_email',
         'path' => '/settings/email/inbound',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-inbox'
       ],
       'email-queue' => [
@@ -57,6 +63,7 @@ return [
         'slug' => 'email-queue',
         'label' => 'settings.items.email_queue',
         'path' => '/settings/email/queue',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-envelope-open-text'
       ],
       'system-email-settings' => [
@@ -64,6 +71,7 @@ return [
         'slug' => 'system-email-settings',
         'label' => 'settings.items.system_email_settings',
         'path' => '/settings/email/general',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-envelope-circle-check'
       ]
     ]
@@ -77,6 +85,7 @@ return [
         'slug' => 'role-management',
         'label' => 'settings.items.role_management',
         'path' => '/settings/users/roles',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-user-shield'
       ],
       'create-user' => [
@@ -84,6 +93,7 @@ return [
         'slug' => 'create-user',
         'label' => 'settings.items.create_user',
         'path' => '/settings/users/create',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-user-plus'
       ],
       'list-users' => [
@@ -91,19 +101,21 @@ return [
         'slug' => 'list-users',
         'label' => 'settings.items.list_users',
         'path' => '/settings/users',
+        'isActive' => 0,
         'icon' => 'fa-solid fa-users'
       ]
     ]
   ],
   'customisation'  => [
     'label' =>  'settings.groups.customisations',
-    'description' => 'settings.groups.description.customisation',
+    'description' => 'settings.groups.description.customisations',
     'items' => [
       'modulebuilder' => [
         'name' => 'Modulebuilder',
         'slug' => 'modulebuilder',
         'label' => 'settings.items.modulebuilder',
         'path' => '/settings/modulebuilder',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-plug-circle-plus'
       ],
       'modules' => [
@@ -111,6 +123,7 @@ return [
         'slug' => 'modules',
         'label' => 'settings.items.modules',
         'path' => '/settings/modules',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-cubes'
       ],
       'dropdowns' => [
@@ -118,6 +131,7 @@ return [
         'slug' => 'dropdowns',
         'label' => 'settings.items.dropdowns',
         'path' => '/settings/dropdowns',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-list'
       ]
     ]

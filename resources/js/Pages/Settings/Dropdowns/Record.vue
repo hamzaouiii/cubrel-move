@@ -37,17 +37,30 @@ const appSettings = usePage().props.appSettings;
       <div class="settings__dropdown__edit">
         <div class="settings__dropdown__edit__header">
           <ul class="settings__dropdown__edit__header__info">
-            <li>
-              <span>Dropdown List : </span>
-              <span>{{ dropdown.key }}</span>
+            <li class="settings__dropdown__edit__header__info__data">
+              <span class="settings__dropdown__edit__header__info__data__label"
+                >{{ $t("settings.dropdown.list_name") }}:</span
+              >
+              <span
+                class="settings__dropdown__edit__header__info__data__value"
+                >{{ dropdown.key }}</span
+              >
             </li>
-            <li v-if="dropdown.field_key">
-              <span>Related Field : </span>
-              <span>{{ dropdown.field_key }}</span>
+            <li
+              class="settings__dropdown__edit__header__info__data"
+              v-if="dropdown.field_key"
+            >
+              <span class="settings__dropdown__edit__header__info__data__label"
+                >{{ $t("settings.dropdown.related_field") }}:
+              </span>
+              <span
+                class="settings__dropdown__edit__header__info__data__value"
+                >{{ dropdown.field_key }}</span
+              >
             </li>
             <li class="settings__dropdown__edit__header__info__indicator">
-              <span>Label</span>
-              <span>Value</span>
+              <span>{{ $t("settings.dropdown.display_label") }}</span>
+              <span>{{ $t("settings.dropdown.value") }}</span>
               <div></div>
             </li>
           </ul>

@@ -15,7 +15,8 @@ class SettingsController extends Controller
 {
   public function index()
   {
-    $settings = Settings::all();
+    // $settings = Settings::all();
+    $settings = Settings::allActive();
     return Inertia::render('Settings/List', [
       'settings'     => $settings
     ]);

@@ -18,7 +18,19 @@ class Settings extends Model
   {
     return config("settings");
   }
+  public static function allActive()
+  {
+    $settings = config("settings");
 
+    $activeSettings = array_map(
+      fn($group) => array_merge(
+        $group,
+        ['items' => array_filter($group['items'], fn($item) => $item['isActive'])]
+      ),
+      $settings
+    );
+    return array_filter($activeSettings, fn($group) => !empty($group['items']));;
+  }
   public static function getItem($categorty, $slug)
   {
     $settings = config("settings");
