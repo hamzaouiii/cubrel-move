@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
@@ -18,6 +18,34 @@ const page = usePage();
 const currentUrl = computed(() => {
   return page.url;
 });
+
+const sortKey = ref(null);
+const sortDirection = ref("asc");
+
+function sortBy(key) {
+  if (sortKey.value === key) {
+    sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
+  } else {
+    sortKey.value = key;
+    sortDirection.value = "asc";
+  }
+}
+const sortedFields = computed(() => {
+  if (!sortKey.value) return props.list;
+
+  return [...props.list].sort((a, b) => {
+    const valA = a[sortKey.value] ?? "";
+    const valB = b[sortKey.value] ?? "";
+
+    if (valA < valB) return sortDirection.value === "asc" ? -1 : 1;
+    if (valA > valB) return sortDirection.value === "asc" ? 1 : -1;
+    return 0;
+  });
+});
+const editUrl = (f) => {
+  return `${page.url.replace(/\/+$/, "")}/${f}`;
+};
+console.log(sortedFields.value);
 </script>
 <template>
   <Head>
@@ -47,6 +75,53 @@ const currentUrl = computed(() => {
           <Link :href="currentUrl + '/' + item.key"> {{ item.key }}</Link>
         </li>
       </ul>
+    </div>
+    <div class="fields">
+      <table class="fields__table">
+        <thead>
+          <tr>
+            <th @click="sortBy('key')">
+              {{ $t("key") }}
+
+              <i
+                v-if="sortKey === 'key'"
+                class="fa-solid sort-icon is-active"
+                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+              ></i>
+
+              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
+            </th>
+
+            <th @click="sortBy('field_key')">
+              {{ $t("related field") }}
+
+              <i
+                v-if="sortKey === 'field_key'"
+                class="fa-solid sort-icon is-active"
+                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+              ></i>
+
+              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
+            </th>
+            <th style="width: 70px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
+            <td>
+              {{ f.key }}
+            </td>
+            <td>{{ $t(f.field_key) }}</td>
+            <td style="width: 70px">
+              <Link class="fields__table__row__edit btn" :href="editUrl(f.key)">
+                <i
+                  class="fields__table__row__edit__icon fa-regular fa-pen-to-square"
+                ></i>
+              </Link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

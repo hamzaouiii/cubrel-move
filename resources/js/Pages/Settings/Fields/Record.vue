@@ -29,12 +29,6 @@ function sortBy(key) {
     sortDirection.value = "asc";
   }
 }
-const createUrl = computed(() => {
-  return `${page.url.replace(/\/+$/, "")}/create`;
-});
-const editUrl = (f) => {
-  return `${page.url.replace(/\/+$/, "")}/${f}`;
-};
 const sortedFields = computed(() => {
   if (!sortKey.value) return props.fields;
 
@@ -47,6 +41,12 @@ const sortedFields = computed(() => {
     return 0;
   });
 });
+const createUrl = computed(() => {
+  return `${page.url.replace(/\/+$/, "")}/create`;
+});
+const editUrl = (f) => {
+  return `${page.url.replace(/\/+$/, "")}/${f}`;
+};
 </script>
 
 <template>
