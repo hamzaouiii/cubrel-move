@@ -15,8 +15,8 @@ const props = defineProps({
   list: Array,
 });
 const page = usePage();
-const currentUrl = computed(() => {
-  return page.url;
+const createUrl = computed(() => {
+  return `${page.url.replace(/\/+$/, "")}/create`;
 });
 
 const sortKey = ref(null);
@@ -69,13 +69,7 @@ console.log(sortedFields.value);
         >
       </div>
     </div>
-    <div class="settings__dropdown">
-      <ul class="settings__dropdown__list">
-        <li class="settings__dropdown__list__item" v-for="item in list">
-          <Link :href="currentUrl + '/' + item.key"> {{ item.key }}</Link>
-        </li>
-      </ul>
-    </div>
+
     <div class="fields">
       <table class="fields__table">
         <thead>

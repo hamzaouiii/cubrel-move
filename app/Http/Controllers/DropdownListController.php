@@ -27,7 +27,12 @@ class DropDownListController extends Controller
    */
   public function create()
   {
-    //
+
+    $settingsItem = Settings::getItem('customisation', 'dropdowns');
+    return Inertia::render('Settings/Dropdowns/Create', [
+      'item'  => $settingsItem
+
+    ]);
   }
 
   /**
@@ -44,8 +49,8 @@ class DropDownListController extends Controller
   public function show(String $dropDownList)
   {
     $dropdown = DropdownList::query()
-    ->where('key', $dropDownList)
-    ->first();
+      ->where('key', $dropDownList)
+      ->first();
     $settingsItem = Settings::getItem('customisation', 'dropdowns');
     return Inertia::render('Settings/Dropdowns/Record', [
       'dropdown' => $dropdown,

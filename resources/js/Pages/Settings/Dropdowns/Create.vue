@@ -1,6 +1,6 @@
 <script setup>
-import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
-import { computed, ref, toRaw } from "vue";
+import { Head, usePage, useForm } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -11,54 +11,59 @@ defineOptions({
 });
 
 const props = defineProps({
-  dropdown: Object,
   item: Object,
 });
 const appSettings = usePage().props.appSettings;
 
-const newItem = useForm({
-  label: "",
-  value: "",
+const form = useForm({
+  name: "",
+  field: "",
+  module: "",
+  json: {},
 });
-const dbListItems = computed(() => {
-  return props.dropdown.values ?? [];
-});
+let ListItems = ref([]);
+let newItem = ref({ label: "", value: "" });
 
 const rowIsDirty = computed(() => {
-  return newItem.value.length >= 3 && newItem.label.length >= 3;
+  return newItem.value.value.length >= 3 && newItem.value.label.length >= 3;
 });
 
-let ListItems = ref([...toRaw(dbListItems.value)]);
 const valueExistsError = ref(false);
-const isEditing = ref([]);
+// const isEditing = ref([]);
 
 const addItem = () => {
-  if (!newItem.isDirty) return;
+  if (!rowIsDirty.value) {
+    console.log("row is not dirty");
+    return;
+  }
   if (ListItems.value.some((item) => item.value === newItem.value)) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
   }
   ListItems.value.push({
-    label: newItem.label,
-    value: newItem.value,
+    label: newItem.value.label,
+    value: newItem.value.value,
   });
-  newItem.reset();
+
+  newItem.value.value = "";
+  newItem.value.label = "";
 };
 const deleteItem = (value) => {
   ListItems.value = ListItems.value.filter((i) => i.value != value);
 };
 
 const listIsDirty = computed(() => {
+  return false; //
   const current = JSON.stringify(dbListItems.value);
   const original = JSON.stringify(ListItems.value);
   return current !== original;
 });
 
-const resetList = () => {
-  warning("Resetting List to original values ");
-  ListItems.value = [...toRaw(dbListItems.value)];
-};
+// const resetList = () => {
+//   warning("Resetting List to original values ");
+//   ListItems.value = [...toRaw(dbListItems.value)];
+// };
 </script>
 
 <template>
@@ -81,29 +86,36 @@ const resetList = () => {
 
     <div class="settings__dropdown">
       <div class="settings__dropdown__edit">
+        <form class="dropdown-form" action="" method="post">
+          <div class="dropdown-form__item">
+            <span class="dropdown-form__item__label"
+              ><label for="name">Name</label></span
+            >
+            <div class="dropdown-form__item__field dropdown-form__item--prefix">
+              <input type="text" v-model="form.name" maxlength="25" />
+              <span class="prefix">_list</span>
+            </div>
+          </div>
+          <div class="dropdown-form__item">
+            <span class="dropdown-form__item__label"
+              ><label for="name">Module</label></span
+            >
+            <span class="dropdown-form__item__field">
+              <input type="text" v-model="form.module" />
+            </span>
+          </div>
+          <div class="dropdown-form__item">
+            <span class="dropdown-form__item__label"
+              ><label for="name">Field</label></span
+            >
+            <span class="dropdown-form__item__field">
+              <input type="text" v-model="form.field" />
+            </span>
+          </div>
+        </form>
+
         <div class="settings__dropdown__edit__header">
           <ul class="settings__dropdown__edit__header__info">
-            <li class="settings__dropdown__edit__header__info__data">
-              <span class="settings__dropdown__edit__header__info__data__label"
-                >{{ $t("settings.dropdown.list_name") }}:</span
-              >
-              <span
-                class="settings__dropdown__edit__header__info__data__value"
-                >{{ dropdown.key }}</span
-              >
-            </li>
-            <li
-              class="settings__dropdown__edit__header__info__data"
-              v-if="dropdown.field_key"
-            >
-              <span class="settings__dropdown__edit__header__info__data__label"
-                >{{ $t("settings.dropdown.related_field") }}:
-              </span>
-              <span
-                class="settings__dropdown__edit__header__info__data__value"
-                >{{ dropdown.field_key }}</span
-              >
-            </li>
             <li class="settings__dropdown__edit__header__info__indicator">
               <span>{{ $t("settings.dropdown.display_label") }}</span>
               <span>{{ $t("settings.dropdown.value") }}</span>
@@ -135,11 +147,7 @@ const resetList = () => {
               <input type="text" v-model="newItem.label" />
             </div>
             <div class="settings__dropdown__edit__value__item">
-              <input
-                type="text"
-                v-model="newItem.value"
-                :class="{ error: valueExistsError }"
-              />
+              <input type="text" v-model="newItem.value" />
             </div>
             <div class="settings__dropdown__edit__value__actions">
               <span
@@ -152,6 +160,7 @@ const resetList = () => {
             </div>
           </li>
         </ul>
+
         <div class="settings__dropdown__edit__actions">
           <button
             type="button"
