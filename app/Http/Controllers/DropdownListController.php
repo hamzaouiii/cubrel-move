@@ -40,7 +40,13 @@ class DropDownListController extends Controller
    */
   public function store(Request $request)
   {
-    //
+    // request sent now validate and save
+    $data = $request->validate([
+      'name' => 'required|string',
+      'field_key' => 'nullable|string',
+      'values' => 'nullable|string',
+    ]);
+    dd($data);
   }
 
   /**

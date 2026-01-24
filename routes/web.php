@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);
+    Route::post('dropdowns', [DropdownListController::class, 'store']);
     Route::get('dropdowns/{dropdown_key}', [DropdownListController::class, 'show']);
   });
 

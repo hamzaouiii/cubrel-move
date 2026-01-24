@@ -1,14 +1,16 @@
 <script setup>
 import { Head, usePage, useForm } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
-const { error, warning, success } = useAlerts();
+const { error, info, success, clearAllAlerts } = useAlerts();
 defineOptions({
   layout: Layout,
 });
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 const props = defineProps({
   item: Object,
@@ -16,12 +18,12 @@ const props = defineProps({
 const appSettings = usePage().props.appSettings;
 
 const form = useForm({
-  name: "",
-  field: "",
-  module: "",
+  name: "dsa",
+  field: "das",
+  module: "das",
   json: {},
 });
-let ListItems = ref([]);
+let listItems = ref([]);
 let newItem = ref({ label: "", value: "" });
 
 const rowIsDirty = computed(() => {
@@ -36,12 +38,12 @@ const addItem = () => {
     console.log("row is not dirty");
     return;
   }
-  if (ListItems.value.some((item) => item.value === newItem.value)) {
+  if (listItems.value.some((item) => item.value === newItem.value)) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
   }
-  ListItems.value.push({
+  listItems.value.push({
     label: newItem.value.label,
     value: newItem.value.value,
   });
@@ -50,20 +52,28 @@ const addItem = () => {
   newItem.value.label = "";
 };
 const deleteItem = (value) => {
-  ListItems.value = ListItems.value.filter((i) => i.value != value);
+  listItems.value = listItems.value.filter((i) => i.value != value);
 };
 
 const listIsDirty = computed(() => {
-  return false; //
-  const current = JSON.stringify(dbListItems.value);
-  const original = JSON.stringify(ListItems.value);
-  return current !== original;
+  return listItems.value.length && form.name.length;
 });
 
-// const resetList = () => {
-//   warning("Resetting List to original values ");
-//   ListItems.value = [...toRaw(dbListItems.value)];
-// };
+const saveList = () => {
+  form.json = JSON.stringify(listItems.value);
+  info(t("modules.actions.saving"));
+
+  form.post("/settings/dropdowns", {
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("modules.actions.save_success"));
+    },
+    onError: () => {
+      clearAllAlerts();
+      error(t("modules.actions.save_error") + form.errors);
+    },
+  });
+};
 </script>
 
 <template>
@@ -124,7 +134,7 @@ const listIsDirty = computed(() => {
           </ul>
         </div>
         <ul>
-          <li v-for="l in ListItems" class="settings__dropdown__edit__value">
+          <li v-for="l in listItems" class="settings__dropdown__edit__value">
             <div class="settings__dropdown__edit__value__item">
               <span>{{ $t(l.label) }}</span>
             </div>
@@ -163,18 +173,10 @@ const listIsDirty = computed(() => {
 
         <div class="settings__dropdown__edit__actions">
           <button
-            type="button"
-            class="settings__dropdown__edit__actions__reset btn"
-            :disabled="!listIsDirty"
-            @click="resetList()"
-          >
-            {{ $t("settings.reset") }}
-          </button>
-
-          <button
             type="submit"
             class="settings__dropdown__edit__actions__save btn"
             :disabled="!listIsDirty"
+            @click="saveList()"
           >
             {{ $t("settings.save") }}
           </button>
