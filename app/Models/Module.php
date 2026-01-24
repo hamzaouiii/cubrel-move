@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
 use App\Models\Field;
+use App\Models\DropDownList;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -78,6 +79,10 @@ class Module extends BaseModule
     return $recordLayout;
   }
 
+  public function dropdownLists()
+  {
+    return $this->hasMany(DropDownList::class, 'module_id', 'id');
+  }
 
   public function layoutFor(string $type)
   {
@@ -92,6 +97,7 @@ class Module extends BaseModule
       ->select([
         'name',
         'type',
+        'key',
         'readonly',
         'sortable',
         'label',

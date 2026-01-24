@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Models\DropDownList;
 
 class RecordController extends Controller
 {
@@ -40,11 +41,16 @@ class RecordController extends Controller
       }
     }
     $recordLayout = $moduleModel->recordLayout();
+    $recorddropdownLists = $moduleModel->dropdownLists;
+    $fields = $moduleModel->fields;
     return Inertia::render('Modules/Record', array_merge([
       'module'   => $moduleModel,
       'title'    => $moduleModel->name,
       'recordId' => $recordId,
-      'recordLayout' => $recordLayout
+      'recordLayout' => $recordLayout,
+      'dropdownLists' => $recorddropdownLists,
+      'fields' => $fields,
+
     ], $props));
   }
 

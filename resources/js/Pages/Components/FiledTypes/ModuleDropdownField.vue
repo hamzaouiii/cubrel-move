@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
       @click="toggle"
     >
       <span class="module-dropdown__selected">
-        {{ selectedOption?.label ?? $t("settings.select") }}
+        {{ $t(selectedOption?.label) ?? $t("settings.select") }}
       </span>
       <i
         class="module-dropdown__icon"
@@ -172,13 +172,13 @@ onBeforeUnmount(() => {
             @click="selectOption(option.value)"
           >
             <div class="module-dropdown_option_label">
-              {{ option.label }}
+              {{ $t(option.label) }}
             </div>
             <div
               v-if="option.description"
               class="module-dropdown_option_description"
             >
-              {{ option.description }}
+              {{ $t(option.description) }}
             </div>
           </li>
 

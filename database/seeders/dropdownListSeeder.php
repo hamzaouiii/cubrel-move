@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\DropDownList;
 use Illuminate\Support\Str;
+use App\Models\Module;
 
 class dropdownListSeeder extends Seeder
 {
@@ -14,12 +15,14 @@ class dropdownListSeeder extends Seeder
    */
   public function run(): void
   {
+    $cases_id = Module::where('slug', 'cases')->value('id');
     DropdownList::create(
       [
         'id' => Str::uuid(),
         'key' => 'cases_status_list',
         'is_global' => false,
         'field_key' => 'cases_status',
+        'module_id' => $cases_id,
         'values' => [
           ['value' => 'open', 'label' => 'dropdowns.cases_status_list.open'],
           ['value' => 'in_progress', 'label' => 'dropdowns.cases_status_list.in_progress'],
@@ -35,6 +38,8 @@ class dropdownListSeeder extends Seeder
         'key' => 'cases_priority_list',
         'is_global' => false,
         'field_key' => 'cases_priority',
+        'module_id' => $cases_id,
+
         'values' => [
           ['value' => 'low', 'label' => 'dropdowns.cases_priority_list.low'],
           ['value' => 'medium', 'label' => 'dropdowns.cases_priority_list.medium'],

@@ -4,6 +4,7 @@ import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
   computed,
   ref,
+  watch,
   onMounted,
   onBeforeUnmount,
   reactive,
@@ -27,13 +28,14 @@ const props = defineProps({
   title: String,
   record: Object,
   recordLayout: Object,
+  dropdownLists: Object,
+  fields: Object,
 });
-
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const form = useForm({ ...props.record });
-const isEditing = ref(true);
+const isEditing = ref(false);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 
@@ -81,7 +83,19 @@ const saveRecord = () => {
   const moduleSlug = props.module.slug ?? props.module;
   const url = `/${moduleSlug}/${props.record.id}`;
   form
-    .transform(() => payload)
+    .transform((data) => {
+      const payload = { ...data };
+
+      for (const section of props.recordLayout.sections) {
+        for (const f of section.layout) {
+          if (f.type === "dateTime" && payload[f.name]) {
+            payload[f.name] = payload[f.name] + " 00:00:00";
+          }
+        }
+      }
+
+      return payload;
+    })
     .put(url, {
       onSuccess: () => {
         isEditing.value = false;
@@ -167,6 +181,9 @@ const displayValueFor = (f) => {
       return val.substring(0, 64) + "...";
     }
   }
+  if (f.type === "dropDownField") {
+    return getDropDownListLabel(f);
+  }
   return val;
 };
 
@@ -185,14 +202,49 @@ useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
 });
 
-// for now! later we need to implement dynamic dropdown lists
+const getFieldDropDownList = (f) => {
+  const field = props.fields.find((field) => field.name === f.name);
+  const list = props.dropdownLists.find((l) => l.field_key === field.key);
 
-const priority_list = [
-  { value: "low", label: "Low" },
-  { value: "medium", label: "Medium" },
-  { value: "high", label: "High" },
-  { value: "urgent", label: "Urgent" },
-];
+  return list.values;
+};
+
+const getDropDownListLabel = (f) => {
+  const list = getFieldDropDownList(f);
+  const label = list.find((l) => l.value === form[f.name])?.label || "-";
+  return t(label);
+};
+
+watch(
+  () => props.record,
+  (data) => {
+    if (!data) return;
+
+    for (const section of props.recordLayout.sections) {
+      for (const f of section.layout) {
+        const value = data[f.name];
+
+        if (!value) {
+          form[f.name] = null;
+          continue;
+        }
+
+        if (f.type === "date") {
+          form[f.name] = value.slice(0, 10);
+        }
+
+        if (f.type === "dateTime") {
+          form[f.name] = value.replace(" ", "T").slice(0, 16);
+        }
+
+        if (!["date", "dateTime"].includes(f.type)) {
+          form[f.name] = value;
+        }
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>
 
 <template>
@@ -324,15 +376,18 @@ const priority_list = [
               </template>
               <template v-else-if="isDropDown(f)">
                 <ModuleDropdownField
-                  :options="priority_list"
+                  :options="getFieldDropDownList(f)"
                   v-model="form[f.name]"
                 ></ModuleDropdownField>
               </template>
-              <template v-else-if="f.type == 'textarea'">
+              <template v-else-if="f.type == 'longText'">
                 <textarea
                   v-model="form[f.name]"
                   :rows="getTextareaRows(f)"
                 ></textarea>
+              </template>
+              <template v-else-if="f.type == 'dateTime'">
+                <input type="datetime-local" v-model="form[f.name]" />
               </template>
               <template v-else>
                 <input type="text" v-model="form[f.name]" />
