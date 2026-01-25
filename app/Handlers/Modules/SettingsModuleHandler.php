@@ -2,7 +2,7 @@
 
 namespace App\Handlers\Modules;
 
-use App\Models\Modules\Settings;
+use App\Models\Settings\Settings;
 use Illuminate\Database\Eloquent\Builder;
 
 class SettingsModuleHandler extends BasePaginatedModuleHandler
