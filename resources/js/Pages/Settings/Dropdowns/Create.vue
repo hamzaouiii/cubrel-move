@@ -18,10 +18,10 @@ const props = defineProps({
 const appSettings = usePage().props.appSettings;
 
 const form = useForm({
-  name: "dsa",
-  field: "das",
-  module: "das",
-  json: {},
+  key: "dsa",
+  field_key: "das",
+  module_id: "das",
+  values: {},
 });
 let listItems = ref([]);
 let newItem = ref({ label: "", value: "" });
@@ -56,11 +56,11 @@ const deleteItem = (value) => {
 };
 
 const listIsDirty = computed(() => {
-  return listItems.value.length && form.name.length;
+  return listItems.value.length && form.key.length;
 });
 
 const saveList = () => {
-  form.json = JSON.stringify(listItems.value);
+  form.values = listItems.value;
   info(t("modules.actions.saving"));
 
   form.post("/settings/dropdowns", {
@@ -68,9 +68,10 @@ const saveList = () => {
       clearAllAlerts();
       success(t("modules.actions.save_success"));
     },
-    onError: () => {
+    onError: (error) => {
       clearAllAlerts();
-      error(t("modules.actions.save_error") + form.errors);
+      error(t("modules.actions.save_error"));
+      console.error(error);
     },
   });
 };
@@ -102,7 +103,7 @@ const saveList = () => {
               ><label for="name">Name</label></span
             >
             <div class="dropdown-form__item__field dropdown-form__item--prefix">
-              <input type="text" v-model="form.name" maxlength="25" />
+              <input type="text" v-model="form.key" maxlength="25" />
               <span class="prefix">_list</span>
             </div>
           </div>
@@ -111,7 +112,7 @@ const saveList = () => {
               ><label for="name">Module</label></span
             >
             <span class="dropdown-form__item__field">
-              <input type="text" v-model="form.module" />
+              <input type="text" v-model="form.module_id" />
             </span>
           </div>
           <div class="dropdown-form__item">
@@ -119,7 +120,7 @@ const saveList = () => {
               ><label for="name">Field</label></span
             >
             <span class="dropdown-form__item__field">
-              <input type="text" v-model="form.field" />
+              <input type="text" v-model="form.field_key" />
             </span>
           </div>
         </form>

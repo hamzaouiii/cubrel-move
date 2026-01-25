@@ -40,13 +40,14 @@ class DropDownListController extends Controller
    */
   public function store(Request $request)
   {
-    // request sent now validate and save
     $data = $request->validate([
-      'name' => 'required|string',
-      'field_key' => 'nullable|string',
-      'values' => 'nullable|string',
+      'key' => 'required|string',
+      'values' => 'required',
     ]);
-    dd($data);
+    DropdownList::create($data);
+    return redirect()
+    ->route('settings.dropdowns.show', [$data['key']])
+    ->with('success', __('layouts.layout_update_success'));
   }
 
   /**

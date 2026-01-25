@@ -14,6 +14,7 @@ const props = defineProps({
   dropdown: Object,
   item: Object,
 });
+console.log(props.dropdown);
 const appSettings = usePage().props.appSettings;
 
 const newItem = useForm({

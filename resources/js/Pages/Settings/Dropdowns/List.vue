@@ -45,7 +45,6 @@ const sortedFields = computed(() => {
 const editUrl = (f) => {
   return `${page.url.replace(/\/+$/, "")}/${f}`;
 };
-console.log(sortedFields.value);
 </script>
 <template>
   <Head>
