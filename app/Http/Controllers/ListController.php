@@ -28,7 +28,7 @@ class ListController extends Controller
     if (class_exists($handlerClass)) {
       $handler = app($handlerClass);
 
-      if ($handler instanceof ModuleHandler && method_exists($handler, 'getListData')) {
+      if ($handler instanceof ModuleHandler) {
         $params = request()->all();
         $params['perPage'] = $params['perPage'] ?? request()->query('perPage', 18);
 

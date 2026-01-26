@@ -152,6 +152,6 @@ trait HasCustomFields
   protected function attributeExists(string $key): bool
   {
     return array_key_exists($key, $this->attributes)
-      || array_key_exists($key, $this->casts ?? []);
+      || array_key_exists($key, $this->casts);
   }
 }
