@@ -502,7 +502,9 @@ const handleMassUpdate = async (payload) => {
                   </template>
 
                   <template
-                    v-else-if="col.type === 'dateTime' && item[col.name]"
+                    v-else-if="
+                      col.type.toLowerCase() === 'datetime' && item[col.name]
+                    "
                   >
                     {{ formatDateTime(item[col.name], appSettings) }}
                   </template>

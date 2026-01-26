@@ -31,6 +31,8 @@ const props = defineProps({
   dropdownLists: Object,
   fields: Object,
 });
+
+console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -171,17 +173,18 @@ const appSettings = usePage().props.appSettings;
 
 const displayValueFor = (f) => {
   const val = props.record[f.name];
+  const type = f.type.toLowerCase();
   if (val == null || val === "") return "";
 
-  if (f.type === "dateTime") {
+  if (type === "datetime") {
     return formatDateTime(val, appSettings);
   }
-  if (f.type === "longText") {
+  if (type === "longtext") {
     if (val.length > 62) {
       return val.substring(0, 64) + "...";
     }
   }
-  if (f.type === "dropDownField") {
+  if (type === "dropdownfield") {
     return getDropDownListLabel(f);
   }
   return val;

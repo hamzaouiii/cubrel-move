@@ -46,8 +46,8 @@ class DropDownListController extends Controller
     ]);
     DropdownList::create($data);
     return redirect()
-    ->route('settings.dropdowns.show', [$data['key']])
-    ->with('success', __('layouts.layout_update_success'));
+      ->route('settings.dropdowns.show', [$data['key']])
+      ->with('success', __('layouts.layout_update_success'));
   }
 
   /**
@@ -69,7 +69,7 @@ class DropDownListController extends Controller
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit(DropDownList $dropDownList)
+  public function edit(DropdownList $dropDownList)
   {
     //
   }
@@ -77,7 +77,7 @@ class DropDownListController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, DropDownList $dropDownList)
+  public function update(Request $request, DropdownList $dropDownList)
   {
     //
   }
@@ -85,7 +85,7 @@ class DropDownListController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(DropDownList $dropDownList)
+  public function destroy(DropdownList $dropDownList)
   {
     //
   }

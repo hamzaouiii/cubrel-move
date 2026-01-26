@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Concerns\HasTranslatableLabel;
 use Illuminate\Support\Str;
 
-class SettingItem extends Model
+final class SettingItem extends Model
 {
   use  HasTranslatableLabel;
 

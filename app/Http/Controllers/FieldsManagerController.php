@@ -21,11 +21,6 @@ class FieldsManagerController extends Controller
   public function index(Request $request)
   {
     $modules = Module::query()
-      ->with([
-        'layouts' => function ($q) {
-          $q->orderBy('type')->orderBy('name');
-        },
-      ])
       ->orderBy('id')
       ->get();
     $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
@@ -131,8 +126,11 @@ class FieldsManagerController extends Controller
       $value = $request->input('label');
       Label::updateOrCreate(
         ['key' => $key],
-        ['value' => $value],
-        ['module_id' => $module]
+        [
+          'value' => $value,
+          'module_id' => $module
+        ]
+
       );
     }
 

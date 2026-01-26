@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
 use App\Models\Field;
-use App\Models\DropDownList;
+use App\Models\DropdownList;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Layout> $layouts
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany layouts()
+ */
 class Module extends BaseModule
 {
   protected $fillable = [
@@ -81,7 +85,7 @@ class Module extends BaseModule
 
   public function dropdownLists()
   {
-    return $this->hasMany(DropDownList::class, 'module_id', 'id');
+    return $this->hasMany(DropdownList::class, 'module_id', 'id');
   }
 
   public function layoutFor(string $type)

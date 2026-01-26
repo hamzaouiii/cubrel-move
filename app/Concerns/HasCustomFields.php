@@ -12,10 +12,10 @@ trait HasCustomFields
   public function __set($key, $value)
   {
     if ($this->isCustomField($key)) {
-      return $this->setAttribute($key, $value);
+      $this->setAttribute($key, $value);
     }
 
-    return parent::__set($key, $value);
+    parent::__set($key, $value);
   }
 
   public function __get($key)
