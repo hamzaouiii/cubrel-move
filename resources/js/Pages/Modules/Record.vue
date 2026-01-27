@@ -32,16 +32,28 @@ const props = defineProps({
   fields: Object,
 });
 
-console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-const form = useForm({ ...props.record });
+const normalizedRecord = computed(() => {
+  const r = { ...props.record };
+
+  for (const section of props.recordLayout.sections) {
+    for (const f of section.layout) {
+      if (f.type === "datetime" && r[f.name]) {
+        r[f.name] = r[f.name].replace(" ", "T").slice(0, 16);
+      }
+    }
+  }
+
+  return r;
+});
+
+const form = useForm(normalizedRecord.value);
 const isEditing = ref(false);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-
-const editableRecord = reactive({ ...props.record });
+const appSettings = usePage().props.appSettings;
 
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
@@ -56,7 +68,6 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
-const isDirty = computed(() => form.isDirty);
 const enableEditing = () => {
   isEditing.value = true;
 };
@@ -169,8 +180,6 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-const appSettings = usePage().props.appSettings;
-
 const displayValueFor = (f) => {
   const val = props.record[f.name];
   if (val == null || val === "") return "";
@@ -196,12 +205,13 @@ const getTextareaRows = (f) => {
   }
   return 5;
 };
+
 const isDropDown = (f) => {
   return f.type === "dropdown";
 };
 
 useUnsavedChangesGuard({
-  getIsDirty: () => isDirty.value,
+  getIsDirty: () => form.isDirty,
 });
 
 const getFieldDropDownList = (f) => {
@@ -216,37 +226,6 @@ const getDropDownListLabel = (f) => {
   const label = list.find((l) => l.value === form[f.name])?.label || "-";
   return t(label);
 };
-
-watch(
-  () => props.record,
-  (data) => {
-    if (!data) return;
-
-    for (const section of props.recordLayout.sections) {
-      for (const f of section.layout) {
-        const value = data[f.name];
-
-        if (!value) {
-          form[f.name] = null;
-          continue;
-        }
-
-        if (f.type === "date") {
-          form[f.name] = value.slice(0, 10);
-        }
-
-        if (f.type === "datetime") {
-          form[f.name] = value.replace(" ", "T").slice(0, 16);
-        }
-
-        if (!["date", "datetime"].includes(f.type)) {
-          form[f.name] = value;
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true },
-);
 </script>
 
 <template>
