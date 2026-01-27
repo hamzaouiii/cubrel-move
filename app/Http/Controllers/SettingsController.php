@@ -98,18 +98,6 @@ class SettingsController extends Controller
     })->values()->all();
   }
 
-  private function formatTimezone(string $tz, string $currentTz): array
-  {
-    $now = now()->setTimezone($tz);
-    $offset = $now->format('P'); // +01:00
-
-    return [
-      'value' => $tz,                                // stored value
-      'label' => "{$tz} (UTC{$offset})",              // display
-      'selected' => $tz === $currentTz,               // optional
-    ];
-  }
-
   private function timezoneOptions(): array
   {
     $currentTz = SettingValue::query()
@@ -131,7 +119,7 @@ class SettingsController extends Controller
       $options[] = [
         'value'       => $tz,
         'label'       => "{$city} (UTC{$offset})",
-        'description' => $tz . ($abbr ? " • {$abbr}" : ''),
+        'description' => $tz . " • {$abbr}",
         'isActive'    => $tz === $currentTz,
       ];
     }

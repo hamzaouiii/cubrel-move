@@ -14,6 +14,7 @@ class LayoutManagerController extends Controller
 
   public function store(Request $request, \App\Models\Module $module, string $layoutType)
   {
+    $validated = [];
     if ($layoutType == 'list') {
       $validated = $request->validate([
         'definition' => 'required|array',

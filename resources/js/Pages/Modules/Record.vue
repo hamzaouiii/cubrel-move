@@ -31,6 +31,8 @@ const props = defineProps({
   dropdownLists: Object,
   fields: Object,
 });
+
+console.log(props.recordLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -243,7 +245,7 @@ watch(
       }
     }
   },
-  { immediate: true, deep: true },
+  { immediate: true, deep: true }
 );
 </script>
 

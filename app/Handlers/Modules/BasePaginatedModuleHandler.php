@@ -96,9 +96,5 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
     } catch (ModelNotFoundException $e) {
       throw $e;
     }
-
-    return [
-      'record' => $record,
-    ];
   }
 }

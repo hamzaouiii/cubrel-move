@@ -1,0 +1,1075 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Contracts\\ModuleHandler\:\:getListData\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Contracts/ModuleHandler.php
+
+		-
+			message: '#^Method App\\Contracts\\ModuleHandler\:\:getListData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Contracts/ModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\AccountsModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/AccountsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\AccountsModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/AccountsModuleHandler.php
+
+		-
+			message: '#^Property App\\Handlers\\Modules\\AccountsModuleHandler\:\:\$searchable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/AccountsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:getListData\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:getListData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:getPerPage\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:getRecordData\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:getRecordData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:transformItems\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:transformItems\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:transformItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Property App\\Handlers\\Modules\\BasePaginatedModuleHandler\:\:\$searchable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/BasePaginatedModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\CasesModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/CasesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\CasesModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/CasesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\ContactsModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/ContactsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\ContactsModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/ContactsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\Custom\\MoneyModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/Custom/MoneyModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\Custom\\MoneyModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/Custom/MoneyModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\CustomerInquriesModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/CustomerInquriesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\CustomerInquriesModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/CustomerInquriesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\EmailModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/EmailModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\EmailModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/EmailModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\InquiriesModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/InquiriesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\InquiriesModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/InquiriesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\InvoicesModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/InvoicesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\InvoicesModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/InvoicesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\LeadsModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/LeadsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\LeadsModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/LeadsModuleHandler.php
+
+		-
+			message: '#^Property App\\Handlers\\Modules\\LeadsModuleHandler\:\:\$searchable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/LeadsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\QuotesModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/QuotesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\QuotesModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/QuotesModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\SettingsModuleHandler\:\:query\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Handlers/Modules/SettingsModuleHandler.php
+
+		-
+			message: '#^Method App\\Handlers\\Modules\\SettingsModuleHandler\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Handlers/Modules/SettingsModuleHandler.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\AuthController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\AuthController\:\:login\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\AuthController\:\:logout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:destroy\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\DropDownListController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DropdownListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:destroy\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\FieldsManagerController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/FieldsManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\IconController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/IconController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LayoutManagerController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LayoutManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LayoutManagerController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LayoutManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LayoutManagerController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LayoutManagerController.php
+
+		-
+			message: '#^Property App\\Models\\Layout\:\:\$type \(''form''\|''list''\|''record''\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Http/Controllers/LayoutManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LeadController\:\:destroy\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LeadController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LeadController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LeadController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LeadController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ListController\:\:__invoke\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\LocaleController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/LocaleController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ModuleManagerController\:\:update\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/ModuleManagerController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:first\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getTable\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Cannot call method getRecordData\(\) on App\\Contracts\\ModuleHandler\|class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RecordController\:\:__invoke\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RecordController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RecordController\:\:destroy\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RecordController\:\:destroyMany\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RecordController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RecordController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/RecordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingValueController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/SettingValueController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingValueController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/SettingValueController.php
+
+		-
+			message: '#^Cannot call method setTimezone\(\) on Carbon\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingsController\:\:datetimeFormatOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingsController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingsController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingsController\:\:timezoneOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SettingsController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\LocalAutoLogin\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Middleware/LocalAutoLogin.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\LocalAutoLogin\:\:handle\(\) has parameter \$request with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Middleware/LocalAutoLogin.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\SetLocaleFromSettings\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Middleware/SetLocaleFromSettings.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\SetLocaleFromSettings\:\:handle\(\) has parameter \$request with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Middleware/SetLocaleFromSettings.php
+
+		-
+			message: '#^Method App\\Mail\\ContactMessageConfirmation\:\:__construct\(\) has parameter \$contactMessage with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/ContactMessageConfirmation.php
+
+		-
+			message: '#^Method App\\Mail\\ContactMessageConfirmation\:\:build\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Mail/ContactMessageConfirmation.php
+
+		-
+			message: '#^Property App\\Mail\\ContactMessageConfirmation\:\:\$contactMessage has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/ContactMessageConfirmation.php
+
+		-
+			message: '#^Method App\\Mail\\ContactMessageReceived\:\:build\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Mail/ContactMessageReceived.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:getAllCustomFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:getCachedCustomFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:getCustomFieldValue\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:getCustomFieldsArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:getLabelAttribute\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:getLabelAttribute\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Method App\\Models\\BaseModule\:\:uniqueIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Property App\\Models\\BaseModule\:\:\$customFieldCache type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/BaseModule.php
+
+		-
+			message: '#^Class App\\Models\\DropdownList uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/DropdownList.php
+
+		-
+			message: '#^Class App\\Models\\Field uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Field.php
+
+		-
+			message: '#^Method App\\Models\\Field\:\:getEmptyMetadata\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Field.php
+
+		-
+			message: '#^Method App\\Models\\Field\:\:module\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Field.php
+
+		-
+			message: '#^Property App\\Models\\Field\:\:\$excludedFromForms has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Models/Field.php
+
+		-
+			message: '#^Method App\\Models\\Label\:\:uniqueIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Label.php
+
+		-
+			message: '#^Class App\\Models\\Layout has PHPDoc tag @property for property \$definition with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:getDefaultLayout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:getGlobalListLayout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:getGlobalRecordLayout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:module\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:scopeDefault\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:scopeDefault\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:scopeForType\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Layout\:\:scopeForType\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Layout.php
+
+		-
+			message: '#^Method App\\Models\\Module\:\:getFieldMetadata\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^Method App\\Models\\Module\:\:layoutFor\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^Method App\\Models\\Module\:\:listLayout\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^Method App\\Models\\Module\:\:recordLayout\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^Method App\\Models\\Module\:\:scopeActive\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^Method App\\Models\\Module\:\:scopeActive\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^PHPDoc tag @method for method App\\Models\\Module\:\:dropdownLists\(\) return type contains generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany but does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^PHPDoc tag @method for method App\\Models\\Module\:\:fields\(\) return type contains generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany but does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^PHPDoc tag @method for method App\\Models\\Module\:\:layouts\(\) return type contains generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany but does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^PHPDoc tag @property\-read for property App\\Models\\Module\:\:\$dropdownLists contains generic class Illuminate\\Database\\Eloquent\\Collection but does not specify its types\: TKey, TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^PHPDoc tag @property\-read for property App\\Models\\Module\:\:\$fields contains generic class Illuminate\\Database\\Eloquent\\Collection but does not specify its types\: TKey, TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^PHPDoc tag @property\-read for property App\\Models\\Module\:\:\$layouts contains generic class Illuminate\\Database\\Eloquent\\Collection but does not specify its types\: TKey, TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Module.php
+
+		-
+			message: '#^Class App\\Models\\Modules\\Account uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Account.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Account\:\:cases\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Account.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Account\:\:contacts\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Account.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Account\:\:invoices\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Account.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Account\:\:quotes\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Account.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Contact\:\:account\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Contact.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Contact\:\:cases\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Contact.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Contact\:\:invoices\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Contact.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Contact\:\:quotes\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Contact.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Invoice\:\:account\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Invoice.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Invoice\:\:contact\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Invoice.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Invoice\:\:quote\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Invoice.php
+
+		-
+			message: '#^Class App\\Models\\Modules\\Lead uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Lead.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Quote\:\:account\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Quote.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Quote\:\:contact\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Quote.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\Quote\:\:invoices\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/Quote.php
+
+		-
+			message: '#^Class App\\Models\\Modules\\SupportCase uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/SupportCase.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\SupportCase\:\:account\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/SupportCase.php
+
+		-
+			message: '#^Method App\\Models\\Modules\\SupportCase\:\:contact\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Modules/SupportCase.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingItem\:\:all\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Settings/SettingItem.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingItem\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Settings\\SettingItem\> but returns Illuminate\\Support\\Collection\<int, static\(App\\Models\\Settings\\SettingItem\)\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Settings/SettingItem.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingItem\:\:getLabelAttribute\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/SettingItem.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingItem\:\:getLabelAttribute\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Settings/SettingItem.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingItem\:\:values\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/SettingItem.php
+
+		-
+			message: '#^Class App\\Models\\Settings\\SettingValue uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Settings/SettingValue.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingValue\:\:getCastedValueAttribute\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/SettingValue.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingValue\:\:getLabelAttribute\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/SettingValue.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingValue\:\:getLabelAttribute\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Settings/SettingValue.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\SettingValue\:\:settingItem\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/SettingValue.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:all\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:allActive\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:getItem\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:getItem\(\) has parameter \$categorty with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:getItem\(\) has parameter \$slug with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:getLabelAttribute\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Models\\Settings\\Settings\:\:getLabelAttribute\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Property App\\Models\\Settings\\Settings\:\:\$settings has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Models/Settings/Settings.php
+
+		-
+			message: '#^Method App\\Providers\\AppServiceProvider\:\:translate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Providers\\AppServiceProvider\:\:translate\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Providers\\AppServiceProvider\:\:translate\(\) has parameter \$locale with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Providers\\AppServiceProvider\:\:translate\(\) has parameter \$replace with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Support\\Settings\:\:all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/Settings.php
+
+		-
+			message: '#^Method App\\Support\\Settings\:\:get\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Support/Settings.php
+
+		-
+			message: '#^Method App\\Support\\Settings\:\:get\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Support/Settings.php
+
+		-
+			message: '#^Method App\\Support\\Settings\:\:set\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Support/Settings.php
+
+		-
+			message: '#^Property App\\Support\\Settings\:\:\$cache type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/Settings.php

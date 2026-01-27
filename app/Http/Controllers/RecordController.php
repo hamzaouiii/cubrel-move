@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Models\DropDownList;
+use App\Models\DropdownList;
 
 class RecordController extends Controller
 {

@@ -46,7 +46,7 @@ const allMatchingSelected = ref(false);
 
 const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
-    (column) => column !== null,
+    (column) => column !== null
   );
 });
 
@@ -104,15 +104,15 @@ const toggleAllInView = () => {
   allMatchingSelected.value = false;
 
   const allInViewSelected = pageProps.items.every((i) =>
-    selectedIds.value.includes(i.id),
+    selectedIds.value.includes(i.id)
   );
 
   selectedIds.value = allInViewSelected
     ? selectedIds.value.filter(
-        (id) => !pageProps.items.some((i) => i.id === id),
+        (id) => !pageProps.items.some((i) => i.id === id)
       )
     : Array.from(
-        new Set([...selectedIds.value, ...pageProps.items.map((i) => i.id)]),
+        new Set([...selectedIds.value, ...pageProps.items.map((i) => i.id)])
       );
 };
 
@@ -128,7 +128,7 @@ watch(
     if (allMatchingSelected.value) {
       selectedIds.value = (newItems ?? []).map((i) => i.id);
     }
-  },
+  }
 );
 
 const recordsNumber = computed(() => pageProps.items?.length ?? 0);
@@ -169,7 +169,7 @@ const performSearch = (page = 1) => {
       preserveState: true,
       preserveScroll: true,
       replace: true,
-    },
+    }
   );
 };
 
@@ -228,7 +228,7 @@ const resetActionZone = () => {
 
 const totalSelected = computed(() => {
   return allMatchingSelected.value
-    ? (pageProps.meta?.total ?? 0)
+    ? pageProps.meta?.total ?? 0
     : selectedIds.value.length;
 });
 
@@ -288,7 +288,7 @@ const handleMassUpdate = async (payload) => {
 
   // info(t("modules.actions.updating"));
   error(
-    "Mass update will not be sent to the backend until field types are introduced ",
+    "Mass update will not be sent to the backend until field types are introduced "
   );
 
   // router.put(`/${pageProps.module.slug}`, {

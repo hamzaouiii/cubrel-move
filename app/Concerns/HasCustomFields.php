@@ -12,10 +12,10 @@ trait HasCustomFields
   public function __set($key, $value)
   {
     if ($this->isCustomField($key)) {
-      return $this->setAttribute($key, $value);
+      $this->setAttribute($key, $value);
     }
 
-    return parent::__set($key, $value);
+    parent::__set($key, $value);
   }
 
   public function __get($key)
@@ -97,7 +97,7 @@ trait HasCustomFields
     return in_array($key, $this->getCachedCustomFields(), true);
   }
 
-  protected function getCustomFieldValue(string $key)
+  protected function getCustomFieldValue(string $key) : string
   {
     $custom = $this->getCustomFieldsArray();
     return $custom[$key] ?? null;
@@ -152,6 +152,6 @@ trait HasCustomFields
   protected function attributeExists(string $key): bool
   {
     return array_key_exists($key, $this->attributes)
-      || array_key_exists($key, $this->casts ?? []);
+      || array_key_exists($key, $this->casts);
   }
 }

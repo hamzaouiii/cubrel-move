@@ -5,10 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Layout;
 use App\Models\Field;
-use App\Models\DropDownList;
+use App\Models\DropdownList;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Layout> $layouts
+ * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\DropdownList> $dropdownLists
+ * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Field> $fields
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany layouts()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany dropdownLists()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany fields()
+ */
 class Module extends BaseModule
 {
   protected $fillable = [
@@ -45,43 +54,58 @@ class Module extends BaseModule
     return $query->where('is_active', true);
   }
 
+  /**
+   * @return HasMany<Layout, $this>
+   */
   public function layouts()
   {
     return $this->hasMany(Layout::class);
   }
 
+  /**
+   * @return array
+   */
   public function listLayout()
   {
+    /** @var Layout|null $layout */
     $layout = $this->layouts()->where('type', 'list')->first();
-    if ($layout) {
+    if ($layout !== null) {
       return $layout->definition;
     }
 
     $globalDefault = Layout::getDefaultLayout('list');
-    if ($globalDefault) {
+    if ($globalDefault !== null) {
       return $globalDefault;
     }
-
     throw new \Exception("No list layout found for module {$this->name} and no global fallback available.");
   }
 
+
+  /**
+   * @return array
+   */
   public function recordLayout()
   {
+    /** @var Layout|null $recordLayout */
+
     $recordLayout = $this->layouts()->where('type', 'record')->first();
 
-    if ($recordLayout) {
+    if ($recordLayout !== null) {
       return $recordLayout->definition;
     }
     $globalDefault = Layout::getDefaultLayout('record');
-    if ($globalDefault) {
+    if ($globalDefault !== null) {
       return $globalDefault;
     }
-    return $recordLayout;
+    throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
   }
 
+  /**
+   * @return HasMany<DropdownList, $this>
+   */
   public function dropdownLists()
   {
-    return $this->hasMany(DropDownList::class, 'module_id', 'id');
+    return $this->hasMany(DropdownList::class, 'module_id', 'id');
   }
 
   public function layoutFor(string $type)
@@ -91,6 +115,9 @@ class Module extends BaseModule
       ->first();
   }
 
+  /**
+   * @return HasMany<Field, $this>
+   */
   public function fields()
   {
     return $this->hasMany(Field::class, 'module_id', 'id')
