@@ -23,7 +23,7 @@ class FieldsUpdaterSeeder extends Seeder
             'id'        => (string) Str::uuid(),
             'is_custom' => false,
             'is_active' => true,
-            'type' => 'dateTime',
+            'type' => 'datetime',
             'required' => true,
           ]
         );

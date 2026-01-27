@@ -90,7 +90,7 @@ const saveRecord = () => {
 
       for (const section of props.recordLayout.sections) {
         for (const f of section.layout) {
-          if (f.type === "dateTime" && payload[f.name]) {
+          if (f.type === "datetime" && payload[f.name]) {
             payload[f.name] = payload[f.name] + " 00:00:00";
           }
         }
@@ -175,15 +175,15 @@ const displayValueFor = (f) => {
   const val = props.record[f.name];
   if (val == null || val === "") return "";
 
-  if (f.type === "dateTime") {
+  if (f.type === "datetime") {
     return formatDateTime(val, appSettings);
   }
-  if (f.type === "longText") {
+  if (f.type === "longtext") {
     if (val.length > 62) {
       return val.substring(0, 64) + "...";
     }
   }
-  if (f.type === "dropDownField") {
+  if (f.type === "dropdown") {
     return getDropDownListLabel(f);
   }
   return val;
@@ -197,7 +197,7 @@ const getTextareaRows = (f) => {
   return 5;
 };
 const isDropDown = (f) => {
-  return f.type === "dropDownField";
+  return f.type === "dropdown";
 };
 
 useUnsavedChangesGuard({
@@ -235,17 +235,17 @@ watch(
           form[f.name] = value.slice(0, 10);
         }
 
-        if (f.type === "dateTime") {
+        if (f.type === "datetime") {
           form[f.name] = value.replace(" ", "T").slice(0, 16);
         }
 
-        if (!["date", "dateTime"].includes(f.type)) {
+        if (!["date", "datetime"].includes(f.type)) {
           form[f.name] = value;
         }
       }
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 </script>
 
@@ -382,13 +382,13 @@ watch(
                   v-model="form[f.name]"
                 ></ModuleDropdownField>
               </template>
-              <template v-else-if="f.type == 'longText'">
+              <template v-else-if="f.type == 'longtext'">
                 <textarea
                   v-model="form[f.name]"
                   :rows="getTextareaRows(f)"
                 ></textarea>
               </template>
-              <template v-else-if="f.type == 'dateTime'">
+              <template v-else-if="f.type == 'datetime'">
                 <input type="datetime-local" v-model="form[f.name]" />
               </template>
               <template v-else>

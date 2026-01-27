@@ -14,11 +14,11 @@ return [
   'field_reset_success' => 'Feld auf Datenbank-Werte zurückgesetzt.',
   'key_is_taken_error'    => 'Ein Feld mit demselben Systemnamen existiert bereits.',
   'types' => [
-    'longText' => 'Langer Text',
-    'textField' => 'Text',
-    'dateTime' => 'Datum und Uhrzeit',
+    'longtext' => 'Langer Text',
+    'textfield' => 'Text',
+    'datetime' => 'Datum und Uhrzeit',
     'email' => 'E Mail',
-    'dropDownField' => 'Auswahlliste',
+    'dropdown' => 'Auswahlliste',
     'date' => 'Datum',
     'number' => 'Zahl',
     'relationship' => 'Beziehung'

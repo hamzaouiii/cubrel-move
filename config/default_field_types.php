@@ -1,10 +1,10 @@
 <?php
 return [
-  'longText',
-  'textField',
-  'dateTime',
+  'longtext',
+  'textfield',
+  'datetime',
   'email',
-  'dropDownField',
+  'dropdown',
   'date',
   'number',
   'relationship'

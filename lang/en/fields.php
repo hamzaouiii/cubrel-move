@@ -14,11 +14,11 @@ return [
   'field_reset_success' => 'Field reset to Database values.',
   'key_is_taken_error'    => 'A field with the same system name already exists',
   'types' => [
-    'longText' => 'Long text',
-    'textField' => 'Text',
-    'dateTime' => 'Date & time',
+    'longtext' => 'Long text',
+    'textfield' => 'Text',
+    'datetime' => 'Date & time',
     'email' => 'Email',
-    'dropDownField' => 'Dropdown',
+    'dropdown' => 'Dropdown',
     'date' => 'Date',
     'number' => 'Number',
     'relationship' => 'Relationship'
