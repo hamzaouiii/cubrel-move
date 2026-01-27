@@ -173,18 +173,17 @@ const appSettings = usePage().props.appSettings;
 
 const displayValueFor = (f) => {
   const val = props.record[f.name];
-  const type = f.type.toLowerCase();
   if (val == null || val === "") return "";
 
-  if (type === "datetime") {
+  if (f.type === "dateTime") {
     return formatDateTime(val, appSettings);
   }
-  if (type === "longtext") {
+  if (f.type === "longText") {
     if (val.length > 62) {
       return val.substring(0, 64) + "...";
     }
   }
-  if (type === "dropdownfield") {
+  if (f.type === "dropDownField") {
     return getDropDownListLabel(f);
   }
   return val;
@@ -246,7 +245,7 @@ watch(
       }
     }
   },
-  { immediate: true, deep: true },
+  { immediate: true, deep: true }
 );
 </script>
 
