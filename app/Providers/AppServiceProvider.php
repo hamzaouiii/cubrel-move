@@ -69,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
         'fields' => $this->translate('fields'),
         'globals' => $this->translate('globals'),
         'dropdowns' => $this->translate('dropdowns'),
+        'calendar' => $this->translate('calendar'),
         'custom' => $customLabels
       ];
     });

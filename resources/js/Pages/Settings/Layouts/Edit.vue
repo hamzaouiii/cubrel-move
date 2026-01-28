@@ -53,7 +53,7 @@ const fieldByName = computed(() => {
 
 // list layout
 const listLayoutColumnConfigs = computed(() => {
-  return Object.values(currentLayout?.value?.columns || {});
+  return Object.values(currentLayout?.value?.columns || {}).filter(Boolean);
 });
 
 const selectedListColumnsFromDb = computed(() => {

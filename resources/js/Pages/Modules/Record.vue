@@ -16,7 +16,7 @@ import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 import ModuleDropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
-
+import DateTime from "../Components/FiledTypes/DateTime.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 defineOptions({
@@ -35,25 +35,10 @@ const props = defineProps({
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-const normalizedRecord = computed(() => {
-  const r = { ...props.record };
-
-  for (const section of props.recordLayout.sections) {
-    for (const f of section.layout) {
-      if (f.type === "datetime" && r[f.name]) {
-        r[f.name] = r[f.name].replace(" ", "T").slice(0, 16);
-      }
-    }
-  }
-
-  return r;
-});
-
-const form = useForm(normalizedRecord.value);
+const form = useForm({ ...props.record });
 const isEditing = ref(false);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const appSettings = usePage().props.appSettings;
 
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
@@ -68,6 +53,7 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
+const isDirty = computed(() => form.isDirty);
 const enableEditing = () => {
   isEditing.value = true;
 };
@@ -180,6 +166,8 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
+const appSettings = usePage().props.appSettings;
+
 const displayValueFor = (f) => {
   const val = props.record[f.name];
   if (val == null || val === "") return "";
@@ -205,13 +193,12 @@ const getTextareaRows = (f) => {
   }
   return 5;
 };
-
 const isDropDown = (f) => {
   return f.type === "dropdown";
 };
 
 useUnsavedChangesGuard({
-  getIsDirty: () => form.isDirty,
+  getIsDirty: () => isDirty.value,
 });
 
 const getFieldDropDownList = (f) => {
@@ -226,6 +213,10 @@ const getDropDownListLabel = (f) => {
   const label = list.find((l) => l.value === form[f.name])?.label || "-";
   return t(label);
 };
+
+function func() {
+  console.log("runnig");
+}
 </script>
 
 <template>
@@ -368,7 +359,12 @@ const getDropDownListLabel = (f) => {
                 ></textarea>
               </template>
               <template v-else-if="f.type == 'datetime'">
-                <input type="datetime-local" v-model="form[f.name]" />
+                <DateTime v-model="form[f.name]" type="datetime" />
+                <!-- <input
+                  @change="func()"
+                  type="datetime-local"
+                  v-model="form[f.name]"
+                /> -->
               </template>
               <template v-else>
                 <input type="text" v-model="form[f.name]" />
