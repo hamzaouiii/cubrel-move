@@ -190,19 +190,9 @@
       &_actions {
         display: flex;
         justify-content: flex-end;
-        button {
-          all: unset;
-          border: 2px solid #0d6efd;
-          color: #0d6efd;
-          padding: 5px 20px;
+        .btn {
           margin-right: 50px;
-          transition: all 0.2s ease-in-out;
-          border-radius: 5px;
-          cursor: pointer;
-          &:hover {
-            background-color: #0d6efd;
-            color: white;
-          }
+
           &:disabled {
             background-color: rgb(218, 218, 218);
             color: white;
@@ -210,19 +200,13 @@
             cursor: not-allowed;
           }
         }
-        .reset-btn {
-          border: 2px solid salmon;
-          color: salmon;
-          &:hover {
-            background-color: salmon;
-            color: white;
-          }
-          &:disabled {
-            background-color: rgb(218, 218, 218);
-            color: white;
-            border-color: rgb(218, 218, 218);
-            cursor: not-allowed;
-          }
+        &__reset {
+          --btn-color: salmon;
+          --btn-bg-hover: salmon;
+        }
+        &__save {
+          --btn-color: var(--primary-color);
+          --btn-bg-hover: var(--primary-color);
         }
       }
     }
@@ -1015,7 +999,8 @@
     }
   }
   .selected {
-    background-color: white;
+    color: white;
+    background-color: var(--primary-color);
   }
 }
 

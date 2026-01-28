@@ -71,7 +71,7 @@ const normalizedOptions = computed(() => {
 
 const selectedOption = computed(
   () =>
-    normalizedOptions.value.find((o) => o.value === props.modelValue) ?? null
+    normalizedOptions.value.find((o) => o.value === props.modelValue) ?? null,
 );
 
 const filteredOptions = computed(() => {
@@ -147,7 +147,10 @@ onBeforeUnmount(() => {
         {{ selectedOption?.label ?? $t("settings.select") }}
       </span>
 
-      <span class="dropdown-field_icon"> ▾ </span>
+      <i
+        class="dropdown-field__icon"
+        :class="isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"
+      ></i>
     </div>
 
     <transition name="dropdown-fade">

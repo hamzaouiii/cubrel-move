@@ -61,42 +61,27 @@ class SettingsController extends Controller
 
   private function datetimeFormatOptions(): array
   {
-    $formats = [
-      'Y-m-d H:i',
-      'd.m.Y H:i',
-      'd/m/Y H:i',
-      'm/d/Y h:i A',
-      'M d, Y H:i',
-      'D, d M Y H:i',
-    ];
-
+    $formatsMap = config('datetime_formats');
     $example = Carbon::create(2025, 12, 11, 14, 30, 0);
 
     $tz = SettingValue::query()
       ->where('key', 'timezone')
-      ->value('value') ?: config('app.timezone', 'UTC');
+      ->value('value')
+      ?: config('app.timezone', 'UTC');
 
     $example->locale(app()->getLocale())->setTimezone($tz);
 
-    $previewMap = [
-      'Y-m-d H:i'    => 'YYYY-MM-DD HH:mm',
-      'd.m.Y H:i'    => 'DD.MM.YYYY HH:mm',
-      'd/m/Y H:i'    => 'DD/MM/YYYY HH:mm',
-      'm/d/Y h:i A'  => 'MM/DD/YYYY hh:mm A',
-      'M d, Y H:i'   => 'MMM DD, YYYY HH:mm',
-      'D, d M Y H:i' => 'ddd, DD MMM YYYY HH:mm',
-    ];
-
-    return collect($formats)->map(function ($format) use ($example, $previewMap) {
-      $preview = $example->copy()->isoFormat($previewMap[$format] ?? 'YYYY-MM-DD HH:mm');
+    return collect($formatsMap)->map(function ($previewFormat, $phpFormat) use ($example) {
+      $preview = $example->copy()->isoFormat($previewFormat);
 
       return [
-        'value' => $format,
-        'label' => $preview,
-        'description' => "({$format})"
+        'value'       => $phpFormat,
+        'label'       => $preview,
+        'description' => "({$phpFormat})",
       ];
     })->values()->all();
   }
+
 
   private function timezoneOptions(): array
   {

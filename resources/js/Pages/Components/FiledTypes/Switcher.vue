@@ -1,7 +1,7 @@
 <script setup>
-import { computed } from 'vue'
-
-const emit = defineEmits(['update:modelValue'])
+import { computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
+const emit = defineEmits(["update:modelValue"]);
 
 const props = defineProps({
   modelValue: {
@@ -13,19 +13,27 @@ const props = defineProps({
     required: true,
     validator: (opts) =>
       opts.length === 2 &&
-      opts.every(o => Object.prototype.hasOwnProperty.call(o, 'label') &&
-                      Object.prototype.hasOwnProperty.call(o, 'value')),
+      opts.every(
+        (o) =>
+          Object.prototype.hasOwnProperty.call(o, "label") &&
+          Object.prototype.hasOwnProperty.call(o, "value"),
+      ),
   },
-})
+});
 
 const current = computed({
   get: () => props.modelValue ?? props.options[0]?.value,
-  set: (val) => emit('update:modelValue', val),
-})
+  set: (val) => emit("update:modelValue", val),
+});
+const page = usePage();
+const appSettings = page.props.appSettings;
 </script>
 
 <template>
-  <div class="switcher">
+  <div
+    class="switcher"
+    :style="{ '--primary-color': appSettings.primary_color }"
+  >
     <span
       v-for="opt in options"
       :key="opt.value"

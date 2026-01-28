@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
-import DropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
+import DropdownField from "../Components/FiledTypes/SettingDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
@@ -22,8 +22,11 @@ const props = defineProps({
   datetimeFormatOptions: { type: Array, default: [] },
   timezoneOptions: { type: Array, default: [] },
 });
+console.log(props.datetimeFormatOptions);
 const page = usePage();
 const module = computed(() => page.props.item || page.props);
+const appSettings = usePage().props.appSettings;
+
 const normalizedValues = props.values.map((v) => ({
   ...v,
   value: v.type === "bool" ? v.value == 1 || v.value === "1" : v.value,
@@ -63,7 +66,6 @@ const saveSetting = () => {
 const resetForm = () => {
   form.reset();
 };
-// explicit isDirty function for template usage
 const isDirty = () => form.isDirty;
 </script>
 
@@ -72,7 +74,10 @@ const isDirty = () => form.isDirty;
     <title>{{ $t(item.label) }} - {{ $t("settings.label") }}</title>
   </Head>
 
-  <div class="settings">
+  <div
+    class="settings"
+    :style="{ '--primary-color': appSettings.primary_color }"
+  >
     <div class="settings__header">
       <div class="settings__header__title">
         <SettingBreadcrumbs :setting-item="item"></SettingBreadcrumbs>
@@ -134,14 +139,18 @@ const isDirty = () => form.isDirty;
         <div class="settings_system_form_actions">
           <button
             type="button"
-            class="reset-btn"
+            class="settings_system_form_actions__reset btn"
             @click="resetForm"
             :disabled="!isDirty()"
           >
             {{ $t("settings.reset") }}
           </button>
 
-          <button type="submit" :disabled="!isDirty() || form.processing">
+          <button
+            class="settings_system_form_actions__save btn"
+            type="submit"
+            :disabled="!isDirty() || form.processing"
+          >
             {{ $t("settings.save") }}
           </button>
         </div>
