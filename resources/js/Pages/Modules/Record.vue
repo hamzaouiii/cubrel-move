@@ -4,10 +4,8 @@ import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
   computed,
   ref,
-  watch,
   onMounted,
   onBeforeUnmount,
-  reactive,
   getCurrentInstance,
 } from "vue";
 import { formatDateTime } from "@/utils/datetime";
@@ -40,6 +38,17 @@ const isEditing = ref(false);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 
+const getFieldType = (field) => {
+  const sections = props.recordLayout?.sections;
+  for (const section of sections) {
+    const found = section.layout?.find((item) => item.name === field);
+    if (found) {
+      return found.type;
+    }
+  }
+  return "no_type";
+};
+
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
 };
@@ -63,17 +72,24 @@ const getChangedData = (original, form) => {
   const edited = form.data();
   for (const key of Object.keys(edited)) {
     if (original[key] !== edited[key]) {
-      changed[key] = edited[key];
+      if (getFieldType(key) === "datetime" || getFieldType(key) === "date") {
+        changed[key] = normalizeDateTime(edited[key]);
+      } else {
+        changed[key] = edited[key];
+      }
     }
   }
 
   return changed;
 };
+function normalizeDateTime(value) {
+  const d = new Date(value);
+  return d.toISOString().slice(0, 19).replace("T", " ");
+}
 
 const saveRecord = () => {
   info(t("modules.actions.updating"));
   const payload = getChangedData(props.record, form);
-
   if (Object.keys(payload).length === 0) {
     isEditing.value = false;
     return;
@@ -84,14 +100,6 @@ const saveRecord = () => {
   form
     .transform((data) => {
       const payload = { ...data };
-
-      for (const section of props.recordLayout.sections) {
-        for (const f of section.layout) {
-          if (f.type === "datetime" && payload[f.name]) {
-            payload[f.name] = payload[f.name] + " 00:00:00";
-          }
-        }
-      }
 
       return payload;
     })
