@@ -37,7 +37,9 @@ class ListController extends Controller
     }
 
     $listLayout = $moduleModel->listLayout();
-    $fields = $moduleModel->fields()->get();
+    $recorddropdownLists = $moduleModel->dropdownLists;
+    $fields = $moduleModel->fields;
+
     //TODO: make the fields list customizable
     // remove readonly fields and fields unsuited for mass update such as emails and so on.
     return Inertia::render('Modules/List', array_merge([
@@ -46,6 +48,8 @@ class ListController extends Controller
       'listLayout' => $listLayout,
       'fields'     => $fields,
       'filters'    => request()->only(['search', 'perPage']),
+      'dropdownLists' => $recorddropdownLists,
+
     ], $props));
   }
 }

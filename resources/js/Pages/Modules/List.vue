@@ -33,7 +33,9 @@ const pageProps = defineProps({
   listLayout: Object,
   filters: Object,
   fields: Object,
+  dropdownLists: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const bulkActionmode = ref(false);
@@ -69,6 +71,7 @@ const toggleMassUpdateZone = () => {
   }
   toggleBulkActionMode();
 };
+
 const toggleDeleteZone = () => {
   showDeleteZone.value = !showDeleteZone.value;
   if (showMassUpdateZone.value == true) {
@@ -315,6 +318,20 @@ const handleMassUpdate = async (payload) => {
   //   },
   // });
 };
+
+const getFieldDropDownList = (f) => {
+  const field = pageProps.fields.find((field) => field.name === f);
+
+  const list = pageProps.dropdownLists.find((l) => l.field_key === field.key);
+
+  return list?.values || {};
+};
+
+const getDropDownListLabel = (f, i) => {
+  const list = getFieldDropDownList(f);
+  const label = list.find((l) => l.value === i)?.label || "";
+  return t(label);
+};
 </script>
 
 <template>
@@ -506,7 +523,11 @@ const handleMassUpdate = async (payload) => {
                   >
                     {{ formatDateTime(item[col.name], appSettings) }}
                   </template>
-
+                  <template
+                    v-else-if="col.type === 'dropdown' && item[col.name]"
+                  >
+                    {{ getDropDownListLabel(col.name, item[col.name]) }}
+                  </template>
                   <template
                     v-else-if="item[col.name] && item[col.name].length > 62"
                   >
