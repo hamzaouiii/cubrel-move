@@ -35,7 +35,7 @@ const pageProps = defineProps({
   fields: Object,
   dropdownLists: Object,
 });
-
+console.log(pageProps.listLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const bulkActionmode = ref(false);
@@ -332,6 +332,51 @@ const getDropDownListLabel = (f, i) => {
   const label = list.find((l) => l.value === i)?.label || "";
   return t(label);
 };
+
+const sortKey = ref(null);
+const sortDir = ref("asc");
+
+const isSortable = (col) => col?.sortable === true;
+const isSorted = (col) => sortKey.value === col.name;
+
+const sortIcon = (col) => {
+  if (!isSortable(col)) return "";
+  if (!isSorted(col)) return "fa-solid fa-sort";
+  return sortDir.value === "asc"
+    ? "fa-solid fa-sort-up"
+    : "fa-solid fa-sort-down";
+};
+
+const sortBy = (col) => {
+  if (!isSortable(col)) return;
+
+  if (sortKey.value === col.name) {
+    sortDir.value = sortDir.value === "asc" ? "desc" : "asc";
+  } else {
+    sortKey.value = col.name;
+    sortDir.value = "asc";
+  }
+};
+
+const sortedItems = computed(() => {
+  if (!sortKey.value) return pageProps.items;
+
+  return [...pageProps.items].sort((a, b) => {
+    const valA = a[sortKey.value];
+    const valB = b[sortKey.value];
+
+    if (valA == null) return 1;
+    if (valB == null) return -1;
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      return sortDir.value === "asc" ? valA - valB : valB - valA;
+    }
+
+    return sortDir.value === "asc"
+      ? String(valA).localeCompare(String(valB))
+      : String(valB).localeCompare(String(valA));
+  });
+});
 </script>
 
 <template>
@@ -483,8 +528,17 @@ const getDropDownListLabel = (f, i) => {
                 v-for="col in listLayoutColumns || []"
                 :key="col?.name"
                 scope="col"
+                :class="{ sortable: col?.sortable }"
+                @click="sortBy(col)"
               >
-                {{ $t(col.label) }}
+                <span class="th-label">
+                  {{ $t(col.label) }}
+                  <i
+                    v-if="col?.sortable"
+                    :class="sortIcon(col)"
+                    class="sort-icon"
+                  ></i>
+                </span>
               </th>
             </tr>
           </thead>
@@ -492,7 +546,7 @@ const getDropDownListLabel = (f, i) => {
           <tbody>
             <template v-if="meta && meta.total != 0">
               <Link
-                v-for="item in items"
+                v-for="item in sortedItems"
                 :key="item.id"
                 as="tr"
                 class="clickable-row"
