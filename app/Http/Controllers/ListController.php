@@ -30,7 +30,7 @@ class ListController extends Controller
 
       if ($handler instanceof ModuleHandler) {
         $params = request()->all();
-        $params['perPage'] = $params['perPage'] ?? request()->query('perPage', 18);
+        $params['perPage'] = $params['perPage'] ?? request()->query('perPage', 31);
 
         $props = $handler->getListData($params);
       }

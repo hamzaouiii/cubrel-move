@@ -226,37 +226,70 @@
     }
   }
 
-  &__content {
+  &__list {
     //list view
+    position: fixed;
+    top: 8rem;
+    right: 0;
+    bottom: 0;
+    left: 6rem;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    &__table-scroll {
+      flex: 1 1 auto;
+      overflow: auto;
+      margin: 20px 55px;
+      scrollbar-width: thin; // Firefox
+      scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+      border: 3px solid var(--module-color);
+      border-radius: 8px;
+
+      &::-webkit-scrollbar {
+        height: 10px;
+        width: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+
+        &:hover {
+          background-color: color-mix(
+            in srgb,
+            var(--module-color) 55%,
+            rgba(0, 0, 0, 0.35)
+          );
+        }
+      }
+    }
     &__table {
-      margin: 25px 25px;
       font-size: 0.9em;
       font-family: sans-serif;
-      min-width: 400px;
-      width: 95%;
-      border: 2px solid var(--module-color);
-      border-radius: 15px;
+      width: max-content;
+      min-width: 100%;
+
       border-collapse: separate;
       border-spacing: 0;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.374);
-
-      @media (max-width: 1250px) {
-        margin: 25px 10px;
-        width: 99%;
-        font-size: 0.785em;
-      }
-      @media (max-width: 750px) {
-        margin: 25px 10px;
-        width: 99%;
-        font-size: 0.685em;
-      }
       &__bulk-select {
         border-right: 1px solid rgba(211, 211, 211, 0.488);
       }
+      thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+
+        background-color: var(--module-color);
+        color: #ffffff;
+      }
       thead tr {
         background-color: var(--module-color);
-        opacity: 0.8;
         color: #ffffff;
         text-align: left;
       }
@@ -265,14 +298,8 @@
       td {
         padding: 15px 15px;
         cursor: pointer;
-        @media (max-width: 1250px) {
-          padding: 5px;
-        }
-        @media (max-width: 750px) {
-          padding: 2.5px;
-        }
       }
-      tbody tr:nth-of-type(even) {
+      tbody tr:nth-of-type(odd) {
         background-color: #fefefe;
       }
 
@@ -304,7 +331,16 @@
         background-color: #9f9eac69;
       }
     }
+    &__pagination {
+      position: sticky;
+      bottom: 0;
+      padding: 10px 25px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      z-index: 3;
+    }
     //record view
+  }
+  &__record {
     &__section {
       display: flex;
       flex-direction: column;

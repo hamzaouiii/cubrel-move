@@ -312,27 +312,27 @@ function func() {
       </div>
     </div>
 
-    <div class="module-layout__content">
+    <div class="module-layout__record">
       <div
-        class="module-layout__content__section"
+        class="module-layout__record__section"
         v-for="s in recordLayout.sections"
       >
-        <div class="module-layout__content__section__title">
+        <div class="module-layout__record__section__title">
           {{ s.name }}
         </div>
-        <div class="module-layout__content__section__layout">
+        <div class="module-layout__record__section__layout">
           <div
             v-for="f in s.layout"
-            class="module-layout__content__section__layout__field"
+            class="module-layout__record__section__layout__field"
           >
-            <span class="module-layout__content__section__layout__field__label">
+            <span class="module-layout__record__section__layout__field__label">
               {{ $t(f.label) }}:
             </span>
 
             <div
               v-if="!isEditing"
               :class="[
-                'module-layout__content__section__layout__field__content',
+                'module-layout__record__section__layout__field__content',
                 { 'view-uneditable-field': f.readonly },
               ]"
               @click="!f.readonly && enableEditing()"
@@ -343,7 +343,7 @@ function func() {
             </div>
             <div
               :class="[
-                'module-layout__content__section__layout__field__content',
+                'module-layout__record__section__layout__field__content',
                 'editing-mode',
                 { 'uneditable-field': f.readonly },
               ]"

@@ -340,136 +340,136 @@ const getDropDownListLabel = (f, i) => {
   </Head>
 
   <div class="module-layout">
-    <div class="module-layout__header">
-      <div class="module-layout__header__details">
-        <h3 class="module-layout__header__details__title">
-          {{ $t(module.label) }}
-        </h3>
-        <span class="module-layout__header__details__meta">{{
-          recordsNumberPhrase
-        }}</span>
-      </div>
-
-      <div class="module-layout__header__actions" ref="actionDropDownref">
-        <div
-          class="module-layout__header__actions__list"
-          :style="
-            appSettings.use_individual_module_colors == '0'
-              ? { '--module-color': appSettings.primary_color }
-              : { '--module-color': module.color }
-          "
-        >
-          <input
-            type="text"
-            name="search"
-            class="module-layout__header__actions__list__search"
-            :placeholder="$t('modules.actions.search_placeholder')"
-            v-model="search"
-            @input="handleSearchInput"
-            @keydown.enter.prevent="performSearch(1)"
-          />
-
-          <span
-            @click="resetSearchValue()"
-            :class="[
-              'module-layout__header__actions__list__search-reseter',
-              { 'hide-reseter': !search },
-            ]"
-            ><i class="fa-regular fa-circle-xmark"></i>
-          </span>
-
-          <button @click="goToCreateView()">
-            {{ $t("modules.actions.create") }}
-          </button>
-
-          <button @click="toggleActionDropDown">
-            <i
-              :class="
-                showActionDropDown
-                  ? 'fa-solid fa-chevron-up'
-                  : 'fa-solid fa-chevron-down'
-              "
-            ></i>
-          </button>
-
-          <transition name="fade">
-            <ul
-              v-if="showActionDropDown"
-              class="module-layout__header__actions__list__dropdown show"
-            >
-              <li>
-                <Link
-                  class="module-layout__header__actions__list__dropdown__item"
-                  :href="editModuleUrl"
-                >
-                  <i class="fa-solid fa-wrench"></i>
-                  {{ $t("modules.actions.edit_module") }}
-                </Link>
-              </li>
-              <li>
-                <span
-                  class="module-layout__header__actions__list__dropdown__item"
-                  @click="toggleMassUpdateZone()"
-                >
-                  <i class="fa-solid fa-square-pen"></i>
-                  {{ $t("modules.actions.mass_update") }}
-                </span>
-              </li>
-
-              <li>
-                <span
-                  class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
-                  @click.prevent="toggleDeleteZone()"
-                >
-                  <i class="fa-solid fa-trash-can"></i>
-                  {{ $t("modules.actions.mass_delete") }}
-                </span>
-              </li>
-            </ul>
-          </transition>
-        </div>
-      </div>
-    </div>
-
     <div
-      class="module-layout__content"
+      class="module-layout__list"
       :style="
         appSettings.use_individual_module_colors == '0'
           ? { '--module-color': appSettings.primary_color }
           : { '--module-color': module.color }
       "
     >
-      <div>
-        <ListDeleteZone
-          v-if="showDeleteZone"
-          :selectedIds="selectedIds"
-          :meta="meta"
-          :allMatchingSelected="allMatchingSelected"
-          @toggleAll="toggleAll()"
-          @cancelClicked="resetActionZone()"
-          @clearSelection="clearSelection()"
-          @deleteClicked="handleListDelete()"
-        />
+      <div class="module-layout__header">
+        <div class="module-layout__header__details">
+          <h3 class="module-layout__header__details__title">
+            {{ $t(module.label) }}
+          </h3>
+          <span class="module-layout__header__details__meta">{{
+            recordsNumberPhrase
+          }}</span>
+        </div>
 
-        <MassUpdateZone
-          v-else-if="showMassUpdateZone"
-          :selected-ids="selectedIds"
-          :meta="meta"
-          :all-matching-selected="allMatchingSelected"
-          :fields="fields"
-          :filters="pageProps.filters ?? {}"
-          @massUpdate="handleMassUpdate"
-          @toggleAll="toggleAll()"
-          @clearSelection="clearSelection()"
-          @cancelClicked="resetActionZone()"
-        />
-        <table class="module-layout__content__table">
+        <div class="module-layout__header__actions" ref="actionDropDownref">
+          <div
+            class="module-layout__header__actions__list"
+            :style="
+              appSettings.use_individual_module_colors == '0'
+                ? { '--module-color': appSettings.primary_color }
+                : { '--module-color': module.color }
+            "
+          >
+            <input
+              type="text"
+              name="search"
+              class="module-layout__header__actions__list__search"
+              :placeholder="$t('modules.actions.search_placeholder')"
+              v-model="search"
+              @input="handleSearchInput"
+              @keydown.enter.prevent="performSearch(1)"
+            />
+
+            <span
+              @click="resetSearchValue()"
+              :class="[
+                'module-layout__header__actions__list__search-reseter',
+                { 'hide-reseter': !search },
+              ]"
+              ><i class="fa-regular fa-circle-xmark"></i>
+            </span>
+
+            <button @click="goToCreateView()">
+              {{ $t("modules.actions.create") }}
+            </button>
+
+            <button @click="toggleActionDropDown">
+              <i
+                :class="
+                  showActionDropDown
+                    ? 'fa-solid fa-chevron-up'
+                    : 'fa-solid fa-chevron-down'
+                "
+              ></i>
+            </button>
+
+            <transition name="fade">
+              <ul
+                v-if="showActionDropDown"
+                class="module-layout__header__actions__list__dropdown show"
+              >
+                <li>
+                  <Link
+                    class="module-layout__header__actions__list__dropdown__item"
+                    :href="editModuleUrl"
+                  >
+                    <i class="fa-solid fa-wrench"></i>
+                    {{ $t("modules.actions.edit_module") }}
+                  </Link>
+                </li>
+                <li>
+                  <span
+                    class="module-layout__header__actions__list__dropdown__item"
+                    @click="toggleMassUpdateZone()"
+                  >
+                    <i class="fa-solid fa-square-pen"></i>
+                    {{ $t("modules.actions.mass_update") }}
+                  </span>
+                </li>
+
+                <li>
+                  <span
+                    class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
+                    @click.prevent="toggleDeleteZone()"
+                  >
+                    <i class="fa-solid fa-trash-can"></i>
+                    {{ $t("modules.actions.mass_delete") }}
+                  </span>
+                </li>
+              </ul>
+            </transition>
+          </div>
+        </div>
+      </div>
+
+      <ListDeleteZone
+        v-if="showDeleteZone"
+        :selectedIds="selectedIds"
+        :meta="meta"
+        :allMatchingSelected="allMatchingSelected"
+        @toggleAll="toggleAll()"
+        @cancelClicked="resetActionZone()"
+        @clearSelection="clearSelection()"
+        @deleteClicked="handleListDelete()"
+      />
+
+      <MassUpdateZone
+        v-else-if="showMassUpdateZone"
+        :selected-ids="selectedIds"
+        :meta="meta"
+        :all-matching-selected="allMatchingSelected"
+        :fields="fields"
+        :filters="pageProps.filters ?? {}"
+        @massUpdate="handleMassUpdate"
+        @toggleAll="toggleAll()"
+        @clearSelection="clearSelection()"
+        @cancelClicked="resetActionZone()"
+      />
+      <div class="module-layout__list__table-scroll">
+        <table class="module-layout__list__table">
           <thead>
             <tr>
               <th
                 v-if="bulkActionmode"
                 scope="col"
-                class="module-layout__content__table__bulk-select"
+                class="module-layout__list__table__bulk-select"
                 @click.stop
               >
                 <input
@@ -501,7 +501,7 @@ const getDropDownListLabel = (f, i) => {
                 <td
                   v-if="bulkActionmode"
                   @click.stop
-                  class="module-layout__content__table__bulk-select"
+                  class="module-layout__list__table__bulk-select"
                 >
                   <input
                     type="checkbox"
@@ -560,8 +560,9 @@ const getDropDownListLabel = (f, i) => {
           </tbody>
         </table>
       </div>
-
-      <Pagination v-if="meta && meta.total != 0" :meta="meta" />
+      <div class="module-layout__list__pagination">
+        <Pagination v-if="meta && meta.total != 0" :meta="meta" />
+      </div>
     </div>
   </div>
 </template>
