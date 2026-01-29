@@ -18,6 +18,11 @@ return [
   'dropdown_no_results' => 'Keine Ergibnisse',
   'setting_update_success' => 'Die Einstellungen wurden erfolgreich aktualisiert',
   'setting_update_error' => 'Beim Aktualisieren der Einstellungen ist ein Fehler aufgetreten',
+  'tabs' => [
+    'module_settings' => 'Module-Einstellungen',
+    'layouts' => 'Layouts',
+    'fields' => 'Felder',
+  ],
   'modules' => [
     'label' => 'Module',
     'display_label' => 'Anzeigebezeichnung',

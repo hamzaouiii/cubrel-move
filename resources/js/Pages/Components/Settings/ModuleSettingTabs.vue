@@ -25,7 +25,7 @@ const appSettings = usePage().props.appSettings;
       class="settings__module__tabs__item"
       :class="{ 'settings__module__tabs__item--active': activeKey === 'edit' }"
     >
-      Module Settings
+      {{ $t("settings.tabs.module_settings") }}
     </Link>
     <Link
       :href="getUrl('layouts')"
@@ -33,7 +33,7 @@ const appSettings = usePage().props.appSettings;
       :class="{
         'settings__module__tabs__item--active': activeKey === 'layouts',
       }"
-      >Layouts</Link
+      >{{ $t("settings.tabs.layouts") }}</Link
     >
     <Link
       :href="getUrl('fields')"
@@ -41,7 +41,7 @@ const appSettings = usePage().props.appSettings;
       :class="{
         'settings__module__tabs__item--active': activeKey === 'fields',
       }"
-      >Fields</Link
+      >{{ $t("settings.tabs.fields") }}</Link
     >
     <!-- <Link
       :href="getUrl('relationships')"

@@ -18,6 +18,11 @@ return [
   'dropdown_no_results' => 'No results',
   'setting_update_success' => 'The settings have been successfully updated',
   'setting_update_error' => 'An error occurred while updating the settings',
+  'tabs' => [
+    'module_settings' => 'Module Settings',
+    'layouts' => 'Layouts',
+    'fields' => 'Fields',
+  ],
   'modules' => [
     'label' => 'Modules',
     'display_label' => 'Display Label',
