@@ -209,7 +209,6 @@
         cursor: pointer;
         @media (max-width: 780px) {
           font-size: 0.7rem;
-          padding: 0 4px;
         }
         &:hover {
           background-color: color-mix(
@@ -361,6 +360,9 @@
         margin: 20px 60px;
         flex-wrap: wrap;
         gap: 1.25rem;
+        @media (max-width: 750px) {
+          margin: 0;
+        }
 
         &__field {
           display: flex;
@@ -368,7 +370,8 @@
           flex: 1 1 calc(50% - 0.625rem);
 
           &__content {
-            width: 420px;
+            max-width: 420px;
+            min-width: 180px;
             font-size: 1.2rem;
             font-weight: 500;
             border: 2px solid transparent;

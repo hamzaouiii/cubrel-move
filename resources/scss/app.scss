@@ -40,31 +40,31 @@ body {
 .unsupported-device {
   display: none;
 }
-// @media (max-width: 1024px) {
-//   .unsupported-device {
-//     display: flex;
-//     flex-direction: column;
-//     position: fixed;
-//     inset: 0;
-//     z-index: 9999;
-//     place-items: center;
-//     padding: 24px;
-//     background: rgba(0, 0, 0, 0.849);
-//     color: aliceblue;
-//     align-items: center;
-//     justify-content: center;
-//     justify-items: center;
-//     h3 {
-//       color: aliceblue;
-//     }
-//     p {
-//       font-family: "Fira Sans", "Heebo", sans-serif;
-//     }
-//   }
-//   .root {
-//     display: none;
-//   }
-// }
+@media (max-width: 650px) {
+  .unsupported-device {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    place-items: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.849);
+    color: aliceblue;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    h3 {
+      color: aliceblue;
+    }
+    p {
+      font-family: "Fira Sans", "Heebo", sans-serif;
+    }
+  }
+  .root {
+    display: none;
+  }
+}
 
 button,
 input,
