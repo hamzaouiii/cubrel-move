@@ -239,7 +239,6 @@
 
     overflow: hidden;
     &__table-scroll {
-      flex: 1 1 auto;
       overflow: auto;
       margin: 20px 55px;
       scrollbar-width: thin; // Firefox
@@ -335,7 +334,6 @@
       position: sticky;
       bottom: 0;
       padding: 10px 25px;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
       z-index: 3;
     }
     //record view
