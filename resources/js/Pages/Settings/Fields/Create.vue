@@ -32,7 +32,6 @@ const default_values = {
   type: "",
   readonly: false,
   hidden: false,
-  nullable: false,
   required: false,
   searchable: false,
   filterable: false,

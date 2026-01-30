@@ -29,7 +29,6 @@ return [
     'label' => 'Bezeichnung',
     'readonly' => 'Schreibgeschützt',
     'hidden' => 'Ausgeblendet',
-    'nullable' => 'Nullable',
     'required' => 'Pflichtfeld',
     'searchable' => 'Durchsuchbar',
     'filterable' => 'Filterbar',
@@ -40,4 +39,7 @@ return [
     'max_length' => 'Maximale Länge',
     'regex' => 'Regex Regeln',
   ],
+  'validation' => [
+    'is_required' => "ist ein Pflichtfeld"
+  ]
 ];

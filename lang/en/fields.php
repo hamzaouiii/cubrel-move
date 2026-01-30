@@ -31,7 +31,6 @@ return [
     'label' => 'Display Label',
     'readonly' => 'Readonly',
     'hidden' => 'Hidden',
-    'nullable' => 'Nullable',
     'required' => 'Required',
     'searchable' => 'Searchable',
     'filterable' => 'Filterable',
@@ -41,5 +40,8 @@ return [
     'min_length' => 'Minimun Length',
     'max_length' => 'Maximun Length',
     'regex' => 'Regex Rules',
+  ],
+  'validation' => [
+    'is_required' => "field is required!"
   ]
 ];

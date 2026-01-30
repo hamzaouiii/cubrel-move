@@ -31,7 +31,6 @@ const form = useForm({
   label: t(props.metadata.label),
   readonly: props.metadata.readonly,
   hidden: props.metadata.hidden,
-  nullable: props.metadata.nullable,
   required: props.metadata.required,
   searchable: props.metadata.searchable,
   filterable: props.metadata.filterable,
@@ -47,7 +46,6 @@ const isCheckbox = (field) => {
   const map = [
     "readonly",
     "hidden",
-    "nullable",
     "required",
     "searchable",
     "filterable",
