@@ -35,7 +35,6 @@ const pageProps = defineProps({
   fields: Object,
   dropdownLists: Object,
 });
-console.log(pageProps.listLayout);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const bulkActionmode = ref(false);

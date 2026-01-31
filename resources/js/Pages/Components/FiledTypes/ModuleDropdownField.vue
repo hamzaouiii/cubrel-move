@@ -63,7 +63,7 @@ const normalizedOptions = computed(() => {
 
 const selectedOption = computed(
   () =>
-    normalizedOptions.value.find((o) => o.value === props.modelValue) ?? null,
+    normalizedOptions.value.find((o) => o.value === props.modelValue) ?? "---",
 );
 const filteredOptions = computed(() => {
   const q = search.value.trim().toLowerCase();
@@ -134,9 +134,10 @@ onBeforeUnmount(() => {
       }"
       @click="toggle"
     >
-      <span class="module-dropdown__selected">
-        {{ $t(selectedOption?.label) ?? $t("settings.select") }}
+      <span class="module-dropdown__selected" v-if="selectedOption.label">
+        {{ $t(selectedOption.label) }}
       </span>
+      <span class="module-dropdown__selected" v-else> --- </span>
       <i
         class="module-dropdown__icon"
         :class="isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"
@@ -163,6 +164,13 @@ onBeforeUnmount(() => {
         </div>
 
         <ul class="module-dropdown_list">
+          <li
+            class="module-dropdown_option"
+            :class="{ 'is-active': modelValue === '---' }"
+            @click="selectOption('---')"
+          >
+            <div class="module-dropdown_option_label">---</div>
+          </li>
           <li
             v-for="option in filteredOptions"
             :key="option.value"

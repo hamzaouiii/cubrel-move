@@ -90,7 +90,6 @@ const isCheckbox = (field) => {
   const checkboxFields = [
     "readonly",
     "hidden",
-    "nullable",
     "required",
     "searchable",
     "filterable",

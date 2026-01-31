@@ -833,7 +833,7 @@
 
         &:hover {
           border-color: #adb5bd;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 18px 18px rgba(0, 0, 0, 0.05);
         }
       }
       &--dragging &__content {
@@ -853,6 +853,18 @@
         font-weight: 500;
         color: #212529;
         font-size: 14px;
+      }
+      &__flag {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 120px;
+        &__label {
+          font-size: 0.65rem;
+        }
+        &__field {
+          transform: scale(0.8);
+        }
       }
       &__remove {
         background: none;

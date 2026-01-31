@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
+import Checkbox from "../FiledTypes/Checkbox.vue";
 
 const props = defineProps({
   sections: {
@@ -503,6 +504,15 @@ onBeforeUnmount(() => {
                     </span>
                     <span class="editor__columns__item__label">
                       {{ $t(column.label) ?? column.key }}
+                    </span>
+                    <span class="editor__columns__item__flag">
+                      <span class="editor__columns__item__flag__label">{{
+                        $t("layouts.required_field")
+                      }}</span>
+                      <Checkbox
+                        class="editor__columns__item__flag__field"
+                        v-model="column.required"
+                      ></Checkbox>
                     </span>
                     <button
                       @click="

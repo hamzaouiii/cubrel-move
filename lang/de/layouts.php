@@ -28,6 +28,7 @@ return [
   'reset' => 'Zurücksetzen',
   'resetting' => 'Wird zurückgesetzt...',
   'back_to_list' => 'Zurück zu Layouts',
+  'required_field' => 'Pflichtfeld'
 
 
 

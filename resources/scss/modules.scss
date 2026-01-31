@@ -393,7 +393,7 @@
             }
             textarea {
               all: unset;
-              resize: vertical;
+              resize: none;
               padding: 10px;
               width: 100%;
               cursor: text;
@@ -428,6 +428,15 @@
             transition: all 0.3s ease-in-out;
             border: 2px solid var(--module-color);
             border-radius: 5px;
+          }
+          .error {
+            border: 2px solid #dc3545 !important;
+            color: #dc3545 !important;
+            span {
+              position: relative;
+              text-align: right;
+              width: 20px;
+            }
           }
         }
       }

@@ -83,7 +83,6 @@ return [
     ],
   ],
 
-  // unchanged as requested
   'leads' => [
     'label' => 'Leads',
     'fields' => [
@@ -212,20 +211,6 @@ return [
 
   'money' => [
     'label'  => 'Money',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'description' => 'Description',
-      'data'        => 'Data',
-      'created_at'  => 'Created At',
-      'updated_at'  => 'Updated At',
-      'deleted_at'  => 'Deleted At',
-    ],
-  ],
-
-  // new module based on books_cstm table
-  'books' => [
-    'label'  => 'Books',
     'fields' => [
       'id'          => 'ID',
       'name'        => 'Name',

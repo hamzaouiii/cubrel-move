@@ -26,5 +26,6 @@ return [
   'saving'  => 'Saving...',
   'reset' => 'Reset',
   'resetting' => 'Resetting...',
-  'back_to_list' => 'Back to layouts'
+  'back_to_list' => 'Back to layouts',
+  'required_field' => 'Required Field'
 ];

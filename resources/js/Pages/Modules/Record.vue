@@ -35,8 +35,15 @@ const t = proxy.$t;
 
 const form = useForm({ ...props.record });
 const isEditing = ref(false);
+const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
+const appSettings = usePage().props.appSettings;
+
+const isDirty = computed(() => form.isDirty);
+const hasError = computed(() => (field) => {
+  return validationErrors.value.some((item) => item.field === field);
+});
 
 const getFieldType = (field) => {
   const sections = props.recordLayout?.sections;
@@ -62,7 +69,6 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
-const isDirty = computed(() => form.isDirty);
 const enableEditing = () => {
   isEditing.value = true;
 };
@@ -87,20 +93,107 @@ function normalizeDateTime(value) {
   return d.toISOString().slice(0, 19).replace("T", " ");
 }
 
+const getRequiredFields = () => {
+  const sections = props.recordLayout?.sections;
+  let allRequiredFields = [];
+
+  for (const section of sections) {
+    const requiredFields = section.layout?.filter(
+      (item) => item.required === true,
+    );
+    if (requiredFields?.length) {
+      allRequiredFields.push(...requiredFields);
+    }
+  }
+  return allRequiredFields;
+};
+
+const getRequiredFieldsFromPayload = (payload) => {
+  return getRequiredFields().filter((item) =>
+    payload.hasOwnProperty(item.name),
+  );
+};
+
+// This ended up being way too complex due to several data manupulations for different data types, I am sure there is a better way to achieve this
+const validateRequiredFields = (payload) => {
+  // upon saving if a field is required and empty then immediately add to validationErrors[] - no need to check anything else. This only validates empty fields that should not be empty. Meaning a record cannot be edited or saved without having to solve this issue. In reality this should never happen since same validation happens upon creating new records.
+  requiredEmptyFields.value.map((item) => {
+    validationErrors.value.push({
+      field: item,
+      type: "required",
+    });
+    clearAllAlerts();
+    error(t(item) + " " + t("fields.validation.is_required"));
+  });
+
+  // Now we need to check the payload, if a field that has had a value before and is now empty, we need to stop the saving proccess by adding to validationErrors[]
+  const fields = getRequiredFieldsFromPayload(payload);
+  fields.map((item) => {
+    if (!payload[item.name]) {
+      validationErrors.value.push({
+        field: item.name,
+        type: "required",
+      });
+      clearAllAlerts();
+
+      error(t(item.label) + " " + t("fields.validation.is_required"));
+    }
+  });
+};
+
+const emptyFields = computed(() => {
+  return Object.entries(form)
+    .filter(([key, value]) => {
+      // Check if value is empty
+      return (
+        value === "" ||
+        value === "---" ||
+        value === null ||
+        value === undefined ||
+        (Array.isArray(value) && value.length === 0)
+      );
+    })
+    .map(([key]) => key);
+});
+const requiredEmptyFields = computed(() => {
+  const requiredFields = getRequiredFields();
+  const requiredFieldNames = requiredFields.map((field) => field.name);
+
+  return requiredFieldNames.filter((fieldName) =>
+    emptyFields.value.includes(fieldName),
+  );
+});
+
+const clearAllValidartionErrors = () => {
+  clearAllAlerts();
+  validationErrors.value = [];
+};
+
+const removeValidationError = (field) => {
+  if (form[field].length >= 3) {
+    validationErrors.value = validationErrors.value.filter(
+      (item) => item.field !== field,
+    );
+  }
+};
+
 const saveRecord = () => {
   info(t("modules.actions.updating"));
+
   const payload = getChangedData(props.record, form);
   if (Object.keys(payload).length === 0) {
     isEditing.value = false;
     return;
   }
-
+  validateRequiredFields(payload);
+  if (validationErrors.value.length > 0) {
+    return;
+  }
   const moduleSlug = props.module.slug ?? props.module;
   const url = `/${moduleSlug}/${props.record.id}`;
   form
     .transform((data) => {
       const payload = { ...data };
-
       return payload;
     })
     .put(url, {
@@ -162,19 +255,8 @@ function handleKeydown(e) {
 const cancelEditing = () => {
   form.reset();
   isEditing.value = false;
+  clearAllValidartionErrors();
 };
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutsideActionDropDown);
-  window.addEventListener("keydown", handleKeydown);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutsideActionDropDown);
-  window.removeEventListener("keydown", handleKeydown);
-});
-
-const appSettings = usePage().props.appSettings;
 
 const displayValueFor = (f) => {
   const val = props.record[f.name];
@@ -201,13 +283,10 @@ const getTextareaRows = (f) => {
   }
   return 5;
 };
+
 const isDropDown = (f) => {
   return f.type === "dropdown";
 };
-
-useUnsavedChangesGuard({
-  getIsDirty: () => isDirty.value,
-});
 
 const getFieldDropDownList = (f) => {
   const field = props.fields.find((field) => field.name === f.name);
@@ -218,13 +297,27 @@ const getFieldDropDownList = (f) => {
 
 const getDropDownListLabel = (f) => {
   const list = getFieldDropDownList(f);
-  const label = list.find((l) => l.value === form[f.name])?.label || "-";
+  const label = list.find((l) => l.value === form[f.name])?.label || "---";
   return t(label);
 };
 
-function func() {
-  console.log("runnig");
-}
+onMounted(() => {
+  document.addEventListener("click", handleClickOutsideActionDropDown);
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutsideActionDropDown);
+  window.removeEventListener("keydown", handleKeydown);
+});
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
+
+// required validation works on text and dropdown fields.
+// needs to be solved for datetime and date fields
+// styling of datetime and date still needs polishing.
+// on error style of  dropdown fields need polishing
 </script>
 
 <template>
@@ -346,6 +439,7 @@ function func() {
                 'module-layout__record__section__layout__field__content',
                 'editing-mode',
                 { 'uneditable-field': f.readonly },
+                { error: hasError(f.name) },
               ]"
               v-else
             >
@@ -359,23 +453,35 @@ function func() {
                   :options="getFieldDropDownList(f)"
                   v-model="form[f.name]"
                 ></ModuleDropdownField>
+                <span v-if="hasError(f.name)">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                </span>
               </template>
               <template v-else-if="f.type == 'longtext'">
                 <textarea
                   v-model="form[f.name]"
                   :rows="getTextareaRows(f)"
+                  @input="removeValidationError(f.name)"
                 ></textarea>
+                <span v-if="hasError(f.name)">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                </span>
               </template>
               <template v-else-if="f.type == 'datetime'">
                 <DateTime v-model="form[f.name]" type="datetime" />
-                <!-- <input
-                  @change="func()"
-                  type="datetime-local"
-                  v-model="form[f.name]"
-                /> -->
+              </template>
+              <template v-else-if="f.type == 'date'">
+                <DateTime v-model="form[f.name]" type="date" />
               </template>
               <template v-else>
-                <input type="text" v-model="form[f.name]" />
+                <input
+                  type="text"
+                  v-model="form[f.name]"
+                  @input="removeValidationError(f.name)"
+                />
+                <span v-if="hasError(f.name)">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                </span>
               </template>
             </div>
           </div>
