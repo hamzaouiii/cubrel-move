@@ -149,7 +149,10 @@ onBeforeUnmount(() => {
             isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
           "
         ></i>
-        <i v-if="hasError" class="fa-solid fa-circle-exclamation"></i>
+        <i
+          v-if="hasError"
+          class="error-icon fa-solid fa-circle-exclamation"
+        ></i>
       </span>
     </div>
 

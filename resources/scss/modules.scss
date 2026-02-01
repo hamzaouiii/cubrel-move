@@ -431,16 +431,19 @@
           }
           .error {
             border: 2px solid #dc3545 !important;
+            display: flex;
+          }
+          .error-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .error-icon {
+            position: relative;
+            text-align: right;
+            width: 20px;
+            padding: 5px;
             color: #dc3545;
-            > span {
-              position: relative;
-              text-align: right;
-              display: flex;
-              width: 20px;
-              justify-content: center;
-              padding: 5px;
-              align-items: center;
-            }
           }
         }
       }

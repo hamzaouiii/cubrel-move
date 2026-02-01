@@ -176,12 +176,18 @@ const clearAllValidartionErrors = () => {
   validationErrors.value = [];
 };
 
-const removeValidationError = (field) => {
+const removeValidationErrorText = (field) => {
   if (form[field].length >= 3) {
     validationErrors.value = validationErrors.value.filter(
       (item) => item.field !== field,
     );
   }
+};
+
+const removeValidationError = (field) => {
+  validationErrors.value = validationErrors.value.filter(
+    (item) => item.field !== field,
+  );
 };
 
 const saveRecord = () => {
@@ -324,7 +330,7 @@ useUnsavedChangesGuard({
 // required validation works on text and dropdown fields.
 // needs to be solved for datetime and date fields
 // styling of datetime and date still needs polishing.
-// on error style of  dropdown fields need polishing
+// on error style of dropdown fields need polishing
 </script>
 
 <template>
@@ -458,32 +464,43 @@ useUnsavedChangesGuard({
                   :options="getFieldDropDownList(f)"
                   v-model="form[f.name]"
                   :hasError="hasError(f.name)"
+                  @click="removeValidationError(f.name)"
                 ></ModuleDropdownField>
               </template>
               <template v-else-if="f.type == 'longtext'">
                 <textarea
                   v-model="form[f.name]"
                   :rows="getTextareaRows(f)"
-                  @input="removeValidationError(f.name)"
+                  @input="removeValidationErrorText(f.name)"
                 ></textarea>
-                <span v-if="hasError(f.name)">
-                  <i class="fa-solid fa-circle-exclamation"></i>
+                <span v-if="hasError(f.name)" class="error-icon-container">
+                  <i class="error-icon fa-solid fa-circle-exclamation"></i>
                 </span>
               </template>
               <template v-else-if="f.type == 'datetime'">
-                <DateTime v-model="form[f.name]" type="datetime" />
+                <DateTime
+                  v-model="form[f.name]"
+                  type="datetime"
+                  :error="hasError(f.name)"
+                  @click="removeValidationError(f.name)"
+                />
               </template>
               <template v-else-if="f.type == 'date'">
-                <DateTime v-model="form[f.name]" type="date" />
+                <DateTime
+                  v-model="form[f.name]"
+                  type="date"
+                  :error="hasError(f.name)"
+                  @click="removeValidationError(f.name)"
+                />
               </template>
               <template v-else>
                 <input
                   type="text"
                   v-model="form[f.name]"
-                  @input="removeValidationError(f.name)"
+                  @input="removeValidationErrorText(f.name)"
                 />
-                <span v-if="hasError(f.name)">
-                  <i class="fa-solid fa-circle-exclamation"></i>
+                <span v-if="hasError(f.name)" class="error-icon-container">
+                  <i class="error-icon fa-solid fa-circle-exclamation"></i>
                 </span>
               </template>
             </div>
