@@ -278,6 +278,10 @@ const displayValueFor = (f) => {
   if (f.type === "datetime") {
     return formatDateTime(val, appSettings);
   }
+  if (f.type === "date") {
+    return formatDateTime(val, appSettings);
+  }
+
   if (f.type === "longtext") {
     if (val.length > 62) {
       return val.substring(0, 64) + "...";
