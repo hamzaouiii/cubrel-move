@@ -43,6 +43,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  hasError: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
@@ -138,10 +142,15 @@ onBeforeUnmount(() => {
         {{ $t(selectedOption.label) }}
       </span>
       <span class="module-dropdown__selected" v-else> --- </span>
-      <i
-        class="module-dropdown__icon"
-        :class="isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"
-      ></i>
+
+      <span class="module-dropdown__icon">
+        <i
+          :class="
+            isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
+          "
+        ></i>
+        <i v-if="hasError" class="fa-solid fa-circle-exclamation"></i>
+      </span>
     </div>
 
     <transition name="dropdown-fade">

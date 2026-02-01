@@ -40,6 +40,9 @@ return [
     'regex' => 'Regex Regeln',
   ],
   'validation' => [
-    'is_required' => "ist ein Pflichtfeld"
+    'is_required' => "ist ein Pflichtfeld",
+    'is_required_several' => "Mehrere Pflichtfelder sind noch leer!"
+
+
   ]
 ];

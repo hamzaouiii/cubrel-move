@@ -42,6 +42,7 @@ return [
     'regex' => 'Regex Rules',
   ],
   'validation' => [
-    'is_required' => "field is required!"
+    'is_required' => "field is required!",
+    'is_required_several' => "Multiple required fields are still empty!"
   ]
 ];

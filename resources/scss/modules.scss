@@ -224,7 +224,6 @@
       }
     }
   }
-
   &__list {
     //list view
     position: fixed;
@@ -373,6 +372,7 @@
             max-width: 420px;
             min-width: 180px;
             font-size: 1.2rem;
+            min-height: 1.3rem;
             font-weight: 500;
             border: 2px solid transparent;
             display: flex;
@@ -381,10 +381,7 @@
               border-bottom: 2px solid var(--module-color);
               cursor: pointer;
             }
-            span {
-              padding: 10px;
-              width: 100%;
-            }
+
             input {
               all: unset;
               width: 100%;
@@ -405,6 +402,7 @@
             border: none !important;
             cursor: not-allowed;
             border-radius: 8px;
+            padding: 10px;
             span {
               cursor: not-allowed;
             }
@@ -416,6 +414,8 @@
           .view-uneditable-field {
             background-color: rgb(248, 248, 248);
             cursor: not-allowed;
+            padding: 10px;
+
             border-radius: 8px;
             span {
               cursor: not-allowed;
@@ -431,8 +431,8 @@
           }
           .error {
             border: 2px solid #dc3545 !important;
-            color: #dc3545 !important;
-            span {
+            color: #dc3545;
+            > span {
               position: relative;
               text-align: right;
               width: 20px;

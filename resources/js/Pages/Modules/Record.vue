@@ -88,6 +88,7 @@ const getChangedData = (original, form) => {
 
   return changed;
 };
+
 function normalizeDateTime(value) {
   const d = new Date(value);
   return d.toISOString().slice(0, 19).replace("T", " ");
@@ -114,37 +115,9 @@ const getRequiredFieldsFromPayload = (payload) => {
   );
 };
 
-// This ended up being way too complex due to several data manupulations for different data types, I am sure there is a better way to achieve this
-const validateRequiredFields = (payload) => {
-  // upon saving if a field is required and empty then immediately add to validationErrors[] - no need to check anything else. This only validates empty fields that should not be empty. Meaning a record cannot be edited or saved without having to solve this issue. In reality this should never happen since same validation happens upon creating new records.
-  requiredEmptyFields.value.map((item) => {
-    validationErrors.value.push({
-      field: item,
-      type: "required",
-    });
-    clearAllAlerts();
-    error(t(item) + " " + t("fields.validation.is_required"));
-  });
-
-  // Now we need to check the payload, if a field that has had a value before and is now empty, we need to stop the saving proccess by adding to validationErrors[]
-  const fields = getRequiredFieldsFromPayload(payload);
-  fields.map((item) => {
-    if (!payload[item.name]) {
-      validationErrors.value.push({
-        field: item.name,
-        type: "required",
-      });
-      clearAllAlerts();
-
-      error(t(item.label) + " " + t("fields.validation.is_required"));
-    }
-  });
-};
-
 const emptyFields = computed(() => {
   return Object.entries(form)
     .filter(([key, value]) => {
-      // Check if value is empty
       return (
         value === "" ||
         value === "---" ||
@@ -155,6 +128,7 @@ const emptyFields = computed(() => {
     })
     .map(([key]) => key);
 });
+
 const requiredEmptyFields = computed(() => {
   const requiredFields = getRequiredFields();
   const requiredFieldNames = requiredFields.map((field) => field.name);
@@ -163,6 +137,40 @@ const requiredEmptyFields = computed(() => {
     emptyFields.value.includes(fieldName),
   );
 });
+
+// This ended up being way too complex due to several data manupulations for different data types, I am sure there is a better way to achieve this
+const validateRequiredFields = (payload) => {
+  // upon saving if a field is required and empty then immediately add to validationErrors[] - no need to check anything else. This only validates empty fields that should not be empty. Meaning a record cannot be edited or saved without having to solve this issue. In reality this should never happen since same validation happens upon creating new records.
+  requiredEmptyFields.value.map((item) => {
+    validationErrors.value.push({
+      field: item,
+      type: "required",
+    });
+  });
+
+  // Now we need to check the payload, if a field that has had a value before and is now empty, we need to stop the saving proccess by adding to validationErrors[]
+  const fields = getRequiredFieldsFromPayload(payload);
+  fields.map((item) => {
+    if (!payload[item.name]) {
+      validationErrors.value.push({
+        field: item.label,
+        type: "required",
+      });
+    }
+  });
+  if (validationErrors.value.length > 1) {
+    clearAllAlerts();
+    error(t("fields.validation.is_required_several"));
+  } else if (validationErrors.value.length === 1) {
+    clearAllAlerts();
+    console.log(validationErrors.value);
+    error(
+      t(validationErrors.value[0].field) +
+        " " +
+        t("fields.validation.is_required"),
+    );
+  }
+};
 
 const clearAllValidartionErrors = () => {
   clearAllAlerts();
@@ -430,9 +438,7 @@ useUnsavedChangesGuard({
               ]"
               @click="!f.readonly && enableEditing()"
             >
-              <span>
-                {{ displayValueFor(f) }}
-              </span>
+              {{ displayValueFor(f) }}
             </div>
             <div
               :class="[
@@ -452,10 +458,8 @@ useUnsavedChangesGuard({
                 <ModuleDropdownField
                   :options="getFieldDropDownList(f)"
                   v-model="form[f.name]"
+                  :hasError="hasError(f.name)"
                 ></ModuleDropdownField>
-                <span v-if="hasError(f.name)">
-                  <i class="fa-solid fa-circle-exclamation"></i>
-                </span>
               </template>
               <template v-else-if="f.type == 'longtext'">
                 <textarea
