@@ -163,7 +163,6 @@ const validateRequiredFields = (payload) => {
     error(t("fields.validation.is_required_several"));
   } else if (validationErrors.value.length === 1) {
     clearAllAlerts();
-    console.log(validationErrors.value);
     error(
       t(validationErrors.value[0].field) +
         " " +

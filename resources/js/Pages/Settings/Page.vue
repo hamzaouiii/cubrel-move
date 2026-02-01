@@ -22,7 +22,6 @@ const props = defineProps({
   datetimeFormatOptions: { type: Array, default: [] },
   timezoneOptions: { type: Array, default: [] },
 });
-console.log(props.datetimeFormatOptions);
 const page = usePage();
 const module = computed(() => page.props.item || page.props);
 const appSettings = usePage().props.appSettings;
