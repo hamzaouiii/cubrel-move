@@ -13,10 +13,18 @@ return new class extends Migration
    */
   public function getTables()
   {
-    return DB::table('modules')
-      ->where('is_active', 1)
-      ->whereNotNull('table_name')
-      ->pluck('table_name');
+    return
+      [
+        'accounts',
+        'contacts',
+        'leads',
+        'invoices',
+        'quotes',
+        'cases',
+        'emails',
+        'money',
+        'inquiries'
+      ];
   }
 
   public function up(): void

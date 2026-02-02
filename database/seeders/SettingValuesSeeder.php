@@ -1,0 +1,198 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+
+
+class SettingValuesSeeder extends Seeder
+{
+  /**
+   * Run the database seeds.
+   */
+  public function run(): void
+  {
+    DB::table('setting_values')->insert([
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'locale',
+        'key' => 'app_locale',
+        'value' => 'en',
+        'label' => 'settings.fields.app_locale',
+        'type' => 'lang_switcher',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'locale',
+        'key' => 'date_format',
+        'value' => 'Y-m-d',
+        'label' => 'settings.fields.date_format',
+        'type' => 'date',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'languages',
+        'key' => 'show_language_switcher',
+        'value' => '1',
+        'label' => 'settings.fields.show_language_switcher',
+        'type' => 'bool',
+        'autoload' => 0,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
+        'key' => 'border_radius',
+        'value' => '10',
+        'label' => 'settings.fields.border_radius',
+        'type' => 'int',
+        'autoload' => 0,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'languages',
+        'key' => 'enabled_languages',
+        'value' => json_encode(["de", "en"]),
+        'label' => 'settings.fields.enabled_languages',
+        'type' => 'json',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
+        'key' => 'secondary_color',
+        'value' => '#3498db',
+        'label' => 'settings.fields.secondary_color',
+        'type' => 'color',
+        'autoload' => 0,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
+        'key' => 'theme',
+        'value' => 'dark',
+        'label' => 'settings.fields.theme',
+        'type' => 'theme_switcher',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'locale',
+        'key' => 'default_locale',
+        'value' => 'de_DE',
+        'label' => 'settings.fields.default_locale',
+        'type' => 'string',
+        'autoload' => 0,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
+        'key' => 'primary_color',
+        'value' => '#3498db',
+        'label' => 'settings.fields.primary_color',
+        'type' => 'color',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
+        'key' => 'table_striped_rows',
+        'value' => '1',
+        'label' => 'settings.fields.table_striped_rows',
+        'type' => 'bool',
+        'autoload' => 0,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'languages',
+        'key' => 'default_language',
+        'value' => 'de',
+        'label' => 'settings.fields.default_language',
+        'type' => 'string',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'languages',
+        'key' => 'fallback_language',
+        'value' => 'en',
+        'label' => 'settings.fields.fallback_language',
+        'type' => 'string',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'locale',
+        'key' => 'datetime_format',
+        'value' => 'l, d.m.Y H:i',
+        'label' => 'settings.fields.datetime_format',
+        'type' => 'datetime',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
+        'key' => 'use_individual_module_colors',
+        'value' => '1',
+        'label' => 'settings.fields.use_individual_module_colors',
+        'type' => 'bool',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'locale',
+        'key' => 'timezone',
+        'value' => 'Europe/Berlin',
+        'label' => 'settings.fields.timezone',
+        'type' => 'timezone',
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'locale',
+        'key' => 'first_day_of_week',
+        'value' => '1',
+        'label' => 'settings.fields.first_day_of_week',
+        'type' => 'int',
+        'autoload' => 0,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+    ]);
+  }
+}
