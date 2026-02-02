@@ -503,7 +503,12 @@ onBeforeUnmount(() => {
                       <i class="fa-solid fa-grip-vertical"></i>
                     </span>
                     <span class="editor__columns__item__label">
-                      {{ $t(column.label) ?? column.key }}
+                      <span>{{ $t(column.label) ?? column.key }}</span>
+                      <span
+                        v-if="column.readonly"
+                        class="editor__columns__item__label__flag"
+                        >{{ $t("fields.metadata.readonly") }}</span
+                      >
                     </span>
                     <span class="editor__columns__item__flag">
                       <span class="editor__columns__item__flag__label">{{

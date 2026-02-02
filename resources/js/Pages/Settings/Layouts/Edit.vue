@@ -261,7 +261,10 @@ useUnsavedChangesGuard({
 
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--secondary-color': appSettings.secondary_color,
+    }"
   >
     <div class="settings__header">
       <div class="settings__header__title">
