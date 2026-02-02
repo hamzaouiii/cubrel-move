@@ -15,7 +15,7 @@ const props = defineProps({
   item: Object,
   setting_modules: Object,
 });
-
+console.log(props.item);
 const page = usePage();
 const module = computed(() => page.props.item || page.props);
 const createUrl = computed(() => {
@@ -24,7 +24,7 @@ const createUrl = computed(() => {
 </script>
 <template>
   <Head>
-    <title>{{ item.label }} - {{ $t("settings.label") }}</title>
+    <title>{{ $t(item.label) }} - {{ $t("settings.label") }}</title>
   </Head>
   <div
     class="settings"

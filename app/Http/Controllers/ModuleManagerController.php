@@ -11,12 +11,15 @@ use App\Services\ModuleScaffolder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Filesystem\Filesystem;
+use App\Models\Settings\Settings;
 
 
 class ModuleManagerController extends Controller
 {
   public function index(Request $request)
   {
+    $item = Settings::getItem('customisation', 'modules');
+
     $modules = Module::query()
       ->where('is_active', 1)
       ->with([
@@ -26,7 +29,7 @@ class ModuleManagerController extends Controller
       ])
       ->orderBy('id')
       ->get();
-    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
+
 
     return Inertia::render('Settings/Modules/List', [
       'item'     => $item,

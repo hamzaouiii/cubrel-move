@@ -8,7 +8,7 @@ import {
   watch,
 } from "vue";
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
-import { formatDateTime } from "@/utils/datetime";
+import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 
@@ -575,6 +575,9 @@ const sortedItems = computed(() => {
                     v-else-if="col.type === 'datetime' && item[col.name]"
                   >
                     {{ formatDateTime(item[col.name], appSettings) }}
+                  </template>
+                  <template v-else-if="col.type === 'date' && item[col.name]">
+                    {{ formatDate(item[col.name], appSettings) }}
                   </template>
                   <template
                     v-else-if="col.type === 'dropdown' && item[col.name]"

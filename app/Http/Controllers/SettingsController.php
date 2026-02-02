@@ -15,7 +15,6 @@ class SettingsController extends Controller
 {
   public function index()
   {
-    // $settings = Settings::all();
     $settings = Settings::allActive();
     return Inertia::render('Settings/List', [
       'settings'     => $settings
@@ -28,10 +27,12 @@ class SettingsController extends Controller
 
     $values = SettingValue::where('setting_item',  $slug)
       ->where('autoload', 1)
+      ->orderBy('key')
       ->get();
     return Inertia::render('Settings/Page', [
       'item' => $settingsItem,
       'values' => $values,
+      'dateFormatOptions' => $this->dateFormatOptions(),
       'datetimeFormatOptions' => $this->datetimeFormatOptions(),
       'timezoneOptions' => $this->timezoneOptions(),
     ]);
@@ -113,5 +114,28 @@ class SettingsController extends Controller
     usort($options, fn($a, $b) => strcmp($a['label'], $b['label']));
 
     return $options;
+  }
+
+  private function dateFormatOptions(): array
+  {
+    $formatsMap = config('date_formats');
+    $example = Carbon::create(2025, 12, 11);
+
+    $tz = SettingValue::query()
+      ->where('key', 'timezone')
+      ->value('value')
+      ?: config('app.timezone', 'UTC');
+
+    $example->locale(app()->getLocale())->setTimezone($tz);
+
+    return collect($formatsMap)->map(function ($previewFormat, $phpFormat) use ($example) {
+      $preview = $example->copy()->isoFormat($previewFormat);
+
+      return [
+        'value'       => $phpFormat,
+        'label'       => $preview,
+        'description' => "({$phpFormat})",
+      ];
+    })->values()->all();
   }
 }

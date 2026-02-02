@@ -8,7 +8,7 @@ import {
   onBeforeUnmount,
   getCurrentInstance,
 } from "vue";
-import { formatDateTime } from "@/utils/datetime";
+import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
@@ -279,7 +279,7 @@ const displayValueFor = (f) => {
     return formatDateTime(val, appSettings);
   }
   if (f.type === "date") {
-    return formatDateTime(val, appSettings);
+    return formatDate(val, appSettings);
   }
 
   if (f.type === "longtext") {

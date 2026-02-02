@@ -19,6 +19,7 @@ const t = proxy.$t;
 const props = defineProps({
   item: Object,
   values: Object,
+  dateFormatOptions: { type: Array, default: [] },
   datetimeFormatOptions: { type: Array, default: [] },
   timezoneOptions: { type: Array, default: [] },
 });
@@ -43,6 +44,7 @@ const inputTypeFor = (type) => {
   if (type === "color") return "color";
   if (type === "json") return "multiselect";
   if (type === "int") return "number";
+  if (type === "date") return "date";
   if (type === "datetime") return "datetime";
   if (type === "timezone") return "timezone";
   return "text";
@@ -100,6 +102,13 @@ const isDirty = () => form.isDirty;
             <DropdownField
               v-model="form.values[index].value"
               :options="datetimeFormatOptions"
+            />
+          </template>
+
+          <template v-else-if="inputTypeFor(i.type) === 'date'">
+            <DropdownField
+              v-model="form.values[index].value"
+              :options="dateFormatOptions"
             />
           </template>
           <template v-else-if="inputTypeFor(i.type) === 'timezone'">

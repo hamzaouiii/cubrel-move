@@ -66,3 +66,14 @@ export function formatDateTime(value, settings) {
 
   return dayjs(value).tz(tz).locale(locale).format(fmt);
 }
+
+export function formatDate(value, settings) {
+  if (!value) return "";
+
+  const phpFmt = settings?.date_format || "Y-m-d";
+  const fmt = PHP_TO_DAYJS[phpFmt] || "YYYY-MM-DD";
+
+  const locale = normalizeLocale(settings?.app_locale);
+
+  return dayjs(value).locale(locale).format(fmt);
+}
