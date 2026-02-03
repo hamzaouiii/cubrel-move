@@ -177,6 +177,11 @@ const onCollapserMouseLeave = () => {
 
     <div class="sidebar__footer"></div>
   </aside>
+  <div
+    v-if="!collapsedSidebar"
+    @click="toggleSidebar"
+    class="sidebar__overlay"
+  ></div>
 
   <AppTooltip
     :show="tooltip.show"
