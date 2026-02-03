@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
-
+import Checkbox from "../FiledTypes/Checkbox.vue";
 const props = defineProps({
   columns: {
     type: Array,
@@ -267,6 +267,9 @@ onBeforeUnmount(() => {
               <span class="editor__available-fields__item__label">
                 {{ $t(field.label) ?? field.key }}
               </span>
+              <span class="editor__available-fields__item__type">
+                {{ $t("fields.types." + field.type) }}
+              </span>
             </li>
 
             <!-- Drop zone *after* this item -->
@@ -339,11 +342,15 @@ onBeforeUnmount(() => {
                       <span class="editor__columns__item__label">
                         {{ $t(col.label) ?? col.key }}
                       </span>
-                      <span
-                        v-if="col.sortable"
-                        class="editor__columns__item__label__flag"
-                        >{{ $t("fields.metadata.sortable") }}</span
-                      >
+                      <span class="editor__columns__item__flag">
+                        <span class="editor__columns__item__flag__label">{{
+                          $t("fields.metadata.sortable")
+                        }}</span>
+                        <Checkbox
+                          class="editor__columns__item__flag__field"
+                          v-model="col.sortable"
+                        ></Checkbox>
+                      </span>
                       <button
                         class="editor__columns__item__remove"
                         type="button"

@@ -337,6 +337,9 @@ const stopGhostAnimation = () => {
 };
 
 const emitUpdatedSections = () => {
+  console.log(internalSections.value);
+  console.log(filteredAvailableFields.value);
+
   emit("update:sections", internalSections.value);
 };
 
@@ -395,6 +398,9 @@ onBeforeUnmount(() => {
             </span>
             <span class="editor__available-fields__item__label">
               {{ $t(field.label) ?? field.key }}
+            </span>
+            <span class="editor__available-fields__item__type">
+              {{ $t("fields.types." + field.type) }}
             </span>
           </div>
 
@@ -504,6 +510,7 @@ onBeforeUnmount(() => {
                     </span>
                     <span class="editor__columns__item__label">
                       <span>{{ $t(column.label) ?? column.key }}</span>
+
                       <span
                         v-if="column.readonly"
                         class="editor__columns__item__label__flag"

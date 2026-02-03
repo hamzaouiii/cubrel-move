@@ -672,6 +672,14 @@
         color: #212529;
         flex: 1;
       }
+      &__type {
+        border: 1px solid darkcyan;
+        padding: 2.5px;
+        font-size: 0.7rem;
+        border-radius: 5px;
+        color: darkcyan;
+        background-color: color-mix(in srgb, darkcyan 10%, rgb(255, 255, 255));
+      }
     }
     &__no-fields {
       text-align: center;
@@ -875,12 +883,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 120px;
+
+        width: 80px;
         &__label {
           font-size: 0.65rem;
         }
         &__field {
-          transform: scale(0.8);
+          transform: scale(0.75);
         }
       }
       &__remove {
