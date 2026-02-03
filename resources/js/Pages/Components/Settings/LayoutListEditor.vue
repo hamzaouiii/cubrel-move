@@ -22,7 +22,7 @@ watch(
   (val) => {
     internalColumns.value = [...val];
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch(
@@ -30,7 +30,7 @@ watch(
   (val) => {
     internalAvailable.value = [...val];
   },
-  { deep: true }
+  { deep: true },
 );
 
 const { proxy } = getCurrentInstance();
@@ -56,10 +56,10 @@ const ghostLabel = computed(() => {
   const { list, index } = dragging.value;
   if (list === "available") {
     const item = internalAvailable.value[index];
-    return item ? t(item.label) ?? item.key : "";
+    return item ? (t(item.label) ?? item.key) : "";
   } else {
     const item = internalColumns.value[index];
-    return item ? t(item.label) ?? item.key : "";
+    return item ? (t(item.label) ?? item.key) : "";
   }
 });
 
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
             :class="{
               'editor__empty-drop-zone--active': isDropZoneActive(
                 'available',
-                0
+                0,
               ),
             }"
             @dragover="setDragOver('available', 0, $event)"
@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
               :class="{
                 'editor__available-fields__item--dragging': isItemDragging(
                   'available',
-                  index
+                  index,
                 ),
               }"
               draggable="true"
@@ -275,7 +275,7 @@ onBeforeUnmount(() => {
               :class="{
                 'lle-drop-zone--active': isDropZoneActive(
                   'available',
-                  index + 1
+                  index + 1,
                 ),
               }"
               @dragover="setDragOver('available', index + 1, $event)"
@@ -305,7 +305,7 @@ onBeforeUnmount(() => {
                   :class="{
                     'editor__columns__drop-zone--active': isDropZoneActive(
                       'columns',
-                      0
+                      0,
                     ),
                   }"
                   @dragover="setDragOver('columns', 0, $event)"
@@ -322,7 +322,7 @@ onBeforeUnmount(() => {
                     :class="{
                       'editor__columns__item--dragging': isItemDragging(
                         'columns',
-                        index
+                        index,
                       ),
                     }"
                   >
@@ -339,6 +339,11 @@ onBeforeUnmount(() => {
                       <span class="editor__columns__item__label">
                         {{ $t(col.label) ?? col.key }}
                       </span>
+                      <span
+                        v-if="col.sortable"
+                        class="editor__columns__item__label__flag"
+                        >{{ $t("fields.metadata.sortable") }}</span
+                      >
                       <button
                         class="editor__columns__item__remove"
                         type="button"
@@ -355,7 +360,7 @@ onBeforeUnmount(() => {
                       :class="{
                         'editor__columns__drop-zone--active': isDropZoneActive(
                           'columns',
-                          index + 1
+                          index + 1,
                         ),
                       }"
                       @dragover="setDragOver('columns', index + 1, $event)"
