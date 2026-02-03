@@ -337,9 +337,6 @@ const stopGhostAnimation = () => {
 };
 
 const emitUpdatedSections = () => {
-  console.log(internalSections.value);
-  console.log(filteredAvailableFields.value);
-
   emit("update:sections", internalSections.value);
 };
 
@@ -358,7 +355,9 @@ onBeforeUnmount(() => {
     <div class="editor__container">
       <div class="editor__container__sidebar">
         <div class="editor__container__sidebar__header">
-          <h5>{{ $t("layouts.available_fields") }}</h5>
+          <span class="editor__container__sidebar__header__title">{{
+            $t("layouts.available_fields")
+          }}</span>
           <small>{{ $t("layouts.drag_to_sections") }}</small>
         </div>
 
@@ -415,7 +414,9 @@ onBeforeUnmount(() => {
 
       <div class="editor__container__main">
         <div class="editor__container__main__header">
-          <h3>{{ $t("layouts.record_sections") }}</h3>
+          <div class="editor__container__main__header__title">
+            {{ $t("layouts.record_sections") }}
+          </div>
           <button
             @click="addNewSection"
             class="editor__container__main__header__btn btn"

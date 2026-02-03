@@ -226,7 +226,9 @@ onBeforeUnmount(() => {
     <div class="editor__container">
       <div class="editor__container__sidebar">
         <div class="editor__container__sidebar__header">
-          <h5>{{ $t("layouts.available_fields") }}</h5>
+          <span class="editor__container__sidebar__header__title">{{
+            $t("layouts.available_fields")
+          }}</span>
           <small>{{ $t("layouts.available_fields_hint") }}</small>
         </div>
 
@@ -293,14 +295,13 @@ onBeforeUnmount(() => {
 
       <div class="editor__container__main">
         <div class="editor__sections">
+          <div class="editor__sections__header">
+            <span class="editor__sections__header__title">
+              {{ $t("layouts.list_columns") }}
+            </span>
+            <small>{{ $t("layouts.list_columns_hint") }}</small>
+          </div>
           <div class="editor__sections__item">
-            <div class="editor__sections__item__header">
-              <div class="editor__sections__item__title">
-                <h3>{{ $t("layouts.list_columns") }}</h3>
-                <small>{{ $t("layouts.list_columns_hint") }}</small>
-              </div>
-            </div>
-
             <div class="editor__sections__item__content">
               <div class="editor__columns">
                 <div

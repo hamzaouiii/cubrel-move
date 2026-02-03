@@ -631,11 +631,9 @@
   }
 }
 .editor {
-  margin-top: 20px;
+  border: 3px solid var(--primary-color);
+  overflow: hidden;
   border-radius: 8px;
-  padding: 20px;
-  position: relative;
-  min-height: 500px;
   &__available-fields {
     min-height: 200px;
     &__item {
@@ -668,7 +666,7 @@
         }
       }
       &__label {
-        font-size: 14px;
+        font-size: 0.9rem;
         color: #212529;
         flex: 1;
       }
@@ -708,15 +706,62 @@
   }
   &__container {
     display: flex;
+    padding: 5px;
     gap: 24px;
     height: 100%;
+    margin-top: 20px;
+    border-radius: 8px;
+    min-height: 500px;
+    position: relative;
+    overflow-y: auto;
+    scrollbar-width: thin; // Firefox
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+    max-height: 55vh;
+    &::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+
+      &:hover {
+        background-color: color-mix(
+          in srgb,
+          var(--module-color) 55%,
+          rgba(0, 0, 0, 0.35)
+        );
+      }
+    }
+    @media (max-width: 1250px) {
+      padding: 5px;
+      margin-top: 10px;
+    }
+
     &__sidebar {
-      width: 300px;
       flex-shrink: 0;
       background: #f8f9fa;
       border-radius: 8px;
       padding: 16px;
       border: 1px solid #e9ecef;
+      &__header {
+        display: flex;
+        flex-direction: column;
+        &__title {
+          font-family: "Fira Sans", "Heebo", sans-serif;
+          font-weight: 700;
+          font-size: 2rem;
+          color: #323450;
+          @media (max-width: 1250px) {
+            font-size: 1.4em;
+          }
+        }
+      }
     }
     &__main {
       flex: 1;
@@ -726,10 +771,14 @@
         align-items: center;
         margin-bottom: 20px;
 
-        h3 {
-          margin: 0;
-          font-size: 20px;
-          color: #212529;
+        &__title {
+          font-family: "Fira Sans", "Heebo", sans-serif;
+          font-weight: 700;
+          font-size: 2rem;
+          color: #323450;
+          @media (max-width: 1250px) {
+            font-size: 1.4em;
+          }
         }
         &__btn {
           --btn-color: var(--primary-color);
@@ -742,6 +791,24 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px 20px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      &__title {
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #323450;
+        @media (max-width: 1250px) {
+          font-size: 1.4em;
+        }
+      }
+    }
     &__item {
       background: white;
       border: 1px solid #e9ecef;
@@ -762,6 +829,7 @@
         border-bottom: 1px solid #e9ecef;
         &__title {
           flex: 1;
+
           input {
             width: 100%;
             padding: 8px 12px;
@@ -801,6 +869,16 @@
           }
         }
       }
+      &__title {
+        display: flex;
+        flex-direction: column;
+        span {
+          font-size: 2rem;
+          font-weight: 700;
+          font-family: "Fira Sans", "Heebo", sans-serif;
+          color: #323450;
+        }
+      }
     }
   }
   &__columns {
@@ -838,6 +916,9 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 12px;
+        @media (max-width: 1250px) {
+          padding: 3px;
+        }
 
         &:hover {
           border-color: #adb5bd;
@@ -860,10 +941,13 @@
         flex: 1;
         font-weight: 500;
         color: #212529;
-        font-size: 14px;
+        font-size: 1rem;
         display: flex;
         justify-content: space-between;
         padding-right: 12px;
+        @media (max-width: 1250px) {
+          font-size: 0.8rem;
+        }
         &__flag {
           border: 1px solid var(--secondary-color);
           color: var(--secondary-color);
