@@ -25,6 +25,7 @@ class FieldsUpdaterSeeder extends Seeder
             'is_active' => true,
             'type' => 'datetime',
             'required' => true,
+            'readonly' => true,
           ]
         );
     }
