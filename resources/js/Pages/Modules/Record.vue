@@ -41,8 +41,9 @@ const actionDropDownref = ref(null);
 const appSettings = usePage().props.appSettings;
 
 const isDirty = computed(() => form.isDirty);
+
 const hasError = computed(() => (field) => {
-  return validationErrors.value.some((item) => item.field === field);
+  return validationErrors.value.some((item) => item.field === field.label);
 });
 
 const getFieldType = (field) => {
@@ -100,7 +101,7 @@ const getRequiredFields = () => {
 
   for (const section of sections) {
     const requiredFields = section.layout?.filter(
-      (item) => item.required === true,
+      (item) => item.required === true && item.readonly !== true,
     );
     if (requiredFields?.length) {
       allRequiredFields.push(...requiredFields);
@@ -131,10 +132,9 @@ const emptyFields = computed(() => {
 
 const requiredEmptyFields = computed(() => {
   const requiredFields = getRequiredFields();
-  const requiredFieldNames = requiredFields.map((field) => field.name);
 
-  return requiredFieldNames.filter((fieldName) =>
-    emptyFields.value.includes(fieldName),
+  return requiredFields.filter((field) =>
+    emptyFields.value.includes(field.name),
   );
 });
 
@@ -143,12 +143,12 @@ const validateRequiredFields = (payload) => {
   // upon saving if a field is required and empty then immediately add to validationErrors[] - no need to check anything else. This only validates empty fields that should not be empty. Meaning a record cannot be edited or saved without having to solve this issue. In reality this should never happen since same validation happens upon creating new records.
   requiredEmptyFields.value.map((item) => {
     validationErrors.value.push({
-      field: item,
+      field: item.label,
       type: "required",
     });
   });
 
-  // Now we need to check the payload, if a field that has had a value before and is now empty, we need to stop the saving proccess by adding to validationErrors[]
+  // Now we need to check the payload, if a field had a value before and is now empty, we need to stop the saving proccess by adding to validationErrors[]
   const fields = getRequiredFieldsFromPayload(payload);
   fields.map((item) => {
     if (!payload[item.name]) {
@@ -177,20 +177,24 @@ const clearAllValidartionErrors = () => {
 };
 
 const removeValidationErrorText = (field) => {
-  if (form[field].length >= 3) {
+  if (form[field]?.length >= 3 && hasError.value(field)) {
     validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field,
+      (item) => item.field !== field.label,
     );
   }
 };
 
 const removeValidationError = (field) => {
-  validationErrors.value = validationErrors.value.filter(
-    (item) => item.field !== field,
-  );
+  if (hasError.value(field)) {
+    validationErrors.value = validationErrors.value.filter(
+      (item) => item.field !== field.label,
+    );
+  }
 };
 
 const saveRecord = () => {
+  clearAllValidartionErrors();
+
   info(t("modules.actions.updating"));
 
   const payload = getChangedData(props.record, form);
@@ -294,11 +298,11 @@ const displayValueFor = (f) => {
 };
 
 const getTextareaRows = (f) => {
-  if (form[f.key]) {
-    const val = form[f.key].split(" ").length;
+  if (form[f.name]) {
+    const val = form[f.name].split(" ").length;
     return val / 8;
   }
-  return 5;
+  return 3;
 };
 
 const isDropDown = (f) => {
@@ -330,11 +334,6 @@ onBeforeUnmount(() => {
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
 });
-
-// required validation works on text and dropdown fields.
-// needs to be solved for datetime and date fields
-// styling of datetime and date still needs polishing.
-// on error style of dropdown fields need polishing
 </script>
 
 <template>
@@ -454,7 +453,7 @@ useUnsavedChangesGuard({
                 'module-layout__record__section__layout__field__content',
                 'editing-mode',
                 { 'uneditable-field': f.readonly },
-                { error: hasError(f.name) },
+                { error: hasError(f) },
               ]"
               v-else
             >
@@ -467,17 +466,16 @@ useUnsavedChangesGuard({
                 <ModuleDropdownField
                   :options="getFieldDropDownList(f)"
                   v-model="form[f.name]"
-                  :hasError="hasError(f.name)"
-                  @click="removeValidationError(f.name)"
+                  @click="removeValidationError(f)"
                 ></ModuleDropdownField>
               </template>
               <template v-else-if="f.type == 'longtext'">
                 <textarea
                   v-model="form[f.name]"
                   :rows="getTextareaRows(f)"
-                  @input="removeValidationErrorText(f.name)"
+                  @input="removeValidationErrorText(f)"
                 ></textarea>
-                <span v-if="hasError(f.name)" class="error-icon-container">
+                <span v-if="hasError(f)" class="error-icon-container">
                   <i class="error-icon fa-solid fa-circle-exclamation"></i>
                 </span>
               </template>
@@ -485,28 +483,26 @@ useUnsavedChangesGuard({
                 <DateTime
                   v-model="form[f.name]"
                   type="datetime"
-                  :error="hasError(f.name)"
-                  @click="removeValidationError(f.name)"
+                  @click="removeValidationError(f)"
                 />
               </template>
               <template v-else-if="f.type == 'date'">
                 <DateTime
                   v-model="form[f.name]"
                   type="date"
-                  :error="hasError(f.name)"
-                  @click="removeValidationError(f.name)"
+                  @click="removeValidationError(f)"
                 />
               </template>
               <template v-else>
                 <input
                   type="text"
                   v-model="form[f.name]"
-                  @input="removeValidationErrorText(f.name)"
+                  @input="removeValidationErrorText(f)"
                 />
-                <span v-if="hasError(f.name)" class="error-icon-container">
-                  <i class="error-icon fa-solid fa-circle-exclamation"></i>
-                </span>
               </template>
+              <span v-if="hasError(f)" class="error-icon-container">
+                <i class="error-icon fa-solid fa-circle-exclamation"></i>
+              </span>
             </div>
           </div>
         </div>

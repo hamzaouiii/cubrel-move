@@ -1,10 +1,17 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
-import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from "vue";
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  getCurrentInstance,
+  computed,
+} from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
-
+import ModuleDropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
+import DateTime from "../Components/FiledTypes/DateTime.vue";
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -15,7 +22,10 @@ const props = defineProps({
   module: Object,
   title: String,
   recordLayout: Object,
+  dropdownLists: Object,
+  fields: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -25,7 +35,7 @@ const buildInitialForm = () => {
   if (props.recordLayout && props.recordLayout.sections) {
     props.recordLayout.sections.forEach((section) => {
       section.layout.forEach((field) => {
-        data[field.key] = "";
+        data[field.name] = "";
       });
     });
   }
@@ -33,9 +43,15 @@ const buildInitialForm = () => {
   return data;
 };
 
+const appSettings = usePage().props.appSettings;
 const form = useForm(buildInitialForm());
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
+const validationErrors = ref([]);
+
+const hasError = computed(() => (field) => {
+  return validationErrors.value.some((item) => item.field === field.label);
+});
 
 const handleClickOutsideActionDropDown = (event) => {
   if (
@@ -46,14 +62,97 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
+const getRequiredFields = () => {
+  const sections = props.recordLayout?.sections;
+  let allRequiredFields = [];
+
+  for (const section of sections) {
+    const requiredFields = section.layout?.filter(
+      (item) => item.required === true && item.readonly !== true,
+    );
+    if (requiredFields?.length) {
+      allRequiredFields.push(...requiredFields);
+    }
+  }
+  return allRequiredFields;
+};
+
+const emptyFields = computed(() => {
+  return Object.entries(form)
+    .filter(([key, value]) => {
+      return (
+        value === "" ||
+        value === "---" ||
+        value === null ||
+        value === undefined ||
+        (Array.isArray(value) && value.length === 0)
+      );
+    })
+    .map(([key]) => key);
+});
+
+const requiredEmptyFields = computed(() => {
+  const requiredFields = getRequiredFields();
+  return requiredFields.filter((field) =>
+    emptyFields.value.includes(field.name),
+  );
+});
+
+const validateRequiredFields = () => {
+  requiredEmptyFields.value.map((item) => {
+    validationErrors.value.push({
+      field: item.label,
+      type: "required",
+    });
+  });
+
+  if (validationErrors.value.length > 1) {
+    clearAllAlerts();
+    error(t("fields.validation.is_required_several"));
+  } else if (validationErrors.value.length === 1) {
+    clearAllAlerts();
+    error(
+      t(validationErrors.value[0].field) +
+        " " +
+        t("fields.validation.is_required"),
+    );
+  }
+};
+
+const clearAllValidartionErrors = () => {
+  clearAllAlerts();
+  validationErrors.value = [];
+};
+
+const removeValidationError = (field) => {
+  if (hasError.value(field)) {
+    validationErrors.value = validationErrors.value.filter(
+      (item) => item.field !== field.label,
+    );
+  }
+};
+
+const removeValidationErrorText = (field) => {
+  if (form[field.name].length >= 3 && hasError.value(field)) {
+    validationErrors.value = validationErrors.value.filter(
+      (item) => item.field !== field.label,
+    );
+  }
+};
+
 const saveRecord = () => {
   if (!form.isDirty) {
     warning(t("modules.actions.no_data_entered"));
   } else {
     info(t("modules.actions.saving"));
-
+    clearAllValidartionErrors();
     const moduleSlug = props.module.slug ?? props.module;
     const url = `/${moduleSlug}`;
+    validateRequiredFields();
+    if (validationErrors.value.length > 0) {
+      return;
+    }
+
     form.post(url, {
       onSuccess: () => {
         clearAllAlerts();
@@ -68,6 +167,7 @@ const saveRecord = () => {
 };
 
 const cancelCreate = () => {
+  clearAllValidartionErrors();
   const moduleSlug = props.module.slug ?? props.module;
   router.visit(`/${moduleSlug}`);
 };
@@ -84,6 +184,13 @@ function handleKeydown(e) {
   }
 }
 
+const getFieldDropDownList = (f) => {
+  const field = props.fields.find((field) => field.name === f.name);
+  const list = props.dropdownLists.find((l) => l.field_key === field.key);
+
+  return list?.values || [];
+};
+
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
   window.addEventListener("keydown", handleKeydown);
@@ -94,11 +201,17 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-const appSettings = usePage().props.appSettings;
-
 useUnsavedChangesGuard({
   getIsDirty: () => form.isDirty,
 });
+
+const getTextareaRows = (f) => {
+  if (form[f.name]) {
+    const val = form[f.name].split(" ").length;
+    return val / 8;
+  }
+  return 2;
+};
 </script>
 
 <template>
@@ -139,40 +252,67 @@ useUnsavedChangesGuard({
       </div>
     </div>
 
-    <div class="module-layout__content">
+    <div class="module-layout__record">
       <div
-        class="module-layout__content__section"
+        class="module-layout__record__section"
         v-for="s in recordLayout.sections"
         :key="s.name"
       >
-        <div class="module-layout__content__section__title">
+        <div class="module-layout__record__section__title">
           {{ s.name }}
         </div>
 
-        <div class="module-layout__content__section__layout">
+        <div class="module-layout__record__section__layout">
           <div
             v-for="f in s.layout.filter((f) => !f.readonly)"
-            :key="f.key"
-            class="module-layout__content__section__layout__field"
+            :key="f.name"
+            class="module-layout__record__section__layout__field"
           >
-            <span class="module-layout__content__section__layout__field__label">
+            <span class="module-layout__record__section__layout__field__label">
               {{ $t(f.label) }}:
             </span>
 
             <div
-              class="module-layout__content__section__layout__field__content editing-mode"
+              class="module-layout__record__section__layout__field__content editing-mode"
+              :class="{ error: hasError(f) }"
             >
-              <template v-if="f.format === 'datetime'">
-                <input type="date" v-model="form[f.key]" />
+              <template v-if="f.type === 'datetime'">
+                <DateTime
+                  v-model="form[f.name]"
+                  type="datetime"
+                  @click="removeValidationError(f)"
+                ></DateTime>
               </template>
-
-              <template v-else-if="f.format === 'Textarea'">
-                <textarea v-model="form[f.key]"></textarea>
+              <template v-else-if="f.type === 'date'">
+                <DateTime
+                  v-model="form[f.name]"
+                  type="date"
+                  @click="removeValidationError(f)"
+                ></DateTime>
               </template>
-
+              <template v-else-if="f.type === 'longtext'">
+                <textarea
+                  v-model="form[f.name]"
+                  :rows="getTextareaRows(f)"
+                ></textarea>
+              </template>
+              <template v-else-if="f.type === 'dropdown'">
+                <ModuleDropdownField
+                  :options="getFieldDropDownList(f)"
+                  v-model="form[f.name]"
+                  @click="removeValidationError(f)"
+                ></ModuleDropdownField>
+              </template>
               <template v-else>
-                <input type="text" v-model="form[f.key]" />
+                <input
+                  type="text"
+                  v-model="form[f.name]"
+                  @input="removeValidationErrorText(f)"
+                />
               </template>
+              <span v-if="hasError(f)" class="error-icon-container">
+                <i class="error-icon fa-solid fa-circle-exclamation"></i>
+              </span>
             </div>
           </div>
         </div>

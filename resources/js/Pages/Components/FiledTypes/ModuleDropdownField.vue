@@ -43,10 +43,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  hasError: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
@@ -148,10 +144,6 @@ onBeforeUnmount(() => {
           :class="
             isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
           "
-        ></i>
-        <i
-          v-if="hasError"
-          class="error-icon fa-solid fa-circle-exclamation"
         ></i>
       </span>
     </div>

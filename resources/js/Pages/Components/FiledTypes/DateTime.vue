@@ -38,7 +38,7 @@ const emit = defineEmits(["update:modelValue", "change"]);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-const showDatePicker = ref(true);
+const showDatePicker = ref(false);
 const showTimePicker = ref(false);
 const currentDate = ref(new Date());
 const selectedDate = ref(null);
