@@ -12,7 +12,7 @@
 html,
 body {
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 body {
   font-family: "Fira Sans", "Heebo", sans-serif;
@@ -34,38 +34,38 @@ body {
   &__content {
     padding-top: 20px;
     flex-grow: 1;
-    padding-left: 85px;
+    padding-left: 95px;
   }
 }
 
 .unsupported-device {
   display: none;
 }
-@media (max-width: 650px) {
-  .unsupported-device {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    inset: 0;
-    z-index: 101;
-    place-items: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.849);
-    color: aliceblue;
-    align-items: center;
-    justify-content: center;
-    justify-items: center;
-    h3 {
-      color: aliceblue;
-    }
-    p {
-      font-family: "Fira Sans", "Heebo", sans-serif;
-    }
-  }
-  .root {
-    display: none;
-  }
-}
+// @media (max-width: 650px) {
+//   .unsupported-device {
+//     display: flex;
+//     flex-direction: column;
+//     position: fixed;
+//     inset: 0;
+//     z-index: 101;
+//     place-items: center;
+//     padding: 24px;
+//     background: rgba(0, 0, 0, 0.849);
+//     color: aliceblue;
+//     align-items: center;
+//     justify-content: center;
+//     justify-items: center;
+//     h3 {
+//       color: aliceblue;
+//     }
+//     p {
+//       font-family: "Fira Sans", "Heebo", sans-serif;
+//     }
+//   }
+//   .root {
+//     display: none;
+//   }
+// }
 
 button,
 input,

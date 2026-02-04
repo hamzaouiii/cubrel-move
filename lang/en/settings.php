@@ -52,6 +52,8 @@ return [
     'use_individual_module_colors' => 'Use Single Module Colors',
     'timezone'                  => 'Timezone',
     'first_day_of_week'         => 'First Day of Week',
+    'danger_color'              => "Danger Color",
+    'danger_color_hint'              => "Used for dangerous actions such delete warnings and delete buttons"
   ],
   'groups' => [
     'email'          => 'Email Settings',

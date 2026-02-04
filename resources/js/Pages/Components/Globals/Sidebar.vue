@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, onMounted, reactive, getCurrentInstance } from "vue";
-import { useForm, Link, usePage } from "@inertiajs/vue3";
+import { useForm, Link, usePage, router } from "@inertiajs/vue3";
 import AppTooltip from "./AppTooltip.vue";
 
 const form = useForm({});
@@ -23,6 +23,10 @@ const toggleSidebar = () => {
   localStorage.setItem(SIDEBAR_KEY, collapsedSidebar.value ? "1" : "0");
 };
 
+const collapseSidebar = () => {
+  collapsedSidebar.value = true;
+};
+
 onMounted(() => {
   const saved = localStorage.getItem(SIDEBAR_KEY);
   collapsedSidebar.value = saved === "1";
@@ -35,6 +39,10 @@ const tooltip = reactive({
   top: 0,
   left: 0,
 });
+
+const navigateTo = (path) => {
+  router.visit(path);
+};
 
 const hideTooltip = () => {
   tooltip.show = false;
@@ -113,7 +121,7 @@ const onCollapserMouseLeave = () => {
     <div class="sidebar__module-list">
       <Link
         class="sidebar__module-list__item sidebar__module-list__item--home"
-        href="/#"
+        @click="collapseSidebar()"
         @mouseenter="onModuleMouseEnter($event, 'home')"
         @mouseleave="onModuleMouseLeave"
         :style="{ '--module-color': appSettings.primary_color }"
@@ -142,6 +150,7 @@ const onCollapserMouseLeave = () => {
         v-for="mod in modules"
         :key="mod.slug"
         :href="mod.path"
+        @click="collapseSidebar()"
         :style="
           appSettings.use_individual_module_colors == '0'
             ? { '--module-color': appSettings.primary_color }

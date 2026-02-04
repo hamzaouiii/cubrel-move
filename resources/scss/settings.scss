@@ -6,6 +6,13 @@
   margin: auto;
   padding: 0 20px;
   font-family: "Fira Sans", "Heebo", sans-serif;
+  @media (max-width: 1250px) {
+    padding: 0 10px;
+  }
+
+  @media (max-width: 750px) {
+    padding: 0 5px 0px 12px;
+  }
 
   input[type="text"] {
     all: unset;
@@ -29,20 +36,23 @@
   &__header {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     padding: 20px;
     &__search {
       padding: 20px;
-      background-color: white;
-      box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
       border-radius: 8px;
       input {
-        all: unset;
         border: 2px solid lightgrey;
-        padding: 5px 15px;
-        width: 380px;
+        background: none;
+        padding: 10px 15px;
+        max-width: 100%;
         border-radius: 8px;
         font-family: "Fira Sans", "Heebo", sans-serif;
+        transition: border 0.15s ease;
+        &:focus {
+          border-color: var(--primary-color);
+        }
       }
     }
     &__title {
@@ -54,7 +64,16 @@
       &__breadcrumbs {
         display: flex;
         align-items: baseline;
+        font-size: 1.7rem;
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        font-weight: 700;
+        @media (max-width: 1250px) {
+          font-size: 1.4rem !important;
+        }
 
+        @media (max-width: 750px) {
+          font-size: 1.1rem !important;
+        }
         a {
           color: var(--primary-color);
           margin-right: 15px;
@@ -86,30 +105,30 @@
       }
     }
   }
-  &_content {
-    // display: flex;
-    // flex-direction: column;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    &_section {
+  &__list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    &__section {
       margin: 20px;
       padding: 20px;
       display: flex;
+      flex: 1;
       flex-direction: column;
       background-color: white;
       box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
       border-radius: 8px;
-      &_header {
-        &_title {
+      &__header {
+        &__title {
           margin-bottom: 10px;
         }
-        &_desc p {
-          font-size: 0.8rem !important;
+        &__desc p {
+          font-size: 0.6rem !important;
         }
       }
 
-      &_links {
+      &__links {
         display: flex;
         flex-direction: column;
         margin: 10px;
@@ -117,7 +136,7 @@
 
         a {
           all: unset;
-          color: #0d6efd;
+          color: var(--primary-color);
 
           width: max-content;
           align-self: flex-start;
@@ -129,7 +148,7 @@
             border-bottom: 2px solid transparent;
             margin: 5px;
             &:hover {
-              border-color: #0d6efd;
+              border-color: var(--primary-color);
             }
           }
         }
@@ -138,23 +157,21 @@
   }
   &__items {
     &__modules {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 50px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
       padding: 50px;
       justify-content: center;
-      align-items: center;
 
       &__item {
         display: flex;
         flex-direction: column;
         align-items: center;
-
         padding: 10px;
         justify-content: center;
         justify-items: center;
         width: auto;
-        font-size: 1.82rem;
+        font-size: 2rem;
         cursor: pointer;
         transition: all 0.3s ease-in-out;
         margin: 10px;
@@ -169,25 +186,49 @@
       }
     }
   }
-  &_system {
+  &__system {
     margin: 20px;
     padding: 20px;
     background-color: white;
     box-shadow: 2px 2px 2px 0px rgba(51, 51, 51, 0.5) !important;
     border-radius: 8px;
-    &_form {
+    @media (max-width: 1250px) {
+      margin: 10px;
+      padding: 10px;
+    }
+
+    @media (max-width: 750px) {
+      margin: 5px;
+      padding: 10px 5;
+    }
+    &__form {
       display: flex;
       flex-direction: column;
-      &_field {
-        width: 600px;
+      &__field {
         display: flex;
         align-items: baseline;
+        flex-direction: row;
+        flex-wrap: wrap;
         margin: 10px;
+        @media (max-width: 950px) {
+          flex-direction: column;
+          margin: 20px 5px;
+        }
+
         label {
-          min-width: 250px;
+          max-width: 250px;
+          flex: 1;
+          @media (max-width: 1250px) {
+            margin-bottom: 5px;
+          }
+        }
+        &__content {
+          flex: 2;
+          max-width: 450px;
+          width: 100%;
         }
       }
-      &_actions {
+      &__actions {
         display: flex;
         justify-content: flex-end;
         .btn {
@@ -393,16 +434,30 @@
       background: white;
       padding: 20px;
       margin-top: 20px;
+      @media (max-width: 1250px) {
+        margin: 20px;
+      }
+
+      @media (max-width: 750px) {
+      }
       box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5);
       &__element {
         display: flex;
         flex-direction: row;
         align-items: baseline;
-        // justify-content: space-between;
         margin: 10px;
+        @media (max-width: 1250px) {
+          flex-direction: column;
+        }
+
+        @media (max-width: 750px) {
+          padding: 0 5px 0px 12px;
+        }
 
         label {
-          min-width: 220px;
+          max-width: 250px;
+          width: 100%;
+          margin-bottom: 5px;
         }
         input[type="text"] {
           font-family: "Fira Sans", "Heebo", sans-serif;
@@ -411,7 +466,8 @@
           padding-top: 5px;
           padding-bottom: 5px;
           border-radius: 5px;
-          width: 438px;
+          width: 100%;
+          max-width: 438px;
           &:disabled {
             background-color: rgb(218, 218, 218);
             color: white;
@@ -1018,6 +1074,7 @@
 
 .fields {
   margin-top: 20px;
+  margin-bottom: 20px;
   border-radius: 8px;
   &__header {
     display: flex;
@@ -1099,194 +1156,6 @@
             color: white;
           }
         }
-      }
-    }
-  }
-}
-
-// field Types
-
-.switcher {
-  display: flex;
-  .switch-option {
-    padding: 10px;
-    box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5) !important;
-    border-radius: 5px;
-    margin: 0 5px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-    background-color: lightgrey;
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-  .selected {
-    color: white;
-    background-color: var(--primary-color);
-  }
-}
-
-//dropdown
-.dropdown-field {
-  font-family: "Fira Sans", "Heebo", sans-serif;
-  position: relative;
-
-  width: 450px;
-
-  // button (closed state)
-  &_button {
-    border: 2px solid lightgray;
-    border-radius: 5px;
-    padding: 5px 10px;
-
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-
-    &.is-disabled {
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    &.is-invalid {
-      border-color: #dc3545;
-    }
-
-    &.is-open {
-      // subtle focus state when open
-      border-color: rgba(0, 0, 0, 0.28);
-    }
-  }
-
-  &_selected {
-    flex: 1;
-    min-width: 0; // enables truncation
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &_icon {
-    flex: 0 0 auto;
-    line-height: 1;
-  }
-
-  &_menu {
-    position: absolute;
-    z-index: 20;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 6px;
-
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
-
-    overflow: hidden;
-  }
-
-  &_search {
-    padding: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    background: #fff;
-  }
-
-  &_search_input {
-    all: unset !important;
-    border: 2px solid lightgray;
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    outline: none;
-
-    &:focus {
-      border-color: rgba(0, 0, 0, 0.28);
-    }
-  }
-
-  &_list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    max-height: 260px;
-    overflow-y: auto;
-  }
-
-  &_option {
-    padding: 0.45rem 0.75rem;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #f5f5f5;
-    }
-
-    &.is-active {
-      background-color: #e9ecef;
-      font-weight: 500;
-    }
-
-    &_label {
-      font-size: 0.9rem;
-    }
-
-    &_description {
-      font-size: 0.75rem;
-      color: #6c757d;
-    }
-  }
-
-  &_no_results {
-    padding: 10px 12px;
-    opacity: 0.7;
-  }
-}
-
-.dropdown-fade-enter-active,
-.dropdown-fade-leave-active {
-  transition:
-    opacity 0.12s ease,
-    transform 0.12s ease;
-}
-.dropdown-fade-enter-from,
-.dropdown-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-2px);
-}
-
-.dropdown-form {
-  padding: 8px;
-  &__item {
-    display: flex;
-    flex-direction: row;
-    margin: 10px;
-    padding: 8px;
-    align-items: baseline;
-    &__label {
-      width: 150px;
-    }
-    &__field {
-      input {
-        width: 300px !important;
-      }
-    }
-    &--prefix {
-      position: relative;
-      display: inline-block;
-      .prefix {
-        position: relative;
-        left: -42px;
-        background-color: #6e6e6e7a;
-        padding: 5px;
-        color: white;
-        pointer-events: none;
-        border-radius: 0 4px 4px 0;
       }
     }
   }

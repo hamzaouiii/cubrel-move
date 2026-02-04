@@ -16,13 +16,13 @@ const currentLocation = usePage()?.url;
       class="settings__header__title__breadcrumbs"
       :style="[{ '--primary-color': appSettings.primary_color }]"
     >
-      <h5>
+      <span>
         <Link href="/settings">{{ $t("settings.label") }} </Link>
-      </h5>
+      </span>
       <span><i class="fa-solid fa-angle-right"></i></span>
-      <h5>
+      <span>
         {{ $t(settingItem.label) }}
-      </h5>
+      </span>
     </div>
   </div>
 </template>

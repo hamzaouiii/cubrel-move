@@ -52,6 +52,8 @@ return [
     'use_individual_module_colors' => 'Einzelfarben für Module verwenden',
     'timezone'                  => 'Zeitzone',
     'first_day_of_week'         => 'Erster Wochentag',
+    'danger_color'              => "Gefahrfarbe",
+
   ],
   'groups' => [
     'email'          => 'E-Mail Einstellungen',

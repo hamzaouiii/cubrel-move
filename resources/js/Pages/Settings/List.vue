@@ -10,6 +10,8 @@ defineOptions({
 const pageProps = defineProps({
   settings: Object,
 });
+const appSettings = usePage().props.appSettings;
+
 const flattenedSettings = computed(() => {
   const settings = pageProps.settings;
   if (!settings || typeof settings !== "object") return [];
@@ -87,7 +89,13 @@ const filteredSettings = computed(() => {
   <Head>
     <title>{{ $t("settings.label") }}</title>
   </Head>
-  <div class="settings">
+  <div
+    class="settings"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--secondary-color': appSettings.secondary_color,
+    }"
+  >
     <div class="settings__header">
       <div class="settings__header__title">
         <h3 class="settings__header__title__text">
@@ -103,17 +111,17 @@ const filteredSettings = computed(() => {
         />
       </div>
     </div>
-    <div class="settings_content">
-      <div v-for="s in filteredSettings" class="settings_content_section">
-        <div class="settings_content_section_header">
-          <div class="settings_content_section_header_title">
+    <div class="settings__list">
+      <div v-for="s in filteredSettings" class="settings__list__section">
+        <div class="settings__list__section__header">
+          <div class="settings__list__section__header__title">
             <h6>{{ $t(s.label) }}</h6>
           </div>
-          <div class="settings_content_section_header_desc">
+          <div class="settings__list__section__header__desc">
             <p>{{ $t(s.description) }}</p>
           </div>
         </div>
-        <div class="settings_content_section_links">
+        <div class="settings__list__section__links">
           <Link v-for="i in s.items" :href="i.path">
             <i :class="i.icon"></i>
             <span class="label">{{ $t(i.label) }}</span>

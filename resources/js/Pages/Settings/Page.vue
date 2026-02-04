@@ -85,69 +85,70 @@ const isDirty = () => form.isDirty;
       </div>
     </div>
 
-    <div class="settings_system">
-      <form @submit.prevent="saveSetting" class="settings_system_form">
+    <div class="settings__system">
+      <form @submit.prevent="saveSetting" class="settings__system__form">
         <div
           v-for="(i, index) in form.values"
           :key="i.id || i.key || index"
-          class="settings_system_form_field"
+          class="settings__system__form__field"
         >
           <label>{{ i.label || i.key }}</label>
+          <div class="settings__system__form__field__content">
+            <template v-if="i.type === 'bool'">
+              <Checkbox v-model="form.values[index].value"></Checkbox>
+            </template>
 
-          <template v-if="i.type === 'bool'">
-            <Checkbox v-model="form.values[index].value"></Checkbox>
-          </template>
+            <template v-else-if="inputTypeFor(i.type) === 'datetime'">
+              <DropdownField
+                v-model="form.values[index].value"
+                :options="datetimeFormatOptions"
+              />
+            </template>
 
-          <template v-else-if="inputTypeFor(i.type) === 'datetime'">
-            <DropdownField
-              v-model="form.values[index].value"
-              :options="datetimeFormatOptions"
-            />
-          </template>
+            <template v-else-if="inputTypeFor(i.type) === 'date'">
+              <DropdownField
+                v-model="form.values[index].value"
+                :options="dateFormatOptions"
+              />
+            </template>
+            <template v-else-if="inputTypeFor(i.type) === 'timezone'">
+              <DropdownField
+                v-model="form.values[index].value"
+                :options="timezoneOptions"
+              />
+            </template>
+            <template v-else-if="inputTypeFor(i.type) === 'lang_switcher'">
+              <switcher
+                v-model="form.values[index].value"
+                :options="[
+                  { label: 'EN', value: 'en' },
+                  { label: 'DE', value: 'de' },
+                ]"
+              />
+            </template>
+            <template v-else-if="inputTypeFor(i.type) === 'theme_switcher'">
+              <switcher
+                v-model="form.values[index].value"
+                :options="[
+                  { label: 'Light', value: 'light' },
+                  { label: 'Dark', value: 'dark' },
+                ]"
+              />
+            </template>
 
-          <template v-else-if="inputTypeFor(i.type) === 'date'">
-            <DropdownField
-              v-model="form.values[index].value"
-              :options="dateFormatOptions"
-            />
-          </template>
-          <template v-else-if="inputTypeFor(i.type) === 'timezone'">
-            <DropdownField
-              v-model="form.values[index].value"
-              :options="timezoneOptions"
-            />
-          </template>
-          <template v-else-if="inputTypeFor(i.type) === 'lang_switcher'">
-            <switcher
-              v-model="form.values[index].value"
-              :options="[
-                { label: 'EN', value: 'en' },
-                { label: 'DE', value: 'de' },
-              ]"
-            />
-          </template>
-          <template v-else-if="inputTypeFor(i.type) === 'theme_switcher'">
-            <switcher
-              v-model="form.values[index].value"
-              :options="[
-                { label: 'Light', value: 'light' },
-                { label: 'Dark', value: 'dark' },
-              ]"
-            />
-          </template>
-
-          <template v-else>
-            <input
-              :type="inputTypeFor(i.type)"
-              v-model="form.values[index].value"
-            />
-          </template>
+            <template v-else>
+              <input
+                :type="inputTypeFor(i.type)"
+                v-model="form.values[index].value"
+              />
+            </template>
+          </div>
         </div>
 
-        <div class="settings_system_form_actions">
+        <div class="settings__system__form__actions">
           <button
             type="button"
-            class="settings_system_form_actions__reset btn"
+            class="settings__system__form__actions__reset btn"
             @click="resetForm"
             :disabled="!isDirty()"
           >
@@ -155,7 +156,7 @@ const isDirty = () => form.isDirty;
           </button>
 
           <button
-            class="settings_system_form_actions__save btn"
+            class="settings__system__form__actions__save btn"
             type="submit"
             :disabled="!isDirty() || form.processing"
           >

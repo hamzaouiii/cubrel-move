@@ -27,7 +27,7 @@ class SettingsController extends Controller
 
     $values = SettingValue::where('setting_item',  $slug)
       ->where('autoload', 1)
-      ->orderBy('key')
+      ->orderBy('sort_order')
       ->get();
     return Inertia::render('Settings/Page', [
       'item' => $settingsItem,
