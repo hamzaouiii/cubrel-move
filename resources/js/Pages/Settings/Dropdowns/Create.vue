@@ -18,9 +18,9 @@ const props = defineProps({
 const appSettings = usePage().props.appSettings;
 
 const form = useForm({
-  key: "dsa",
-  field_key: "das",
-  module_id: "das",
+  key: "",
+  field_key: "",
+  module_id: "",
   values: {},
 });
 let listItems = ref([]);
@@ -31,11 +31,9 @@ const rowIsDirty = computed(() => {
 });
 
 const valueExistsError = ref(false);
-// const isEditing = ref([]);
 
 const addItem = () => {
   if (!rowIsDirty.value) {
-    console.log("row is not dirty");
     return;
   }
   if (listItems.value.some((item) => item.value === newItem.value)) {

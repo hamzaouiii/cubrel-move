@@ -89,4 +89,16 @@ class DropDownListController extends Controller
   {
     //
   }
+
+  public function api(Request $request){
+    $query = DropdownList::query();
+
+    if ($search = $request->input('q')) {
+      $query->where('key', 'like', '%' . $search . '%');
+    }
+    $list = $query->get();
+
+    return response()->json([
+      'list' => $list // Wrap in 'data' key
+  ]);  }
 }

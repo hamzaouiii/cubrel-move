@@ -1,12 +1,15 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
+
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
 import { getCurrentInstance, computed, watch } from "vue";
+import { useAlerts } from "@/Composables/useAlerts";
+
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
-import { useAlerts } from "@/Composables/useAlerts";
+import DropdownSelector from "@/Pages/Components/Settings/DropdownSelector.vue";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
@@ -18,7 +21,7 @@ const props = defineProps({
   module: Object,
   item: Object,
   field_types: Array,
-  field: Object,
+  metadata: Object,
 });
 const page = usePage();
 const appSettings = page.props.appSettings;
@@ -31,13 +34,13 @@ const default_values = {
   key: "",
   type: "",
   readonly: false,
-  hidden: false,
+  //hidden: false,
   required: false,
-  searchable: false,
-  filterable: false,
+  //searchable: false,
+  //filterable: false,
   sortable: false,
   default_value: "",
-  options: "",
+  //options: "",
   min_length: "",
   max_length: "",
   regex: "",
@@ -69,7 +72,7 @@ watch(
       form.name = generatedName.value;
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const generatedKey = computed(() => {
@@ -83,7 +86,7 @@ watch(
       form.key = generatedKey.value;
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const isCheckbox = (field) => {
@@ -157,6 +160,7 @@ const resetForm = () => {
   router.visit(fieldsUrl());
   warning(t("fields.field_reset_success"));
 };
+
 const isDirty = () => {
   return form.label?.length >= 4 && form.type;
 };
@@ -201,10 +205,9 @@ const displayKeyError = () => {
 
     <div class="settings__module__edit">
       <form @submit.prevent="saveField">
-        <!-- Assuming props.field is an array of field names -->
         <div
           class="settings__module__edit__element"
-          v-for="fieldName in field"
+          v-for="fieldName in metadata"
           :key="fieldName"
         >
           <label> {{ $t("fields.metadata." + fieldName) }} </label>
@@ -244,6 +247,13 @@ const displayKeyError = () => {
               v-model="form[fieldName]"
               :options="typesList()"
             ></DropdownField>
+
+            <DropdownSelector
+              v-if="form[fieldName] === 'dropdown'"
+              :options="[]"
+            >
+            </DropdownSelector>
+
             <span
               v-if="form.errors[fieldName]"
               class="settings__module__edit__element__error"

@@ -39,13 +39,18 @@ class Field extends Model
     'filterable',
     'sortable',
     'database_type',
-    'default_value',
     'options',
+    'default_value',
     'min_length',
     'max_length',
     'regex',
   ];
-  protected $excludedFromForms = ['id', 'module_id', 'key', 'is_custom', 'is_active', 'database_type'];
+  protected $excludedFromForms = ['id', 'module_id', 'key', 'is_custom', 'is_active', 
+  'options',
+  'filterable',
+  'searchable',
+  'hidden',
+  'database_type'];
   /**
    * Attribute casting
    */

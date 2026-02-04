@@ -50,7 +50,7 @@ class FieldsManagerController extends Controller
       'module'     => $module,
       'item'     => $item,
       'field_types' => $field_types,
-      'field' => $field->getEmptyMetadata()
+      'metadata' => $field->getEmptyMetadata()
     ]);
   }
 
