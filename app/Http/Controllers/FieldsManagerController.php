@@ -155,13 +155,9 @@ class FieldsManagerController extends Controller
       'key' => ['required', 'string', 'unique:fields,key,except,id'],
       'type' => ['required'],
       'readonly' => ['boolean'],
-      'hidden' => ['boolean'],
       'required' => ['boolean'],
-      'searchable' => ['boolean'],
-      'filterable' => ['boolean'],
       'sortable' => ['boolean'],
       'default_value' => ['nullable'],
-      'options' => ['nullable', 'array'],
       'min_length' => ['nullable', 'integer'],
       'max_length' => ['nullable', 'integer'],
       'regex' => ['nullable', 'string'],
@@ -185,20 +181,15 @@ class FieldsManagerController extends Controller
       'key'  => $data['key'],
       'type'  => $data['type'],
       'readonly'  => $data['readonly'],
-      'hidden'  => $data['hidden'],
       'required'  => $data['required'],
-      'searchable'  => $data['searchable'],
-      'filterable'  => $data['filterable'],
       'sortable'  => $data['sortable'],
       'default_value'  => $data['default_value'],
-      'options'  => $data['options'],
       'min_length'  => $data['min_length'],
       'max_length'  => $data['max_length'],
       'regex'  => $data['regex'],
       'is_custom' => 1
     ]);
 
-    // where do we store the value of these custom fields ?  
     return redirect()
       ->route('settings.modules.fields.index', $module_id);
   }

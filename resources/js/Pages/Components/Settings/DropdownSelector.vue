@@ -9,7 +9,9 @@ import {
 } from "vue";
 import axios from "axios";
 
-const props = defineProps({});
+const props = defineProps({
+  modelValue: [String, Number, Boolean, Object, null],
+});
 
 const emit = defineEmits(["update:modelValue", "change"]);
 const { proxy } = getCurrentInstance();
@@ -46,7 +48,7 @@ const filteredOptions = computed(() => {
 });
 
 const selectedOption = computed(
-  () => options.value.find((o) => o.value === props.modelValue) ?? null
+  () => options.value.find((o) => o.key === props.modelValue)?.key ?? null,
 );
 
 const toggle = async () => {
@@ -70,8 +72,6 @@ const close = () => {
 };
 
 const selectOption = (value) => {
-  if (props.disabled) return;
-
   if (value !== props.modelValue) {
     emit("update:modelValue", value);
     emit("change", value);
@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
       @click="toggle"
     >
       <span class="dropdown-field_selected">
-        {{ selectedOption?.label ?? $t("settings.select") }}
+        {{ selectedOption ?? $t("settings.select_dropdown_list") }}
       </span>
 
       <i
@@ -153,4 +153,10 @@ onBeforeUnmount(() => {
       </div>
     </transition>
   </div>
+  <button class="btn" :disabled="selectedOption === null">
+    <i class="fa-solid fa-pen-to-square"></i>
+  </button>
+  <button class="btn">
+    <i class="fa-solid fa-circle-plus"></i>
+  </button>
 </template>

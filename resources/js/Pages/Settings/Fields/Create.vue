@@ -2,7 +2,7 @@
 import Layout from "@/Layouts/Layout.vue";
 
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
-import { getCurrentInstance, computed, watch } from "vue";
+import { getCurrentInstance, computed, watch, ref } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
@@ -27,6 +27,8 @@ const page = usePage();
 const appSettings = page.props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
+const selected_dropdown_list = ref("");
 
 const default_values = {
   label: "",
@@ -72,7 +74,7 @@ watch(
       form.name = generatedName.value;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const generatedKey = computed(() => {
@@ -86,7 +88,7 @@ watch(
       form.key = generatedKey.value;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const isCheckbox = (field) => {
@@ -168,6 +170,11 @@ const isDirty = () => {
 const displayKeyError = () => {
   return form.errors.key || form.errors.name;
 };
+
+function runThis() {
+  console.log(selected_dropdown_list.value);
+}
+// TODO: add unsaved changes guard here after dev work is done!
 </script>
 
 <template>
@@ -210,75 +217,83 @@ const displayKeyError = () => {
           v-for="fieldName in metadata"
           :key="fieldName"
         >
-          <label> {{ $t("fields.metadata." + fieldName) }} </label>
+          <label class="settings__module__edit__element__label">
+            {{ $t("fields.metadata." + fieldName) }}
+          </label>
+          <div class="settings__module__edit__element__content">
+            <template v-if="isReadonly(fieldName)">
+              <input
+                type="text"
+                :name="fieldName"
+                v-model="form.name"
+                :class="[
+                  'disabled',
+                  {
+                    'settings__module__edit__element--error-field':
+                      displayKeyError(),
+                  },
+                ]"
+              />
+              <span
+                v-if="displayKeyError()"
+                class="settings__module__edit__element__error"
+                >{{ $t("fields.key_is_taken_error") }}</span
+              >
+            </template>
 
-          <template v-if="isReadonly(fieldName)">
-            <input
-              type="text"
-              :name="fieldName"
-              v-model="form.name"
-              :class="[
-                'disabled',
-                {
+            <template v-else-if="isCheckbox(fieldName)">
+              <Checkbox v-model="form[fieldName]"></Checkbox>
+              <span
+                v-if="form.errors[fieldName]"
+                class="settings__module__edit__element__error"
+              >
+                {{ form.errors[fieldName] }}
+              </span>
+            </template>
+
+            <template v-else-if="isDropDown(fieldName)">
+              <DropdownField
+                v-model="form[fieldName]"
+                :options="typesList()"
+              ></DropdownField>
+              <transition name="dropdown-fade">
+                <div
+                  class="dropdown-selector"
+                  v-if="form[fieldName] === 'dropdown'"
+                >
+                  <DropdownSelector
+                    v-model="selected_dropdown_list"
+                    @change="runThis()"
+                  >
+                  </DropdownSelector>
+                </div>
+              </transition>
+              <span
+                v-if="form.errors[fieldName]"
+                class="settings__module__edit__element__error"
+              >
+                {{ form.errors[fieldName] }}
+              </span>
+            </template>
+
+            <template v-else>
+              <input
+                type="text"
+                v-model="form[fieldName]"
+                :name="fieldName"
+                :class="{
                   'settings__module__edit__element--error-field':
-                    displayKeyError(),
-                },
-              ]"
-            />
-            <span
-              v-if="displayKeyError()"
-              class="settings__module__edit__element__error"
-              >{{ $t("fields.key_is_taken_error") }}</span
-            >
-          </template>
-
-          <template v-else-if="isCheckbox(fieldName)">
-            <Checkbox v-model="form[fieldName]"></Checkbox>
-            <span
-              v-if="form.errors[fieldName]"
-              class="settings__module__edit__element__error"
-            >
-              {{ form.errors[fieldName] }}
-            </span>
-          </template>
-
-          <template v-else-if="isDropDown(fieldName)">
-            <DropdownField
-              v-model="form[fieldName]"
-              :options="typesList()"
-            ></DropdownField>
-
-            <DropdownSelector
-              v-if="form[fieldName] === 'dropdown'"
-              :options="[]"
-            >
-            </DropdownSelector>
-
-            <span
-              v-if="form.errors[fieldName]"
-              class="settings__module__edit__element__error"
-            >
-              {{ form.errors[fieldName] }}
-            </span>
-          </template>
-
-          <template v-else>
-            <input
-              type="text"
-              v-model="form[fieldName]"
-              :name="fieldName"
-              :class="{
-                'settings__module__edit__element--error-field':
-                  form.errors[fieldName],
-              }"
-            />
-            <span
-              v-if="form.errors[fieldName]"
-              class="settings__module__edit__element__error"
-            >
-              {{ form.errors[fieldName] }}
-            </span>
-          </template>
+                    form.errors[fieldName],
+                }"
+              />
+              <span
+                v-if="form.errors[fieldName]"
+                class="settings__module__edit__element__error"
+              >
+                {{ form.errors[fieldName] }}
+              </span>
+            </template>
+          </div>
         </div>
 
         <div class="settings__module__edit__actions">

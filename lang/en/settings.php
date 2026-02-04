@@ -14,6 +14,7 @@ return [
   'module_update_success' => 'Module updated successfuly',
   'module_save_error' => 'An error occured while saving module',
   'select'  => 'Select...',
+  'select_dropdown_list'  => 'Select Dropdown List...',
   'search_in_drop_down' => 'Search this list...',
   'dropdown_no_results' => 'No results',
   'setting_update_success' => 'The settings have been successfully updated',
