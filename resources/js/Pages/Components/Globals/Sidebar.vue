@@ -17,20 +17,15 @@ const modules = computed(() => page.props.modules ?? []);
 const currentUrl = computed(() => page.url);
 const appSettings = usePage().props.appSettings;
 
-const collapsedSidebar = ref(false);
-const toggleSidebar = () => {
-  collapsedSidebar.value = !collapsedSidebar.value;
-  localStorage.setItem(SIDEBAR_KEY, collapsedSidebar.value ? "1" : "0");
-};
+const collapsedSidebar = ref(true);
 
-const collapseSidebar = () => {
+function collapseSidebar() {
   collapsedSidebar.value = true;
-};
+}
 
-onMounted(() => {
-  const saved = localStorage.getItem(SIDEBAR_KEY);
-  collapsedSidebar.value = saved === "1";
-});
+function toggleSidebar() {
+  collapsedSidebar.value = !collapsedSidebar.value;
+}
 
 const tooltip = reactive({
   show: false,
@@ -39,10 +34,6 @@ const tooltip = reactive({
   top: 0,
   left: 0,
 });
-
-const navigateTo = (path) => {
-  router.visit(path);
-};
 
 const hideTooltip = () => {
   tooltip.show = false;
@@ -91,6 +82,7 @@ const onCollapserMouseEnter = (event) => {
 const onCollapserMouseLeave = () => {
   hideTooltip();
 };
+console.log(collapsedSidebar.value);
 </script>
 
 <template>

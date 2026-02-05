@@ -67,6 +67,7 @@
         }
         i {
           margin-right: 15px;
+          font-size: 1rem;
         }
       }
     }
@@ -726,12 +727,16 @@
         flex: 1;
       }
       &__type {
-        border: 1px solid darkcyan;
+        border: 1px solid var(--secondary-color);
         padding: 2.5px;
         font-size: 0.7rem;
         border-radius: 5px;
-        color: darkcyan;
-        background-color: color-mix(in srgb, darkcyan 10%, rgb(255, 255, 255));
+        color: var(--secondary-color);
+        background-color: color-mix(
+          in srgb,
+          var(--secondary-color) 10%,
+          rgb(255, 255, 255)
+        );
       }
     }
     &__no-fields {
