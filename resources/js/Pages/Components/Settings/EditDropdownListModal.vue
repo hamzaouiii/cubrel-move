@@ -1,34 +1,36 @@
 <script setup>
-import {
-  ref,
-  computed,
-  getCurrentInstance,
-  onMounted,
-  onBeforeUnmount,
-} from "vue";
 import { usePage, useForm } from "@inertiajs/vue3";
+
+import {
+  computed,
+  ref,
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+} from "vue";
+import Layout from "@/Layouts/Layout.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
-import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
-const { error, info, success, clearAllAlerts } = useAlerts();
+const { error, warning, success, info, clearAllAlerts } = useAlerts();
 
-const generatedSystemKey = computed(() => {
-  if (!form.key) return "";
-  const name = form.key
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^-+|-+$/g, "");
+const emit = defineEmits(["onCloseModal"]);
 
-  return name + "_list";
+const props = defineProps({
+  dropdown: Object,
+});
+const appSettings = usePage().props.appSettings;
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+const newItem = useForm({
+  label: "",
+  value: "",
 });
 
+const form = useForm({
+  key: props.dropdown?.key || "",
+  values: props.dropdown?.values || {},
+});
 const generatedSystemvalue = (label) => {
   if (!label) return "";
   const value = label
@@ -44,80 +46,67 @@ const generatedSystemvalue = (label) => {
 
   return value;
 };
-const { proxy } = getCurrentInstance();
-const t = proxy.$t;
-
-const appSettings = usePage().props.appSettings;
-
-const form = useForm({
-  key: "",
-  values: {},
-});
-let listItems = ref([]);
-let newItem = ref({ label: "", value: "" });
 
 const rowIsDirty = computed(() => {
-  return newItem.value.label.length >= 3;
+  return newItem.label.length >= 3;
 });
 
 const valueExistsError = ref(false);
 
 const addItem = () => {
-  if (!rowIsDirty.value) {
-    return;
-  }
-  if (listItems.value.some((item) => item.value === newItem.value)) {
+  if (!newItem.isDirty) return;
+  if (form.values.some((item) => item.value === newItem.value)) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
   }
-  listItems.value.push({
-    label: newItem.value.label,
-    value: generatedSystemvalue(newItem.value.label),
+  form.values.push({
+    label: newItem.label,
+    value: generatedSystemvalue(newItem.label),
   });
-
-  newItem.value.value = "";
-  newItem.value.label = "";
+  newItem.reset();
 };
+
 const deleteItem = (value) => {
-  listItems.value = listItems.value.filter((i) => i.value != value);
+  form.values = form.values.filter((i) => i.value != value);
 };
 
 const listIsDirty = computed(() => {
-  return listItems.value.length && form.key.length;
+  return form.isDirty;
 });
 
-const saveList = async () => {
-  try {
-    form.values = listItems.value;
-    form.key = generatedSystemKey.value;
+const resetList = () => {
+  warning("Resetting List to original values ");
+  form.reset();
+};
 
+const saveList = () => {
+  if (form.isDirty) {
     info(t("modules.actions.saving"));
-    const response = await axios.post("/settings/dropdowns_in_fields", form);
-    clearAllAlerts();
-    closeModalClicked();
-    success(t("settings.dropdown.save_success"));
-    emit("listCreated", response.data);
-  } catch (e) {
-    clearAllAlerts();
-    error(t("settings.dropdown.save_error"));
-    console.error(e);
+    form.put("/settings/dropdowns/" + props.dropdown.key, {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("settings.dropdown.update_success"));
+        closeModalClicked();
+      },
+      onError: (e) => {
+        clearAllAlerts();
+        error(t("settings.dropdown.save_error"));
+        console.error(e);
+      },
+    });
   }
 };
 
 function handleKeydown(e) {
   if (e.ctrlKey && e.key === "s") {
     e.preventDefault();
-    if (listIsDirty.value) {
-      saveList();
-    }
-  }
-  if (e.key === "Escape" && !listIsDirty.value) {
-    e.preventDefault();
-    closeModalClicked();
+    saveList();
   }
 }
-
+const closeModalClicked = () => {
+  emit("onCloseModal");
+};
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
 });
@@ -125,15 +114,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
-
-useUnsavedChangesGuard({
-  getIsDirty: () => listIsDirty.value,
-});
-const emit = defineEmits(["onCloseModal", "listCreated"]);
-
-const closeModalClicked = () => {
-  emit("onCloseModal");
-};
 </script>
 
 <template>
@@ -148,27 +128,31 @@ const closeModalClicked = () => {
       >
         <div class="settings__dropdown">
           <div class="settings__dropdown__edit">
-            <form class="dropdown-form" action="" method="post">
-              <div class="dropdown-form__item">
-                <span class="dropdown-form__item__label"
-                  ><label for="name">Name</label></span
-                >
-                <div class="dropdown-form__item__field">
-                  <input type="text" v-model="form.key" maxlength="25" />
-                </div>
-              </div>
-              <div class="dropdown-form__item" v-if="generatedSystemKey">
-                <span class="dropdown-form__item__label"
-                  ><label for="name">System Key</label></span
-                >
-                <div class="dropdown-form__item__field">
-                  <span>{{ generatedSystemKey }}</span>
-                </div>
-              </div>
-            </form>
-
             <div class="settings__dropdown__edit__header">
               <ul class="settings__dropdown__edit__header__info">
+                <li class="settings__dropdown__edit__header__info__data">
+                  <span
+                    class="settings__dropdown__edit__header__info__data__label"
+                    >{{ $t("settings.dropdown.list_name") }}:</span
+                  >
+                  <span
+                    class="settings__dropdown__edit__header__info__data__value"
+                    >{{ dropdown.key }}</span
+                  >
+                </li>
+                <li
+                  class="settings__dropdown__edit__header__info__data"
+                  v-if="dropdown.field_key"
+                >
+                  <span
+                    class="settings__dropdown__edit__header__info__data__label"
+                    >{{ $t("settings.dropdown.related_field") }}:
+                  </span>
+                  <span
+                    class="settings__dropdown__edit__header__info__data__value"
+                    >{{ dropdown.field_key }}</span
+                  >
+                </li>
                 <li class="settings__dropdown__edit__header__info__indicator">
                   <span>{{ $t("settings.dropdown.display_label") }}</span>
                   <span>{{ $t("settings.dropdown.value") }}</span>
@@ -178,7 +162,7 @@ const closeModalClicked = () => {
             </div>
             <ul>
               <li
-                v-for="l in listItems"
+                v-for="l in form.values"
                 class="settings__dropdown__edit__value"
               >
                 <div class="settings__dropdown__edit__value__item">
@@ -198,7 +182,7 @@ const closeModalClicked = () => {
                   </span>
                 </div>
               </li>
-              <form class="settings__dropdown__edit__value">
+              <li class="settings__dropdown__edit__value">
                 <div class="settings__dropdown__edit__value__item">
                   <input
                     type="text"
@@ -210,6 +194,7 @@ const closeModalClicked = () => {
                   <input
                     type="text"
                     :value="generatedSystemvalue(newItem.label)"
+                    :class="{ error: valueExistsError }"
                     readonly
                     disabled
                   />
@@ -223,10 +208,18 @@ const closeModalClicked = () => {
                     <i class="fa-solid fa-plus"></i>
                   </span>
                 </div>
-              </form>
+              </li>
             </ul>
-
             <div class="settings__dropdown__edit__actions">
+              <button
+                type="button"
+                class="settings__dropdown__edit__actions__reset btn"
+                :disabled="!listIsDirty"
+                @click="resetList()"
+              >
+                {{ $t("settings.reset") }}
+              </button>
+
               <button
                 type="submit"
                 class="settings__dropdown__edit__actions__save btn"

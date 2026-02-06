@@ -156,8 +156,8 @@
     }
 
     &--info {
-      background-color: rgba(25, 195, 252, 0.5);
-      color: dodgerblue;
+      background-color: rgba(25, 195, 252, 0.882);
+      color: rgb(0, 128, 255);
 
       &::before {
         content: "\f05a";

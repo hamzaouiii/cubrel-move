@@ -77,9 +77,18 @@ class DropDownListController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, DropdownList $dropDownList)
+  public function update(Request $request, string $dropdownList_key)
   {
-    //
+    $dropdownList = DropdownList::where('key', $dropdownList_key)
+      ->firstOrFail();
+
+    $data = $request->validate([
+      'values' => 'required',
+    ]);
+
+    $dropdownList->update($data);
+
+    return back()->with('success', __('settings.dropdown.update_success'));
   }
 
   /**

@@ -12,7 +12,12 @@ const props = defineProps({
   modelValue: [String, Number, Boolean, Object, null],
   options: Array,
 });
-const emit = defineEmits(["update:modelValue", "change", "onOpenCreateDialog"]);
+const emit = defineEmits([
+  "update:modelValue",
+  "change",
+  "onOpenCreateDialog",
+  "onOpenEditDialog",
+]);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -81,6 +86,10 @@ onBeforeUnmount(() => {
 const createClicked = () => {
   emit("onOpenCreateDialog");
 };
+
+const editClicked = () => {
+  emit("onOpenEditDialog");
+};
 </script>
 
 <template>
@@ -140,7 +149,11 @@ const createClicked = () => {
       </div>
     </transition>
   </div>
-  <button class="btn" :disabled="selectedOption === null">
+  <button
+    class="btn"
+    :disabled="selectedOption === null"
+    @click.prevent="editClicked(selectedOption)"
+  >
     <i class="fa-solid fa-pen-to-square"></i>
   </button>
   <button @click.prevent="createClicked" class="btn">

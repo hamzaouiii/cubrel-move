@@ -1194,14 +1194,14 @@
   }
 }
 
-.create-dropdown-list-modal {
+.dropdown-list-modal {
   position: fixed;
   top: 0;
   left: 0;
   display: flex;
   width: 100vw;
   height: 100vh;
-  background-color: #353535bb;
+  background-color: #636363b6;
   justify-content: center;
   align-items: center;
   &__container {

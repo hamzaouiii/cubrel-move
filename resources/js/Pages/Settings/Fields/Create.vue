@@ -11,6 +11,7 @@ import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
 import DropdownSelector from "@/Pages/Components/Settings/DropdownSelector.vue";
 import CreateNewDropdownListModal from "@/Pages/Components/Settings/CreateNewDropdownListModal.vue";
+import EditDropdownListModal from "@/Pages/Components/Settings/EditDropdownListModal.vue";
 import axios from "axios";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
@@ -30,8 +31,11 @@ const page = usePage();
 const appSettings = page.props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
 const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
 const selected_dropdown_list = ref(null);
+const DropDownListOptions = ref([]);
 
 const default_values = {
   label: "",
@@ -182,12 +186,19 @@ const openCreateDialog = () => {
   showCreateDialog.value = true;
 };
 
+const openEditDialog = () => {
+  showEditDialog.value = true;
+};
+
 const closeCreateDialog = () => {
   showCreateDialog.value = false;
 };
 
-const DropDownListOptions = ref([]);
-const fetchDropDownList = async () => {
+const closeEditDialog = () => {
+  showEditDialog.value = false;
+};
+
+const fetchDrodownList = async () => {
   try {
     const { data } = await axios.get("/api/dropdown-lists", {});
     DropDownListOptions.value = data.list;
@@ -201,8 +212,12 @@ const assignList = (value) => {
   selected_dropdown_list.value = value.id;
 };
 
+const getDropdonwItem = (id) => {
+  return DropDownListOptions.value.find((e) => e.id === id);
+};
+
 onMounted(() => {
-  fetchDropDownList();
+  fetchDrodownList();
 });
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty(),
@@ -297,6 +312,7 @@ useUnsavedChangesGuard({
                     v-model="selected_dropdown_list"
                     :options="DropDownListOptions"
                     @onOpenCreateDialog="openCreateDialog"
+                    @onOpenEditDialog="openEditDialog"
                   >
                   </DropdownSelector>
                 </div>
@@ -354,4 +370,10 @@ useUnsavedChangesGuard({
     @listCreated="assignList"
     v-if="showCreateDialog"
   ></CreateNewDropdownListModal>
+
+  <EditDropdownListModal
+    :dropdown="getDropdonwItem(selected_dropdown_list)"
+    @onCloseModal="closeEditDialog"
+    v-if="showEditDialog"
+  ></EditDropdownListModal>
 </template>

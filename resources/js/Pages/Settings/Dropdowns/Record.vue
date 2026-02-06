@@ -1,11 +1,17 @@
 <script setup>
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
-import { computed, ref, toRaw } from "vue";
+import {
+  computed,
+  ref,
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+} from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
-const { error, warning, success } = useAlerts();
+const { error, warning, success, info, clearAllAlerts } = useAlerts();
 defineOptions({
   layout: Layout,
 });
@@ -15,50 +21,97 @@ const props = defineProps({
   item: Object,
 });
 const appSettings = usePage().props.appSettings;
-
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 const newItem = useForm({
   label: "",
   value: "",
 });
-const dbListItems = computed(() => {
-  return props.dropdown.values ?? [];
+
+const form = useForm({
+  key: props.dropdown?.key || "",
+  values: props.dropdown?.values || {},
 });
+const generatedSystemvalue = (label) => {
+  if (!label) return "";
+  const value = label
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^-+|-+$/g, "");
+
+  return value;
+};
 
 const rowIsDirty = computed(() => {
-  return newItem.value.length >= 3 && newItem.label.length >= 3;
+  return newItem.label.length >= 3;
 });
 
-let ListItems = ref([...toRaw(dbListItems.value)]);
 const valueExistsError = ref(false);
-const isEditing = ref([]);
 
 const addItem = () => {
   if (!newItem.isDirty) return;
-  if (ListItems.value.some((item) => item.value === newItem.value)) {
+  if (form.values.some((item) => item.value === newItem.value)) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
   }
-  ListItems.value.push({
+  form.values.push({
     label: newItem.label,
-    value: newItem.value,
+    value: generatedSystemvalue(newItem.label),
   });
   newItem.reset();
 };
+
 const deleteItem = (value) => {
-  ListItems.value = ListItems.value.filter((i) => i.value != value);
+  form.values = form.values.filter((i) => i.value != value);
 };
 
 const listIsDirty = computed(() => {
-  const current = JSON.stringify(dbListItems.value);
-  const original = JSON.stringify(ListItems.value);
-  return current !== original;
+  return form.isDirty;
 });
 
 const resetList = () => {
   warning("Resetting List to original values ");
-  ListItems.value = [...toRaw(dbListItems.value)];
+  form.reset();
 };
+
+const saveList = () => {
+  if (form.isDirty) {
+    info(t("modules.actions.saving"));
+    form.put("/settings/dropdowns/" + props.dropdown.key, {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("settings.dropdown.update_success"));
+      },
+      onError: (e) => {
+        clearAllAlerts();
+        error(t("settings.dropdown.save_error"));
+        console.error(e);
+      },
+    });
+  }
+};
+
+function handleKeydown(e) {
+  if (e.ctrlKey && e.key === "s") {
+    e.preventDefault();
+    saveList();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
 </script>
 
 <template>
@@ -112,7 +165,7 @@ const resetList = () => {
           </ul>
         </div>
         <ul>
-          <li v-for="l in ListItems" class="settings__dropdown__edit__value">
+          <li v-for="l in form.values" class="settings__dropdown__edit__value">
             <div class="settings__dropdown__edit__value__item">
               <span>{{ $t(l.label) }}</span>
             </div>
@@ -132,13 +185,19 @@ const resetList = () => {
           </li>
           <li class="settings__dropdown__edit__value">
             <div class="settings__dropdown__edit__value__item">
-              <input type="text" v-model="newItem.label" />
+              <input
+                type="text"
+                v-model="newItem.label"
+                @keyup.enter="addItem"
+              />
             </div>
             <div class="settings__dropdown__edit__value__item">
               <input
                 type="text"
-                v-model="newItem.value"
+                :value="generatedSystemvalue(newItem.label)"
                 :class="{ error: valueExistsError }"
+                readonly
+                disabled
               />
             </div>
             <div class="settings__dropdown__edit__value__actions">
@@ -166,6 +225,7 @@ const resetList = () => {
             type="submit"
             class="settings__dropdown__edit__actions__save btn"
             :disabled="!listIsDirty"
+            @click="saveList()"
           >
             {{ $t("settings.save") }}
           </button>
