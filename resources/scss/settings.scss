@@ -1193,3 +1193,34 @@
     }
   }
 }
+
+.create-dropdown-list-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: #353535bb;
+  justify-content: center;
+  align-items: center;
+  &__container {
+    background-color: rgb(227, 227, 227);
+    width: 100%;
+    margin-left: 180px;
+    margin-right: 80px;
+    border-radius: 8px;
+  }
+  &__close {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+}

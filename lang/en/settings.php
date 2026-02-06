@@ -35,7 +35,7 @@ return [
     'show_in_sidebar' => 'Show In Sidebar',
     'description' => 'Descrption'
   ],
-  // perhaps need to change this to system_fields not to conflict with settings.modules.fields
+  // perhaps I need to change this to system_fields not to conflict with settings.modules.fields
   'fields' => [
     'app_locale'                => 'Application Language',
     'show_language_switcher'    => 'Show Language Switcher',
@@ -92,7 +92,10 @@ return [
     'display_label'   => 'Display Label',
     'value'   => 'Value',
     'list_name' => 'List Name',
-    'related_field' => 'Related Field'
+    'related_field' => 'Related Field',
+    'save_success' => 'Dropdown list saved succefully',
+    'save_error' => 'An error occurred while saving the Dropdown list'
+
   ]
 
 ];

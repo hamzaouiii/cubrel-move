@@ -7,48 +7,32 @@ import {
   nextTick,
   getCurrentInstance,
 } from "vue";
-import axios from "axios";
 
 const props = defineProps({
   modelValue: [String, Number, Boolean, Object, null],
+  options: Array,
 });
-
-const emit = defineEmits(["update:modelValue", "change"]);
+const emit = defineEmits(["update:modelValue", "change", "onOpenCreateDialog"]);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const isOpen = ref(false);
 const root = ref(null);
-const options = ref([]);
 
 const search = ref("");
 const searchInput = ref(null);
-const loading = ref(false);
-
-const fetchList = async () => {
-  loading.value = true;
-  try {
-    const { data } = await axios.get("/api/dropdown-lists", {});
-
-    options.value = data.list;
-  } catch (error) {
-    console.error("Failed to fetch dropdown lists:", error);
-  } finally {
-    loading.value = false;
-  }
-};
 
 const filteredOptions = computed(() => {
   const q = search.value.trim().toLowerCase();
 
-  return options.value.filter((o) => {
+  return props.options.filter((o) => {
     const key = String(o.key ?? "").toLowerCase();
     return key.includes(q);
   });
 });
 
 const selectedOption = computed(
-  () => options.value.find((o) => o.id === props.modelValue)?.key ?? null,
+  () => props.options.find((o) => o.id === props.modelValue)?.key ?? null,
 );
 
 const toggle = async () => {
@@ -73,7 +57,7 @@ const close = () => {
 
 const selectOption = (value) => {
   if (value !== props.modelValue) {
-    emit("update:modelValue", value);
+    emit("update:model-value", value);
     emit("change", value);
   }
   close();
@@ -87,13 +71,16 @@ const handleClickOutside = (event) => {
 };
 
 onMounted(() => {
-  fetchList();
   document.addEventListener("click", handleClickOutside);
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+const createClicked = () => {
+  emit("onOpenCreateDialog");
+};
 </script>
 
 <template>
@@ -156,7 +143,7 @@ onBeforeUnmount(() => {
   <button class="btn" :disabled="selectedOption === null">
     <i class="fa-solid fa-pen-to-square"></i>
   </button>
-  <button class="btn">
+  <button @click.prevent="createClicked" class="btn">
     <i class="fa-solid fa-circle-plus"></i>
   </button>
 </template>

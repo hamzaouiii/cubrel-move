@@ -90,7 +90,8 @@ class DropDownListController extends Controller
     //
   }
 
-  public function api(Request $request){
+  public function api(Request $request)
+  {
     $query = DropdownList::query();
 
     if ($search = $request->input('q')) {
@@ -99,6 +100,17 @@ class DropDownListController extends Controller
     $list = $query->get();
 
     return response()->json([
-      'list' => $list // Wrap in 'data' key
-  ]);  }
+      'list' => $list
+    ]);
+  }
+
+  public function storeAndAttach(Request $request)
+  {
+    $data = $request->validate([
+      'key' => 'required|string',
+      'values' => 'required',
+    ]);
+    $dropdown = DropdownList::create($data);
+    return response()->json($dropdown);
+  }
 }

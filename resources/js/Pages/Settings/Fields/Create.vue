@@ -2,7 +2,7 @@
 import Layout from "@/Layouts/Layout.vue";
 
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
-import { getCurrentInstance, computed, watch, ref } from "vue";
+import { getCurrentInstance, computed, watch, ref, onMounted } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
@@ -10,6 +10,9 @@ import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
 import DropdownSelector from "@/Pages/Components/Settings/DropdownSelector.vue";
+import CreateNewDropdownListModal from "@/Pages/Components/Settings/CreateNewDropdownListModal.vue";
+import axios from "axios";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
@@ -27,8 +30,8 @@ const page = usePage();
 const appSettings = page.props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-
-const selected_dropdown_list = ref("");
+const showCreateDialog = ref(false);
+const selected_dropdown_list = ref(null);
 
 const default_values = {
   label: "",
@@ -175,7 +178,35 @@ const displayKeyError = () => {
   return form.errors.key || form.errors.name;
 };
 
-// TODO: add unsaved changes guard here after dev work is done!
+const openCreateDialog = () => {
+  showCreateDialog.value = true;
+};
+
+const closeCreateDialog = () => {
+  showCreateDialog.value = false;
+};
+
+const DropDownListOptions = ref([]);
+const fetchDropDownList = async () => {
+  try {
+    const { data } = await axios.get("/api/dropdown-lists", {});
+    DropDownListOptions.value = data.list;
+  } catch (error) {
+    console.error("Failed to fetch dropdown lists:", error);
+  }
+};
+
+const assignList = (value) => {
+  DropDownListOptions.value.push(value);
+  selected_dropdown_list.value = value.id;
+};
+
+onMounted(() => {
+  fetchDropDownList();
+});
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty(),
+});
 </script>
 
 <template>
@@ -262,7 +293,11 @@ const displayKeyError = () => {
                   class="dropdown-selector"
                   v-if="form[fieldName] === 'dropdown'"
                 >
-                  <DropdownSelector v-model="selected_dropdown_list">
+                  <DropdownSelector
+                    v-model="selected_dropdown_list"
+                    :options="DropDownListOptions"
+                    @onOpenCreateDialog="openCreateDialog"
+                  >
                   </DropdownSelector>
                 </div>
               </transition>
@@ -303,7 +338,6 @@ const displayKeyError = () => {
           >
             {{ $t("settings.cancel") }}
           </button>
-
           <button
             type="submit"
             class="settings__module__edit__actions__save btn"
@@ -315,4 +349,9 @@ const displayKeyError = () => {
       </form>
     </div>
   </div>
+  <CreateNewDropdownListModal
+    @onCloseModal="closeCreateDialog"
+    @listCreated="assignList"
+    v-if="showCreateDialog"
+  ></CreateNewDropdownListModal>
 </template>
