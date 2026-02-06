@@ -48,7 +48,7 @@ const filteredOptions = computed(() => {
 });
 
 const selectedOption = computed(
-  () => options.value.find((o) => o.key === props.modelValue)?.key ?? null,
+  () => options.value.find((o) => o.id === props.modelValue)?.key ?? null,
 );
 
 const toggle = async () => {
@@ -133,10 +133,10 @@ onBeforeUnmount(() => {
         <ul class="dropdown-field_list">
           <li
             v-for="option in filteredOptions"
-            :key="option.value"
+            :key="option.key"
             class="dropdown-field_option"
             role="option"
-            @click="selectOption(option.key)"
+            @click="selectOption(option.id)"
           >
             <div class="dropdown-field_option_label">
               {{ option.key }}

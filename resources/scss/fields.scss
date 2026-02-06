@@ -619,8 +619,20 @@
       width: 150px;
     }
     &__field {
+      width: 100%;
+
       input {
-        width: 300px !important;
+        border: 2px solid lightgrey;
+        background: none;
+        padding: 5px;
+        width: 33%;
+
+        border-radius: 8px;
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        transition: border 0.15s ease;
+        &:focus {
+          border-color: var(--primary-color);
+        }
       }
     }
     &--prefix {

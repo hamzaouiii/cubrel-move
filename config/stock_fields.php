@@ -53,7 +53,7 @@ return [
     ],
     'account_id' => [
       'name' => 'account_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'first_name' => [
@@ -148,12 +148,12 @@ return [
     ],
     'account_id' => [
       'name' => 'account_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'contact_id' => [
       'name' => 'contact_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'quote_id' => [
@@ -210,12 +210,12 @@ return [
     ],
     'account_id' => [
       'name' => 'account_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'contact_id' => [
       'name' => 'contact_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'number' => [
@@ -263,12 +263,12 @@ return [
     ],
     'account_id' => [
       'name' => 'account_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'contact_id' => [
       'name' => 'contact_id',
-      'type' => 'dropdown',
+      'type' => 'relationship',
 
     ],
     'subject' => [

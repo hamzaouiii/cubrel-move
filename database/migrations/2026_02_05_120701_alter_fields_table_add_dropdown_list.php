@@ -11,12 +11,9 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('dropdown_lists', function (Blueprint $table) {
-      $table->uuid('id')->primary();
-      $table->string('key')->unique();
-      $table->boolean('is_global')->default(false);
-      $table->json('values')->nullable();
-      $table->timestamps();
+    Schema::table('fields', function (Blueprint $table) {
+      $table->uuid('dropdown_list_id')->nullable();
+      $table->foreign('dropdown_list_id')->references('id')->on('dropdown_lists')->cascadeOnDelete();
     });
   }
 
@@ -25,6 +22,8 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('dropdown_lists');
+    Schema::table('fields', function (Blueprint $table) {
+      $table->dropColumn('dropdown_list_id');
+    });
   }
 };

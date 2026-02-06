@@ -35,6 +35,7 @@ const default_values = {
   name: "",
   key: "",
   type: "",
+  dropdown_list: "",
   readonly: false,
   //hidden: false,
   required: false,
@@ -134,6 +135,9 @@ const saveField = () => {
     form.key = generatedKey.value;
     form.name = generatedName.value;
   }
+  if ((form.type = "dropdown")) {
+    form.dropdown_list = selected_dropdown_list.value;
+  }
 
   form.post(page.url, {
     preserveScroll: true,
@@ -171,9 +175,6 @@ const displayKeyError = () => {
   return form.errors.key || form.errors.name;
 };
 
-function runThis() {
-  console.log(selected_dropdown_list.value);
-}
 // TODO: add unsaved changes guard here after dev work is done!
 </script>
 
@@ -261,10 +262,7 @@ function runThis() {
                   class="dropdown-selector"
                   v-if="form[fieldName] === 'dropdown'"
                 >
-                  <DropdownSelector
-                    v-model="selected_dropdown_list"
-                    @change="runThis()"
-                  >
+                  <DropdownSelector v-model="selected_dropdown_list">
                   </DropdownSelector>
                 </div>
               </transition>

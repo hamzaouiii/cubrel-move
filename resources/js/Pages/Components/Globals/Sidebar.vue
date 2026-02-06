@@ -82,7 +82,6 @@ const onCollapserMouseEnter = (event) => {
 const onCollapserMouseLeave = () => {
   hideTooltip();
 };
-console.log(collapsedSidebar.value);
 </script>
 
 <template>

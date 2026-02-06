@@ -132,8 +132,6 @@ class FieldsManagerController extends Controller
 
       );
     }
-
-
     $field->update($data);
 
     return back();
@@ -154,6 +152,7 @@ class FieldsManagerController extends Controller
       'name' => ['required', 'string'],
       'key' => ['required', 'string', 'unique:fields,key,except,id'],
       'type' => ['required'],
+      'dropdown_list' => ['nullable'],
       'readonly' => ['boolean'],
       'required' => ['boolean'],
       'sortable' => ['boolean'],
@@ -167,12 +166,18 @@ class FieldsManagerController extends Controller
     $label_key = "modules." . $module->slug . ".fields." . $field_name;
     $label_value = $data['label'];
 
+    $dropdown_list = null;
+    if (isset($data['dropdown_list']) && $data['type'] === "dropdown") {
+      $dropdown_list = $data['dropdown_list'];
+    }
+
     Label::updateOrCreate([
       'key' => $label_key,
       'value' => $label_value,
       'module_id' => $module_id,
       'is_custom' => true
     ]);
+
 
     Field::updateOrCreate([
       'name'  => $field_name,
@@ -187,6 +192,7 @@ class FieldsManagerController extends Controller
       'min_length'  => $data['min_length'],
       'max_length'  => $data['max_length'],
       'regex'  => $data['regex'],
+      'dropdown_list_id' => $dropdown_list,
       'is_custom' => 1
     ]);
 
