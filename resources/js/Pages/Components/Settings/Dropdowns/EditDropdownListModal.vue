@@ -8,8 +8,6 @@ import {
   onBeforeUnmount,
   onMounted,
 } from "vue";
-import Layout from "@/Layouts/Layout.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { error, warning, success, info, clearAllAlerts } = useAlerts();

@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
-import IconPicker from "@/Pages/Components/Settings/IconPicker.vue";
+import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";

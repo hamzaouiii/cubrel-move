@@ -9,9 +9,9 @@ import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingB
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
-import DropdownSelector from "@/Pages/Components/Settings/DropdownSelector.vue";
-import CreateNewDropdownListModal from "@/Pages/Components/Settings/CreateNewDropdownListModal.vue";
-import EditDropdownListModal from "@/Pages/Components/Settings/EditDropdownListModal.vue";
+import DropdownSelector from "@/Pages/Components/Settings/Dropdowns/DropdownSelector.vue";
+import CreateNewDropdownListModal from "@/Pages/Components/Settings/Dropdowns/CreateNewDropdownListModal.vue";
+import EditDropdownListModal from "@/Pages/Components/Settings/Dropdowns/EditDropdownListModal.vue";
 import axios from "axios";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 

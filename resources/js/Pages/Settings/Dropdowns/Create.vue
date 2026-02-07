@@ -8,7 +8,7 @@ import {
 } from "vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
 import Layout from "@/Layouts/Layout.vue";
-import DropdownBreadcrumbs from "@/Pages/Components/Settings/DropdownBreadcrumbs.vue";
+import DropdownBreadcrumbs from "@/Pages/Components/Settings/Dropdowns/DropdownBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 

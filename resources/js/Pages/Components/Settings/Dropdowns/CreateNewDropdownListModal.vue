@@ -7,7 +7,6 @@ import {
   onBeforeUnmount,
 } from "vue";
 import { usePage, useForm } from "@inertiajs/vue3";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 

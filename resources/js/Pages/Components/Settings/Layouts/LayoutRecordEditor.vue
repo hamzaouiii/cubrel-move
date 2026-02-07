@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
-import Checkbox from "../FiledTypes/Checkbox.vue";
+import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 
 const props = defineProps({
   sections: {

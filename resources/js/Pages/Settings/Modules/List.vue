@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
-import ModuleManager from "@/Pages/Components/Settings/ModuleManager.vue";
+import ModuleManager from "@/Pages/Components/Settings/Modules/ModuleManager.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;

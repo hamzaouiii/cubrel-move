@@ -4,8 +4,8 @@ import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 
 import Layout from "@/Layouts/Layout.vue";
 
-import LayoutListEditor from "@/Pages/Components/Settings/LayoutListEditor.vue";
-import LayoutRecordEditor from "@/Pages/Components/Settings/LayoutRecordEditor.vue";
+import LayoutListEditor from "@/Pages/Components/Settings/Layouts/LayoutListEditor.vue";
+import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecordEditor.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
