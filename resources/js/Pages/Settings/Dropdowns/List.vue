@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import DropdownBreadcrumbs from "@/Pages/Components/Settings/DropdownBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;
 
@@ -61,9 +61,7 @@ const editUrl = (f) => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="item"
-        ></ModuleSettingBreadcrumbs>
+        <DropdownBreadcrumbs :setting-module="item"></DropdownBreadcrumbs>
       </div>
       <div class="settings__header__action">
         <Link class="settings__header__action__create" :href="createUrl">

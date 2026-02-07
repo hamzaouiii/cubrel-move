@@ -37,7 +37,7 @@ const breadcrumbs = computed(() => {
       currentPath += `/${segment}`;
 
       if (isUUID(segment)) {
-        label = props.settingModule?.label || null;
+        label = props.settingModule?.label || "create";
       } else {
         label = labelMapper[segment];
       }
@@ -62,11 +62,18 @@ const isDropdown = () => {
     :style="[{ '--primary-color': appSettings.primary_color }]"
   >
     <template v-for="(item, index) in breadcrumbs" :key="index">
-      <h5 v-if="!item.isCurrent">
+      <span
+        v-if="!item.isCurrent"
+        class="settings__header__title__breadcrumbs__link"
+      >
         <Link v-if="item.path" :href="item.path">{{ $t(item.label) }}</Link>
-        <span v-else>{{ $t(item.label) }}</span>
-      </h5>
-      <h6 v-else>{{ $t(item.label) }}</h6>
+        <span v-else class="settings__header__title__breadcrumbs__current">{{
+          $t(item.label)
+        }}</span>
+      </span>
+      <span v-else class="settings__header__title__breadcrumbs__current">{{
+        $t(item.label)
+      }}</span>
 
       <span v-if="index < breadcrumbs.length - 1">
         <i class="fa-solid fa-angle-right"></i>

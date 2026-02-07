@@ -8,7 +8,7 @@ import {
 } from "vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
 import Layout from "@/Layouts/Layout.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import DropdownBreadcrumbs from "@/Pages/Components/Settings/DropdownBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
@@ -129,9 +129,9 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-// useUnsavedChangesGuard({
-//   getIsDirty: () => (listIsDirty.value || rowIsDirty.value,
-// });
+useUnsavedChangesGuard({
+  getIsDirty: () => listIsDirty.value,
+});
 </script>
 
 <template>
@@ -146,9 +146,10 @@ onBeforeUnmount(() => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
+        <DropdownBreadcrumbs
           :setting-module="item"
-        ></ModuleSettingBreadcrumbs>
+          :current="t('settings.dropdown.create')"
+        ></DropdownBreadcrumbs>
       </div>
     </div>
 
