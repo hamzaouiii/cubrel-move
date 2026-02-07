@@ -186,9 +186,7 @@ function handleKeydown(e) {
 
 const getFieldDropDownList = (f) => {
   const field = props.fields.find((field) => field.name === f.name);
-  const list = props.dropdownLists.find((l) => l.field_key === field.key);
-
-  return list?.values || [];
+  return field?.dropdown_list.values || [];
 };
 
 onMounted(() => {

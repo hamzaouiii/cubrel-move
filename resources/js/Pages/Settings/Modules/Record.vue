@@ -148,36 +148,37 @@ useUnsavedChangesGuard({
             :key="key"
             class="settings__module__edit__element"
           >
-            <label>
+            <label class="settings__module__edit__element__label">
               {{ $t("settings.modules." + key) }}
             </label>
-
-            <Checkbox
-              v-if="inputTypeFor(key, value) === 'checkbox'"
-              v-model="editableModule[key]"
-              :module-color="editableModule.color"
-            ></Checkbox>
-            <IconPicker
-              v-else-if="inputTypeFor(key, value) === 'icon'"
-              v-model="editableModule[key]"
-              :color="editableModule.color"
-            />
-            <input
-              v-else-if="inputTypeFor(key, value) === 'display_label'"
-              :class="{ disabled: disableThis(key) }"
-              type="text"
-              :disabled="disableThis(key)"
-              v-model="settingModule.label"
-            />
-            <textarea
-              v-else-if="inputTypeFor(key, value) === 'textarea'"
-              v-model="editableModule[key]"
-            ></textarea>
-            <input
-              v-else
-              :type="inputTypeFor(key, value)"
-              v-model="editableModule[key]"
-            />
+            <div class="settings__module__edit__element__content">
+              <Checkbox
+                v-if="inputTypeFor(key, value) === 'checkbox'"
+                v-model="editableModule[key]"
+                :module-color="editableModule.color"
+              ></Checkbox>
+              <IconPicker
+                v-else-if="inputTypeFor(key, value) === 'icon'"
+                v-model="editableModule[key]"
+                :color="editableModule.color"
+              />
+              <input
+                v-else-if="inputTypeFor(key, value) === 'display_label'"
+                :class="{ disabled: disableThis(key) }"
+                type="text"
+                :disabled="disableThis(key)"
+                v-model="settingModule.label"
+              />
+              <textarea
+                v-else-if="inputTypeFor(key, value) === 'textarea'"
+                v-model="editableModule[key]"
+              ></textarea>
+              <input
+                v-else
+                :type="inputTypeFor(key, value)"
+                v-model="editableModule[key]"
+              />
+            </div>
           </div>
 
           <div class="settings__module__edit__actions">

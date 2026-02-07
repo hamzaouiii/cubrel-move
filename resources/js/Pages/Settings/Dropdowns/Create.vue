@@ -1,14 +1,53 @@
 <script setup>
+import {
+  ref,
+  computed,
+  getCurrentInstance,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
-import { ref, computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import DropdownBreadcrumbs from "@/Pages/Components/Settings/DropdownBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 const { error, info, success, clearAllAlerts } = useAlerts();
 defineOptions({
   layout: Layout,
 });
+
+const generatedSystemKey = computed(() => {
+  if (!form.key) return "";
+  const name = form.key
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^-+|-+$/g, "");
+
+  return name + "_list";
+});
+
+const generatedSystemvalue = (label) => {
+  if (!label) return "";
+  const value = label
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^-+|-+$/g, "");
+
+  return value;
+};
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -18,24 +57,20 @@ const props = defineProps({
 const appSettings = usePage().props.appSettings;
 
 const form = useForm({
-  key: "dsa",
-  field_key: "das",
-  module_id: "das",
+  key: "",
   values: {},
 });
 let listItems = ref([]);
 let newItem = ref({ label: "", value: "" });
 
 const rowIsDirty = computed(() => {
-  return newItem.value.value.length >= 3 && newItem.value.label.length >= 3;
+  return newItem.value.label.length >= 3;
 });
 
 const valueExistsError = ref(false);
-// const isEditing = ref([]);
 
 const addItem = () => {
   if (!rowIsDirty.value) {
-    console.log("row is not dirty");
     return;
   }
   if (listItems.value.some((item) => item.value === newItem.value)) {
@@ -45,7 +80,7 @@ const addItem = () => {
   }
   listItems.value.push({
     label: newItem.value.label,
-    value: newItem.value.value,
+    value: generatedSystemvalue(newItem.value.label),
   });
 
   newItem.value.value = "";
@@ -61,6 +96,7 @@ const listIsDirty = computed(() => {
 
 const saveList = () => {
   form.values = listItems.value;
+  form.key = generatedSystemKey.value;
   info(t("modules.actions.saving"));
 
   form.post("/settings/dropdowns", {
@@ -75,6 +111,27 @@ const saveList = () => {
     },
   });
 };
+
+function handleKeydown(e) {
+  if (e.ctrlKey && e.key === "s") {
+    e.preventDefault();
+    if (listIsDirty.value) {
+      saveList();
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
+
+useUnsavedChangesGuard({
+  getIsDirty: () => listIsDirty.value,
+});
 </script>
 
 <template>
@@ -89,9 +146,10 @@ const saveList = () => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
+        <DropdownBreadcrumbs
           :setting-module="item"
-        ></ModuleSettingBreadcrumbs>
+          :current="t('settings.dropdown.create')"
+        ></DropdownBreadcrumbs>
       </div>
     </div>
 
@@ -102,26 +160,17 @@ const saveList = () => {
             <span class="dropdown-form__item__label"
               ><label for="name">Name</label></span
             >
-            <div class="dropdown-form__item__field dropdown-form__item--prefix">
+            <div class="dropdown-form__item__field">
               <input type="text" v-model="form.key" maxlength="25" />
-              <span class="prefix">_list</span>
             </div>
           </div>
-          <div class="dropdown-form__item">
+          <div class="dropdown-form__item" v-if="generatedSystemKey">
             <span class="dropdown-form__item__label"
-              ><label for="name">Module</label></span
+              ><label for="name">System Key</label></span
             >
-            <span class="dropdown-form__item__field">
-              <input type="text" v-model="form.module_id" />
-            </span>
-          </div>
-          <div class="dropdown-form__item">
-            <span class="dropdown-form__item__label"
-              ><label for="name">Field</label></span
-            >
-            <span class="dropdown-form__item__field">
-              <input type="text" v-model="form.field_key" />
-            </span>
+            <div class="dropdown-form__item__field">
+              <span>{{ generatedSystemKey }}</span>
+            </div>
           </div>
         </form>
 
@@ -153,12 +202,21 @@ const saveList = () => {
               </span>
             </div>
           </li>
-          <li class="settings__dropdown__edit__value">
+          <form class="settings__dropdown__edit__value">
             <div class="settings__dropdown__edit__value__item">
-              <input type="text" v-model="newItem.label" />
+              <input
+                type="text"
+                v-model="newItem.label"
+                @keyup.enter="addItem"
+              />
             </div>
             <div class="settings__dropdown__edit__value__item">
-              <input type="text" v-model="newItem.value" />
+              <input
+                type="text"
+                :value="generatedSystemvalue(newItem.label)"
+                readonly
+                disabled
+              />
             </div>
             <div class="settings__dropdown__edit__value__actions">
               <span
@@ -169,7 +227,7 @@ const saveList = () => {
                 <i class="fa-solid fa-plus"></i>
               </span>
             </div>
-          </li>
+          </form>
         </ul>
 
         <div class="settings__dropdown__edit__actions">

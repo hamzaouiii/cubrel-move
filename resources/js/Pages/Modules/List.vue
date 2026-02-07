@@ -33,7 +33,6 @@ const pageProps = defineProps({
   listLayout: Object,
   filters: Object,
   fields: Object,
-  dropdownLists: Object,
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -321,9 +320,7 @@ const handleMassUpdate = async (payload) => {
 const getFieldDropDownList = (f) => {
   const field = pageProps.fields.find((field) => field.name === f);
 
-  const list = pageProps.dropdownLists.find((l) => l.field_key === field.key);
-
-  return list?.values || {};
+  return field?.dropdown_list.values || [];
 };
 
 const getDropDownListLabel = (f, i) => {

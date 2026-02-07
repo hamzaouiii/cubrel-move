@@ -100,13 +100,13 @@ class Module extends BaseModule
     throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
   }
 
-  /**
-   * @return HasMany<DropdownList, $this>
-   */
-  public function dropdownLists()
-  {
-    return $this->hasMany(DropdownList::class, 'module_id', 'id');
-  }
+  // /**
+  //  * @return HasMany<DropdownList, $this>
+  //  */
+  // public function dropdownLists()
+  // {
+  //   return $this->hasMany(DropdownList::class, 'module_id', 'id');
+  // }
 
   public function layoutFor(string $type)
   {
@@ -122,14 +122,18 @@ class Module extends BaseModule
   {
     return $this->hasMany(Field::class, 'module_id', 'id')
       ->select([
+        'id',
+        'module_id',
+        'dropdown_list_id',
         'name',
         'type',
         'key',
         'readonly',
         'sortable',
         'label',
-        'required'
-      ]);
+        'required',
+      ])
+      ->with('dropdown_list');
   }
 
   public function getFieldMetadata(string $field)

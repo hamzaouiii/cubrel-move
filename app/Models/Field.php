@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
+use App\Models\DropdownList;
 
 class Field extends Model
 {
@@ -39,13 +39,28 @@ class Field extends Model
     'filterable',
     'sortable',
     'database_type',
-    'default_value',
     'options',
+    'default_value',
     'min_length',
     'max_length',
     'regex',
+    'dropdown_list_id'
   ];
-  protected $excludedFromForms = ['id', 'module_id', 'key', 'is_custom', 'is_active', 'database_type'];
+
+  protected $excludedFromForms = [
+    'id',
+    'module_id',
+    'key',
+    'is_custom',
+    'is_active',
+    'options',
+    'filterable',
+    'searchable',
+    'hidden',
+    'database_type',
+    'dropdown_list_id'
+
+  ];
   /**
    * Attribute casting
    */
@@ -87,5 +102,10 @@ class Field extends Model
   public function getEmptyMetadata()
   {
     return array_diff($this->fillable, $this->excludedFromForms);
+  }
+
+  public function dropdown_list()
+  {
+    return $this->hasOne(DropdownList::class, 'id', 'dropdown_list_id');
   }
 }

@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import DropdownBreadcrumbs from "@/Pages/Components/Settings/DropdownBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;
 
@@ -54,13 +54,14 @@ const editUrl = (f) => {
   </Head>
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--danger-color': appSettings.danger_color,
+    }"
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="item"
-        ></ModuleSettingBreadcrumbs>
+        <DropdownBreadcrumbs :setting-module="item"></DropdownBreadcrumbs>
       </div>
       <div class="settings__header__action">
         <Link class="settings__header__action__create" :href="createUrl">
@@ -84,19 +85,7 @@ const editUrl = (f) => {
 
               <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
             </th>
-
-            <th @click="sortBy('field_key')">
-              {{ $t("related field") }}
-
-              <i
-                v-if="sortKey === 'field_key'"
-                class="fa-solid sort-icon is-active"
-                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
-              ></i>
-
-              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
-            </th>
-            <th style="width: 70px"></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -104,11 +93,20 @@ const editUrl = (f) => {
             <td>
               {{ f.key }}
             </td>
-            <td>{{ $t(f.field_key) }}</td>
-            <td style="width: 70px">
-              <Link class="fields__table__row__edit btn" :href="editUrl(f.key)">
+            <td class="fields__table__row__actions">
+              <span
+                class="fields__table__row__actions__delete btn fields__table__row__actions__delete--disabled"
+              >
                 <i
-                  class="fields__table__row__edit__icon fa-regular fa-pen-to-square"
+                  class="fields__table__row__actions__delete__icon fa-solid fa-trash-can"
+                ></i>
+              </span>
+              <Link
+                class="fields__table__row__actions__edit btn"
+                :href="editUrl(f.key)"
+              >
+                <i
+                  class="fields__table__row__actions__edit__icon fa-solid fa-pen-to-square"
                 ></i>
               </Link>
             </td>

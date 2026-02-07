@@ -77,9 +77,18 @@ class DropDownListController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, DropdownList $dropDownList)
+  public function update(Request $request, string $dropdownList_key)
   {
-    //
+    $dropdownList = DropdownList::where('key', $dropdownList_key)
+      ->firstOrFail();
+
+    $data = $request->validate([
+      'values' => 'required',
+    ]);
+
+    $dropdownList->update($data);
+
+    return back()->with('success', __('settings.dropdown.update_success'));
   }
 
   /**
@@ -88,5 +97,29 @@ class DropDownListController extends Controller
   public function destroy(DropdownList $dropDownList)
   {
     //
+  }
+
+  public function api(Request $request)
+  {
+    $query = DropdownList::query();
+
+    if ($search = $request->input('q')) {
+      $query->where('key', 'like', '%' . $search . '%');
+    }
+    $list = $query->get();
+
+    return response()->json([
+      'list' => $list
+    ]);
+  }
+
+  public function storeAndAttach(Request $request)
+  {
+    $data = $request->validate([
+      'key' => 'required|string',
+      'values' => 'required',
+    ]);
+    $dropdown = DropdownList::create($data);
+    return response()->json($dropdown);
   }
 }

@@ -15,7 +15,6 @@ const props = defineProps({
   item: Object,
   setting_modules: Object,
 });
-console.log(props.item);
 const page = usePage();
 const module = computed(() => page.props.item || page.props);
 const createUrl = computed(() => {
