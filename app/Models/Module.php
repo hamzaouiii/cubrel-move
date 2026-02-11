@@ -3,23 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Concerns\HasTranslatableLabel;
+use App\Concerns\HasCustomFields;
 use App\Models\Layout;
 use App\Models\Field;
-use App\Models\DropdownList;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 /**
+ * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
+ * Not to be confused with BaseModule => app\Models\BaseModule.php which is a business module, all CRM modules are to extend it, unlike this one which probably needs to be an abstract class
+ */
+/**
  * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Layout> $layouts
- * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\DropdownList> $dropdownLists
  * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Field> $fields
  * @method \Illuminate\Database\Eloquent\Relations\HasMany layouts()
- * @method \Illuminate\Database\Eloquent\Relations\HasMany dropdownLists()
  * @method \Illuminate\Database\Eloquent\Relations\HasMany fields()
  */
-class Module extends BaseModule
+class Module extends model
 {
+  use HasUuids;
+  use HasTranslatableLabel;
+  use HasCustomFields;
+
   protected $fillable = [
     'slug',
     'name',
@@ -100,12 +106,9 @@ class Module extends BaseModule
     throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
   }
 
-  // /**
-  //  * @return HasMany<DropdownList, $this>
-  //  */
-  // public function dropdownLists()
+  // public function relationships(): array
   // {
-  //   return $this->hasMany(DropdownList::class, 'module_id', 'id');
+  //   // return RelationshipRegistry::forModule($this->slug);
   // }
 
   public function layoutFor(string $type)
@@ -136,7 +139,7 @@ class Module extends BaseModule
       ->with('dropdown_list');
   }
 
-  public function getFieldMetadata(string $field)
+  public function getFieldMetadata(string $field): array
   {
     $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
     $field = $this->hasMany(Field::class, 'module_id', 'id')
