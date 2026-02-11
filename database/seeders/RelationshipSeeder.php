@@ -13,99 +13,99 @@ class RelationshipSeeder extends Seeder
 
     $relationships = [
 
-      // Accounts ↔ Contacts
+      // accounts ↔ contacts
       [
         'name' => 'accounts_contacts',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Contacts',
+        'left_module' => 'accounts',
+        'right_module' => 'contacts',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Accounts ↔ Leads
+      // accounts ↔ leads
       [
         'name' => 'accounts_leads',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Leads',
+        'left_module' => 'accounts',
+        'right_module' => 'leads',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Accounts ↔ Quotes
+      // accounts ↔ quotes
       [
         'name' => 'accounts_quotes',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Quotes',
+        'left_module' => 'accounts',
+        'right_module' => 'quotes',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Accounts ↔ Invoices
+      // accounts ↔ invoices
       [
         'name' => 'accounts_invoices',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Invoices',
+        'left_module' => 'accounts',
+        'right_module' => 'invoices',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Accounts ↔ Cases
+      // accounts ↔ cases
       [
         'name' => 'accounts_cases',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Cases',
+        'left_module' => 'accounts',
+        'right_module' => 'cases',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Accounts ↔ Emails
+      // accounts ↔ emails
       [
         'name' => 'accounts_emails',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Emails',
+        'left_module' => 'accounts',
+        'right_module' => 'emails',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Accounts ↔ Inquiries
+      // accounts ↔ inquiries
       [
         'name' => 'accounts_inquiries',
-        'lhs_module' => 'Accounts',
-        'rhs_module' => 'Inquiries',
+        'left_module' => 'accounts',
+        'right_module' => 'inquiries',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Quotes ↔ Invoices (conversion)
+      // quotes ↔ invoices (conversion)
       [
         'name' => 'quotes_invoices',
-        'lhs_module' => 'Quotes',
-        'rhs_module' => 'Invoices',
+        'left_module' => 'quotes',
+        'right_module' => 'invoices',
         'relationship_type' => 'one-to-one',
       ],
 
-      // Leads ↔ Emails
+      // leads ↔ emails
       [
         'name' => 'leads_emails',
-        'lhs_module' => 'Leads',
-        'rhs_module' => 'Emails',
+        'left_module' => 'leads',
+        'right_module' => 'emails',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Contacts ↔ Emails
+      // contacts ↔ emails
       [
         'name' => 'contacts_emails',
-        'lhs_module' => 'Contacts',
-        'rhs_module' => 'Emails',
+        'left_module' => 'contacts',
+        'right_module' => 'emails',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Cases ↔ Emails
+      // cases ↔ emails
       [
         'name' => 'cases_emails',
-        'lhs_module' => 'Cases',
-        'rhs_module' => 'Emails',
+        'left_module' => 'cases',
+        'right_module' => 'emails',
         'relationship_type' => 'one-to-many',
       ],
 
-      // Inquiries ↔ Emails
+      // inquiries ↔ emails
       [
         'name' => 'inquiries_emails',
-        'lhs_module' => 'Inquiries',
-        'rhs_module' => 'Emails',
+        'left_module' => 'inquiries',
+        'right_module' => 'emails',
         'relationship_type' => 'one-to-many',
       ],
     ];

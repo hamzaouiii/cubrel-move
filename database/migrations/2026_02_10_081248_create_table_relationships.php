@@ -12,20 +12,20 @@ return new class extends Migration {
 
       $table->string('name')->unique();
 
-      $table->string('lhs_module');
-      $table->string('rhs_module');
+      $table->string('left_module');
+      $table->string('right_module');
 
-      $table->string('relationship_type'); // one-to-one | one-to-many | many-to-many
+      $table->string('relationship_type');
 
       // for future DB-level optimizations
       $table->string('join_table')->nullable();
-      $table->string('lhs_key')->nullable();
-      $table->string('rhs_key')->nullable();
+      $table->string('left_module_key')->nullable();
+      $table->string('right_module_key')->nullable();
 
       $table->timestamps();
 
-      $table->index(['lhs_module']);
-      $table->index(['rhs_module']);
+      $table->index(['left_module']);
+      $table->index(['right_module']);
       $table->index(['relationship_type']);
     });
   }

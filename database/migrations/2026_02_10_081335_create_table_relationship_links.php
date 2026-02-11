@@ -12,21 +12,20 @@ return new class extends Migration {
 
       $table->uuid('relationship_id');
 
-      $table->uuid('lhs_id');
-      $table->uuid('rhs_id');
+      $table->uuid('left_id');
+      $table->uuid('right_id');
 
       $table->timestamps();
 
       $table->unique(
-        ['relationship_id', 'lhs_id', 'rhs_id'],
+        ['relationship_id', 'left_id', 'right_id'],
         'rel_unique_link'
       );
 
-      $table->index(['lhs_id']);
-      $table->index(['rhs_id']);
+      $table->index(['left_id']);
+      $table->index(['right_id']);
       $table->index(['relationship_id']);
 
-      // FK is safe here because relationships are system-defined
       $table->foreign('relationship_id')
         ->references('id')
         ->on('relationships')
