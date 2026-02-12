@@ -5,7 +5,7 @@ namespace App\Handlers\Modules;
 use App\Models\Modules\Lead;
 use Illuminate\Database\Eloquent\Builder;
 
-class LeadsModuleHandler extends BasePaginatedModuleHandler
+class LeadsModuleHandler extends BaseModuleHandler
 {
   /**
    * Build the base query for leads.

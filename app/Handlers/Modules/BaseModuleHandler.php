@@ -5,8 +5,9 @@ namespace App\Handlers\Modules;
 use App\Contracts\ModuleHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Services\Relationships\RelationshipService;
 
-abstract class BasePaginatedModuleHandler implements ModuleHandler
+abstract class BaseModuleHandler implements ModuleHandler
 {
   abstract protected function query(array $params = []): Builder;
 
@@ -88,8 +89,9 @@ abstract class BasePaginatedModuleHandler implements ModuleHandler
       $record = $model::findOrFail($recordId);
       $customFields = $record->custom_fields ?? [];
       $recordData = $record->toArray();
+      $related = RelationshipService::getAllRelatedRecords($model, $recordId)->toArray();
       $mergedData = array_merge($recordData, $customFields);
-
+      $mergedData['related'] = $related;
       return [
         'record' => $mergedData
       ];

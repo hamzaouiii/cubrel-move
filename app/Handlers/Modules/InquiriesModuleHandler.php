@@ -1,20 +1,19 @@
 <?php
 
 namespace App\Handlers\Modules;
+
 use App\Models\Modules\ContactMessage;
 use Illuminate\Database\Eloquent\Builder;
 
-class InquiriesModuleHandler extends BasePaginatedModuleHandler
+class InquiriesModuleHandler extends BaseModuleHandler
 {
-      protected function query(array $params = []): Builder
-    {
-        $query = ContactMessage::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = ContactMessage::query();
 
-        // apply filters here if needed
+    // apply filters here if needed
 
-        return $query;
-    }
-    protected string $model = ContactMessage::class;
-
+    return $query;
+  }
+  protected string $model = ContactMessage::class;
 }
-

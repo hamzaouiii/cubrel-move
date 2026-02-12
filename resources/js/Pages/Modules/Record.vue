@@ -28,6 +28,8 @@ const props = defineProps({
   recordLayout: Object,
   fields: Object,
 });
+
+console.log(props.record);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 

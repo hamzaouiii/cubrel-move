@@ -5,15 +5,15 @@ namespace App\Handlers\Modules;
 use App\Models\Modules\Invoice;
 use Illuminate\Database\Eloquent\Builder;
 
-class InvoicesModuleHandler extends BasePaginatedModuleHandler
+class InvoicesModuleHandler extends BaseModuleHandler
 {
-    protected function query(array $params = []): Builder
-    {
-        $query = Invoice::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = Invoice::query();
 
-        // apply filters here if needed
+    // apply filters here if needed
 
-        return $query;
-    }
-        protected string $model = Invoice::class;
+    return $query;
+  }
+  protected string $model = Invoice::class;
 }

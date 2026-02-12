@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import Layout from "@/Layouts/Layout.vue";
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 
 defineOptions({
   layout: Layout,
@@ -11,6 +11,8 @@ const pageProps = defineProps({
   settings: Object,
 });
 const appSettings = usePage().props.appSettings;
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 const flattenedSettings = computed(() => {
   const settings = pageProps.settings;
@@ -52,7 +54,7 @@ const filteredSettings = computed(() => {
   Object.entries(pageProps.settings).forEach(([groupKey, group]) => {
     if (!group || !group.items) return;
     const groupMatches =
-      (group.label && group.label.toLowerCase().includes(term)) ||
+      (t(group.label) && t(group.label).toLowerCase().includes(term)) ||
       (group.description && group.description.toLowerCase().includes(term)) ||
       groupKey.toLowerCase().includes(term);
 
@@ -62,7 +64,7 @@ const filteredSettings = computed(() => {
       if (!item) return;
 
       const itemMatches =
-        (item.label && item.label.toLowerCase().includes(term)) ||
+        (t(item.label) && t(item.label).toLowerCase().includes(term)) ||
         (item.description && item.description.toLowerCase().includes(term)) ||
         (item.name && item.name.toLowerCase().includes(term)) ||
         (item.path && item.path.toLowerCase().includes(term)) ||
