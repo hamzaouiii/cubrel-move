@@ -5,16 +5,15 @@ namespace App\Handlers\Modules;
 use App\Models\Modules\SupportCase;
 use Illuminate\Database\Eloquent\Builder;
 
-class CasesModuleHandler extends BasePaginatedModuleHandler
+class CasesModuleHandler extends BaseModuleHandler
 {
-    protected function query(array $params = []): Builder
-    {
-        $query = SupportCase::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = SupportCase::query();
 
-        // apply filters here if needed
+    // apply filters here if needed
 
-        return $query;
-    }
-    protected string $model = SupportCase::class;
-
+    return $query;
+  }
+  protected string $model = SupportCase::class;
 }

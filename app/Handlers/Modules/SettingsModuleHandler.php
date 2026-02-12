@@ -5,23 +5,22 @@ namespace App\Handlers\Modules;
 use App\Models\Settings\Settings;
 use Illuminate\Database\Eloquent\Builder;
 
-class SettingsModuleHandler extends BasePaginatedModuleHandler
+class SettingsModuleHandler extends BaseModuleHandler
 {
-    /**
-     * The Eloquent model class associated with this module.
-     *
-     * @var class-string
-     */
-    protected string $modelClass = Settings::class;
+  /**
+   * The Eloquent model class associated with this module.
+   *
+   * @var class-string
+   */
+  protected string $modelClass = Settings::class;
 
-    protected function query(array $params = []): Builder
-    {
-        $query = Settings::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = Settings::query();
 
-        // apply filters here if needed
+    // apply filters here if needed
 
-        return $query;
-    }
-    // Optionally override baseQuery(), filters, etc.
+    return $query;
+  }
+  // Optionally override baseQuery(), filters, etc.
 }
-

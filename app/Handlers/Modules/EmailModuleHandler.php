@@ -5,16 +5,15 @@ namespace App\Handlers\Modules;
 use App\Models\Modules\Email;
 use Illuminate\Database\Eloquent\Builder;
 
-class EmailModuleHandler extends BasePaginatedModuleHandler
+class EmailModuleHandler extends BaseModuleHandler
 {
-    protected function query(array $params = []): Builder
-    {
-        $query = Email::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = Email::query();
 
-        // apply filters here if needed
+    // apply filters here if needed
 
-        return $query;
-    }
-        protected string $model = Email::class;
-
+    return $query;
+  }
+  protected string $model = Email::class;
 }

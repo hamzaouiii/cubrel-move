@@ -4,18 +4,18 @@ namespace App\Handlers\Modules\Custom;
 
 use App\Models\Modules\Custom\Money;
 use Illuminate\Database\Eloquent\Builder;
-use App\Handlers\Modules\BasePaginatedModuleHandler;
+use App\Handlers\Modules\BaseModuleHandler;
 
-class MoneyModuleHandler extends BasePaginatedModuleHandler
+class MoneyModuleHandler extends BaseModuleHandler
 {
-    protected string $model = Money::class;
+  protected string $model = Money::class;
 
-    protected function query(array $params = []): Builder
-    {
-        $query = Money::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = Money::query();
 
-        // apply filters if needed
+    // apply filters if needed
 
-        return $query;
-    }
+    return $query;
+  }
 }

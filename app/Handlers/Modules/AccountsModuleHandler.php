@@ -5,7 +5,7 @@ namespace App\Handlers\Modules;
 use App\Models\Modules\Account;
 use Illuminate\Database\Eloquent\Builder;
 
-class AccountsModuleHandler extends BasePaginatedModuleHandler
+class AccountsModuleHandler extends BaseModuleHandler
 {
   protected string $model = Account::class;
   protected array $searchable = [

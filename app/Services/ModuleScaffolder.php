@@ -81,9 +81,9 @@ class ModuleScaffolder
 
         use {$modelClass};
         use Illuminate\Database\Eloquent\Builder;
-        use App\Handlers\Modules\BasePaginatedModuleHandler;
+        use App\Handlers\Modules\BaseModuleHandler;
 
-        class {$handlerName} extends BasePaginatedModuleHandler
+        class {$handlerName} extends BaseModuleHandler
         {
             protected string \$model = {$baseName}::class;
 
