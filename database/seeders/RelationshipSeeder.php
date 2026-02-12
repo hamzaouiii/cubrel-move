@@ -17,6 +17,8 @@ class RelationshipSeeder extends Seeder
       [
         'name' => 'accounts_contacts',
         'left_module' => 'accounts',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\Contact',
         'right_module' => 'contacts',
         'relationship_type' => 'one-to-many',
       ],
@@ -25,6 +27,8 @@ class RelationshipSeeder extends Seeder
       [
         'name' => 'accounts_leads',
         'left_module' => 'accounts',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\Lead',
         'right_module' => 'leads',
         'relationship_type' => 'one-to-many',
       ],
@@ -33,6 +37,8 @@ class RelationshipSeeder extends Seeder
       [
         'name' => 'accounts_quotes',
         'left_module' => 'accounts',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\Quote',
         'right_module' => 'quotes',
         'relationship_type' => 'one-to-many',
       ],
@@ -41,6 +47,8 @@ class RelationshipSeeder extends Seeder
       [
         'name' => 'accounts_invoices',
         'left_module' => 'accounts',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\Invoice',
         'right_module' => 'invoices',
         'relationship_type' => 'one-to-many',
       ],
@@ -49,6 +57,8 @@ class RelationshipSeeder extends Seeder
       [
         'name' => 'accounts_cases',
         'left_module' => 'accounts',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\SupportCase',
         'right_module' => 'cases',
         'relationship_type' => 'one-to-many',
       ],
@@ -57,6 +67,8 @@ class RelationshipSeeder extends Seeder
       [
         'name' => 'accounts_emails',
         'left_module' => 'accounts',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\Email',
         'right_module' => 'emails',
         'relationship_type' => 'one-to-many',
       ],
@@ -66,6 +78,8 @@ class RelationshipSeeder extends Seeder
         'name' => 'accounts_inquiries',
         'left_module' => 'accounts',
         'right_module' => 'inquiries',
+        'left_class'  => 'App\Models\Modules\Account',
+        'right_class'  => 'App\Models\Modules\ContactMessage',
         'relationship_type' => 'one-to-many',
       ],
 
@@ -74,6 +88,8 @@ class RelationshipSeeder extends Seeder
         'name' => 'quotes_invoices',
         'left_module' => 'quotes',
         'right_module' => 'invoices',
+        'left_class'  => 'App\Models\Modules\Quote',
+        'right_class'  => 'App\Models\Modules\Invoice',
         'relationship_type' => 'one-to-one',
       ],
 
@@ -82,6 +98,8 @@ class RelationshipSeeder extends Seeder
         'name' => 'leads_emails',
         'left_module' => 'leads',
         'right_module' => 'emails',
+        'left_class'  => 'App\Models\Modules\Lead',
+        'right_class'  => 'App\Models\Modules\Email',
         'relationship_type' => 'one-to-many',
       ],
 
@@ -90,6 +108,8 @@ class RelationshipSeeder extends Seeder
         'name' => 'contacts_emails',
         'left_module' => 'contacts',
         'right_module' => 'emails',
+        'left_class'  => 'App\Models\Modules\Contact',
+        'right_class'  => 'App\Models\Modules\Email',
         'relationship_type' => 'one-to-many',
       ],
 
@@ -98,6 +118,8 @@ class RelationshipSeeder extends Seeder
         'name' => 'cases_emails',
         'left_module' => 'cases',
         'right_module' => 'emails',
+        'left_class'  => 'App\Models\Modules\SupportCase',
+        'right_class'  => 'App\Models\Modules\Email',
         'relationship_type' => 'one-to-many',
       ],
 
@@ -106,6 +128,8 @@ class RelationshipSeeder extends Seeder
         'name' => 'inquiries_emails',
         'left_module' => 'inquiries',
         'right_module' => 'emails',
+        'left_class'  => 'App\Models\Modules\ContactMessage',
+        'right_class'  => 'App\Models\Modules\Email',
         'relationship_type' => 'one-to-many',
       ],
     ];

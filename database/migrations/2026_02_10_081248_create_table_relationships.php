@@ -13,12 +13,14 @@ return new class extends Migration {
       $table->string('name')->unique();
 
       $table->string('left_module');
+      $table->string('left_class');
+      $table->string('right_class');
       $table->string('right_module');
 
       $table->string('relationship_type');
 
       // for future DB-level optimizations
-      $table->string('join_table')->nullable();
+      $table->string('join_table')->default("relationship_links");
       $table->string('left_module_key')->nullable();
       $table->string('right_module_key')->nullable();
 
