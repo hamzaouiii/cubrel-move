@@ -297,7 +297,7 @@ class RelationshipService
 
       $result[$relationship->name] = [
         'type'    => $relationship->relationship_type,
-        'label'   => "relationships." . strtolower(class_basename($rel->related_class)),
+        'label'   =>  $relationship->label,
         'records' => $records,
       ];
     }

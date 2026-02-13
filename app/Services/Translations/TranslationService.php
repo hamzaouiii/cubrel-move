@@ -26,6 +26,7 @@ class TranslationService
         'globals',
         'dropdowns',
         'calendar',
+        'relationships'
       ];
 
       $translations = [];

@@ -7,22 +7,18 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'website' => [
       'name' => 'website',
       'type' => 'textfield',
-
     ],
     'email' => [
       'name' => 'email',
       'type' => 'email',
-
     ],
     'phone' => [
       'name' => 'phone',
       'type' => 'textfield',
-
     ],
     'billing_address' => [
       'name' => 'billing_address',
@@ -35,12 +31,14 @@ return [
     'city' => [
       'name' => 'city',
       'type' => 'textfield',
-
     ],
     'country' => [
       'name' => 'country',
       'type' => 'textfield',
-
+    ],
+    'description' => [
+      'name' => 'description',
+      'type' => 'longtext',
     ],
   ],
 
@@ -49,40 +47,37 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'account_id' => [
       'name' => 'account_id',
       'type' => 'relationship',
-
     ],
     'first_name' => [
       'name' => 'first_name',
       'type' => 'textfield',
-
     ],
     'last_name' => [
       'name' => 'last_name',
       'type' => 'textfield',
-
     ],
     'email' => [
       'name' => 'email',
       'type' => 'email',
-
     ],
     'phone' => [
       'name' => 'phone',
       'type' => 'textfield',
-
     ],
     'position' => [
       'name' => 'position',
       'type' => 'textfield',
-
     ],
     'notes' => [
       'name' => 'notes',
+      'type' => 'longtext',
+    ],
+    'description' => [
+      'name' => 'description',
       'type' => 'longtext',
     ],
   ],
@@ -92,32 +87,26 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'first_name' => [
       'name' => 'first_name',
       'type' => 'textfield',
-
     ],
     'last_name' => [
       'name' => 'last_name',
       'type' => 'textfield',
-
     ],
     'email' => [
       'name' => 'email',
       'type' => 'email',
-
     ],
     'phone' => [
       'name' => 'phone',
       'type' => 'textfield',
-
     ],
     'company' => [
       'name' => 'company',
       'type' => 'textfield',
-
     ],
     'street' => [
       'name' => 'street',
@@ -126,12 +115,10 @@ return [
     'city' => [
       'name' => 'city',
       'type' => 'textfield',
-
     ],
     'zip' => [
       'name' => 'zip',
       'type' => 'textfield',
-
     ],
     'description' => [
       'name' => 'description',
@@ -144,22 +131,18 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'account_id' => [
       'name' => 'account_id',
       'type' => 'relationship',
-
     ],
     'contact_id' => [
       'name' => 'contact_id',
       'type' => 'relationship',
-
     ],
     'quote_id' => [
       'name' => 'quote_id',
       'type' => 'dropdown',
-
     ],
     'number' => [
       'name' => 'number',
@@ -168,7 +151,6 @@ return [
     'status' => [
       'name' => 'status',
       'type' => 'dropdown',
-
     ],
     'issue_date' => [
       'name' => 'issue_date',
@@ -181,7 +163,6 @@ return [
     'currency' => [
       'name' => 'currency',
       'type' => 'textfield',
-
     ],
     'subtotal' => [
       'name' => 'subtotal',
@@ -197,6 +178,10 @@ return [
     ],
     'notes' => [
       'name' => 'notes',
+      'type' => 'longtext',
+    ],
+    'description' => [
+      'name' => 'description',
       'type' => 'longtext',
     ],
   ],
@@ -206,17 +191,14 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'account_id' => [
       'name' => 'account_id',
       'type' => 'relationship',
-
     ],
     'contact_id' => [
       'name' => 'contact_id',
       'type' => 'relationship',
-
     ],
     'number' => [
       'name' => 'number',
@@ -225,7 +207,6 @@ return [
     'status' => [
       'name' => 'status',
       'type' => 'dropdown',
-
     ],
     'valid_until' => [
       'name' => 'valid_until',
@@ -234,7 +215,6 @@ return [
     'currency' => [
       'name' => 'currency',
       'type' => 'textfield',
-
     ],
     'subtotal' => [
       'name' => 'subtotal',
@@ -252,6 +232,10 @@ return [
       'name' => 'notes',
       'type' => 'longtext',
     ],
+    'description' => [
+      'name' => 'description',
+      'type' => 'longtext',
+    ],
   ],
 
   'cases' => [
@@ -259,22 +243,18 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'account_id' => [
       'name' => 'account_id',
       'type' => 'relationship',
-
     ],
     'contact_id' => [
       'name' => 'contact_id',
       'type' => 'relationship',
-
     ],
     'subject' => [
       'name' => 'subject',
       'type' => 'textfield',
-
     ],
     'description' => [
       'name' => 'description',
@@ -283,12 +263,10 @@ return [
     'status' => [
       'name' => 'status',
       'type' => 'dropdown',
-
     ],
     'priority' => [
       'name' => 'priority',
       'type' => 'dropdown',
-
     ],
     'opened_at' => [
       'name' => 'opened_at',
@@ -304,27 +282,26 @@ return [
     'to' => [
       'name' => 'to',
       'type' => 'email',
-
     ],
     'subject' => [
       'name' => 'subject',
       'type' => 'textfield',
-
     ],
     'mailable_class' => [
       'name' => 'mailable_class',
       'type' => 'textfield',
-
     ],
     'related_id' => [
       'name' => 'related_id',
       'type' => 'textfield',
-
     ],
     'status' => [
       'name' => 'status',
       'type' => 'dropdown',
-
+    ],
+    'description' => [
+      'name' => 'description',
+      'type' => 'longtext',
     ],
   ],
 
@@ -333,7 +310,6 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-
     ],
     'message' => [
       'name' => 'message',
@@ -342,25 +318,25 @@ return [
     'email' => [
       'name' => 'email',
       'type' => 'email',
-
     ],
     'phone' => [
       'name' => 'phone',
       'type' => 'textfield',
-
     ],
     'status' => [
       'name' => 'status',
       'type' => 'dropdown',
-
     ],
     'ip' => [
       'name' => 'ip',
       'type' => 'textfield',
-
     ],
     'user_agent' => [
       'name' => 'user_agent',
+      'type' => 'longtext',
+    ],
+    'description' => [
+      'name' => 'description',
       'type' => 'longtext',
     ],
   ],
