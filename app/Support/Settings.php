@@ -11,9 +11,12 @@ class Settings
 
   public static function get(string $key, $default = null)
   {
-    static::$cache =  SettingValue::where('autoload', true)
-      ->pluck('value', 'key')
-      ->toArray();
+    if (empty(static::$cache)) {
+      static::$cache = SettingValue::where('autoload', true)
+        ->pluck('value', 'key')
+        ->toArray();
+    }
+
     return static::$cache[$key] ?? $default;
   }
 
@@ -42,8 +45,12 @@ class Settings
 
   public static function all(): array
   {
-    return SettingValue::where('autoload', true)
-      ->pluck('value', 'key')
-      ->toArray();
+    if (empty(static::$cache)) {
+      static::$cache = SettingValue::where('autoload', true)
+        ->pluck('value', 'key')
+        ->toArray();
+    }
+
+    return static::$cache;
   }
 }

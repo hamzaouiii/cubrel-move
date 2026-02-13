@@ -380,242 +380,236 @@ const sortedItems = computed(() => {
     <title>{{ title }}</title>
   </Head>
 
-  <div class="module-layout">
-    <div
-      class="module-layout__list"
-      :style="
-        appSettings.use_individual_module_colors == '0'
-          ? { '--module-color': appSettings.primary_color }
-          : { '--module-color': module.color }
-      "
-    >
-      <div class="module-layout__header">
-        <div class="module-layout__header__details">
-          <h3 class="module-layout__header__details__title">
-            {{ $t(module.label) }}
-          </h3>
-          <span class="module-layout__header__details__meta">{{
-            recordsNumberPhrase
-          }}</span>
-        </div>
-
-        <div class="module-layout__header__actions" ref="actionDropDownref">
-          <div
-            class="module-layout__header__actions__list"
-            :style="
-              appSettings.use_individual_module_colors == '0'
-                ? { '--module-color': appSettings.primary_color }
-                : { '--module-color': module.color }
-            "
-          >
-            <input
-              type="text"
-              name="search"
-              class="module-layout__header__actions__list__search"
-              :placeholder="$t('modules.actions.search_placeholder')"
-              v-model="search"
-              @input="handleSearchInput"
-              @keydown.enter.prevent="performSearch(1)"
-            />
-
-            <span
-              @click="resetSearchValue()"
-              :class="[
-                'module-layout__header__actions__list__search-reseter',
-                { 'hide-reseter': !search },
-              ]"
-              ><i class="fa-regular fa-circle-xmark"></i>
-            </span>
-
-            <button @click="goToCreateView()">
-              {{ $t("modules.actions.create") }}
-            </button>
-
-            <button @click="toggleActionDropDown">
-              <i
-                :class="
-                  showActionDropDown
-                    ? 'fa-solid fa-chevron-up'
-                    : 'fa-solid fa-chevron-down'
-                "
-              ></i>
-            </button>
-
-            <transition name="fade">
-              <ul
-                v-if="showActionDropDown"
-                class="module-layout__header__actions__list__dropdown show"
-              >
-                <li>
-                  <Link
-                    class="module-layout__header__actions__list__dropdown__item"
-                    :href="editModuleUrl"
-                  >
-                    <i class="fa-solid fa-wrench"></i>
-                    {{ $t("modules.actions.edit_module") }}
-                  </Link>
-                </li>
-                <li>
-                  <span
-                    class="module-layout__header__actions__list__dropdown__item"
-                    @click="toggleMassUpdateZone()"
-                  >
-                    <i class="fa-solid fa-square-pen"></i>
-                    {{ $t("modules.actions.mass_update") }}
-                  </span>
-                </li>
-
-                <li>
-                  <span
-                    class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
-                    @click.prevent="toggleDeleteZone()"
-                  >
-                    <i class="fa-solid fa-trash-can"></i>
-                    {{ $t("modules.actions.mass_delete") }}
-                  </span>
-                </li>
-              </ul>
-            </transition>
-          </div>
-        </div>
+  <div
+    class="list-layout"
+    :style="
+      appSettings.use_individual_module_colors == '0'
+        ? { '--module-color': appSettings.primary_color }
+        : { '--module-color': module.color }
+    "
+  >
+    <div class="module-layout__header">
+      <div class="module-layout__header__details">
+        <h3 class="module-layout__header__details__title">
+          {{ $t(module.label) }}
+        </h3>
+        <span class="module-layout__header__details__meta">{{
+          recordsNumberPhrase
+        }}</span>
       </div>
 
-      <ListDeleteZone
-        v-if="showDeleteZone"
-        :selectedIds="selectedIds"
-        :meta="meta"
-        :allMatchingSelected="allMatchingSelected"
-        @toggleAll="toggleAll()"
-        @cancelClicked="resetActionZone()"
-        @clearSelection="clearSelection()"
-        @deleteClicked="handleListDelete()"
-      />
+      <div class="module-layout__header__actions" ref="actionDropDownref">
+        <div
+          class="module-layout__header__actions__list"
+          :style="
+            appSettings.use_individual_module_colors == '0'
+              ? { '--module-color': appSettings.primary_color }
+              : { '--module-color': module.color }
+          "
+        >
+          <input
+            type="text"
+            name="search"
+            class="module-layout__header__actions__list__search"
+            :placeholder="$t('modules.actions.search_placeholder')"
+            v-model="search"
+            @input="handleSearchInput"
+            @keydown.enter.prevent="performSearch(1)"
+          />
 
-      <MassUpdateZone
-        v-else-if="showMassUpdateZone"
-        :selected-ids="selectedIds"
-        :meta="meta"
-        :all-matching-selected="allMatchingSelected"
-        :fields="fields"
-        :filters="pageProps.filters ?? {}"
-        @massUpdate="handleMassUpdate"
-        @toggleAll="toggleAll()"
-        @clearSelection="clearSelection()"
-        @cancelClicked="resetActionZone()"
-      />
-      <div class="module-layout__list__table-scroll">
-        <table class="module-layout__list__table">
-          <thead>
-            <tr>
-              <th
+          <span
+            @click="resetSearchValue()"
+            :class="[
+              'module-layout__header__actions__list__search-reseter',
+              { 'hide-reseter': !search },
+            ]"
+            ><i class="fa-regular fa-circle-xmark"></i>
+          </span>
+
+          <button @click="goToCreateView()">
+            {{ $t("modules.actions.create") }}
+          </button>
+
+          <button @click="toggleActionDropDown">
+            <i
+              :class="
+                showActionDropDown
+                  ? 'fa-solid fa-chevron-up'
+                  : 'fa-solid fa-chevron-down'
+              "
+            ></i>
+          </button>
+
+          <transition name="fade">
+            <ul
+              v-if="showActionDropDown"
+              class="module-layout__header__actions__list__dropdown show"
+            >
+              <li>
+                <Link
+                  class="module-layout__header__actions__list__dropdown__item"
+                  :href="editModuleUrl"
+                >
+                  <i class="fa-solid fa-wrench"></i>
+                  {{ $t("modules.actions.edit_module") }}
+                </Link>
+              </li>
+              <li>
+                <span
+                  class="module-layout__header__actions__list__dropdown__item"
+                  @click="toggleMassUpdateZone()"
+                >
+                  <i class="fa-solid fa-square-pen"></i>
+                  {{ $t("modules.actions.mass_update") }}
+                </span>
+              </li>
+
+              <li>
+                <span
+                  class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
+                  @click.prevent="toggleDeleteZone()"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                  {{ $t("modules.actions.mass_delete") }}
+                </span>
+              </li>
+            </ul>
+          </transition>
+        </div>
+      </div>
+    </div>
+
+    <ListDeleteZone
+      v-if="showDeleteZone"
+      :selectedIds="selectedIds"
+      :meta="meta"
+      :allMatchingSelected="allMatchingSelected"
+      @toggleAll="toggleAll()"
+      @cancelClicked="resetActionZone()"
+      @clearSelection="clearSelection()"
+      @deleteClicked="handleListDelete()"
+    />
+
+    <MassUpdateZone
+      v-else-if="showMassUpdateZone"
+      :selected-ids="selectedIds"
+      :meta="meta"
+      :all-matching-selected="allMatchingSelected"
+      :fields="fields"
+      :filters="pageProps.filters ?? {}"
+      @massUpdate="handleMassUpdate"
+      @toggleAll="toggleAll()"
+      @clearSelection="clearSelection()"
+      @cancelClicked="resetActionZone()"
+    />
+    <div class="list-layout__table-scroll">
+      <table class="list-layout__table">
+        <thead>
+          <tr>
+            <th
+              v-if="bulkActionmode"
+              scope="col"
+              class="list-layout__table__bulk-select"
+              @click.stop
+            >
+              <input
+                type="checkbox"
+                :checked="allSelected"
+                @change="toggleAllInView"
+              />
+            </th>
+
+            <th
+              v-for="col in listLayoutColumns || []"
+              :key="col?.name"
+              scope="col"
+              :class="{ sortable: col?.sortable }"
+              @click="sortBy(col)"
+            >
+              <span class="th-label">
+                {{ $t(col.label) }}
+                <i
+                  v-if="col?.sortable"
+                  :class="sortIcon(col)"
+                  class="sort-icon"
+                ></i>
+              </span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <template v-if="meta && meta.total != 0">
+            <Link
+              v-for="item in sortedItems"
+              :key="item.id"
+              as="tr"
+              class="clickable-row"
+              :href="`/${module.slug}/${item.id}`"
+            >
+              <td
                 v-if="bulkActionmode"
-                scope="col"
-                class="module-layout__list__table__bulk-select"
                 @click.stop
+                class="list-layout__table__bulk-select"
               >
                 <input
                   type="checkbox"
-                  :checked="allSelected"
-                  @change="toggleAllInView"
-                />
-              </th>
-
-              <th
-                v-for="col in listLayoutColumns || []"
-                :key="col?.name"
-                scope="col"
-                :class="{ sortable: col?.sortable }"
-                @click="sortBy(col)"
-              >
-                <span class="th-label">
-                  {{ $t(col.label) }}
-                  <i
-                    v-if="col?.sortable"
-                    :class="sortIcon(col)"
-                    class="sort-icon"
-                  ></i>
-                </span>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <template v-if="meta && meta.total != 0">
-              <Link
-                v-for="item in sortedItems"
-                :key="item.id"
-                as="tr"
-                class="clickable-row"
-                :href="`/${module.slug}/${item.id}`"
-              >
-                <td
-                  v-if="bulkActionmode"
+                  :checked="isSelected(item.id) || allMatchingSelected"
                   @click.stop
-                  class="module-layout__list__table__bulk-select"
+                  @change="toggleRow(item.id)"
+                />
+              </td>
+
+              <td v-for="col in listLayoutColumns || []" :key="col.name">
+                <template v-if="col?.name === 'email' && item[col?.name]">
+                  <a :href="'mailto:' + item[col.name]">
+                    <span v-html="highlightMatch(item[col.key])"></span>
+                  </a>
+                </template>
+
+                <template v-else-if="col.type === 'datetime' && item[col.name]">
+                  {{ formatDateTime(item[col.name], appSettings) }}
+                </template>
+                <template v-else-if="col.type === 'date' && item[col.name]">
+                  {{ formatDate(item[col.name], appSettings) }}
+                </template>
+                <template v-else-if="col.type === 'dropdown' && item[col.name]">
+                  {{ getDropDownListLabel(col.name, item[col.name]) }}
+                </template>
+                <template
+                  v-else-if="item[col.name] && item[col.name].length > 62"
                 >
-                  <input
-                    type="checkbox"
-                    :checked="isSelected(item.id) || allMatchingSelected"
-                    @click.stop
-                    @change="toggleRow(item.id)"
-                  />
-                </td>
+                  <span
+                    v-html="
+                      highlightMatch(item[col.name].substring(0, 64) + '...')
+                    "
+                  ></span>
+                </template>
 
-                <td v-for="col in listLayoutColumns || []" :key="col.name">
-                  <template v-if="col?.name === 'email' && item[col?.name]">
-                    <a :href="'mailto:' + item[col.name]">
-                      <span v-html="highlightMatch(item[col.key])"></span>
-                    </a>
-                  </template>
+                <template v-else>
+                  <span v-html="highlightMatch(item[col.name] ?? '-')"></span>
+                </template>
+              </td>
+            </Link>
+          </template>
 
-                  <template
-                    v-else-if="col.type === 'datetime' && item[col.name]"
-                  >
-                    {{ formatDateTime(item[col.name], appSettings) }}
-                  </template>
-                  <template v-else-if="col.type === 'date' && item[col.name]">
-                    {{ formatDate(item[col.name], appSettings) }}
-                  </template>
-                  <template
-                    v-else-if="col.type === 'dropdown' && item[col.name]"
-                  >
-                    {{ getDropDownListLabel(col.name, item[col.name]) }}
-                  </template>
-                  <template
-                    v-else-if="item[col.name] && item[col.name].length > 62"
-                  >
-                    <span
-                      v-html="
-                        highlightMatch(item[col.name].substring(0, 64) + '...')
-                      "
-                    ></span>
-                  </template>
-
-                  <template v-else>
-                    <span v-html="highlightMatch(item[col.name] ?? '-')"></span>
-                  </template>
-                </td>
-              </Link>
-            </template>
-
-            <template v-else>
-              <tr class="no-data-row">
-                <td
-                  :colspan="
-                    (listLayoutColumns?.length ?? 0) + (bulkActionmode ? 1 : 0)
-                  "
-                  class="no_data_list_view"
-                >
-                  {{ $t("modules.defaults.no_data") }}
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-      </div>
-      <div class="module-layout__list__pagination">
-        <Pagination v-if="meta && meta.total != 0" :meta="meta" />
-      </div>
+          <template v-else>
+            <tr class="no-data-row">
+              <td
+                :colspan="
+                  (listLayoutColumns?.length ?? 0) + (bulkActionmode ? 1 : 0)
+                "
+                class="no_data_list_view"
+              >
+                {{ $t("modules.defaults.no_data") }}
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+    <div class="list-layout__pagination">
+      <Pagination v-if="meta && meta.total != 0" :meta="meta" />
     </div>
   </div>
 </template>

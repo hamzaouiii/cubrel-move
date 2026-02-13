@@ -8,23 +8,38 @@ use App\Models\Module;
 trait HasCustomFields
 {
   protected static array $customFieldCache = [];
-
+  protected static array $moduleCache = [];
   public function __set($key, $value)
   {
-    if ($this->isCustomField($key)) {
-      $this->setAttribute($key, $value);
+    if (
+      array_key_exists($key, $this->attributes)
+      || array_key_exists($key, $this->casts)
+      || $this->hasGetMutator($key)
+    ) {
+      return parent::setAttribute($key);
     }
 
-    parent::__set($key, $value);
+    if ($this->isCustomField($key)) {
+      return $this->getCustomFieldValue($key);
+    }
+
+    return parent::__set($key, $value);
   }
 
   public function __get($key)
   {
-    if ($this->isCustomField($key)) {
+    if (
+      array_key_exists($key, $this->attributes)
+      || array_key_exists($key, $this->casts)
+      || $this->hasGetMutator($key)
+    ) {
+      return parent::getAttribute($key);
+    }
+    if ($this->isCustomField($key)) { // line 38
       return $this->getAttribute($key);
     }
 
-    return parent::__get($key);
+    return parent::__get($key); // 42
   }
 
   public function getAttribute($key)
@@ -32,13 +47,11 @@ trait HasCustomFields
     if ($key == 'custom_fields') {
       return $this->getAllCustomFields();
     }
-
-    if ($this->isCustomField($key)) {
-      return $this->getCustomFieldValue($key);
-    }
-
     if ($this->hasGetMutator($key) || $this->attributeExists($key)) {
       return parent::getAttribute($key);
+    }
+    if ($this->isCustomField($key)) { //53
+      return $this->getCustomFieldValue($key);
     }
 
     return parent::getAttribute($key);
@@ -84,7 +97,7 @@ trait HasCustomFields
   {
     $attributes = parent::toArray();
 
-    $customFields = $this->getCachedCustomFields();
+    $customFields = $this->getCachedCustomFields(); //100
     foreach ($customFields as $field) {
       $attributes[$field] = $this->getCustomFieldValue($field);
     }
@@ -94,7 +107,7 @@ trait HasCustomFields
 
   protected function isCustomField(string $key): bool
   {
-    return in_array($key, $this->getCachedCustomFields(), true);
+    return in_array($key, $this->getCachedCustomFields(), true); // line 110
   }
 
   protected function getCustomFieldValue(string $key): string
@@ -127,10 +140,16 @@ trait HasCustomFields
 
   protected function getCachedCustomFields(): array
   {
-    $module = Module::query()
-      ->where('table_name', $this->table)
-      ->where('is_active', 1)
-      ->first();
+    $table = $this->getTable();
+    if (!isset(self::$moduleCache[$table])) {
+      self::$moduleCache[$table] = Module::query()
+        ->where('table_name', $table)
+        ->where('is_active', 1)
+        ->first(); //148
+    }
+
+    $module = self::$moduleCache[$table];
+
 
     if (!$module) {
       return [];

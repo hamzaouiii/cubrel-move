@@ -89,8 +89,8 @@ abstract class BaseModuleHandler implements ModuleHandler
       $record = $model::findOrFail($recordId);
       $customFields = $record->custom_fields ?? [];
       $recordData = $record->toArray();
-      $related = RelationshipService::getAllRelatedRecords($model, $recordId)->toArray();
       $mergedData = array_merge($recordData, $customFields);
+      $related = RelationshipService::getAllRelatedRecords($model, $recordId)->toArray();
       $mergedData['related'] = $related;
       return [
         'record' => $mergedData
