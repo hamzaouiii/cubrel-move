@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Concerns\HasTranslatableLabel;
-use App\Concerns\HasCustomFields;
 use App\Models\Layout;
 use App\Models\Field;
+use Illuminate\Support\Collection;
 
 /**
  * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
@@ -20,11 +20,10 @@ use App\Models\Field;
  * @method \Illuminate\Database\Eloquent\Relations\HasMany layouts()
  * @method \Illuminate\Database\Eloquent\Relations\HasMany fields()
  */
-class Module extends model
+class Module extends Model
 {
   use HasUuids;
   use HasTranslatableLabel;
-  use HasCustomFields;
 
   protected $fillable = [
     'slug',
@@ -54,6 +53,26 @@ class Module extends model
     'can_edit'   => 'boolean',
     'can_delete' => 'boolean',
   ];
+
+  public static function forSidebar(): Collection
+  {
+    return self::active()
+      ->where('show_in_sidebar', 1)
+      ->orderBy('id')
+      ->get()
+      ->map(function (Module $module) {
+
+        return [
+          'slug'  => $module->slug,
+          'name' => $module->name,
+          'icon'  => $module->icon,
+          'color' => $module->color,
+          'path'  => $module->path,
+          'label' => $module->label
+        ];
+      })
+      ->values();
+  }
 
   public function scopeActive($query)
   {
@@ -106,11 +125,6 @@ class Module extends model
     throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
   }
 
-  // public function relationships(): array
-  // {
-  //   // return RelationshipRegistry::forModule($this->slug);
-  // }
-
   public function layoutFor(string $type)
   {
     return $this->layouts()
@@ -149,7 +163,6 @@ class Module extends model
       array_flip($excluded)
     );
   }
-
 
   protected function defaultReadonlyFor(string $key, string $type): bool
   {
