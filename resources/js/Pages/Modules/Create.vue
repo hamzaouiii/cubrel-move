@@ -250,28 +250,28 @@ const getTextareaRows = (f) => {
       </div>
     </div>
 
-    <div class="module-layout__record">
+    <div class="record-layout">
       <div
-        class="module-layout__record__section"
+        class="record-layout__section"
         v-for="s in recordLayout.sections"
         :key="s.name"
       >
-        <div class="module-layout__record__section__title">
+        <div class="record-layout__section__title">
           {{ s.name }}
         </div>
 
-        <div class="module-layout__record__section__layout">
+        <div class="record-layout__section__layout">
           <div
             v-for="f in s.layout.filter((f) => !f.readonly)"
             :key="f.name"
-            class="module-layout__record__section__layout__field"
+            class="record-layout__section__layout__field"
           >
-            <span class="module-layout__record__section__layout__field__label">
+            <span class="record-layout__section__layout__field__label">
               {{ $t(f.label) }}:
             </span>
 
             <div
-              class="module-layout__record__section__layout__field__content editing-mode"
+              class="record-layout__section__layout__field__content editing-mode"
               :class="{ error: hasError(f) }"
             >
               <template v-if="f.type === 'datetime'">

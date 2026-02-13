@@ -29,7 +29,6 @@ const props = defineProps({
   fields: Object,
 });
 
-console.log(props.record);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -419,88 +418,87 @@ useUnsavedChangesGuard({
       </div>
     </div>
 
-    <div class="module-layout__record">
-      <div
-        class="module-layout__record__section"
-        v-for="s in recordLayout.sections"
-      >
-        <div class="module-layout__record__section__title">
-          {{ s.name }}
-        </div>
-        <div class="module-layout__record__section__layout">
-          <div
-            v-for="f in s.layout"
-            class="module-layout__record__section__layout__field"
-          >
-            <span class="module-layout__record__section__layout__field__label">
-              {{ $t(f.label) }}:
-            </span>
+    <div class="record-layout">
+      <div class="record-layout__scroll">
+        <div class="record-layout__section" v-for="s in recordLayout.sections">
+          <div class="record-layout__section__title">
+            {{ s.name }}
+          </div>
+          <div class="record-layout__section__layout">
+            <div
+              v-for="f in s.layout"
+              class="record-layout__section__layout__field"
+            >
+              <span class="record-layout__section__layout__field__label">
+                {{ $t(f.label) }}:
+              </span>
 
-            <div
-              v-if="!isEditing"
-              :class="[
-                'module-layout__record__section__layout__field__content',
-                { 'view-uneditable-field': f.readonly },
-              ]"
-              @click="!f.readonly && enableEditing()"
-            >
-              {{ displayValueFor(f) }}
-            </div>
-            <div
-              :class="[
-                'module-layout__record__section__layout__field__content',
-                'editing-mode',
-                { 'uneditable-field': f.readonly },
-                { error: hasError(f) },
-              ]"
-              v-else
-            >
-              <template v-if="f.readonly">
-                <span>
-                  {{ displayValueFor(f) }}
-                </span>
-              </template>
-              <template v-else-if="isDropDown(f)">
-                <ModuleDropdownField
-                  :options="getFieldDropDownList(f)"
-                  v-model="form[f.name]"
-                  @click="removeValidationError(f)"
-                ></ModuleDropdownField>
-              </template>
-              <template v-else-if="f.type == 'longtext'">
-                <textarea
-                  v-model="form[f.name]"
-                  :rows="getTextareaRows(f)"
-                  @input="removeValidationErrorText(f)"
-                ></textarea>
+              <div
+                v-if="!isEditing"
+                :class="[
+                  'record-layout__section__layout__field__content',
+                  { 'view-uneditable-field': f.readonly },
+                ]"
+                @click="!f.readonly && enableEditing()"
+              >
+                {{ displayValueFor(f) }}
+              </div>
+              <div
+                :class="[
+                  'record-layout__section__layout__field__content',
+                  'editing-mode',
+                  { 'uneditable-field': f.readonly },
+                  { error: hasError(f) },
+                ]"
+                v-else
+              >
+                <template v-if="f.readonly">
+                  <span>
+                    {{ displayValueFor(f) }}
+                  </span>
+                </template>
+                <template v-else-if="isDropDown(f)">
+                  <ModuleDropdownField
+                    :options="getFieldDropDownList(f)"
+                    v-model="form[f.name]"
+                    @click="removeValidationError(f)"
+                  ></ModuleDropdownField>
+                </template>
+                <template v-else-if="f.type == 'longtext'">
+                  <textarea
+                    v-model="form[f.name]"
+                    :rows="getTextareaRows(f)"
+                    @input="removeValidationErrorText(f)"
+                  ></textarea>
+                  <span v-if="hasError(f)" class="error-icon-container">
+                    <i class="error-icon fa-solid fa-circle-exclamation"></i>
+                  </span>
+                </template>
+                <template v-else-if="f.type == 'datetime'">
+                  <DateTime
+                    v-model="form[f.name]"
+                    type="datetime"
+                    @click="removeValidationError(f)"
+                  />
+                </template>
+                <template v-else-if="f.type == 'date'">
+                  <DateTime
+                    v-model="form[f.name]"
+                    type="date"
+                    @click="removeValidationError(f)"
+                  />
+                </template>
+                <template v-else>
+                  <input
+                    type="text"
+                    v-model="form[f.name]"
+                    @input="removeValidationErrorText(f)"
+                  />
+                </template>
                 <span v-if="hasError(f)" class="error-icon-container">
                   <i class="error-icon fa-solid fa-circle-exclamation"></i>
                 </span>
-              </template>
-              <template v-else-if="f.type == 'datetime'">
-                <DateTime
-                  v-model="form[f.name]"
-                  type="datetime"
-                  @click="removeValidationError(f)"
-                />
-              </template>
-              <template v-else-if="f.type == 'date'">
-                <DateTime
-                  v-model="form[f.name]"
-                  type="date"
-                  @click="removeValidationError(f)"
-                />
-              </template>
-              <template v-else>
-                <input
-                  type="text"
-                  v-model="form[f.name]"
-                  @input="removeValidationErrorText(f)"
-                />
-              </template>
-              <span v-if="hasError(f)" class="error-icon-container">
-                <i class="error-icon fa-solid fa-circle-exclamation"></i>
-              </span>
+              </div>
             </div>
           </div>
         </div>
