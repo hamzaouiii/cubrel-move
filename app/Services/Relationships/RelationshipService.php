@@ -146,6 +146,7 @@ class RelationshipService
       $relationship->current_id_field = 'left_id';
       $relationship->other_id_field = 'right_id';
       $relationship->related_class = $relationship->right_class;
+      $relationship->related_slug = $relationship->right_module;
       $relationship->current_model_id = $model_id;
     } elseif ($relationship->right_class === $model_class) {
       $relationship->side = 'right';
@@ -154,6 +155,7 @@ class RelationshipService
       $relationship->current_id_field = 'right_id';
       $relationship->other_id_field = 'left_id';
       $relationship->related_class = $relationship->left_class;
+      $relationship->left_slug = $relationship->left_module;
       $relationship->current_model_id = $model_id;
     } else {
       throw new RuntimeException("Model {$model_class} is not part of relationship {$relationship->name}");
@@ -183,8 +185,9 @@ class RelationshipService
   /**
    * Link two records in a relationship
    */
-  public static function link(object $relationship, string $model_class, string $model_id, string $related_id): void
+  public static function link(string $relationship_name, string $model_class, string $model_id, string $related_id): void
   {
+    $relationship = self::get($relationship_name);
     $relationship = self::getWithResolvedIds($relationship, $model_class, $model_id, $related_id);
 
     DB::transaction(function () use ($relationship) {
@@ -277,8 +280,8 @@ class RelationshipService
     foreach ($relationships as $relationship) {
 
       $rel = self::getWithSide($relationship, $modelClass, $recordId);
-
-      $linksForRelationship = $allLinks[$relationship->id] ?? collect();
+      $related_slug =
+        $linksForRelationship = $allLinks[$relationship->id] ?? collect();
 
       $relatedIds = $linksForRelationship
         ->map(function ($link) use ($rel, $recordId) {
@@ -296,9 +299,11 @@ class RelationshipService
       }
 
       $result[$relationship->name] = [
+        'name'    => $relationship->name,
         'type'    => $relationship->relationship_type,
         'label'   =>  $relationship->label,
         'records' => $records,
+        'related_slug' => $relationship->related_slug,
       ];
     }
 

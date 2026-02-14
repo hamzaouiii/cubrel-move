@@ -10,6 +10,8 @@ use App\Services\ModuleScaffolder;
 use App\Services\Translations\TranslationService;
 use App\Models\Label;
 use App\Observers\LabelObserver;
+use App\Models\Settings\SettingValue;
+use App\Observers\SettingValueObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
   public function boot(): void
   {
     Label::observe(LabelObserver::class);
+    SettingValue::observe(SettingValueObserver::class);
 
     Vite::prefetch(concurrency: 3);
     Inertia::share('locale', fn() => app()->getLocale());

@@ -9,7 +9,7 @@ class TranslationService
 {
   public static function all(): array
   {
-    return Cache::rememberForever('translations.all', function () {
+    $resolver = function () {
 
       $dbLabels = Label::pluck('value', 'key')
         ->map(fn($value) => json_decode($value, true))
@@ -44,6 +44,12 @@ class TranslationService
       $translations['custom'] = $dbLabels;
 
       return $translations;
-    });
+    };
+
+    if (!app()->environment('local')) {
+      return Cache::rememberForever('translations.all', $resolver);
+    }
+
+    return $resolver();
   }
 }
