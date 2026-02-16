@@ -2,6 +2,8 @@
 
 return [
   'of' => 'of',
+  'overview' => 'Overview',
+  'related' => 'Related',
   'defaults' => [
     'name' => 'Name',
     'description' => 'Description',

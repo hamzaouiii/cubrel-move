@@ -155,7 +155,8 @@ class RelationshipService
       $relationship->current_id_field = 'right_id';
       $relationship->other_id_field = 'left_id';
       $relationship->related_class = $relationship->left_class;
-      $relationship->left_slug = $relationship->left_module;
+      $relationship->related_slug = $relationship->left_module;
+
       $relationship->current_model_id = $model_id;
     } else {
       throw new RuntimeException("Model {$model_class} is not part of relationship {$relationship->name}");
@@ -280,8 +281,8 @@ class RelationshipService
     foreach ($relationships as $relationship) {
 
       $rel = self::getWithSide($relationship, $modelClass, $recordId);
-      $related_slug =
-        $linksForRelationship = $allLinks[$relationship->id] ?? collect();
+
+      $linksForRelationship = $allLinks[$relationship->id] ?? collect();
 
       $relatedIds = $linksForRelationship
         ->map(function ($link) use ($rel, $recordId) {

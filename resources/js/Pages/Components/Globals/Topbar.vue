@@ -34,7 +34,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="topbar">
     <Link href="/" class="topbar__logo">
-      <img src="/img/logo/logo.svg" alt="logo" width="240" height="180" />
+      <!-- <img src="/img/logo/logo.svg" alt="logo" width="240" height="180" /> -->
     </Link>
     <div class="topbar__actions">
       <transition name="slide-search">

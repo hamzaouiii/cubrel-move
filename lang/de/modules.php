@@ -1,6 +1,9 @@
 <?php
 
 return [
+  'of' => 'von',
+  'overview' => 'Übersicht',
+  'related' => 'Beziehungen',
   'defaults' => [
     'name' => 'Name',
     'created_at' => 'Erstellt am',
@@ -9,7 +12,6 @@ return [
     'description' => 'Beschreibung',
 
   ],
-  'of' => 'von',
   'actions' => [
     'share'              => 'Teilen',
     'export'             => 'Exportieren',

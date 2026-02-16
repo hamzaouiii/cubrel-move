@@ -8,7 +8,7 @@ return [
   'accounts_cases'      => 'Fälle',
   'accounts_emails'     => 'E-Mails',
   'accounts_inquiries'  => 'Anfragen',
-  'quotes_invoices'     => 'Rechnungen',
+  'quotes_invoices'     => 'Angebote',
   'leads_emails'        => 'E-Mails',
   'contacts_emails'     => 'E-Mails',
   'cases_emails'        => 'E-Mails',

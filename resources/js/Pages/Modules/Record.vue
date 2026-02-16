@@ -13,8 +13,10 @@ import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
-import ModuleDropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
-import DateTime from "../Components/FiledTypes/DateTime.vue";
+import ModuleDropdownField from "@/Pages/Components/FiledTypes/ModuleDropdownField.vue";
+import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
+import RelatedpanelList from "../Components/Relatedpanels/List.vue";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 defineOptions({
@@ -32,12 +34,30 @@ const props = defineProps({
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
+const avatar = computed(() => {
+  const name = props.record?.name?.trim();
+  if (!name) return "";
+
+  // Remove numbers
+  const cleaned = name.replace(/\d+/g, "");
+
+  const words = cleaned.split(/\s+/).filter(Boolean);
+
+  if (words.length >= 2) {
+    return ((words[0][0] ?? "") + (words[1][0] ?? "")).toUpperCase();
+  }
+
+  return (words[0]?.slice(0, 2) ?? "").toUpperCase();
+});
+
 const form = useForm({ ...props.record });
 const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const appSettings = usePage().props.appSettings;
+
+const currentTab = ref("related");
 
 const isDirty = computed(() => form.isDirty);
 
@@ -331,6 +351,10 @@ onBeforeUnmount(() => {
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
 });
+
+const switchTabs = (tab) => {
+  currentTab.value = tab;
+};
 </script>
 
 <template>
@@ -346,161 +370,219 @@ useUnsavedChangesGuard({
         : { '--module-color': module.color }
     "
   >
-    <div class="module-layout__header">
-      <div class="module-layout__header__details">
-        <h3 class="module-layout__header__details__title">
-          {{ record.name }}
-        </h3>
-      </div>
-      <div class="module-layout__header__actions" ref="actionDropDownref">
-        <div class="module-layout__header__actions__edit">
-          <button v-if="isEditing" @click="cancelEditing">
-            {{ $t("modules.actions.cancel") }}
-          </button>
-
-          <button v-if="!isEditing" @click="enableEditing">
-            {{ $t("modules.actions.edit") }}
-          </button>
-
-          <button v-else :disabled="!isDirty" @click="saveRecord">
-            {{ $t("modules.actions.save") }}
-          </button>
-
-          <button
-            @click="toggleActionDropDown"
-            class="module-layout__header__actions__edit__dropdown-btn"
-          >
-            <i
-              :class="
-                showActionDropDown
-                  ? 'fa-solid fa-chevron-up'
-                  : 'fa-solid fa-chevron-down'
-              "
-            ></i>
-          </button>
-
-          <transition name="fade">
-            <ul
-              v-if="showActionDropDown"
-              class="module-layout__header__actions__edit__dropdown show"
-            >
-              <li
-                class="module-layout__header__actions__edit__dropdown__item disabled"
-              >
-                <i class="fa-solid fa-share-from-square"></i>
-                <span>{{ $t("modules.actions.share") }}</span>
-              </li>
-              <li
-                class="module-layout__header__actions__edit__dropdown__item disabled"
-              >
-                <i class="fa-solid fa-download"></i>
-                <span>{{ $t("modules.actions.export") }}</span>
-              </li>
-              <li class="module-layout__header__actions__edit__dropdown__item">
-                <i class="fa-solid fa-hourglass-end"></i>
-                <span>{{ $t("modules.actions.placeholder") }}</span>
-              </li>
-              <li class="module-layout__header__actions__edit__dropdown__item">
-                <i class="fa-solid fa-file-pdf"></i>
-                <span>{{ $t("modules.actions.bulk_action") }}</span>
-              </li>
-              <li
-                @click="deleteRecord()"
-                class="module-layout__header__actions__edit__dropdown__item"
-                style="color: salmon"
-              >
-                <i class="fa-solid fa-trash-can"></i>
-                <span>{{ $t("modules.actions.delete") }}</span>
-              </li>
-            </ul>
-          </transition>
-        </div>
-      </div>
-    </div>
-
     <div class="record-layout">
       <div class="record-layout__scroll">
-        <div class="record-layout__section" v-for="s in recordLayout.sections">
-          <div class="record-layout__section__title">
-            {{ s.name }}
-          </div>
-          <div class="record-layout__section__layout">
-            <div
-              v-for="f in s.layout"
-              class="record-layout__section__layout__field"
-            >
-              <span class="record-layout__section__layout__field__label">
-                {{ $t(f.label) }}:
-              </span>
-
+        <div class="record-layout__header">
+          <div class="record-layout__header__details">
+            <div class="record-layout__header__details__info">
               <div
-                v-if="!isEditing"
-                :class="[
-                  'record-layout__section__layout__field__content',
-                  { 'view-uneditable-field': f.readonly },
-                ]"
-                @click="!f.readonly && enableEditing()"
+                class="record-layout__header__details__info__avatar"
+                v-if="record.avatar"
               >
-                {{ displayValueFor(f) }}
+                {{ record.avatar }}
               </div>
               <div
-                :class="[
-                  'record-layout__section__layout__field__content',
-                  'editing-mode',
-                  { 'uneditable-field': f.readonly },
-                  { error: hasError(f) },
-                ]"
-                v-else
+                class="record-layout__header__details__info__avatar"
+                v-else="record.avatar"
               >
-                <template v-if="f.readonly">
-                  <span>
-                    {{ displayValueFor(f) }}
-                  </span>
-                </template>
-                <template v-else-if="isDropDown(f)">
-                  <ModuleDropdownField
-                    :options="getFieldDropDownList(f)"
-                    v-model="form[f.name]"
-                    @click="removeValidationError(f)"
-                  ></ModuleDropdownField>
-                </template>
-                <template v-else-if="f.type == 'longtext'">
-                  <textarea
-                    v-model="form[f.name]"
-                    :rows="getTextareaRows(f)"
-                    @input="removeValidationErrorText(f)"
-                  ></textarea>
-                  <span v-if="hasError(f)" class="error-icon-container">
-                    <i class="error-icon fa-solid fa-circle-exclamation"></i>
-                  </span>
-                </template>
-                <template v-else-if="f.type == 'datetime'">
-                  <DateTime
-                    v-model="form[f.name]"
-                    type="datetime"
-                    @click="removeValidationError(f)"
-                  />
-                </template>
-                <template v-else-if="f.type == 'date'">
-                  <DateTime
-                    v-model="form[f.name]"
-                    type="date"
-                    @click="removeValidationError(f)"
-                  />
-                </template>
-                <template v-else>
-                  <input
-                    type="text"
-                    v-model="form[f.name]"
-                    @input="removeValidationErrorText(f)"
-                  />
-                </template>
-                <span v-if="hasError(f)" class="error-icon-container">
-                  <i class="error-icon fa-solid fa-circle-exclamation"></i>
-                </span>
+                {{ avatar }}
+              </div>
+              <div class="record-layout__header__details__info__text">
+                <div class="record-layout__header__details__info__text__name">
+                  {{ record.name }}
+                </div>
+                <div
+                  class="record-layout__header__details__info__text__description"
+                >
+                  {{ record.description }}
+                </div>
+              </div>
+            </div>
+            <div
+              class="record-layout__header__details__actions"
+              ref="actionDropDownref"
+            >
+              <div class="record-layout__header__details__actions__edit">
+                <button v-if="isEditing" @click="cancelEditing">
+                  {{ $t("modules.actions.cancel") }}
+                </button>
+
+                <button v-if="!isEditing" @click="enableEditing">
+                  {{ $t("modules.actions.edit") }}
+                </button>
+
+                <button v-else :disabled="!isDirty" @click="saveRecord">
+                  {{ $t("modules.actions.save") }}
+                </button>
+
+                <button
+                  @click="toggleActionDropDown"
+                  class="record-layout__header__details__actions__edit__dropdown-btn"
+                >
+                  <i
+                    :class="
+                      showActionDropDown
+                        ? 'fa-solid fa-chevron-up'
+                        : 'fa-solid fa-chevron-down'
+                    "
+                  ></i>
+                </button>
+
+                <transition name="fade">
+                  <ul
+                    v-if="showActionDropDown"
+                    class="record-layout__header__details__actions__edit__dropdown show"
+                  >
+                    <li
+                      class="record-layout__header__details__actions__edit__dropdown__item disabled"
+                    >
+                      <i class="fa-solid fa-share-from-square"></i>
+                      <span>{{ $t("modules.actions.share") }}</span>
+                    </li>
+                    <li
+                      class="record-layout__header__details__actions__edit__dropdown__item disabled"
+                    >
+                      <i class="fa-solid fa-download"></i>
+                      <span>{{ $t("modules.actions.export") }}</span>
+                    </li>
+                    <li
+                      class="record-layout__header__details__actions__edit__dropdown__item"
+                    >
+                      <i class="fa-solid fa-hourglass-end"></i>
+                      <span>{{ $t("modules.actions.placeholder") }}</span>
+                    </li>
+                    <li
+                      class="record-layout__header__details__actions__edit__dropdown__item"
+                    >
+                      <i class="fa-solid fa-file-pdf"></i>
+                      <span>{{ $t("modules.actions.bulk_action") }}</span>
+                    </li>
+                    <li
+                      @click="deleteRecord()"
+                      class="record-layout__header__details__actions__edit__dropdown__item"
+                      style="color: salmon"
+                    >
+                      <i class="fa-solid fa-trash-can"></i>
+                      <span>{{ $t("modules.actions.delete") }}</span>
+                    </li>
+                  </ul>
+                </transition>
               </div>
             </div>
           </div>
+
+          <div class="record-layout__header__tabs">
+            <ul>
+              <li
+                @click="switchTabs('overview')"
+                :class="{ active: currentTab === 'overview' }"
+              >
+                {{ $t("modules.overview") }}
+              </li>
+              <li
+                @click="switchTabs('related')"
+                :class="{ active: currentTab === 'related' }"
+              >
+                {{ $t("modules.related") }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div v-if="currentTab === 'overview'" class="record-layout__sections">
+          <div
+            class="record-layout__sections__item"
+            v-for="s in recordLayout.sections"
+          >
+            <div class="record-layout__sections__item__title">
+              {{ s.name }}
+            </div>
+            <div class="record-layout__sections__item__layout">
+              <div
+                v-for="f in s.layout"
+                class="record-layout__sections__item__layout__field"
+              >
+                <span
+                  class="record-layout__sections__item__layout__field__label"
+                >
+                  {{ $t(f.label) }}:
+                </span>
+
+                <div
+                  v-if="!isEditing"
+                  :class="[
+                    'record-layout__sections__item__layout__field__content',
+                    { 'view-uneditable-field': f.readonly },
+                  ]"
+                  @click="!f.readonly && enableEditing()"
+                >
+                  {{ displayValueFor(f) }}
+                </div>
+                <div
+                  :class="[
+                    'record-layout__sections__item__layout__field__content',
+                    'editing-mode',
+                    { 'uneditable-field': f.readonly },
+                    { error: hasError(f) },
+                  ]"
+                  v-else
+                >
+                  <template v-if="f.readonly">
+                    <span>
+                      {{ displayValueFor(f) }}
+                    </span>
+                  </template>
+                  <template v-else-if="isDropDown(f)">
+                    <ModuleDropdownField
+                      :options="getFieldDropDownList(f)"
+                      v-model="form[f.name]"
+                      @click="removeValidationError(f)"
+                    ></ModuleDropdownField>
+                  </template>
+                  <template v-else-if="f.type == 'longtext'">
+                    <textarea
+                      v-model="form[f.name]"
+                      :rows="getTextareaRows(f)"
+                      @input="removeValidationErrorText(f)"
+                    ></textarea>
+                    <span v-if="hasError(f)" class="error-icon-container">
+                      <i class="error-icon fa-solid fa-circle-exclamation"></i>
+                    </span>
+                  </template>
+                  <template v-else-if="f.type == 'datetime'">
+                    <DateTime
+                      v-model="form[f.name]"
+                      type="datetime"
+                      @click="removeValidationError(f)"
+                    />
+                  </template>
+                  <template v-else-if="f.type == 'date'">
+                    <DateTime
+                      v-model="form[f.name]"
+                      type="date"
+                      @click="removeValidationError(f)"
+                    />
+                  </template>
+                  <template v-else>
+                    <input
+                      type="text"
+                      v-model="form[f.name]"
+                      @input="removeValidationErrorText(f)"
+                    />
+                  </template>
+                  <span v-if="hasError(f)" class="error-icon-container">
+                    <i class="error-icon fa-solid fa-circle-exclamation"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-else-if="currentTab === 'related'"
+          class="record-layout__subpanels"
+        >
+          <RelatedpanelList :relationships="record.related"></RelatedpanelList>
         </div>
       </div>
     </div>
