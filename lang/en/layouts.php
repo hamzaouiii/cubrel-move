@@ -2,12 +2,16 @@
 return [
   'label' => "Layouts",
   'record' => "Record",
+  'record_overview' => "Record Overview",
+  'remove_section'  => "Remove Section",
+  'related' => "Related Panels",
   'list' => "List",
   'create_list_tooltip' => "Create List Layout for ",
   'edit_list_tooltip' => "Edit List Layout for ",
   'create_record_tooltip' => "Create Record Layout for ",
   'edit_record_tooltip' => "Edit Record Layout for ",
-
+  'create_related_tooltip' => "Create Related Panels Layout for ",
+  'edit_related_tooltip' => "Edit Related Panels Layout for ",
   'available_fields' => "Available Fields",
   'available_fields_hint' => "Drag fields into the list on the right.",
   'list_columns' => "List Columns",

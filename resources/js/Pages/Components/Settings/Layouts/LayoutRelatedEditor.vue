@@ -21,7 +21,6 @@ const emit = defineEmits(["update:sections"]);
 
 const internalSections = ref([...props.sections]);
 const internalAvailable = ref([...props.availableFields]);
-const confirmSectionIndex = ref(null);
 watch(
   () => props.sections,
   (val) => {
@@ -95,16 +94,10 @@ const addNewSection = () => {
 };
 
 const removeSection = (sectionIndex) => {
-  if (confirmSectionIndex.value !== sectionIndex) {
-    confirmSectionIndex.value = sectionIndex;
-    return;
-  }
-
   if (internalSections.value.length > 1) {
     internalSections.value.splice(sectionIndex, 1);
     emitUpdatedSections();
   }
-  confirmSectionIndex.value = null;
 };
 
 // Drag and drop functions
@@ -449,27 +442,15 @@ onBeforeUnmount(() => {
                 />
               </div>
               <div class="editor__sections__item__header__actions">
-                <span
+                <button
                   v-if="internalSections.length > 1"
                   @click="removeSection(sectionIndex)"
-                  :class="[
-                    'remove-section',
-                    confirmSectionIndex === sectionIndex
-                      ? 'confirm-remove'
-                      : 'show-remove',
-                  ]"
+                  class="btn"
                   type="button"
+                  :title="$t('layouts.remove_section')"
                 >
-                  <i
-                    :class="[
-                      'fa-solid',
-                      confirmSectionIndex === sectionIndex
-                        ? 'fa-check'
-                        : 'fa-trash',
-                    ]"
-                  />
-                  {{ $t("layouts.remove_section") }}
-                </span>
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </div>
             </div>
 

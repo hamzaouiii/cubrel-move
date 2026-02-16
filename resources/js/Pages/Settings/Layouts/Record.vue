@@ -56,6 +56,10 @@ const onItemMouseEnter = (event, type) => {
     tooltip.text = hasRecordLayout.value
       ? t("layouts.edit_record_tooltip")
       : t("layouts.create_record_tooltip");
+  } else if (type == "related") {
+    tooltip.text = hasRecordLayout.value
+      ? t("layouts.edit_related_tooltip")
+      : t("layouts.create_related_tooltip");
   }
   tooltip.text += props.module.label;
   tooltip.color = appSettings.primary_color;
@@ -125,7 +129,25 @@ const onItemMouseLeave = () => {
               <i class="fa-regular fa-address-card"></i>
             </div>
             <span class="layouts__item__content__label">
-              {{ $t("layouts.record") }}
+              {{ $t("layouts.record_overview") }}
+            </span>
+          </div>
+        </Link>
+        <Link class="layouts__item" :href="currentPath + '/related'">
+          <div
+            class="layouts__item__content"
+            @mouseenter="onItemMouseEnter($event, 'related')"
+            @mouseleave="onItemMouseLeave"
+          >
+            <div class="layouts__item__content__modifier">
+              <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
+              <i v-else class="fa-regular fa-square-plus"></i>
+            </div>
+            <div class="layouts__item__content__icon">
+              <i class="fa-solid fa-circle-nodes"></i>
+            </div>
+            <span class="layouts__item__content__label">
+              {{ $t("layouts.related") }}
             </span>
           </div>
         </Link>

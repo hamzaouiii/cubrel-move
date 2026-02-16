@@ -264,6 +264,7 @@ useUnsavedChangesGuard({
     :style="{
       '--primary-color': appSettings.primary_color,
       '--secondary-color': appSettings.secondary_color,
+      '--danger-color': appSettings.danger_color,
     }"
   >
     <div class="settings__header">
@@ -293,7 +294,14 @@ useUnsavedChangesGuard({
         />
       </div>
 
-      <div v-if="type === 'record'">
+      <div v-else-if="type === 'record'">
+        <LayoutRecordEditor
+          v-model:sections="recordSections"
+          :available-fields="availableRecordFields"
+          :field-by-key="fieldByName"
+        />
+      </div>
+      <div v-else-if="type === 'related'">
         <LayoutRecordEditor
           v-model:sections="recordSections"
           :available-fields="availableRecordFields"

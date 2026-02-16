@@ -623,6 +623,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  border: 1px solid salmon;
   &__item {
     all: unset;
     display: flex;
@@ -704,8 +705,10 @@
 }
 .editor {
   border: 3px solid var(--primary-color);
+
   overflow: hidden;
   border-radius: 8px;
+
   &__available-fields {
     min-height: 200px;
     &__item {
@@ -782,17 +785,18 @@
   }
   &__container {
     display: flex;
-    padding: 5px;
+    padding: 20px;
     gap: 24px;
     height: 100%;
     margin-top: 20px;
     border-radius: 8px;
-    min-height: 500px;
+    min-height: fit-content;
     position: relative;
     overflow-y: auto;
     scrollbar-width: thin; // Firefox
     scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
     max-height: 55vh;
+    z-index: 11;
     &::-webkit-scrollbar {
       height: 10px;
       width: 10px;
@@ -825,6 +829,10 @@
       border-radius: 8px;
       padding: 16px;
       border: 1px solid #e9ecef;
+      z-index: 10;
+      position: sticky;
+      top: 0;
+      height: fit-content;
       &__header {
         display: flex;
         flex-direction: column;
@@ -899,15 +907,14 @@
       &__header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         padding: 16px 20px;
         background: #f8f9fa;
         border-bottom: 1px solid #e9ecef;
+        gap: 10px;
         &__title {
-          flex: 1;
-
+          flex: 10;
           input {
-            width: 100%;
+            width: calc(100% - 24px);
             padding: 8px 12px;
             border: 1px solid #ced4da;
             border-radius: 4px;
@@ -921,11 +928,40 @@
         }
         &__actions {
           display: flex;
-          gap: 8px;
-          margin-left: 10px;
-          .btn {
-            --btn-color: salmon;
-            --btn-bg-hover: salmon;
+          text-align: right;
+          .remove-section {
+            padding: 6px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            border-radius: 8px;
+            text-align: center;
+            color: transparent;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            user-select: none;
+            background-color: white;
+
+            i {
+              padding: 0 5px;
+            }
+          }
+          .show-remove {
+            color: var(--danger-color);
+            border: 2px solid var(--danger-color);
+            &:hover {
+              color: white;
+              background-color: var(--danger-color);
+            }
+          }
+          .confirm-remove {
+            color: seagreen;
+            border: 2px solid seagreen;
+            &:hover {
+              color: white;
+              background-color: seagreen;
+            }
           }
         }
       }
