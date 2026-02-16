@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Modules;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -32,11 +32,10 @@ class AccountFactory extends Factory
       'email' => $this->faker->optional(0.9)->safeEmail(), // 90% chance of having email
       'phone' => $this->faker->optional(0.7)->phoneNumber(), // 70% chance of having phone
       'billing_address' => $this->faker->optional(0.9)->streetAddress(), // 90% chance
-      'shipping_address' => $this->faker->optional(0.5, function () {
-        return $this->faker->streetAddress(); // 50% chance, different from billing
-      }),
+      'shipping_address' => $this->faker->optional(0.5)->streetAddress(),
       'city' => $this->faker->optional(0.9)->city(),
       'country' => $this->faker->optional(0.9)->country(),
+      'description' => $this->faker->paragraph(),
       'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
       'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];

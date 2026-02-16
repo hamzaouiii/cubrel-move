@@ -11,6 +11,12 @@ return [
         "sortable" => true
       ],
       [
+        "name" => "description",
+        "type" => "longText",
+        "label" =>  "modules.defaults.description",
+        "sortable" => true
+      ],
+      [
         "name" => "created_at",
         "type" => "datetime",
         "label" => "modules.defaults.created_at",
@@ -36,6 +42,14 @@ return [
             'name' => 'name',
             'type' => 'textfield',
             'label' => 'modules.defaults.name',
+            'required' => true,
+            'readonly' => false,
+            'sortable' => true
+          ],
+          [
+            'name' => 'description',
+            'type' => 'longText',
+            'label' => 'modules.defaults.description',
             'required' => true,
             'readonly' => false,
             'sortable' => true

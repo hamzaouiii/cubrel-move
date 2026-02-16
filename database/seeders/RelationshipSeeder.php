@@ -16,6 +16,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ contacts
       [
         'name' => 'accounts_contacts',
+        'label' => 'relationships.accounts_contacts',
         'left_module' => 'accounts',
         'left_class'  => 'App\Models\Modules\Account',
         'right_class'  => 'App\Models\Modules\Contact',
@@ -26,6 +27,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ leads
       [
         'name' => 'accounts_leads',
+        'label' => 'relationships.accounts_leads',
         'left_module' => 'accounts',
         'left_class'  => 'App\Models\Modules\Account',
         'right_class'  => 'App\Models\Modules\Lead',
@@ -36,6 +38,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ quotes
       [
         'name' => 'accounts_quotes',
+        'label' => 'relationships.accounts_quotes',
         'left_module' => 'accounts',
         'left_class'  => 'App\Models\Modules\Account',
         'right_class'  => 'App\Models\Modules\Quote',
@@ -46,6 +49,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ invoices
       [
         'name' => 'accounts_invoices',
+        'label' => 'relationships.accounts_invoices',
         'left_module' => 'accounts',
         'left_class'  => 'App\Models\Modules\Account',
         'right_class'  => 'App\Models\Modules\Invoice',
@@ -56,6 +60,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ cases
       [
         'name' => 'accounts_cases',
+        'label' => 'relationships.accounts_cases',
         'left_module' => 'accounts',
         'left_class'  => 'App\Models\Modules\Account',
         'right_class'  => 'App\Models\Modules\SupportCase',
@@ -66,6 +71,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ emails
       [
         'name' => 'accounts_emails',
+        'label' => 'relationships.accounts_emails',
         'left_module' => 'accounts',
         'left_class'  => 'App\Models\Modules\Account',
         'right_class'  => 'App\Models\Modules\Email',
@@ -76,6 +82,7 @@ class RelationshipSeeder extends Seeder
       // accounts ↔ inquiries
       [
         'name' => 'accounts_inquiries',
+        'label' => 'relationships.accounts_inquiries',
         'left_module' => 'accounts',
         'right_module' => 'inquiries',
         'left_class'  => 'App\Models\Modules\Account',
@@ -83,9 +90,10 @@ class RelationshipSeeder extends Seeder
         'relationship_type' => 'one-to-many',
       ],
 
-      // quotes ↔ invoices (conversion)
+      // quotes ↔ invoices
       [
         'name' => 'quotes_invoices',
+        'label' => 'relationships.quotes_invoices',
         'left_module' => 'quotes',
         'right_module' => 'invoices',
         'left_class'  => 'App\Models\Modules\Quote',
@@ -96,6 +104,7 @@ class RelationshipSeeder extends Seeder
       // leads ↔ emails
       [
         'name' => 'leads_emails',
+        'label' => 'relationships.leads_emails',
         'left_module' => 'leads',
         'right_module' => 'emails',
         'left_class'  => 'App\Models\Modules\Lead',
@@ -106,6 +115,7 @@ class RelationshipSeeder extends Seeder
       // contacts ↔ emails
       [
         'name' => 'contacts_emails',
+        'label' => 'relationships.contacts_emails',
         'left_module' => 'contacts',
         'right_module' => 'emails',
         'left_class'  => 'App\Models\Modules\Contact',
@@ -116,6 +126,7 @@ class RelationshipSeeder extends Seeder
       // cases ↔ emails
       [
         'name' => 'cases_emails',
+        'label' => 'relationships.cases_emails',
         'left_module' => 'cases',
         'right_module' => 'emails',
         'left_class'  => 'App\Models\Modules\SupportCase',
@@ -126,6 +137,7 @@ class RelationshipSeeder extends Seeder
       // inquiries ↔ emails
       [
         'name' => 'inquiries_emails',
+        'label' => 'relationships.inquiries_emails',
         'left_module' => 'inquiries',
         'right_module' => 'emails',
         'left_class'  => 'App\Models\Modules\ContactMessage',
@@ -133,6 +145,7 @@ class RelationshipSeeder extends Seeder
         'relationship_type' => 'one-to-many',
       ],
     ];
+
 
     foreach ($relationships as $relationship) {
       DB::table('relationships')->updateOrInsert(
