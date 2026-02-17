@@ -7,6 +7,7 @@ use App\Models\Module;
 use App\Models\Layout;
 use Inertia\Inertia;
 use App\Models\Settings\SettingItem;
+use App\Services\Relationships\RelationshipService;
 
 class LayoutManagerController extends Controller
 {
@@ -25,7 +26,13 @@ class LayoutManagerController extends Controller
         'definition' => 'required|array',
         'definition.sections' => 'required|array'
       ]);
+    } else if ($layoutType == 'related') {
+      $validated = $request->validate([
+        'definition' => 'required|array',
+        'definition.panels' => 'required|array'
+      ]);
     }
+
     $layout = \App\Models\Layout::firstOrNew([
       'module_id' => $module->id,
       'type'      => $layoutType,
@@ -36,8 +43,8 @@ class LayoutManagerController extends Controller
     $layout->module_name = $module->name;
     $layout->type        = $layoutType;
     $layout->definition  = $validated['definition'];
-
     $layout->save();
+
     return redirect()
       ->route('settings.modules.layouts.edit', [$module->id, $layoutType])
       ->with('success', __('layouts.layout_update_success'));
@@ -66,12 +73,14 @@ class LayoutManagerController extends Controller
     $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
     $defaultLayout = Layout::getDefaultLayout($type);
     $fields = $module->fields;
+    $relationships = RelationshipService::getRelationshipForModule($module->model_class);
     return Inertia::render('Settings/Layouts/Edit', [
       'item'     => $item,
       'module' => $module,
       'type'  => $type,
       'defaultLayout' => $defaultLayout,
       'fields'   => $fields,
+      'relationships' => $relationships
     ]);
   }
 }

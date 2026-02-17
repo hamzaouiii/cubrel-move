@@ -1,6 +1,11 @@
 <?php
 
 return [
+  'types' => [
+    'one-to-one' => "One To One",
+    'one-to-many' => "One To Many",
+    'many-to-many' => "One To One",
+  ],
   'accounts_contacts'   => 'Contacts',
   'accounts_leads'      => 'Leads',
   'accounts_quotes'     => 'Quotes',

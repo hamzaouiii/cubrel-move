@@ -1,41 +1,51 @@
 <script setup>
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
-import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 
 const props = defineProps({
-  sections: {
+  panels: {
     type: Array,
     default: () => [],
   },
-  availableFields: {
+  availableRelationships: {
     type: Array,
     default: () => [],
   },
-  fieldByKey: {
+  relByKey: {
     type: Object,
     default: () => ({}),
   },
+  emptyPanels: {
+    type: Array,
+    default: [],
+  },
 });
 
-const emit = defineEmits(["update:sections"]);
+const emit = defineEmits(["update:panels"]);
 
-const internalSections = ref([...props.sections]);
-const internalAvailable = ref([...props.availableFields]);
+const internalpanels = ref([...props.panels]);
+const internalAvailable = ref([...props.availableRelationships]);
+const confirmSectionIndex = ref(null);
+
+const isConfirm = (index) => confirmSectionIndex.value === index;
 watch(
-  () => props.sections,
+  () => props.panels,
   (val) => {
-    internalSections.value = [...val];
+    internalpanels.value = [...val];
   },
   { deep: true },
 );
 watch(
-  () => props.availableFields,
+  () => props.availableRelationships,
   (val) => {
     internalAvailable.value = [...val];
   },
   { deep: true },
 );
 
+const hasEmptyPanelError = (index) => {
+  const hasNoItems = props.panels[index].layout?.length === 0;
+  return props.emptyPanels.has(index) && hasNoItems;
+};
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -56,7 +66,7 @@ dragImage.src = transparentPixel;
 
 const usedFieldKeys = computed(() => {
   const used = new Set();
-  internalSections.value.forEach((section) => {
+  internalpanels.value.forEach((section) => {
     (section.layout || []).forEach((col) => {
       if (col?.key) used.add(col.key);
     });
@@ -64,21 +74,20 @@ const usedFieldKeys = computed(() => {
   return used;
 });
 
-const filteredAvailableFields = computed(() => {
+const filteredAvailableRelationships = computed(() => {
   return internalAvailable.value.filter(
     (field) => !usedFieldKeys.value.has(field.key),
   );
 });
-
 const ghostLabel = computed(() => {
   if (!dragging.value) return "";
   const { source, sectionIndex, columnIndex, isField } = dragging.value;
 
   if (source === "available") {
-    const item = filteredAvailableFields.value[columnIndex];
+    const item = filteredAvailableRelationships.value[columnIndex];
     return item ? (t(item.label) ?? item.key) : "";
   } else if (source === "section") {
-    const section = internalSections.value[sectionIndex];
+    const section = internalpanels.value[sectionIndex];
     const item = section?.layout?.[columnIndex];
     return item ? (t(item.label) ?? item.key) : "";
   }
@@ -86,18 +95,24 @@ const ghostLabel = computed(() => {
 });
 
 const addNewSection = () => {
-  internalSections.value.push({
-    name: `Section ${internalSections.value.length + 1}`,
+  internalpanels.value.push({
     layout: [],
   });
-  emitUpdatedSections();
+  emitUpdatedpanels();
 };
 
 const removeSection = (sectionIndex) => {
-  if (internalSections.value.length > 1) {
-    internalSections.value.splice(sectionIndex, 1);
-    emitUpdatedSections();
+  const hasLayout = internalpanels.value[sectionIndex]?.layout?.length > 0;
+  if (confirmSectionIndex.value !== sectionIndex && hasLayout) {
+    confirmSectionIndex.value = sectionIndex;
+    return;
   }
+
+  if (internalpanels.value.length > 1) {
+    internalpanels.value.splice(sectionIndex, 1);
+    emitUpdatedpanels();
+  }
+  confirmSectionIndex.value = null;
 };
 
 // Drag and drop functions
@@ -175,67 +190,66 @@ const moveFieldToSection = (
   targetSectionIndex,
   targetColumnIndex,
 ) => {
-  const field = filteredAvailableFields.value[fieldIndex];
+  const field = filteredAvailableRelationships.value[fieldIndex];
   if (!field) return;
 
-  const sections = [...internalSections.value];
-  const targetSection = sections[targetSectionIndex];
+  const panels = [...internalpanels.value];
+  const targetSection = panels[targetSectionIndex];
 
   if (!targetSection.layout) targetSection.layout = [];
-
   const newColumn = {
     name: field.name,
     label: field.label,
-    type: field.type,
+    type: field.relationship_type,
     readonly: field.readonly,
     required: field.required,
-    field: props.fieldByKey[field.name],
+    field: props.relByKey[field.name],
   };
 
   targetSection.layout.splice(targetColumnIndex, 0, newColumn);
-  internalSections.value = sections;
-  emitUpdatedSections();
+  internalpanels.value = panels;
+  emitUpdatedpanels();
 };
 
 const moveColumnWithinSection = (sectionIndex, fromIndex, toIndex) => {
   if (fromIndex === toIndex) return;
-  const sections = [...internalSections.value];
-  const section = sections[sectionIndex];
+  const panels = [...internalpanels.value];
+  const section = panels[sectionIndex];
   if (!section?.layout) return;
 
   const [item] = section.layout.splice(fromIndex, 1);
   section.layout.splice(toIndex, 0, item);
-  internalSections.value = sections;
-  emitUpdatedSections();
+  internalpanels.value = panels;
+  emitUpdatedpanels();
 };
 
-const moveColumnBetweenSections = (
+const moveColumnBetweenpanels = (
   fromSectionIndex,
   fromColumnIndex,
   toSectionIndex,
   toColumnIndex,
 ) => {
-  const sections = [...internalSections.value];
-  const fromSection = sections[fromSectionIndex];
-  const toSection = sections[toSectionIndex];
+  const panels = [...internalpanels.value];
+  const fromSection = panels[fromSectionIndex];
+  const toSection = panels[toSectionIndex];
 
   if (!fromSection?.layout || !toSection?.layout) return;
 
   const [item] = fromSection.layout.splice(fromColumnIndex, 1);
   toSection.layout.splice(toColumnIndex, 0, item);
 
-  internalSections.value = sections;
-  emitUpdatedSections();
+  internalpanels.value = panels;
+  emitUpdatedpanels();
 };
 
 const removeColumnFromSection = (sectionIndex, columnIndex) => {
-  const sections = [...internalSections.value];
-  const section = sections[sectionIndex];
+  const panels = [...internalpanels.value];
+  const section = panels[sectionIndex];
 
   if (section?.layout) {
     section.layout.splice(columnIndex, 1);
-    internalSections.value = sections;
-    emitUpdatedSections();
+    internalpanels.value = panels;
+    emitUpdatedpanels();
   }
 };
 
@@ -265,7 +279,7 @@ const onDropOnSectionColumn = (sectionIndex, columnIndex, event) => {
     if (dragSectionIndex === sectionIndex) {
       moveColumnWithinSection(sectionIndex, dragColumnIndex, columnIndex);
     } else {
-      moveColumnBetweenSections(
+      moveColumnBetweenpanels(
         dragSectionIndex,
         dragColumnIndex,
         sectionIndex,
@@ -290,17 +304,17 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
   if (source === "available") {
     moveFieldToSection(dragColumnIndex, sectionIndex, 0);
   } else if (source === "section") {
-    const sections = [...internalSections.value];
-    const targetSection = sections[sectionIndex];
-    const sourceSection = sections[dragSectionIndex];
+    const panels = [...internalpanels.value];
+    const targetSection = panels[sectionIndex];
+    const sourceSection = panels[dragSectionIndex];
 
     if (!targetSection.layout) targetSection.layout = [];
 
     const [item] = sourceSection.layout.splice(dragColumnIndex, 1);
     targetSection.layout.push(item);
 
-    internalSections.value = sections;
-    emitUpdatedSections();
+    internalpanels.value = panels;
+    emitUpdatedpanels();
   }
 
   endDrag();
@@ -336,29 +350,28 @@ const stopGhostAnimation = () => {
   }
 };
 
-const emitUpdatedSections = () => {
-  emit("update:sections", internalSections.value);
+const emitUpdatedpanels = () => {
+  emit("update:panels", internalpanels.value);
 };
 
 const updateSectionName = (sectionIndex, name) => {
-  internalSections.value[sectionIndex].name = name;
-  emitUpdatedSections();
+  internalpanels.value[sectionIndex].name = name;
+  emitUpdatedpanels();
 };
 
 onBeforeUnmount(() => {
   stopGhostAnimation();
 });
 </script>
-
 <template>
   <div class="editor" @dragover="onGlobalDragOver">
     <div class="editor__container">
       <div class="editor__container__sidebar">
         <div class="editor__container__sidebar__header">
           <span class="editor__container__sidebar__header__title">{{
-            $t("layouts.available_fields")
+            $t("layouts.available_relationships")
           }}</span>
-          <small>{{ $t("layouts.drag_to_sections") }}</small>
+          <small>{{ $t("layouts.drag_to_columns") }}</small>
         </div>
 
         <div class="editor__available-fields">
@@ -378,7 +391,7 @@ onBeforeUnmount(() => {
           </div>
 
           <div
-            v-for="(field, index) in filteredAvailableFields"
+            v-for="(field, index) in filteredAvailableRelationships"
             :key="field.key"
             class="editor__available-fields__item"
             :class="{
@@ -399,15 +412,15 @@ onBeforeUnmount(() => {
               {{ $t(field.label) ?? field.key }}
             </span>
             <span class="editor__available-fields__item__type">
-              {{ $t("fields.types." + field.type) }}
+              {{ $t("relationships.types." + field.relationship_type) }}
             </span>
           </div>
 
           <div
-            v-if="filteredAvailableFields.length === 0"
+            v-if="filteredAvailableRelationships.length === 0"
             class="editor__available-fields__no-fields"
           >
-            {{ $t("layouts.all_fields_used") }}
+            {{ $t("layouts.all_relationships_used") }}
           </div>
         </div>
       </div>
@@ -415,70 +428,79 @@ onBeforeUnmount(() => {
       <div class="editor__container__main">
         <div class="editor__container__main__header">
           <div class="editor__container__main__header__title">
-            {{ $t("layouts.record_sections") }}
+            {{ $t("layouts.related") }}
           </div>
           <button
             @click="addNewSection"
             class="editor__container__main__header__btn btn"
             type="button"
+            :disabled="internalpanels.length > 2"
           >
-            <i class="fa-solid fa-plus"></i> {{ $t("layouts.add_section") }}
+            <i class="fa-solid fa-plus"></i> {{ $t("layouts.add_column") }}
           </button>
         </div>
-
-        <div class="editor__sections">
+        <div class="editor__related">
           <div
-            v-for="(section, sectionIndex) in internalSections"
+            v-for="(section, sectionIndex) in internalpanels"
             :key="sectionIndex"
-            class="editor__sections__item"
+            :class="[
+              'editor__related__item',
+              { 'is-empty': hasEmptyPanelError(sectionIndex) },
+            ]"
           >
-            <div class="editor__sections__item__header">
-              <div class="editor__sections__item__header__title">
-                <input
-                  :value="section.name"
-                  @input="updateSectionName(sectionIndex, $event.target.value)"
-                  type="text"
-                  :placeholder="$t('layouts.section_name_placeholder')"
-                />
-              </div>
-              <div class="editor__sections__item__header__actions">
-                <button
-                  v-if="internalSections.length > 1"
-                  @click="removeSection(sectionIndex)"
-                  class="btn"
-                  type="button"
-                  :title="$t('layouts.remove_section')"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </div>
+            <div
+              class="editor__related__item__error"
+              v-if="hasEmptyPanelError(sectionIndex)"
+            >
+              <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
 
-            <div class="editor__sections__item__content">
+            <div class="editor__related__item__actions">
+              <button
+                v-if="internalpanels.length > 1"
+                @click="removeSection(sectionIndex)"
+                :class="[
+                  'remove-section',
+                  isConfirm(sectionIndex) ? 'confirm-remove' : 'show-remove',
+                ]"
+                type="button"
+              >
+                <i
+                  :class="[
+                    'fa-solid',
+                    isConfirm(sectionIndex) ? 'fa-check' : 'fa-trash',
+                  ]"
+                />
+              </button>
+            </div>
+            <div class="editor__related__item__content">
               <div
                 v-if="!section.layout || section.layout.length === 0"
-                class="editor__sections__item__content__empty"
-                :class="{
-                  'editor__sections__item__content__empty--active':
-                    isDropZoneActive('section-empty', sectionIndex, 0),
-                }"
+                class="editor__related__item__content__empty"
+                :class="[
+                  {
+                    'editor__related__item__content__empty--active':
+                      isDropZoneActive('section-empty', sectionIndex, 0),
+                  },
+                  {
+                    'editor__related__item__content__empty--has-empty-error':
+                      hasEmptyPanelError(sectionIndex),
+                  },
+                ]"
                 @dragover="
                   setDragOver('section-empty', sectionIndex, 0, $event)
                 "
                 @drop="onDropOnSectionEmpty(sectionIndex, $event)"
               >
-                <p>{{ $t("layouts.drop_fields_here") }}</p>
+                <p>{{ $t("layouts.drop_boxes_here") }}</p>
               </div>
 
-              <div v-else class="editor__columns">
+              <div v-else class="editor__related__columns">
                 <div
-                  class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
+                  class="editor__related__columns__drop-zone editor__related__drop-zone--horizontal"
                   :class="{
-                    'editor__columns__drop-zone--active': isDropZoneActive(
-                      'section-column',
-                      sectionIndex,
-                      0,
-                    ),
+                    'editor__related__columns__drop-zone--active':
+                      isDropZoneActive('section-column', sectionIndex, 0),
                   }"
                   @dragover="
                     setDragOver('section-column', sectionIndex, 0, $event)
@@ -489,9 +511,9 @@ onBeforeUnmount(() => {
                 <div
                   v-for="(column, columnIndex) in section.layout"
                   :key="columnIndex"
-                  class="editor__columns__item"
+                  class="editor__related__columns__item"
                   :class="{
-                    'editor__columns__item--dragging': isItemDragging(
+                    'editor__related__columns__item--dragging': isItemDragging(
                       'section',
                       sectionIndex,
                       columnIndex,
@@ -499,39 +521,31 @@ onBeforeUnmount(() => {
                   }"
                 >
                   <div
-                    class="editor__columns__item__content"
+                    class="editor__related__columns__item__content"
                     draggable="true"
                     @dragstart="
                       startDrag('section', sectionIndex, columnIndex, $event)
                     "
                     @dragend="endDrag"
                   >
-                    <span class="editor__columns__item__handle">
+                    <span class="editor__related__columns__item__handle">
                       <i class="fa-solid fa-grip-vertical"></i>
                     </span>
-                    <span class="editor__columns__item__label">
+                    <span class="editor__related__columns__item__label">
                       <span>{{ $t(column.label) ?? column.key }}</span>
 
                       <span
                         v-if="column.readonly"
-                        class="editor__columns__item__label__flag"
+                        class="editor__related__item__label__flag"
                         >{{ $t("fields.metadata.readonly") }}</span
                       >
                     </span>
-                    <span class="editor__columns__item__flag">
-                      <span class="editor__columns__item__flag__label">{{
-                        $t("layouts.required_field")
-                      }}</span>
-                      <Checkbox
-                        class="editor__columns__item__flag__field"
-                        v-model="column.required"
-                      ></Checkbox>
-                    </span>
+
                     <button
                       @click="
                         removeColumnFromSection(sectionIndex, columnIndex)
                       "
-                      class="editor__columns__item__remove"
+                      class="editor__related__columns__item__remove"
                       type="button"
                       :title="$t('layouts.remove_column')"
                     >
@@ -541,13 +555,14 @@ onBeforeUnmount(() => {
 
                   <!-- Drop zone after column -->
                   <div
-                    class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
+                    class="editor__related__columns__drop-zone editor__related__columns__drop-zone--horizontal"
                     :class="{
-                      'editor__columns__drop-zone--active': isDropZoneActive(
-                        'section-column',
-                        sectionIndex,
-                        columnIndex + 1,
-                      ),
+                      'editor__related__columns__drop-zone--active':
+                        isDropZoneActive(
+                          'section-column',
+                          sectionIndex,
+                          columnIndex + 1,
+                        ),
                     }"
                     @dragover="
                       setDragOver(

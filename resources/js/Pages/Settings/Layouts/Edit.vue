@@ -6,6 +6,7 @@ import Layout from "@/Layouts/Layout.vue";
 
 import LayoutListEditor from "@/Pages/Components/Settings/Layouts/LayoutListEditor.vue";
 import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecordEditor.vue";
+import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelatedEditor.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
@@ -25,22 +26,29 @@ const props = defineProps({
   type: String,
   defaultLayout: Object,
   fields: Object,
+  relationships: Object,
 });
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
+const relatedPanels = ref([]);
 const recordSections = ref([]);
+const emptyPanels = ref(new Set());
 
-// setup layouts + record
+// setup layouts + record + related
 const currentLayout = computed(() => {
   const custom = props.module.layouts?.find(
     (layout) => layout.type === props.type,
   );
   return custom?.definition || props.defaultLayout || null;
 });
-
 const moduleFields = computed(() => {
   return props.fields ?? [];
+});
+
+const moduleRelationhsips = computed(() => {
+  return props.relationships ?? [];
 });
 
 const fieldByName = computed(() => {
@@ -51,8 +59,17 @@ const fieldByName = computed(() => {
   return map;
 });
 
+const relatedByName = computed(() => {
+  const map = {};
+  for (const rel of moduleRelationhsips.value) {
+    if (rel?.name) map[rel.name] = rel;
+  }
+  return map;
+});
+
 // list layout
 const listLayoutColumnConfigs = computed(() => {
+  if (props.type !== "list") return [];
   return Object.values(currentLayout?.value?.columns || {}).filter(Boolean);
 });
 
@@ -100,6 +117,77 @@ const cleanedColumnsFromDb = computed(() =>
     return rest;
   }),
 );
+
+//related
+const relatedLayoutPanelConfigs = computed(() => {
+  if (props.type !== "related") return [];
+  return Object.values(currentLayout?.value?.panels || {});
+});
+
+const relatedLayoutFromDB = computed(() => {
+  if (props.type !== "related") return [];
+
+  return relatedLayoutPanelConfigs.value.map((panel) => {
+    const layout = (panel.layout || [])
+      .map((col) => {
+        if (!col?.name) return null;
+
+        const rel = relatedByName.value[col.name];
+        if (!rel) return null;
+
+        return {
+          ...col,
+          rel,
+          label: col.label ?? rel.label ?? col.name,
+        };
+      })
+      .filter(Boolean);
+
+    return {
+      ...panel,
+      layout,
+    };
+  });
+});
+
+const cloneRelatedPanelsFromDb = (panels) =>
+  (panels || []).map((panel) => ({
+    ...panel,
+    layout: (panel.layout || []).map((col) => ({ ...col })),
+  }));
+
+watch(
+  relatedLayoutFromDB,
+  (val) => {
+    relatedPanels.value = cloneRelatedPanelsFromDb(val);
+  },
+  { immediate: true },
+);
+
+const cleanedRelatedPanels = computed(() =>
+  relatedPanels.value.map((panel) => ({
+    ...panel,
+    layout: (panel.layout || []).map((col) => {
+      const { rel, ...rest } = col || {};
+      return rest;
+    }),
+  })),
+);
+
+const availableRelationships = computed(() => {
+  if (props.type !== "related") return [];
+
+  const usedRelationships = new Set();
+  relatedPanels.value.forEach((panel) => {
+    (panel.layout || []).forEach((col) => {
+      if (col?.name) usedRelationships.add(col.name);
+    });
+  });
+
+  return moduleRelationhsips.value.filter(
+    (rel) => !usedRelationships.has(rel.name),
+  );
+});
 
 // record layout
 const recordLayoutSectionConfigs = computed(() => {
@@ -169,6 +257,7 @@ const availableRecordFields = computed(() => {
 
   return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
+
 // both
 const isDirty = computed(() => {
   if (props.type === "list") {
@@ -179,6 +268,10 @@ const isDirty = computed(() => {
     const current = JSON.stringify(cleanedRecordSections.value);
     const original = JSON.stringify(recordLayoutSectionConfigs.value);
     return current !== original;
+  } else if (props.type === "related") {
+    const current = JSON.stringify(cleanedRelatedPanels.value);
+    const original = JSON.stringify(relatedLayoutPanelConfigs.value);
+    return current !== original;
   }
   return false;
 });
@@ -186,9 +279,10 @@ const isDirty = computed(() => {
 const form = useForm({
   module_id: props.module.id,
   type: props.type,
-  definition:
-    currentLayout.value ||
-    (props.type === "list" ? { columns: [] } : { sections: [] }),
+  definition: currentLayout.value || {
+    [{ list: "columns", record: "sections", related: "panels" }[props.type]]:
+      [],
+  },
 });
 
 const resetToDatabaseValue = () => {
@@ -196,11 +290,21 @@ const resetToDatabaseValue = () => {
     listColumns.value = [...selectedListColumnsFromDb.value];
   } else if (props.type === "record") {
     recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value);
+  } else if (props.type === "related") {
+    relatedPanels.value = cloneRelatedPanelsFromDb(relatedLayoutFromDB.value);
   }
   form.definition = currentLayout.value || {};
   form.clearErrors();
 
   success(t("layouts.layout_reset_success"));
+};
+
+const getEmptyPanels = () => {
+  return new Set(
+    cleanedRelatedPanels.value
+      .map((panel, index) => (!panel.layout?.length ? index : null))
+      .filter((index) => index !== null),
+  );
 };
 
 const saveLayout = () => {
@@ -211,6 +315,16 @@ const saveLayout = () => {
     definition.columns = cleanedListColumns.value;
   } else if (props.type === "record") {
     definition.sections = cleanedRecordSections.value;
+  } else if (props.type === "related") {
+    const empty = getEmptyPanels();
+    if (empty.size) {
+      emptyPanels.value = empty;
+      clearAllAlerts();
+      error("Has empty Panel cannot save");
+      return;
+    }
+    emptyPanels.value = new Set();
+    definition.panels = cleanedRelatedPanels.value;
   }
   form.definition = definition;
   const url = page.url;
@@ -246,9 +360,9 @@ const layoutsUrl = () => {
   return u;
 };
 
-useUnsavedChangesGuard({
-  getIsDirty: () => isDirty.value,
-});
+// useUnsavedChangesGuard({
+//   getIsDirty: () => isDirty.value,
+// });
 </script>
 
 <template>
@@ -302,10 +416,11 @@ useUnsavedChangesGuard({
         />
       </div>
       <div v-else-if="type === 'related'">
-        <LayoutRecordEditor
-          v-model:sections="recordSections"
-          :available-fields="availableRecordFields"
-          :field-by-key="fieldByName"
+        <LayoutRelatedEditor
+          v-model:panels="relatedPanels"
+          :available-relationships="availableRelationships"
+          :rel-by-key="relatedByName"
+          :empty-panels="emptyPanels"
         />
       </div>
 
