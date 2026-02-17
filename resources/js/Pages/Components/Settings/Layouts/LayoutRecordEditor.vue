@@ -95,7 +95,8 @@ const addNewSection = () => {
 };
 
 const removeSection = (sectionIndex) => {
-  if (confirmSectionIndex.value !== sectionIndex) {
+  const hasLayout = internalSections.value[sectionIndex]?.layout?.length > 0;
+  if (confirmSectionIndex.value !== sectionIndex && hasLayout) {
     confirmSectionIndex.value = sectionIndex;
     return;
   }
@@ -449,7 +450,7 @@ onBeforeUnmount(() => {
                 />
               </div>
               <div class="editor__sections__item__header__actions">
-                <span
+                <button
                   v-if="internalSections.length > 1"
                   @click="removeSection(sectionIndex)"
                   :class="[
@@ -468,8 +469,11 @@ onBeforeUnmount(() => {
                         : 'fa-trash',
                     ]"
                   />
-                  {{ $t("layouts.remove_section") }}
-                </span>
+                  <span v-if="confirmSectionIndex === sectionIndex">{{
+                    $t("layouts.confirm_remove_section")
+                  }}</span>
+                  <span v-else>{{ $t("layouts.remove_section") }}</span>
+                </button>
               </div>
             </div>
 

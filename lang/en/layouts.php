@@ -4,6 +4,7 @@ return [
   'record' => "Record",
   'record_overview' => "Record Overview",
   'remove_section'  => "Remove Section",
+  'confirm_remove_section'  => "Confrim",
   'related' => "Related Panels",
   'list' => "List",
   'create_list_tooltip' => "Create List Layout for ",
