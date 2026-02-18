@@ -27,10 +27,10 @@ const props = defineProps({
   module: Object,
   title: String,
   record: Object,
-  recordLayout: Object,
+  overviewLayout: Object,
+  relatedLayout: Object,
   fields: Object,
 });
-
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -66,7 +66,7 @@ const hasError = computed(() => (field) => {
 });
 
 const getFieldType = (field) => {
-  const sections = props.recordLayout?.sections;
+  const sections = props.overviewLayout?.sections;
   for (const section of sections) {
     const found = section.layout?.find((item) => item.name === field);
     if (found) {
@@ -115,7 +115,7 @@ function normalizeDateTime(value) {
 }
 
 const getRequiredFields = () => {
-  const sections = props.recordLayout?.sections;
+  const sections = props.overviewLayout?.sections;
   let allRequiredFields = [];
 
   for (const section of sections) {
@@ -491,7 +491,7 @@ const switchTabs = (tab) => {
         <div v-if="currentTab === 'overview'" class="record-layout__sections">
           <div
             class="record-layout__sections__item"
-            v-for="s in recordLayout.sections"
+            v-for="s in overviewLayout.sections"
           >
             <div class="record-layout__sections__item__title">
               {{ s.name }}
@@ -582,7 +582,10 @@ const switchTabs = (tab) => {
           v-else-if="currentTab === 'related'"
           class="record-layout__subpanels"
         >
-          <RelatedpanelList :relationships="record.related"></RelatedpanelList>
+          <RelatedpanelList
+            :relationships="record.related"
+            :layout="relatedLayout"
+          ></RelatedpanelList>
         </div>
       </div>
     </div>

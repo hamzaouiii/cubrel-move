@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
     $this->call(UsersTableSeeder::class);
     $this->call(GlobalLayoutUpdater::class);
     $this->call(GlobalRecordLayoutUpdater::class);
-    $this->call([AccountsTableSeeder::class]);
+    $this->call(AccountsTableSeeder::class);
     $this->call(StockFieldsSeeder::class);
     $this->call(FieldsUpdaterSeeder::class);
     $this->call(dropdownListSeeder::class);

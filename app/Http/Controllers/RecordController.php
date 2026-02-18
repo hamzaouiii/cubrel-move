@@ -40,12 +40,14 @@ class RecordController extends Controller
       }
     }
     $recordLayout = $moduleModel->recordLayout();
+    $relatedLayout = $moduleModel->relatedLayout();
     $fields = $moduleModel->fields;
     return Inertia::render('Modules/Record', array_merge([
       'module'   => $moduleModel,
       'title'    => $moduleModel->name,
       'recordId' => $recordId,
-      'recordLayout' => $recordLayout,
+      'overviewLayout' => $recordLayout,
+      'relatedLayout' => $relatedLayout,
       'fields' => $fields
     ], $props));
   }

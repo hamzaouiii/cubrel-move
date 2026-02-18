@@ -4,11 +4,15 @@ namespace Database\Factories\Modules;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Faker\Factory as FakerFactory;
 
 class AccountFactory extends Factory
 {
   public function definition()
   {
+    $locale = 'de_DE';
+    $faker = \Faker\Factory::create($locale);
+
     $companyTypes = ['LLC', 'Inc.', 'Corp.', 'Ltd.', 'Group', 'Partners', 'Solutions'];
     $industries = [
       'Technology',
@@ -23,69 +27,21 @@ class AccountFactory extends Factory
       'Hospitality'
     ];
 
-    $companyName = $this->faker->company() . ' ' . $this->faker->randomElement($companyTypes);
+    $companyName = $faker->company() . ' ' . $faker->randomElement($companyTypes);
 
     return [
       'id' => Str::orderedUuid(), // Generates sequential UUIDs
       'name' => $companyName,
-      'website' => $this->faker->optional(0.8)->url(), // 80% chance of having a website
-      'email' => $this->faker->optional(0.9)->safeEmail(), // 90% chance of having email
-      'phone' => $this->faker->optional(0.7)->phoneNumber(), // 70% chance of having phone
-      'billing_address' => $this->faker->optional(0.9)->streetAddress(), // 90% chance
-      'shipping_address' => $this->faker->optional(0.5)->streetAddress(),
-      'city' => $this->faker->optional(0.9)->city(),
-      'country' => $this->faker->optional(0.9)->country(),
-      'description' => $this->faker->paragraph(),
-      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+      'website' => $faker->optional(0.8)->url(), // 80% chance of having a website
+      'email' => $faker->optional(0.9)->safeEmail(), // 90% chance of having email
+      'phone' => $faker->optional(0.7)->phoneNumber(), // 70% chance of having phone
+      'billing_address' => $faker->optional(0.9)->streetAddress(), // 90% chance
+      'shipping_address' => $faker->optional(0.5)->streetAddress(),
+      'city' => $faker->optional(0.9)->city(),
+      'country' => $faker->optional(0.9)->country(),
+      'description' => $faker->realText(150),
+      'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
     ];
-  }
-
-  /**
-   * Factory state for premium accounts
-   */
-  public function premium()
-  {
-    return $this->state(function (array $attributes) {
-      $premiumDomains = ['example.com', 'corporate.com', 'enterprise.com'];
-
-      return [
-        'website' => 'https://' . Str::slug($attributes['name']) . '.' . $this->faker->randomElement($premiumDomains),
-        'email' => 'contact@' . Str::slug($attributes['name']) . '.com',
-      ];
-    });
-  }
-
-  /**
-   * Factory state for international accounts
-   */
-  public function international()
-  {
-    return $this->state(function (array $attributes) {
-      $countries = ['Germany', 'France', 'United Kingdom', 'Japan', 'Australia', 'Canada'];
-
-      return [
-        'country' => $this->faker->randomElement($countries),
-        'city' => $this->faker->city(),
-      ];
-    });
-  }
-
-  /**
-   * Factory state for accounts with complete information
-   */
-  public function complete()
-  {
-    return $this->state(function (array $attributes) {
-      return [
-        'website' => 'https://' . Str::slug($attributes['name']) . '.com',
-        'email' => 'info@' . Str::slug($attributes['name']) . '.com',
-        'phone' => $this->faker->phoneNumber(),
-        'billing_address' => $this->faker->streetAddress(),
-        'shipping_address' => $this->faker->streetAddress(),
-        'city' => $this->faker->city(),
-        'country' => $this->faker->country(),
-      ];
-    });
   }
 }
