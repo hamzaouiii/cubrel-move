@@ -1,246 +1,277 @@
 <?php
 
-return [
+return array(
   'of' => 'von',
   'overview' => 'Übersicht',
   'related' => 'Beziehungen',
-  'defaults' => [
+  'defaults' =>
+  array(
     'name' => 'Name',
     'created_at' => 'Erstellt am',
     'updated_at' => 'Aktualisiert am',
-    'no_data'   => 'Keine Daten gefunden',
+    'no_data' => 'Keine Daten gefunden',
     'description' => 'Beschreibung',
-
-  ],
-  'actions' => [
-    'share'              => 'Teilen',
-    'export'             => 'Exportieren',
-    'placeholder'        => 'Irgendetwas hier',
-    'bulk_action'        => 'Sammelaktion',
-    'delete'             => 'Löschen',
-    'create'             => 'Erstellen',
+  ),
+  'actions' =>
+  array(
+    'share' => 'Teilen',
+    'export' => 'Exportieren',
+    'placeholder' => 'Irgendetwas hier',
+    'bulk_action' => 'Sammelaktion',
+    'delete' => 'Löschen',
+    'create' => 'Erstellen',
     'search_placeholder' => 'In dieser Liste suchen',
-    'cancel'             => 'Abbrechen',
-    'edit'               => 'Bearbeiten',
-    'save'               => 'Speichern',
-    'saving'            => 'Wird gespeichert...',
-    'saved'             => 'Gespeichert',
-    'updating'          => 'Wird aktualisiert...',
-    'edit_module'     => 'Dieses Module bearbeiten',
-    'mass_delete'     => 'Löschen',
-    'mass_update'     => 'Massenänderung',
-    'save_success'      => 'Datensatz wurde erfolgreich gespeichert',
-    'update_success'    => 'Datensatz wurde erfolgreich aktualisiert',
-    'create_success'    => 'Datensatz wurde erfolgreich erstellt',
-    'update_error'      => 'Beim Aktualisieren des Datensatzes ist ein Fehler aufgetreten',
-    'create_error'      => 'Beim Erstellen des Datensatzes ist ein Fehler aufgetreten',
-    'save_error'        => 'Beim Speichern des Datensatzes ist ein Fehler aufgetreten',
-    'delete_success'    => "Datensatz wurde erfolgreich gelöscht",
-    'delete_error'      => "Beim Löschen des Datensatzes ist ein Fehler aufgetreten",
-    'deleting'          => "Wird gelöscht...",
-    'delete_yes'      => "Ja",
-    'delete_no'      => "Nein",
-    'no_data_entered' => "Sie haben keine neuen Daten eingegeben, es wird kein Datensatz gespeichert!"
-  ],
-  'delete' => [
+    'cancel' => 'Abbrechen',
+    'edit' => 'Bearbeiten',
+    'save' => 'Speichern',
+    'saving' => 'Wird gespeichert...',
+    'saved' => 'Gespeichert',
+    'updating' => 'Wird aktualisiert...',
+    'edit_module' => 'Dieses Module bearbeiten',
+    'mass_delete' => 'Löschen',
+    'mass_update' => 'Massenänderung',
+    'save_success' => 'Datensatz wurde erfolgreich gespeichert',
+    'update_success' => 'Datensatz wurde erfolgreich aktualisiert',
+    'create_success' => 'Datensatz wurde erfolgreich erstellt',
+    'update_error' => 'Beim Aktualisieren des Datensatzes ist ein Fehler aufgetreten',
+    'create_error' => 'Beim Erstellen des Datensatzes ist ein Fehler aufgetreten',
+    'save_error' => 'Beim Speichern des Datensatzes ist ein Fehler aufgetreten',
+    'delete_success' => 'Datensatz wurde erfolgreich gelöscht',
+    'delete_error' => 'Beim Löschen des Datensatzes ist ein Fehler aufgetreten',
+    'deleting' => 'Wird gelöscht...',
+    'delete_yes' => 'Ja',
+    'delete_no' => 'Nein',
+    'no_data_entered' => 'Sie haben keine neuen Daten eingegeben, es wird kein Datensatz gespeichert!',
+    'delete_title' => 'Löschen bestätigen',
+    'delete_confirm' => 'Möchten Sie diesen Eintrag wirklich löschen?',
+  ),
+  'delete' =>
+  array(
     'confirm_delete' => 'Löschen bestätigen',
     'confirm_delete_message' => 'Du bist dabei, :count Datensätze zu löschen. Bist du sicher?',
-    'selected_count'   => 'Du hast :count Datensätze ausgewählt.',
-    'description'      => 'Wähle Datensätze zum Löschen aus',
-    'clear_selection'  => 'Auswahl löschen',
-    'select_all'       => 'Alle :total Datensätze im Ergebnis auswählen',
-    'delete'           => 'Löschen',
-  ],
-  'update'     => [
-    'description'   => 'Wähle Datensätze zum Aktualisieren aus',
-    'update'        => 'Aktualisieren',
-    'cancel'        => 'Abbrechen',
-    'clear_selection'  => 'Auswahl löschen',
-    'selected_count'   => 'Du hast :count Datensätze ausgewählt.',
-    'select_all'       => 'Alle :total Datensätze im Ergebnis auswählen',
+    'selected_count' => 'Du hast :count Datensätze ausgewählt.',
+    'description' => 'Wähle Datensätze zum Löschen aus',
+    'clear_selection' => 'Auswahl löschen',
+    'select_all' => 'Alle :total Datensätze im Ergebnis auswählen',
+    'delete' => 'Löschen',
+  ),
+  'update' =>
+  array(
+    'description' => 'Wähle Datensätze zum Aktualisieren aus',
+    'update' => 'Aktualisieren',
+    'cancel' => 'Abbrechen',
+    'clear_selection' => 'Auswahl löschen',
+    'selected_count' => 'Du hast :count Datensätze ausgewählt.',
+    'select_all' => 'Alle :total Datensätze im Ergebnis auswählen',
     'confirm_update' => 'Aktualisierungsbestätigung ',
     'confirm_update_message' => 'Du bist dabei, :count Datensätze zu aktualisieren. Bist du sicher?',
-    'update_yes'        => 'Ja',
-    'update_no'         => 'Nein'
-
-
-  ],
-  'accounts' => [
-    'label'  => 'Firmen',
-    'fields' => [
-      'id'               => 'ID',
-      'name'             => 'Name',
-      'website'          => 'Webseite',
-      'email'            => 'E-Mail',
-      'phone'            => 'Telefon',
-      'billing_address'  => 'Rechnungsadresse',
+    'update_yes' => 'Ja',
+    'update_no' => 'Nein',
+  ),
+  'accounts' =>
+  array(
+    'label' => 'Firmen',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'website' => 'Webseite',
+      'email' => 'E-Mail',
+      'phone' => 'Telefon',
+      'billing_address' => 'Rechnungsadresse',
       'shipping_address' => 'Lieferadresse',
-      'city'             => 'Stadt',
-      'country'          => 'Land',
-      'created_at'       => 'Erstellt am',
-      'updated_at'       => 'Aktualisiert am',
-    ],
-  ],
-
-  'contacts' => [
-    'label'  => 'Kontakte',
-    'fields' => [
-      'id'         => 'ID',
-      'name'       => 'Name',
-      'account_id' => 'Firma',
-      'first_name' => 'Vorname',
-      'last_name'  => 'Nachname',
-      'email'      => 'E-Mail',
-      'phone'      => 'Telefon',
-      'position'   => 'Position',
-      'notes'      => 'Notizen',
+      'city' => 'Stadt',
+      'country' => 'Land',
       'created_at' => 'Erstellt am',
       'updated_at' => 'Aktualisiert am',
-    ],
-  ],
-
-  'leads' => [
+      'description' => 'Beschreibung',
+    ),
+  ),
+  'contacts' =>
+  array(
+    'label' => 'Kontakte',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'account_id' => 'Firma',
+      'first_name' => 'Vorname',
+      'last_name' => 'Nachname',
+      'email' => 'E-Mail',
+      'phone' => 'Telefon',
+      'position' => 'Position',
+      'notes' => 'Notizen',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+      'description' => 'Beschreibung',
+    ),
+  ),
+  'leads' =>
+  array(
     'label' => 'Interessenten',
-
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'first_name'  => 'Vorname',
-      'last_name'   => 'Nachname',
-      'email'       => 'E-Mail',
-      'phone'       => 'Telefon',
-      'company'     => 'Firma',
-      'street'      => 'Straße',
-      'city'        => 'Stadt',
-      'zip'         => 'PLZ',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'first_name' => 'Vorname',
+      'last_name' => 'Nachname',
+      'email' => 'E-Mail',
+      'phone' => 'Telefon',
+      'company' => 'Firma',
+      'street' => 'Straße',
+      'city' => 'Stadt',
+      'zip' => 'PLZ',
       'description' => 'Beschreibung',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-    ],
-
-  ],
-
-  'invoices' => [
-    'label'  => 'Rechnungen',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'account_id'  => 'Firma',
-      'contact_id'  => 'Kontakt',
-      'quote_id'    => 'Angebot',
-      'number'      => 'Rechnungsnummer',
-      'status'      => 'Status',
-      'issue_date'  => 'Rechnungsdatum',
-      'due_date'    => 'Fälligkeitsdatum',
-      'currency'    => 'Währung',
-      'subtotal'    => 'Zwischensumme',
-      'tax'         => 'Steuer',
-      'total'       => 'Gesamtbetrag',
-      'notes'       => 'Notizen',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-    ],
-  ],
-
-  'quotes' => [
-    'label'  => 'Angebote',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'account_id'  => 'Firma',
-      'contact_id'  => 'Kontakt',
-      'number'      => 'Angebotsnummer',
-      'status'      => 'Status',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+    ),
+    'actions' =>
+    array(
+      'cancel' => 'Cancel',
+      'edit' => 'Edit',
+      'save' => 'Save',
+      'share' => 'Share',
+      'export' => 'Export',
+      'placeholder' => 'Something else here',
+      'bulk_action' => 'Bulk Action',
+      'delete' => 'Delete',
+      'create' => 'Create',
+      'search_placeholder' => 'Search In This List',
+    ),
+  ),
+  'invoices' =>
+  array(
+    'label' => 'Rechnungen',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'account_id' => 'Firma',
+      'contact_id' => 'Kontakt',
+      'quote_id' => 'Angebot',
+      'number' => 'Rechnungsnummer',
+      'status' => 'Status',
+      'issue_date' => 'Rechnungsdatum',
+      'due_date' => 'Fälligkeitsdatum',
+      'currency' => 'Währung',
+      'subtotal' => 'Zwischensumme',
+      'tax' => 'Steuer',
+      'total' => 'Gesamtbetrag',
+      'notes' => 'Notizen',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+      'description' => 'Beschreibung',
+    ),
+  ),
+  'quotes' =>
+  array(
+    'label' => 'Angebote',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'account_id' => 'Firma',
+      'contact_id' => 'Kontakt',
+      'number' => 'Angebotsnummer',
+      'status' => 'Status',
       'valid_until' => 'Gültig bis',
-      'currency'    => 'Währung',
-      'subtotal'    => 'Zwischensumme',
-      'tax'         => 'Steuer',
-      'total'       => 'Gesamtbetrag',
-      'notes'       => 'Notizen',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-    ],
-  ],
-
-  'cases' => [
-    'label'  => 'Tickets',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'account_id'  => 'Firma',
-      'contact_id'  => 'Kontakt',
-      'subject'     => 'Betreff',
+      'currency' => 'Währung',
+      'subtotal' => 'Zwischensumme',
+      'tax' => 'Steuer',
+      'total' => 'Gesamtbetrag',
+      'notes' => 'Notizen',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
       'description' => 'Beschreibung',
-      'status'      => 'Status',
-      'priority'    => 'Priorität',
-      'opened_at'   => 'Geöffnet am',
-      'closed_at'   => 'Geschlossen am',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-    ],
-  ],
-
-  'emails' => [
-    'label'  => 'E-Mails',
-    'fields' => [
-      'id'             => 'ID',
-      'name'           => 'Name',
-      'to'             => 'An',
-      'sent'           => 'Gesendet',
-      'subject'        => 'Betreff',
+    ),
+  ),
+  'cases' =>
+  array(
+    'label' => 'Tickets',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'account_id' => 'Firma',
+      'contact_id' => 'Kontakt',
+      'subject' => 'Betreff',
+      'description' => 'Beschreibung',
+      'status' => 'Status',
+      'priority' => 'Priorität',
+      'opened_at' => 'Geöffnet am',
+      'closed_at' => 'Geschlossen am',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+    ),
+  ),
+  'emails' =>
+  array(
+    'label' => 'E-Mails',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'to' => 'An',
+      'sent' => 'Gesendet',
+      'subject' => 'Betreff',
       'mailable_class' => 'Mailable Klasse',
-      'related_id'     => 'Zugehörige ID',
-      'status'         => 'Status',
-      'error'          => 'Fehler',
-      'created_at'     => 'Erstellt am',
-      'updated_at'     => 'Aktualisiert am',
-    ],
-  ],
-
-  'inquiries' => [
-    'label'  => 'Anfragen',
-    'fields' => [
-      'id'                 => 'ID',
-      'name'               => 'Name',
-      'email'              => 'E-Mail',
+      'related_id' => 'Zugehörige ID',
+      'status' => 'Status',
+      'error' => 'Fehler',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+      'description' => 'Beschreibung',
+    ),
+  ),
+  'inquiries' =>
+  array(
+    'label' => 'Anfragen',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'email' => 'E-Mail',
       'email_confirmation' => 'E-Mail Bestätigung',
-      'phone'              => 'Telefon',
-      'message'            => 'Nachricht',
-      'status'             => 'Status',
-      'ip'                 => 'IP Adresse',
-      'user_agent'         => 'User Agent',
-      'created_at'         => 'Erstellt am',
-      'updated_at'         => 'Aktualisiert am',
-    ],
-  ],
-
-  'money' => [
-    'label'  => 'Geld',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
+      'phone' => 'Telefon',
+      'message' => 'Nachricht',
+      'status' => 'Status',
+      'ip' => 'IP Adresse',
+      'user_agent' => 'User Agent',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
       'description' => 'Beschreibung',
-      'data'        => 'Daten',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-      'deleted_at'  => 'Gelöscht am',
-    ],
-  ],
-
-  'books' => [
-    'label'  => 'Bücher',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
+    ),
+  ),
+  'money' =>
+  array(
+    'label' => 'Geld',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
       'description' => 'Beschreibung',
-      'data'        => 'Daten',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-      'deleted_at'  => 'Gelöscht am',
-    ],
-  ],
-
-  'settings' => [
+      'data' => 'Daten',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+      'deleted_at' => 'Gelöscht am',
+    ),
+  ),
+  'books' =>
+  array(
+    'label' => 'Bücher',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'description' => 'Beschreibung',
+      'data' => 'Daten',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+      'deleted_at' => 'Gelöscht am',
+    ),
+  ),
+  'settings' =>
+  array(
     'label' => 'Einstellungen',
-  ],
-];
+  ),
+);

@@ -658,8 +658,8 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <span class="related-fields__hint">
-          <i class="fa-solid fa-asterisk"></i> Click on fields to add them to
-          the subpanel
+          <i class="fa-solid fa-asterisk"></i>
+          {{ $t("layouts.fields_header_hint") }}
         </span>
       </div>
     </div>

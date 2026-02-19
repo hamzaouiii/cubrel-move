@@ -43,5 +43,7 @@ return [
   'reset' => 'Reset',
   'resetting' => 'Resetting...',
   'back_to_list' => 'Back to layouts',
-  'required_field' => 'Required Field'
+  'required_field' => 'Required Field',
+  'fields_header_hint' => 'Click on a field to add it to the subpanel header',
+
 ];

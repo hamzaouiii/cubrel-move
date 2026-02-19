@@ -1,6 +1,6 @@
 <?php
 
-return [
+return array(
   'label' => 'Einstellungen',
   'reset' => 'Zurücksetzen',
   'cancel' => 'Abbrechen',
@@ -9,21 +9,23 @@ return [
   'next' => 'Weiter',
   'previous' => 'Zurück',
   'saving' => 'Wird gespeichert...',
-  'loading'               => 'Wird geladen...',
-  'module_save_success'   => 'Modul wurde erfolgreich gespeichert',
+  'loading' => 'Wird geladen...',
+  'module_save_success' => 'Modul wurde erfolgreich gespeichert',
   'module_update_success' => 'Modul wurde erfolgreich aktualisiert',
-  'module_save_error'     => 'Beim Speichern des Moduls ist ein Fehler aufgetreten',
-  'search_in_drop_down' =>  'In dieser Liste suchen',
-  'select'  => 'Auswählen ...',
+  'module_save_error' => 'Beim Speichern des Moduls ist ein Fehler aufgetreten',
+  'search_in_drop_down' => 'In dieser Liste suchen',
+  'select' => 'Auswählen ...',
   'dropdown_no_results' => 'Keine Ergibnisse',
   'setting_update_success' => 'Die Einstellungen wurden erfolgreich aktualisiert',
   'setting_update_error' => 'Beim Aktualisieren der Einstellungen ist ein Fehler aufgetreten',
-  'tabs' => [
+  'tabs' =>
+  array(
     'module_settings' => 'Module-Einstellungen',
     'layouts' => 'Layouts',
     'fields' => 'Felder',
-  ],
-  'modules' => [
+  ),
+  'modules' =>
+  array(
     'label' => 'Module',
     'display_label' => 'Anzeigebezeichnung',
     'name' => 'Name',
@@ -33,64 +35,72 @@ return [
     'color' => 'Farbe',
     'show_in_sidebar' => 'Im Sidebar anzeigen',
     'description' => 'Beschreibung',
-  ],
-  'fields' => [
-    'app_locale'                => 'Anwendungssprache',
-    'show_language_switcher'    => 'Sprachumschalter anzeigen',
-    'border_radius'             => 'Randradius',
-    'enabled_languages'         => 'Aktivierte Sprachen',
-    'secondary_color'           => 'Sekundärfarbe',
-    'theme'                     => 'Thema',
-    'default_locale'            => 'Standardgebietsschema',
-    'primary_color'             => 'Primärfarbe',
-    'table_striped_rows'        => 'Gestreifte Tabellenzeilen',
-    'default_language'          => 'Standardsprache',
-    'fallback_language'         => 'Ausweichsprache',
-    'datetime_format'           => 'Datum & Uhrzeit format',
-    'date_format'               => 'Datumsformat',
-
+  ),
+  'fields' =>
+  array(
+    'app_locale' => 'Anwendungssprache',
+    'show_language_switcher' => 'Sprachumschalter anzeigen',
+    'border_radius' => 'Randradius',
+    'enabled_languages' => 'Aktivierte Sprachen',
+    'secondary_color' => 'Sekundärfarbe',
+    'theme' => 'Thema',
+    'default_locale' => 'Standardgebietsschema',
+    'primary_color' => 'Primärfarbe',
+    'table_striped_rows' => 'Gestreifte Tabellenzeilen',
+    'default_language' => 'Standardsprache',
+    'fallback_language' => 'Ausweichsprache',
+    'datetime_format' => 'Datum & Uhrzeit format',
+    'date_format' => 'Datumsformat',
     'use_individual_module_colors' => 'Einzelfarben für Module verwenden',
-    'timezone'                  => 'Zeitzone',
-    'first_day_of_week'         => 'Erster Wochentag',
-    'danger_color'              => "Gefahrfarbe",
-
-  ],
-  'groups' => [
-    'email'          => 'E-Mail Einstellungen',
-    'system'         => 'Systemeinstellungen',
-    'users'          => 'Benutzerverwaltung',
+    'timezone' => 'Zeitzone',
+    'first_day_of_week' => 'Erster Wochentag',
+    'danger_color' => 'Gefahrfarbe',
+    'danger_color_hint' => 'Wird für gefährliche Aktionen wie Löschwarnungen und Löschbuttons verwendet',
+  ),
+  'groups' =>
+  array(
+    'email' => 'E-Mail Einstellungen',
+    'system' => 'Systemeinstellungen',
+    'users' => 'Benutzerverwaltung',
     'customisations' => 'Anpassungen',
-    'description' => [
-      'email'          => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
-      'system'         => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation. Benutzer können einige der Standard Locale Einstellungen in ihren Benutzereinstellungen überschreiben.',
-      'users'          => 'Erstelle, bearbeite, aktiviere und deaktiviere Benutzer. Erstelle und verwalte Teams und Rollen, einschließlich Modul und Feldebene Zugriffsrechte.',
+    'description' =>
+    array(
+      'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
+      'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation. Benutzer können einige der Standard Locale Einstellungen in ihren Benutzereinstellungen überschreiben.',
+      'users' => 'Erstelle, bearbeite, aktiviere und deaktiviere Benutzer. Erstelle und verwalte Teams und Rollen, einschließlich Modul und Feldebene Zugriffsrechte.',
       'customisations' => 'Erstelle und verwalte Layouts, Felder und benutzerdefinierte Module.',
-    ],
-  ],
-  'items' => [
-    'role_management'       => 'Rollenverwaltung',
-    'inbound_email'         => 'Eingehende E-Mails',
-    'currencies'            => 'Währungen',
-    'create_user'           => 'Benutzer erstellen',
-    'fields'                => 'Felder',
-    'email_queue'           => 'E-Mail-Warteschlange',
-    'locale'                => 'Region und Sprachoptionen',
-    'style'                 => 'Stil',
-    'modules'               => 'Module',
-    'modulebuilder'         => 'Modul-Ersteller',
-    'list_users'            => 'Benutzerliste',
-    'system_settings'       => 'Systemeinstellungen',
-    'languages'             => 'Sprachen',
-    'layouts'               => 'Layouts',
+    ),
+  ),
+  'items' =>
+  array(
+    'role_management' => 'Rollenverwaltung',
+    'inbound_email' => 'Eingehende E-Mails',
+    'currencies' => 'Währungen',
+    'create_user' => 'Benutzer erstellen',
+    'fields' => 'Felder',
+    'email_queue' => 'E-Mail-Warteschlange',
+    'locale' => 'Region und Sprachoptionen',
+    'style' => 'Stil',
+    'modules' => 'Module',
+    'modulebuilder' => 'Modul-Ersteller',
+    'list_users' => 'Benutzerliste',
+    'system_settings' => 'Systemeinstellungen',
+    'languages' => 'Sprachen',
+    'layouts' => 'Layouts',
     'system_email_settings' => 'System-E-Mail-Einstellungen',
-    'dropdowns'           => 'Dropdown Editor'
-  ],
-  'dropdown' => [
-    'create'  => 'Neue Dropdown Liste erstellen',
-    'edit'  => 'Dropdown Liste bearbeiten',
-    'display_label'   => 'Anzeigebezeichnung',
-    'value'   => 'Elementname',
+    'dropdowns' => 'Dropdown Editor',
+  ),
+  'dropdown' =>
+  array(
+    'create' => 'Neue Dropdown Liste erstellen',
+    'edit' => 'Dropdown Liste bearbeiten',
+    'display_label' => 'Anzeigebezeichnung',
+    'value' => 'Elementname',
     'list_name' => 'Listenname',
-    'related_field' => 'Zugehöriges Feld'
-  ]
-];
+    'related_field' => 'Zugehöriges Feld',
+    'save_success' => 'Dropdown Liste erfolgreich gespeichert',
+    'update_success' => 'Dropdown Liste erfolgreich gespeichert',
+    'save_error' => 'Beim Speichern der Dropdown Liste ist ein Fehler aufgetreten',
+  ),
+  'select_dropdown_list' => 'Dropdown Liste auswählen...',
+);
