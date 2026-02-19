@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
-
+import LayoutRelatedFields from "./LayoutRelatedFields.vue";
 const props = defineProps({
   panels: {
     type: Array,
@@ -15,16 +15,16 @@ const props = defineProps({
     default: () => ({}),
   },
   emptyPanels: {
-    type: Array,
+    type: Set,
     default: [],
   },
 });
-
 const emit = defineEmits(["update:panels"]);
 
 const internalpanels = ref([...props.panels]);
 const internalAvailable = ref([...props.availableRelationships]);
 const confirmSectionIndex = ref(null);
+const showSubpanels = ref([]);
 
 const isConfirm = (index) => confirmSectionIndex.value === index;
 watch(
@@ -116,7 +116,11 @@ const removeSection = (sectionIndex) => {
 };
 
 // Drag and drop functions
-const startDrag = (source, sectionIndex, columnIndex, event) => {
+const startDrag = (source, sectionIndex, columnIndex, column, event) => {
+  if (source === "section" && showSubpanels.value.includes(`${column.name}`)) {
+    event.preventDefault();
+    return;
+  }
   const isField = source === "available";
   dragging.value = {
     source,
@@ -136,19 +140,23 @@ const startDrag = (source, sectionIndex, columnIndex, event) => {
     } catch (e) {}
   }
 
-  const el = event.target.closest(".rle-item, .rle-field-item");
+  const el = event.currentTarget;
+
   if (el) {
     ghostWidth.value = el.offsetWidth + "px";
     ghostHeight.value = el.offsetHeight + "px";
+
     const rect = el.getBoundingClientRect();
+
     originOffset.value = {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
     };
-    ghostRenderPos.value = { x: event.clientX, y: event.clientY };
-  } else {
-    ghostWidth.value = null;
-    ghostHeight.value = null;
+
+    ghostRenderPos.value = {
+      x: event.clientX,
+      y: event.clientY,
+    };
   }
 
   startGhostAnimation();
@@ -203,7 +211,7 @@ const moveFieldToSection = (
     type: field.relationship_type,
     readonly: field.readonly,
     required: field.required,
-    field: props.relByKey[field.name],
+    relationship: props.relByKey[field.name],
   };
 
   targetSection.layout.splice(targetColumnIndex, 0, newColumn);
@@ -251,6 +259,29 @@ const removeColumnFromSection = (sectionIndex, columnIndex) => {
     internalpanels.value = panels;
     emitUpdatedpanels();
   }
+};
+
+const toggleSubpanel = (column) => {
+  const key = `${column.name}`;
+  const index = showSubpanels.value.indexOf(key);
+
+  if (index === -1) {
+    showSubpanels.value.push(key);
+  } else {
+    showSubpanels.value.splice(index, 1);
+  }
+};
+const isSubpanelOpen = (column) => {
+  return showSubpanels.value.includes(`${column.name}`);
+};
+
+const updateColumnPanelHeader = (sectionIndex, columnIndex, value) => {
+  const panels = [...internalpanels.value];
+
+  panels[sectionIndex].layout[columnIndex].panelHeader = value;
+
+  internalpanels.value = panels;
+  emitUpdatedpanels();
 };
 
 // Drop handlers
@@ -334,7 +365,6 @@ const stepGhost = () => {
     x: x + (tx - x) * lerp,
     y: y + (ty - y) * lerp,
   };
-
   ghostAnimationFrame = requestAnimationFrame(stepGhost);
 };
 
@@ -371,7 +401,6 @@ onBeforeUnmount(() => {
           <span class="editor__container__sidebar__header__title">{{
             $t("layouts.available_relationships")
           }}</span>
-          <small>{{ $t("layouts.drag_to_columns") }}</small>
         </div>
 
         <div class="editor__available-fields">
@@ -402,7 +431,7 @@ onBeforeUnmount(() => {
               ),
             }"
             draggable="true"
-            @dragstart="startDrag('available', 0, index, $event)"
+            @dragstart="startDrag('available', 0, index, null, $event)"
             @dragend="endDrag"
           >
             <span class="editor__available-fields__item__handle">
@@ -444,18 +473,18 @@ onBeforeUnmount(() => {
             v-for="(section, sectionIndex) in internalpanels"
             :key="sectionIndex"
             :class="[
-              'editor__related__item',
+              'editor__related__column',
               { 'is-empty': hasEmptyPanelError(sectionIndex) },
             ]"
           >
             <div
-              class="editor__related__item__error"
+              class="editor__related__column__error"
               v-if="hasEmptyPanelError(sectionIndex)"
             >
               <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
 
-            <div class="editor__related__item__actions">
+            <div class="editor__related__column__actions">
               <button
                 v-if="internalpanels.length > 1"
                 @click="removeSection(sectionIndex)"
@@ -473,17 +502,17 @@ onBeforeUnmount(() => {
                 />
               </button>
             </div>
-            <div class="editor__related__item__content">
+            <div class="editor__related__column__content">
               <div
                 v-if="!section.layout || section.layout.length === 0"
-                class="editor__related__item__content__empty"
+                class="editor__related__column__content__empty"
                 :class="[
                   {
-                    'editor__related__item__content__empty--active':
+                    'editor__related__column__content__empty--active':
                       isDropZoneActive('section-empty', sectionIndex, 0),
                   },
                   {
-                    'editor__related__item__content__empty--has-empty-error':
+                    'editor__related__column__content__empty--has-empty-error':
                       hasEmptyPanelError(sectionIndex),
                   },
                 ]"
@@ -495,11 +524,11 @@ onBeforeUnmount(() => {
                 <p>{{ $t("layouts.drop_boxes_here") }}</p>
               </div>
 
-              <div v-else class="editor__related__columns">
+              <div v-else class="editor__related__list">
                 <div
-                  class="editor__related__columns__drop-zone editor__related__drop-zone--horizontal"
+                  class="editor__related__list__drop-zone editor__related__drop-zone--horizontal"
                   :class="{
-                    'editor__related__columns__drop-zone--active':
+                    'editor__related__list__drop-zone--active':
                       isDropZoneActive('section-column', sectionIndex, 0),
                   }"
                   @dragover="
@@ -511,53 +540,96 @@ onBeforeUnmount(() => {
                 <div
                   v-for="(column, columnIndex) in section.layout"
                   :key="columnIndex"
-                  class="editor__related__columns__item"
+                  class="editor__related__list__row"
                   :class="{
-                    'editor__related__columns__item--dragging': isItemDragging(
+                    'editor__related__list__row--dragging': isItemDragging(
                       'section',
                       sectionIndex,
                       columnIndex,
                     ),
+                    'editor__related__list__row--locked':
+                      isSubpanelOpen(column),
                   }"
                 >
-                  <div
-                    class="editor__related__columns__item__content"
-                    draggable="true"
-                    @dragstart="
-                      startDrag('section', sectionIndex, columnIndex, $event)
-                    "
-                    @dragend="endDrag"
-                  >
-                    <span class="editor__related__columns__item__handle">
-                      <i class="fa-solid fa-grip-vertical"></i>
-                    </span>
-                    <span class="editor__related__columns__item__label">
-                      <span>{{ $t(column.label) ?? column.key }}</span>
-
-                      <span
-                        v-if="column.readonly"
-                        class="editor__related__item__label__flag"
-                        >{{ $t("fields.metadata.readonly") }}</span
-                      >
-                    </span>
-
-                    <button
-                      @click="
-                        removeColumnFromSection(sectionIndex, columnIndex)
+                  <div class="editor__related__list__row__wrapper">
+                    <div
+                      class="editor__related__list__row__content"
+                      draggable="true"
+                      @dragstart="
+                        startDrag(
+                          'section',
+                          sectionIndex,
+                          columnIndex,
+                          column,
+                          $event,
+                        )
                       "
-                      class="editor__related__columns__item__remove"
-                      type="button"
-                      :title="$t('layouts.remove_column')"
+                      @dragend="endDrag"
                     >
-                      <i class="fa-solid fa-times"></i>
-                    </button>
+                      <span class="editor__related__list__row__handle">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                      </span>
+                      <span class="editor__related__list__row__label">
+                        <span>{{ $t(column.label) ?? column.key }}</span>
+
+                        <span
+                          v-if="isSubpanelOpen(column)"
+                          class="editor__related__column__label__flag"
+                          ><i class="fa-solid fa-lock"></i
+                        ></span>
+                      </span>
+                      <button
+                        @click="toggleSubpanel(column)"
+                        class="editor__related__list__row__edit"
+                        type="button"
+                        :title="
+                          isSubpanelOpen(column)
+                            ? $t('layouts.save_column')
+                            : $t('layouts.edit_column')
+                        "
+                      >
+                        <i
+                          :class="[
+                            'fa-solid',
+                            isSubpanelOpen(column)
+                              ? 'fa-floppy-disk'
+                              : 'fa-pen-to-square',
+                          ]"
+                        ></i>
+                      </button>
+                      <button
+                        @click="
+                          removeColumnFromSection(sectionIndex, columnIndex)
+                        "
+                        class="editor__related__list__row__remove"
+                        type="button"
+                        :title="$t('layouts.remove_column')"
+                      >
+                        <i class="fa-solid fa-times"></i>
+                      </button>
+                    </div>
+
+                    <div class="related-fields">
+                      <LayoutRelatedFields
+                        :fields="relByKey[column.name]"
+                        :showFields="isSubpanelOpen(column)"
+                        :selectedFields="column.panelHeader || []"
+                        @update:selectedFields="
+                          (val) =>
+                            updateColumnPanelHeader(
+                              sectionIndex,
+                              columnIndex,
+                              val,
+                            )
+                        "
+                      ></LayoutRelatedFields>
+                    </div>
                   </div>
 
-                  <!-- Drop zone after column -->
                   <div
-                    class="editor__related__columns__drop-zone editor__related__columns__drop-zone--horizontal"
+                    class="editor__related__list__drop-zone editor__related__list__drop-zone--horizontal"
                     :class="{
-                      'editor__related__columns__drop-zone--active':
+                      'editor__related__list__drop-zone--active':
                         isDropZoneActive(
                           'section-column',
                           sectionIndex,
@@ -585,6 +657,10 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
+        <span class="related-fields__hint">
+          <i class="fa-solid fa-asterisk"></i> Click on fields to add them to
+          the subpanel
+        </span>
       </div>
     </div>
 

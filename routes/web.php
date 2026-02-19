@@ -11,7 +11,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ModuleManagerController;
 use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\FieldsManagerController;
-use App\Http\Controllers\DropDownListController;
+use App\Http\Controllers\DropdownListController;
 
 Route::middleware(['auth'])->group(function () {
 

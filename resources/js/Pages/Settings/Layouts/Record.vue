@@ -144,7 +144,7 @@ const onItemMouseLeave = () => {
               <i v-else class="fa-regular fa-square-plus"></i>
             </div>
             <div class="layouts__item__content__icon">
-              <i class="fa-solid fa-circle-nodes"></i>
+              <i class="fa-solid fa-diagram-predecessor"></i>
             </div>
             <span class="layouts__item__content__label">
               {{ $t("layouts.related") }}

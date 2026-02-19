@@ -7,13 +7,14 @@ import Layout from "@/Layouts/Layout.vue";
 import LayoutListEditor from "@/Pages/Components/Settings/Layouts/LayoutListEditor.vue";
 import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecordEditor.vue";
 import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelatedEditor.vue";
+import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubpanelEditor.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
-const { success, error, info, clearAllAlerts } = useAlerts();
+const { success, error, info, clearAllAlerts, warning } = useAlerts();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -294,9 +295,9 @@ const resetToDatabaseValue = () => {
     relatedPanels.value = cloneRelatedPanelsFromDb(relatedLayoutFromDB.value);
   }
   form.definition = currentLayout.value || {};
-  form.clearErrors();
-
-  success(t("layouts.layout_reset_success"));
+  clearAllAlerts();
+  emptyPanels.value = new Set();
+  warning(t("layouts.layout_reset_success"));
 };
 
 const getEmptyPanels = () => {
@@ -421,6 +422,13 @@ const layoutsUrl = () => {
           :available-relationships="availableRelationships"
           :rel-by-key="relatedByName"
           :empty-panels="emptyPanels"
+        />
+      </div>
+
+      <div v-else-if="type === 'subpanels'">
+        <LayoutSubpanelEditor
+          v-model:columns="listColumns"
+          :available-fields="availableListFields"
         />
       </div>
 

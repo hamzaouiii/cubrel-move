@@ -773,6 +773,7 @@
     }
   }
 }
+
 .delete-zone {
   margin: 25px 0;
   display: flex;
@@ -868,6 +869,7 @@
     }
   }
 }
+
 .relatedpanels {
   margin-top: 20px;
 
@@ -889,10 +891,9 @@
     transition: height 0.3s ease;
     margin: 10px;
     border: 1px solid lightgray;
-    box-shadow:
-      rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-      rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+
+    border-radius: 12px;
     overflow: hidden;
     &__header {
       font-family: "Fira Sans", "Heebo", sans-serif;
@@ -933,35 +934,75 @@
       }
     }
     &__body {
-      background-color: rgb(242, 242, 242);
-    }
-  }
-
-  .related-records {
-    font-family: "Fira Sans", "Heebo", sans-serif;
-    &__header {
-      display: flex;
-      justify-content: space-between;
-      flex-direction: row;
-      border: 1px solid darkgray;
-
-      li {
-        flex: 1;
-        padding: 10px 20px;
-        font-weight: 500;
+      .related-table-wrapper {
+        background: #ffffff;
+        border-radius: 0 0 12px;
+        overflow: hidden;
+        border: 1px solid #e8edf2;
       }
-    }
-    &__body {
-      display: flex;
-      justify-content: space-between;
-      flex-direction: row;
-      background-color: #ffffffb2;
 
-      border: 1px solid darkgray;
+      .related-records {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.9rem;
+        color: #1f2937;
 
-      li {
-        flex: 1;
-        padding: 10px;
+        thead {
+          background-color: color-mix(
+            in srgb,
+            var(--related-color) 7%,
+            transparent
+          );
+
+          th {
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            color: #6b7280;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+
+            &:last-child {
+              text-align: right;
+            }
+          }
+        }
+
+        tbody {
+          tr {
+            transition: background 0.15s ease;
+
+            &:hover {
+              background: #f9fbfd;
+            }
+
+            &:not(:last-child) td {
+              border-bottom: 1px solid #eef2f6;
+            }
+          }
+
+          td {
+            padding: 0.85rem 1rem;
+            vertical-align: middle;
+
+            a {
+              color: #2563eb;
+              font-weight: 500;
+              text-decoration: none;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+
+            &:last-child {
+              text-align: right;
+            }
+          }
+        }
       }
     }
   }

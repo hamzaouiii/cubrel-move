@@ -5,6 +5,7 @@ namespace App\Services\Relationships;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use App\Models\RelationshipLink;
+use App\Models\Module;
 use RuntimeException;
 
 class RelationshipService
@@ -105,11 +106,41 @@ class RelationshipService
    */
   public static function getRelationshipForModule(string $class): Collection
   {
-    return DB::table('relationships')
+    $relationships = DB::table('relationships')
       ->where('left_class', $class)
       ->orWhere('right_class', $class)
       ->get();
+
+    if ($relationships->isEmpty()) {
+      return collect();
+    }
+
+    $relationships = $relationships->map(function ($relationship) use ($class) {
+      return self::getWithSide($relationship, $class);
+    });
+
+    $relatedSlugs = $relationships
+      ->pluck('related_slug')
+      ->unique()
+      ->values();
+
+    $modules = Module::with('relatedfields')
+      ->whereIn('slug', $relatedSlugs)
+      ->get()
+      ->keyBy('slug');
+
+    return $relationships->map(function ($relationship) use ($modules) {
+
+      $module = $modules->get($relationship->related_slug);
+
+      $relationship->related_fields = $module
+        ? $module->relatedfields
+        : collect();
+
+      return $relationship;
+    });
   }
+
 
   /**
    * unfinished loads relationship links

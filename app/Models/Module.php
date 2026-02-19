@@ -172,6 +172,22 @@ class Module extends Model
       ->with('dropdown_list');
   }
 
+  public function relatedfields()
+  {
+    return $this->hasMany(Field::class, 'module_id', 'id')
+      ->select([
+        'id',
+        'module_id',
+        'dropdown_list_id',
+        'name',
+        'type',
+        'key',
+        'readonly',
+        'sortable',
+        'label',
+        'required',
+      ]);
+  }
   public function getFieldMetadata(string $field): array
   {
     $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
