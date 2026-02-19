@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed } from "vue";
-import { formatDateTime, formatDate } from "@/utils/datetime";
 import { usePage, Link } from "@inertiajs/vue3";
 import PanelRecord from "./PanelRecord.vue";
+import PanelHeader from "./PanelHeader.vue";
+import PanelBody from "./PanelBody.vue";
 const props = defineProps({
   relationships: Object,
   panel: Object,
@@ -35,50 +36,16 @@ const getRelatedIcon = (slug) => getModule(slug)?.icon;
 </script>
 
 <template>
-  <div
+  <PanelHeader
     v-if="relationshipMap[panel.name]"
     @click="togglePanel(panel.name)"
-    class="relatedpanels__item__header"
-  >
-    <div class="relatedpanels__item__header__title">
-      <i :class="getRelatedIcon(relationshipMap[panel.name].related_slug)"></i>
-      {{ $t(relationshipMap[panel.name].label) }}
-    </div>
-
-    <div class="relatedpanels__item__header__count">
-      {{ relationshipMap[panel.name].records?.length ?? 0 }}
-    </div>
-  </div>
-  <Transition name="expand">
-    <div
-      v-if="relationshipMap[panel.name] && openPanels.includes(panel.name)"
-      class="relatedpanels__item__body"
-    >
-      <div class="related-table-wrapper">
-        <table class="related-records">
-          <thead>
-            <tr>
-              <th
-                v-for="field in panel.panelHeader"
-                :key="field.name"
-                :class="{ 'is-action': field.type === 'action' }"
-              >
-                {{ $t(field.label) }}
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <PanelRecord
-              v-for="record in relationshipMap[panel.name].records"
-              :key="record.id"
-              :record="record"
-              :header="panel.panelHeader"
-              :related_slug="relationshipMap[panel.name].related_slug"
-            ></PanelRecord>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </Transition>
+    :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
+    :count="relationshipMap[panel.name].records?.length ?? 0"
+    :label="relationshipMap[panel.name].label"
+  ></PanelHeader>
+  <PanelBody
+    :relationship="relationshipMap[panel.name]"
+    :isOpenPanel="openPanels.includes(panel.name)"
+    :panel="panel"
+  ></PanelBody>
 </template>
