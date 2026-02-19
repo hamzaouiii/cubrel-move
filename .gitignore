@@ -26,7 +26,7 @@ Thumbs.db
 .env.prod
 *.zip
 
-app/console/*
+# app/console/*
 *.ps1
 package-lock.json
 .prettierrc
