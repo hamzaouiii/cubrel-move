@@ -30,6 +30,7 @@ class Module extends Model
     'name',
     'icon',
     'label',
+    'single_label',
     'color',
     'path',
     'sort_order',
@@ -68,7 +69,8 @@ class Module extends Model
           'icon'  => $module->icon,
           'color' => $module->color,
           'path'  => $module->path,
-          'label' => $module->label
+          'label' => $module->label,
+          'single_label' => $module->single_label
         ];
       })
       ->values();

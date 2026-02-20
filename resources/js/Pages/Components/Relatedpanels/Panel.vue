@@ -33,6 +33,7 @@ const modules = computed(() => page.props.modules);
 const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
 const getRelatedIcon = (slug) => getModule(slug)?.icon;
+const getSingleLabel = (slug) => getModule(slug)?.single_label;
 </script>
 
 <template>
@@ -42,6 +43,8 @@ const getRelatedIcon = (slug) => getModule(slug)?.icon;
     :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
     :count="relationshipMap[panel.name].records?.length ?? 0"
     :label="relationshipMap[panel.name].label"
+    :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
+    :panel="panel"
   ></PanelHeader>
   <PanelBody
     :relationship="relationshipMap[panel.name]"

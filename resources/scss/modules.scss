@@ -903,34 +903,74 @@
       padding: 10px;
       cursor: pointer;
       user-select: none;
-      &__title {
-        font-size: 1.5rem;
-        font-weight: 500;
+      &__details {
         display: flex;
         flex-direction: row;
-        color: color-mix(in srgb, var(--related-color) 25%, rgb(0, 0, 0));
-        i {
-          background-color: var(--related-color);
-          padding: 5px;
-          color: color-mix(in srgb, var(--related-color) 30%, white);
-          font-size: 1rem;
-          width: 25px;
+        justify-content: space-between;
+        &__title {
+          font-size: 1.5rem;
+          font-weight: 500;
           display: flex;
+          flex-direction: row;
+          align-items: center;
+          color: color-mix(in srgb, var(--related-color) 25%, rgb(0, 0, 0));
+          i {
+            background-color: var(--related-color);
+            padding: 5px;
+            color: color-mix(in srgb, var(--related-color) 30%, white);
+            font-size: 1rem;
+            width: 25px;
+            display: flex;
+            margin: 0 5px;
+            justify-content: center;
+            border-radius: 5px;
+          }
+        }
+        &__count {
+          color: rgb(111, 111, 111);
+          background-color: lightgray;
+          display: inline-flex;
+          font-size: 1.1rem;
+          font-weight: 500;
+          align-self: center;
+          padding: 0 10px;
           margin: 0 5px;
-          justify-content: center;
           border-radius: 5px;
         }
       }
-      &__count {
-        color: rgb(111, 111, 111);
-        background-color: lightgray;
-        display: inline-flex;
-        font-size: 1.1rem;
-        font-weight: 500;
-        align-self: center;
-        padding: 0 10px;
-        margin: 0 5px;
-        border-radius: 5px;
+      &__actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        &__btn {
+          border-radius: 5px;
+          background: none;
+          border: none;
+          padding: 5px 10px;
+          background-color: var(--related-color);
+          margin: 0 10px;
+          color: white;
+          cursor: pointer;
+          user-select: none;
+          transition: all 0.1s ease-out;
+          &:hover {
+            background-color: color-mix(
+              in srgb,
+              var(--related-color) 50%,
+              darkgray
+            );
+          }
+          span {
+            margin: 5px;
+          }
+        }
+        &__dropdown {
+          position: absolute;
+          background-color: rgb(235, 235, 235);
+          padding: 5px 20px;
+          white-space: nowrap;
+        }
       }
     }
     &__body {

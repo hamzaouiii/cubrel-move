@@ -54,6 +54,7 @@ return [
   ],
   'accounts' => [
     'label'  => 'Accounts',
+    'single_label'  => 'Account',
     'fields' => [
       'id'               => 'ID',
       'name'             => 'Name',
@@ -72,8 +73,8 @@ return [
 
   'contacts' => [
     'label'  => 'Contacts',
+    'single_label'  => 'Contact',
     'fields' => [
-      'id'         => 'ID',
       'name'       => 'Name',
       'account_id' => 'Account',
       'first_name' => 'First Name',
@@ -90,6 +91,7 @@ return [
 
   'leads' => [
     'label' => 'Leads',
+    'single_label' => 'Lead',
     'fields' => [
       'id'          => 'ID',
       'name'        => 'Name',
@@ -122,6 +124,7 @@ return [
 
   'invoices' => [
     'label'  => 'Invoices',
+    'single_label'  => 'Invoice',
     'fields' => [
       'id'          => 'ID',
       'name'        => 'Name',
@@ -145,6 +148,7 @@ return [
 
   'quotes' => [
     'label'  => 'Quotes',
+    'single_label'  => 'Quote',
     'fields' => [
       'id'          => 'ID',
       'name'        => 'Name',
@@ -166,6 +170,7 @@ return [
 
   'cases' => [
     'label'  => 'Cases',
+    'single_label'  => 'Case',
     'fields' => [
       'id'          => 'ID',
       'name'        => 'Name',
@@ -185,6 +190,7 @@ return [
 
   'emails' => [
     'label'  => 'Emails',
+    'single_label'  => 'Email',
     'fields' => [
       'id'             => 'ID',
       'name'           => 'Name',
@@ -203,6 +209,7 @@ return [
 
   'inquiries' => [
     'label'  => 'Inquiries',
+    'single_label'  => 'Inquiry',
     'fields' => [
       'id'                 => 'ID',
       'name'               => 'Name',
@@ -219,20 +226,10 @@ return [
     ],
   ],
 
-  'money' => [
-    'label'  => 'Money',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'description' => 'Description',
-      'data'        => 'Data',
-      'created_at'  => 'Created At',
-      'updated_at'  => 'Updated At',
-      'deleted_at'  => 'Deleted At',
-    ],
-  ],
+
 
   'settings' => [
     'label' => 'Settings',
+    'single_label' => 'Setting',
   ],
 ];
