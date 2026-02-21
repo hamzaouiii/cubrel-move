@@ -1,11 +1,14 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
-// import axios from "axios";
+import axios from "axios";
+
 const props = defineProps({
   panel: Object,
 });
+
 const emit = defineEmits(["close"]);
+
 const isOpen = ref(true);
 const closeOverlay = () => {
   isOpen.value = false;
@@ -14,24 +17,20 @@ const closeOverlay = () => {
 const handleAfterLeave = () => {
   emit("close");
 };
-const loading = ref(true);
-const records = ref([]);
 
-onMounted(() => {
-  setTimeout(() => {
-    records.value = Array.from({ length: 180 }).map((_, index) => ({
-      id: index + 1,
-      name: `Lead ${index + 1}`,
-      subtitle: `Client Company ${index + 1} • Active`,
-    }));
-
-    loading.value = false;
-  }, 3000);
-});
 const page = usePage();
-const appSettings = page.props.appSettings;
 
+const appSettings = page.props.appSettings;
 const modules = computed(() => page.props.modules);
+
+// 🔹 Current context (must exist on record page)
+const currentModule = page.props.module.slug; // slug
+const currentRecordId = page.props.record?.id; // id
+const relationshipName = props.panel?.relationship?.name || null;
+
+const loading = ref(false);
+const records = ref([]);
+const selected = ref([]);
 
 const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
@@ -41,11 +40,34 @@ const getRelatedColor = (slug) => {
     : getModule(slug)?.color;
 };
 
-const selected = ref([]);
-const save = () => {
-  console.log("Selected record IDs:", selected.value);
+// 🔥 Load real data automatically
+onMounted(async () => {
+  if (!relationshipName || !currentModule || !currentRecordId) {
+    console.error("Missing relationship context");
+    return;
+  }
 
-  emit("save", selected.value);
+  loading.value = true;
+
+  try {
+    const response = await axios.get(
+      `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`,
+    );
+
+    records.value = response.data;
+  } catch (error) {
+    console.error(
+      "Failed loading available records:",
+      error.response?.data || error.message,
+    );
+  } finally {
+    loading.value = false;
+  }
+});
+
+// 🔹 Save now only logs selected ids
+const save = () => {
+  console.log("Selected IDs:", selected.value);
 };
 </script>
 

@@ -31,5 +31,6 @@ class DatabaseSeeder extends Seeder
     $this->call(dropdownListSeeder::class);
     $this->call(SettingValuesSeeder::class);
     $this->call(RelationshipSeeder::class);
+    $this->call(DevSeeder::class);
   }
 }

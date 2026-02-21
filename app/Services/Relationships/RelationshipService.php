@@ -167,7 +167,7 @@ class RelationshipService
   /**
    * Get relationship and determine which side the given model is on
    */
-  public static function getWithSide(object $relationship, string $model_class, ?string $model_id = null): object
+  public static function getWithSide(object $relationship, string $model_class, ?string $module_id = null): object
   {
 
     if ($relationship->left_class === $model_class) {
@@ -178,7 +178,7 @@ class RelationshipService
       $relationship->other_id_field = 'right_id';
       $relationship->related_class = $relationship->right_class;
       $relationship->related_slug = $relationship->right_module;
-      $relationship->current_model_id = $model_id;
+      $relationship->current_module_id = $module_id;
     } elseif ($relationship->right_class === $model_class) {
       $relationship->side = 'right';
       $relationship->current_side = 'right';
@@ -188,7 +188,7 @@ class RelationshipService
       $relationship->related_class = $relationship->left_class;
       $relationship->related_slug = $relationship->left_module;
 
-      $relationship->current_model_id = $model_id;
+      $relationship->current_module_id = $module_id;
     } else {
       throw new RuntimeException("Model {$model_class} is not part of relationship {$relationship->name}");
     }
@@ -199,16 +199,16 @@ class RelationshipService
   /**
    * Get relationship with resolved IDs for linking
    */
-  public static function getWithResolvedIds(object $relationship, string $model_class, string $model_id, string $related_id): object
+  public static function getWithResolvedIds(object $relationship, string $model_class, string $module_id, string $related_id): object
   {
-    $relationship = self::getWithSide($relationship, $model_class, $model_id);
+    $relationship = self::getWithSide($relationship, $model_class, $module_id);
 
     if ($relationship->current_side === 'left') {
-      $relationship->left_id = $model_id;
+      $relationship->left_id = $module_id;
       $relationship->right_id = $related_id;
     } else {
       $relationship->left_id = $related_id;
-      $relationship->right_id = $model_id;
+      $relationship->right_id = $module_id;
     }
 
     return $relationship;
@@ -217,10 +217,10 @@ class RelationshipService
   /**
    * Link two records in a relationship
    */
-  public static function link(string $relationship_name, string $model_class, string $model_id, string $related_id): void
+  public static function link(string $relationship_name, string $model_class, string $module_id, string $related_id): void
   {
     $relationship = self::get($relationship_name);
-    $relationship = self::getWithResolvedIds($relationship, $model_class, $model_id, $related_id);
+    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
     DB::transaction(function () use ($relationship) {
       self::enforceCardinality(
@@ -240,9 +240,9 @@ class RelationshipService
   /**
    * Unlink two records in a relationship
    */
-  public static function unlink(object $relationship, string $model_class, string $model_id, string $related_id): void
+  public static function unlink(object $relationship, string $model_class, string $module_id, string $related_id): void
   {
-    $relationship = self::getWithResolvedIds($relationship, $model_class, $model_id, $related_id);
+    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
     DB::table('relationship_links')
       ->where('relationship_id', $relationship->id)
@@ -254,13 +254,13 @@ class RelationshipService
   /**
    * Get related records for a model
    */
-  public static function getRelatedRecords(object $relationship, string $model_class, string $model_id): Collection
+  public static function getRelatedRecords(object $relationship, string $model_class, string $module_id): Collection
   {
-    $relationship = self::getWithSide($relationship, $model_class, $model_id);
+    $relationship = self::getWithSide($relationship, $model_class, $module_id);
 
     $relatedIds = DB::table('relationship_links')
       ->where('relationship_id', $relationship->id)
-      ->where($relationship->current_id_field, $model_id)
+      ->where($relationship->current_id_field, $module_id)
       ->pluck($relationship->other_id_field);
 
     if ($relatedIds->isEmpty()) {
@@ -277,9 +277,9 @@ class RelationshipService
   /**
    * Check if a relationship exists between two records
    */
-  public static function exists(object $relationship, string $model_class, string $model_id, string $related_id): bool
+  public static function exists(object $relationship, string $model_class, string $module_id, string $related_id): bool
   {
-    $relationship = self::getWithResolvedIds($relationship, $model_class, $model_id, $related_id);
+    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
     return DB::table('relationship_links')
       ->where('relationship_id', $relationship->id)
@@ -340,5 +340,58 @@ class RelationshipService
     }
 
     return $result;
+  }
+
+  /**
+   * Get available records from related module for linking.
+   */
+  public static function getRecordsForLinking(
+    object $relationship,
+    string $modelClass,
+    string $recordId
+  ): Collection {
+
+    // 1. Resolve relationship side
+    $relationship = self::getWithSide($relationship, $modelClass, $recordId);
+
+    // 2. If one-to-one and already linked → nothing available
+    if ($relationship->relationship_type === 'one-to-one') {
+      $alreadyLinked = DB::table('relationship_links')
+        ->where('relationship_id', $relationship->id)
+        ->where($relationship->current_id_field, $recordId)
+        ->exists();
+
+      if ($alreadyLinked) {
+        return collect();
+      }
+    }
+
+    // 3. Get already linked related IDs
+    $linkedIds = DB::table('relationship_links')
+      ->where('relationship_id', $relationship->id)
+      ->where($relationship->current_id_field, $recordId)
+      ->pluck($relationship->other_id_field);
+
+    $relatedClass = $relationship->related_class;
+
+    // 4. Build query for related records
+    $query = $relatedClass::query();
+
+    // 5. Enforce one-to-many rule
+    if ($relationship->relationship_type === 'one-to-many') {
+      // Exclude records already linked elsewhere
+      $takenIds = DB::table('relationship_links')
+        ->where('relationship_id', $relationship->id)
+        ->pluck('right_id');
+
+      $query->whereNotIn('id', $takenIds);
+    }
+
+    // 6. Exclude already linked to THIS record
+    if ($linkedIds->isNotEmpty()) {
+      $query->whereNotIn('id', $linkedIds);
+    }
+
+    return $query->get();
   }
 }
