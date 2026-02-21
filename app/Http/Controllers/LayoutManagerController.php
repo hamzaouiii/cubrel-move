@@ -16,7 +16,7 @@ class LayoutManagerController extends Controller
   public function store(Request $request, \App\Models\Module $module, string $layoutType)
   {
     $validated = [];
-    if ($layoutType == 'list') {
+    if ($layoutType == 'list' || $layoutType === "linking-panel") {
       $validated = $request->validate([
         'definition' => 'required|array',
         'definition.columns' => 'required|array',
