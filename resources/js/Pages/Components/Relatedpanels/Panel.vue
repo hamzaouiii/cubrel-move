@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
-import PanelRecord from "./PanelRecord.vue";
 import PanelHeader from "./PanelHeader.vue";
 import PanelBody from "./PanelBody.vue";
 const props = defineProps({
@@ -34,17 +33,23 @@ const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
 const getRelatedIcon = (slug) => getModule(slug)?.icon;
 const getSingleLabel = (slug) => getModule(slug)?.single_label;
+
+const emit = defineEmits(["open-overlay"]);
+
+const openLinkOverlay = () => {
+  emit("open-overlay", props.panel);
+};
 </script>
 
 <template>
   <PanelHeader
     v-if="relationshipMap[panel.name]"
-    @click="togglePanel(panel.name)"
+    @toggle="togglePanel(panel.name)"
+    @open-overlay="openLinkOverlay"
     :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
     :count="relationshipMap[panel.name].records?.length ?? 0"
     :label="relationshipMap[panel.name].label"
     :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
-    :panel="panel"
   ></PanelHeader>
   <PanelBody
     :relationship="relationshipMap[panel.name]"

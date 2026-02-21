@@ -15,8 +15,8 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 import ModuleDropdownField from "@/Pages/Components/FiledTypes/ModuleDropdownField.vue";
 import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
-import RelatedpanelList from "../Components/Relatedpanels/List.vue";
-
+import PanelList from "../Components/Relatedpanels/PanelList.vue";
+import RelatedLinksOverlay from "../Components/RelatedLinksOverlay.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 defineOptions({
@@ -355,6 +355,15 @@ useUnsavedChangesGuard({
 const switchTabs = (tab) => {
   currentTab.value = tab;
 };
+
+// for related overlay
+const overlayOpen = ref(false);
+const activePanel = ref(null);
+
+const openOverlay = (panel) => {
+  activePanel.value = panel;
+  overlayOpen.value = true;
+};
 </script>
 
 <template>
@@ -582,10 +591,16 @@ const switchTabs = (tab) => {
           v-else-if="currentTab === 'related'"
           class="record-layout__subpanels"
         >
-          <RelatedpanelList
+          <PanelList
             :relationships="record.related"
             :layout="relatedLayout"
-          ></RelatedpanelList>
+            @open-overlay="openOverlay"
+          ></PanelList>
+          <RelatedLinksOverlay
+            v-if="overlayOpen"
+            :panel="activePanel"
+            @close="overlayOpen = false"
+          />
         </div>
       </div>
     </div>

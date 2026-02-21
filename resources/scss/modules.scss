@@ -1,3 +1,4 @@
+/*  Main Layout for list/edit/create/show record  */
 .module-layout {
   padding: 5px;
   margin-top: 25px;
@@ -226,6 +227,8 @@
     }
   }
 }
+
+/*  LIST OF RECORDS*/
 .list-layout {
   //list view
   position: fixed;
@@ -352,6 +355,7 @@
   //record view
 }
 
+/*  SINGLE RECORD */
 .record-layout {
   position: fixed;
   right: 0;
@@ -774,6 +778,7 @@
   }
 }
 
+/*  MASS DELETE */
 .delete-zone {
   margin: 25px 0;
   display: flex;
@@ -817,6 +822,7 @@
   }
 }
 
+/*  MASS UPDATE */
 .mass-update-zone {
   margin: 25px;
   width: 95%;
@@ -870,6 +876,7 @@
   }
 }
 
+/*  RELATED PANELS */
 .relatedpanels {
   margin-top: 20px;
 
@@ -1045,5 +1052,168 @@
         }
       }
     }
+  }
+}
+
+/*  OVERLAY */
+.record-overlay {
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  &__close {
+    all: unset;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: white;
+    border-radius: 8px;
+    font-size: 2rem;
+    transition: transform 0.1s ease;
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+/*  LINK RELATED RECORDS */
+.related-links {
+  background-color: white;
+  width: 85%;
+  height: 85%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 0px;
+  border-radius: 8px 0 0 0;
+  border: 2px solid var();
+  box-shadow: -2px -2px 36px 15px rgba(0, 0, 0, 0.4);
+  &__header {
+    background-color: color-mix(in srgb, var(--related-color) 7%, transparent);
+
+    display: flex;
+    flex-direction: row;
+    padding: 16px;
+    justify-content: space-between;
+    border-radius: 8px 0 0 0;
+    font-family: "Fira Sans", sans-serif;
+    align-items: baseline;
+    &__title {
+      font-size: 1.4rem;
+    }
+    &__actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      &__btn {
+        border-radius: 5px;
+        background: none;
+        border: none;
+        padding: 5px 10px;
+        background-color: var(--related-color);
+        margin: 0 10px;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.1s ease-out;
+        &:hover {
+          background-color: color-mix(
+            in srgb,
+            var(--related-color) 50%,
+            darkgray
+          );
+        }
+        span {
+          margin: 5px;
+        }
+      }
+    }
+  }
+  &__list {
+    height: 95%;
+    overflow: auto;
+  }
+
+  &__row {
+    border-bottom: 1px solid #eef1f5;
+    transition: background 0.15s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: #f8fafc;
+    }
+  }
+
+  &__row-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    margin: 0;
+
+    input[type="checkbox"] {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+  }
+
+  &__record {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__record-title {
+    font-weight: 600;
+    color: #243447;
+  }
+
+  &__record-subtitle {
+    font-size: 0.875rem;
+    color: #6b7c93;
+    margin-top: 2px;
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -400px 0;
+    }
+    100% {
+      background-position: 400px 0;
+    }
+  }
+
+  &__skeleton {
+    border-radius: 6px;
+    background: linear-gradient(90deg, #eef1f5 25%, #e2e8f0 37%, #eef1f5 63%);
+    background-size: 800px 100%;
+    animation: shimmer 1.2s infinite linear;
+  }
+  .skeleton-title {
+    height: 16px;
+    width: 180px;
+    margin-bottom: 8px;
+  }
+
+  .skeleton-subtitle {
+    height: 12px;
+    width: 240px;
+  }
+
+  .skeleton-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: #e5e9f2;
+    margin-top: 4px;
   }
 }
