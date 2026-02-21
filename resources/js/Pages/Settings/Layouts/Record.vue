@@ -151,6 +151,24 @@ const onItemMouseLeave = () => {
             </span>
           </div>
         </Link>
+        <Link class="layouts__item" :href="currentPath + '/linking-panel'">
+          <div
+            class="layouts__item__content"
+            @mouseenter="onItemMouseEnter($event, 'linking-panel')"
+            @mouseleave="onItemMouseLeave"
+          >
+            <div class="layouts__item__content__modifier">
+              <i v-if="hasListLayout" class="fa-regular fa-pen-to-square"></i>
+              <i v-else class="fa-regular fa-square-plus"></i>
+            </div>
+            <div class="layouts__item__content__icon">
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <span class="layouts__item__content__label">
+              {{ $t("layouts.linking-panel") }}
+            </span>
+          </div>
+        </Link>
       </div>
     </div>
   </div>
