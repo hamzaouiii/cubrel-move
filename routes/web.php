@@ -79,11 +79,8 @@ Route::middleware(['auth'])->group(function () {
 
 
   // Modules routes
-
   Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
   Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
-
-
   Route::get('/modules/{module}/{record_id}/relationships/{relationship}/available', [RelationshipLinkController::class, 'getRecordsForLinking'])->name('relationships.available');
   Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
   Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');

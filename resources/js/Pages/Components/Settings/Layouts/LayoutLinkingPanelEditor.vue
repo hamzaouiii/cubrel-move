@@ -12,7 +12,6 @@ const props = defineProps({
     default: () => [],
   },
 });
-console.log(props.columns);
 const emit = defineEmits(["update:columns"]);
 
 const internalColumns = ref([...props.columns]);

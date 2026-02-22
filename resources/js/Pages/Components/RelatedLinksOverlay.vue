@@ -2,14 +2,33 @@
 import { ref, onMounted, computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
+import Selectbox from "./FiledTypes/Selectbox.vue";
 
 const props = defineProps({
-  panel: Object,
+  panel: {
+    type: Object,
+    required: true,
+  },
+  layout: {
+    type: Object,
+    required: true,
+  },
+});
+
+const cleanedLayout = computed(() => {
+  if (!props.layout) return [];
+
+  const values = Array.isArray(props.layout)
+    ? props.layout
+    : Object.values(props.layout);
+
+  return values.filter((field) => field && field.name);
 });
 
 const emit = defineEmits(["close"]);
 
 const isOpen = ref(true);
+
 const closeOverlay = () => {
   isOpen.value = false;
 };
@@ -23,9 +42,8 @@ const page = usePage();
 const appSettings = page.props.appSettings;
 const modules = computed(() => page.props.modules);
 
-// 🔹 Current context (must exist on record page)
-const currentModule = page.props.module.slug; // slug
-const currentRecordId = page.props.record?.id; // id
+const currentModule = page.props.module.slug;
+const currentRecordId = page.props.record?.id;
 const relationshipName = props.panel?.relationship?.name || null;
 
 const loading = ref(false);
@@ -40,7 +58,6 @@ const getRelatedColor = (slug) => {
     : getModule(slug)?.color;
 };
 
-// 🔥 Load real data automatically
 onMounted(async () => {
   if (!relationshipName || !currentModule || !currentRecordId) {
     console.error("Missing relationship context");
@@ -65,7 +82,6 @@ onMounted(async () => {
   }
 });
 
-// 🔹 Save now only logs selected ids
 const save = () => {
   console.log("Selected IDs:", selected.value);
 };
@@ -99,8 +115,16 @@ const save = () => {
           </div>
         </div>
 
-        <!-- List -->
         <div class="related-links__list">
+          <ul
+            v-if="cleanedLayout && cleanedLayout.length"
+            class="related-links__head"
+          >
+            <li class="related-links__head__space"></li>
+            <li v-for="field in cleanedLayout" :key="field.name">
+              {{ $t(field.label) }}
+            </li>
+          </ul>
           <template v-if="loading">
             <div
               v-for="n in 12"
@@ -118,27 +142,29 @@ const save = () => {
             </div>
           </template>
           <template v-else>
-            <div
+            <ul
+              class="related-links__record"
               v-for="record in records"
               :key="record.id"
-              class="related-links__row"
             >
-              <label class="related-links__row-inner">
-                <input type="checkbox" :value="record.id" v-model="selected" />
+              <label>
+                <li class="related-links__record__checkbox">
+                  <Selectbox
+                    :value="record.id"
+                    v-model="selected"
+                    :color="getRelatedColor(panel.relationship.related_slug)"
+                  />
+                </li>
 
-                <div class="related-links__record">
-                  <div class="related-links__record-title">
-                    {{ record.name }}
-                  </div>
-                  <div
-                    v-if="record.subtitle"
-                    class="related-links__record-subtitle"
-                  >
-                    {{ record.subtitle }}
-                  </div>
-                </div>
+                <li
+                  v-for="field in cleanedLayout"
+                  :key="field.name"
+                  class="related-links__cell"
+                >
+                  {{ record[field.name] ?? "-" }}
+                </li>
               </label>
-            </div>
+            </ul>
           </template>
         </div>
       </div>

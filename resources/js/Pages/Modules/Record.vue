@@ -19,6 +19,7 @@ import PanelList from "../Components/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "../Components/RelatedLinksOverlay.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
+
 defineOptions({
   layout: Layout,
 });
@@ -598,6 +599,7 @@ const openOverlay = (panel) => {
           ></PanelList>
           <RelatedLinksOverlay
             v-if="overlayOpen"
+            :layout="record.related[activePanel.name].linking_layout.columns"
             :panel="activePanel"
             @close="overlayOpen = false"
           />

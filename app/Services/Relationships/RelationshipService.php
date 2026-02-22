@@ -288,6 +288,19 @@ class RelationshipService
       ->exists();
   }
 
+  public static function getLinkingLayout(string $slug)
+  {
+    $module = Module::query()
+      ->where('slug', $slug)
+      ->firstOrFail();
+
+    return $module->linkingPanelLayout();
+  }
+
+  /**
+   * on second thought this function's name does not sound right, perhaps it required changing in the future
+  
+   */
   public static function getAllRelatedRecords(string $modelClass, string $recordId): Collection
   {
     $relationships = self::getRelationshipForModule($modelClass);
@@ -312,7 +325,6 @@ class RelationshipService
     foreach ($relationships as $relationship) {
 
       $rel = self::getWithSide($relationship, $modelClass, $recordId);
-
       $linksForRelationship = $allLinks[$relationship->id] ?? collect();
 
       $relatedIds = $linksForRelationship
@@ -336,6 +348,7 @@ class RelationshipService
         'label'   =>  $relationship->label,
         'records' => $records,
         'related_slug' => $relationship->related_slug,
+        'linking_layout' => self::getLinkingLayout($relationship->related_slug)
       ];
     }
 
