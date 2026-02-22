@@ -1,0 +1,37 @@
+<?php
+
+namespace Database\Factories\Modules;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use Faker\Factory as FakerFactory;
+
+class LeadFactory extends Factory
+{
+  public function definition()
+  {
+    $locale = 'de_DE';
+    $faker = \Faker\Factory::create($locale);
+    $firstName = $this->faker->firstName();
+    $lastName  = $this->faker->lastName();
+    $companyTypes = ['LLC', 'Inc.', 'Corp.', 'Ltd.', 'Group', 'Partners', 'Solutions'];
+
+    $companyName = $faker->company() . ' ' . $faker->randomElement($companyTypes);
+
+    return [
+      'id' => Str::orderedUuid(), // Generates sequential UUIDs
+      'name' => $firstName . ' ' . $lastName,
+      'first_name' => $firstName,
+      'last_name' => $lastName,
+      'email' => $faker->optional(0.9)->safeEmail(),
+      'phone' => $faker->optional(0.9)->phoneNumber(),
+      'company' => $companyName,
+      'street' => $faker->optional(0.9)->streetAddress(),
+      'city' => $faker->optional(0.9)->city(),
+      'zip' => $faker->optional(0.9)->postcode(),
+      'description' => $faker->realText(150),
+      'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
+    ];
+  }
+}
