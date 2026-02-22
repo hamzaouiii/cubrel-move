@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Module;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Services\Relationships\RelationshipService;
 
 class RelationshipLinkController extends Controller
@@ -15,33 +14,18 @@ class RelationshipLinkController extends Controller
     string $record_id,
     string $relationship
   ) {
-    // 1. Resolve module
-    $moduleModel = Module::where('slug', $module)->first();
+    $moduleModel = Module::where('slug', $module)->firstOrFail();
 
-    if (!$moduleModel) {
-      throw new NotFoundHttpException("Module {$module} not found.");
-    }
-
-    // 2. Ensure record exists
     $modelClass = $moduleModel->model_class;
 
-    $record = $modelClass::find($record_id);
-
-    if (!$record) {
-      throw new NotFoundHttpException("Record {$record_id} not found.");
-    }
-
-    // 3. Load relationship definition
     $relationshipObj = RelationshipService::get($relationship);
 
-    // 4. Delegate to service
-    $records = RelationshipService::getRecordsForLinking(
+    return RelationshipService::getRecordsForLinking(
       $relationshipObj,
       $modelClass,
-      $record_id
+      $record_id,
+      $request->get('per_page', 25),
+      $request->get('search')
     );
-
-    // 5. Return lightweight response
-    return response()->json($records);
   }
 }

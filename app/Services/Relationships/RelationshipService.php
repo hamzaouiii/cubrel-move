@@ -361,13 +361,14 @@ class RelationshipService
   public static function getRecordsForLinking(
     object $relationship,
     string $modelClass,
-    string $recordId
-  ): Collection {
+    string $recordId,
+    int $perPage = 25,
+    ?string $search = null
+  ) {
 
-    // 1. Resolve relationship side
     $relationship = self::getWithSide($relationship, $modelClass, $recordId);
 
-    // 2. If one-to-one and already linked → nothing available
+    // One-to-one: if already linked, nothing available
     if ($relationship->relationship_type === 'one-to-one') {
       $alreadyLinked = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
@@ -379,20 +380,22 @@ class RelationshipService
       }
     }
 
-    // 3. Get already linked related IDs
+    $relatedClass = $relationship->related_class;
+
+    $query = $relatedClass::query();
+
+    // Exclude records already linked to this record
     $linkedIds = DB::table('relationship_links')
       ->where('relationship_id', $relationship->id)
       ->where($relationship->current_id_field, $recordId)
       ->pluck($relationship->other_id_field);
 
-    $relatedClass = $relationship->related_class;
+    if ($linkedIds->isNotEmpty()) {
+      $query->whereNotIn('id', $linkedIds);
+    }
 
-    // 4. Build query for related records
-    $query = $relatedClass::query();
-
-    // 5. Enforce one-to-many rule
+    // Enforce one-to-many
     if ($relationship->relationship_type === 'one-to-many') {
-      // Exclude records already linked elsewhere
       $takenIds = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
         ->pluck('right_id');
@@ -400,11 +403,11 @@ class RelationshipService
       $query->whereNotIn('id', $takenIds);
     }
 
-    // 6. Exclude already linked to THIS record
-    if ($linkedIds->isNotEmpty()) {
-      $query->whereNotIn('id', $linkedIds);
+    // Search
+    if ($search) {
+      $query->where('name', 'like', "%{$search}%");
     }
 
-    return $query->get();
+    return $query->orderBy('name')->paginate($perPage);
   }
 }

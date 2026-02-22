@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "./FiledTypes/Selectbox.vue";
-
+import { formatDateTime } from "@/utils/datetime";
 const props = defineProps({
   panel: {
     type: Object,
@@ -37,18 +37,26 @@ const handleAfterLeave = () => {
   emit("close");
 };
 
-const page = usePage();
+const pageData = usePage();
 
-const appSettings = page.props.appSettings;
-const modules = computed(() => page.props.modules);
+const appSettings = pageData.props.appSettings;
+const modules = computed(() => pageData.props.modules);
 
-const currentModule = page.props.module.slug;
-const currentRecordId = page.props.record?.id;
+const currentModule = pageData.props.module.slug;
+const currentRecordId = pageData.props.record?.id;
 const relationshipName = props.panel?.relationship?.name || null;
 
 const loading = ref(false);
 const records = ref([]);
 const selected = ref([]);
+
+const page = ref(1);
+const lastPage = ref(1);
+const total = ref(0);
+const perPage = 25;
+
+const search = ref("");
+let searchTimeout = null;
 
 const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
@@ -58,7 +66,7 @@ const getRelatedColor = (slug) => {
     : getModule(slug)?.color;
 };
 
-onMounted(async () => {
+const loadRecords = async () => {
   if (!relationshipName || !currentModule || !currentRecordId) {
     console.error("Missing relationship context");
     return;
@@ -69,9 +77,19 @@ onMounted(async () => {
   try {
     const response = await axios.get(
       `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`,
+      {
+        params: {
+          page: page.value,
+          per_page: perPage,
+          search: search.value,
+        },
+      },
     );
 
-    records.value = response.data;
+    records.value = response.data.data;
+    page.value = response.data.current_page;
+    lastPage.value = response.data.last_page;
+    total.value = response.data.total;
   } catch (error) {
     console.error(
       "Failed loading available records:",
@@ -80,10 +98,57 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+};
+
+onMounted(() => {
+  loadRecords();
 });
+
+// Debounced search
+watch(search, () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    loadRecords();
+  }, 400);
+});
+
+const nextPage = () => {
+  if (page.value < lastPage.value) {
+    page.value++;
+    loadRecords();
+  }
+};
+
+const prevPage = () => {
+  if (page.value > 1) {
+    page.value--;
+    loadRecords();
+  }
+};
 
 const save = () => {
   console.log("Selected IDs:", selected.value);
+};
+
+const formatField = (field, value) => {
+  if (value == null || value === "") return "";
+
+  const type = field?.type?.toLowerCase();
+
+  switch (type) {
+    case "textfield":
+      return value;
+
+    case "datetime":
+      return formatDateTime(value);
+
+    case "longtext":
+      return value.length > 34 ? value.slice(0, 44) + "…" : value;
+
+    default:
+      return value;
+  }
 };
 </script>
 
@@ -102,6 +167,7 @@ const save = () => {
           <div class="related-links__header__title">
             {{ $t("Link Existing Records") }}
           </div>
+
           <div class="related-links__header__actions">
             <button
               class="related-links__header__actions__btn"
@@ -115,7 +181,17 @@ const save = () => {
           </div>
         </div>
 
+        <!-- List -->
         <div class="related-links__list">
+          <div class="related-links__modifiers">
+            <h6>Showing {{ records.length }} records</h6>
+            <div class="related-links__modifiers__search">
+              <input v-model="search" type="text" placeholder="Search..." />
+              <span class="related-links__modifiers__search__clear">
+                <i class="fa-solid fa-xmark" v-if="search.length"></i>
+              </span>
+            </div>
+          </div>
           <ul
             v-if="cleanedLayout && cleanedLayout.length"
             class="related-links__head"
@@ -126,19 +202,16 @@ const save = () => {
             </li>
           </ul>
           <template v-if="loading">
-            <div
-              v-for="n in 12"
-              :key="'related-links__skeleton-' + n"
-              class="related-links__row"
-            >
-              <div class="related-links__row-inner">
-                <div class="skeleton-checkbox"></div>
+            <div v-for="n in 15" :key="'related-links__skeleton-' + n">
+              <ul class="related-links__record related-links__skeleton">
+                <li class="skeleton-checkbox"></li>
 
-                <div class="related-links__record">
-                  <div class="related-links__skeleton skeleton-title"></div>
-                  <div class="related-links__skeleton skeleton-subtitle"></div>
-                </div>
-              </div>
+                <li
+                  v-for="field in cleanedLayout"
+                  :key="field.name"
+                  class="skeleton skeleton-item"
+                ></li>
+              </ul>
             </div>
           </template>
           <template v-else>
@@ -161,12 +234,48 @@ const save = () => {
                   :key="field.name"
                   class="related-links__cell"
                 >
-                  {{ record[field.name] ?? "-" }}
+                  <template v-if="field.name === 'name'"
+                    ><span
+                      class="related-links__record-title related-links__record__field"
+                    >
+                      {{ formatField(field, record[field.name]) }}
+                    </span></template
+                  >
+                  <template v-else
+                    ><span class="related-links__record__field">
+                      {{ formatField(field, record[field.name]) }}
+                    </span></template
+                  >
                 </li>
               </label>
             </ul>
           </template>
         </div>
+        <ul class="related-links__pagination" v-if="lastPage > 1">
+          <li
+            @click="prevPage"
+            class="related-links__pagination__item"
+            :class="{
+              'related-links__pagination__item--disabled': page === 1,
+            }"
+          >
+            <span><i class="fa-solid fa-angle-left"></i></span>
+          </li>
+          <li class="related-links__pagination__item">
+            <span>{{ page }} {{ $t("modules.of") }} {{ lastPage }}</span>
+          </li>
+          <li
+            @click="nextPage"
+            class="related-links__pagination__item"
+            :class="{
+              'related-links__pagination__item--disabled': page === lastPage,
+            }"
+          >
+            <span>
+              <i class="fa-solid fa-angle-right"></i>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
   </Transition>
