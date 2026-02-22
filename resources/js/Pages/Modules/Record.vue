@@ -365,6 +365,16 @@ const openOverlay = (panel) => {
   activePanel.value = panel;
   overlayOpen.value = true;
 };
+
+const handleSaved = () => {
+  overlayOpen.value = false;
+
+  router.reload({
+    only: ["record"],
+    preserveScroll: true,
+    preserveState: true,
+  });
+};
 </script>
 
 <template>
@@ -602,6 +612,7 @@ const openOverlay = (panel) => {
             :layout="record.related[activePanel.name].linking_layout.columns"
             :panel="activePanel"
             @close="overlayOpen = false"
+            @saved="handleSaved"
           />
         </div>
       </div>
