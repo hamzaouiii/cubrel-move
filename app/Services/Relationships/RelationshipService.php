@@ -136,7 +136,6 @@ class RelationshipService
       $relationship->related_fields = $module
         ? $module->relatedfields
         : collect();
-
       return $relationship;
     });
   }

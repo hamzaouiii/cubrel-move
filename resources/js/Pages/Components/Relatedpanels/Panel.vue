@@ -33,6 +33,7 @@ const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
 const getRelatedIcon = (slug) => getModule(slug)?.icon;
 const getSingleLabel = (slug) => getModule(slug)?.single_label;
+const getLabel = (slug) => getModule(slug)?.label;
 
 const emit = defineEmits(["open-overlay"]);
 
@@ -48,7 +49,7 @@ const openLinkOverlay = () => {
     @open-overlay="openLinkOverlay"
     :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
     :count="relationshipMap[panel.name].records?.length ?? 0"
-    :label="relationshipMap[panel.name].label"
+    :label="getLabel(relationshipMap[panel.name].related_slug)"
     :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
   ></PanelHeader>
   <PanelBody

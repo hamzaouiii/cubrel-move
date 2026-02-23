@@ -887,6 +887,7 @@
       flex-direction: column;
     }
     &__column {
+      min-width: 0;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -899,9 +900,8 @@
     margin: 10px;
     border: 1px solid lightgray;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-
     border-radius: 12px;
-    overflow: hidden;
+
     &__header {
       font-family: "Fira Sans", "Heebo", sans-serif;
       display: flex;
@@ -981,11 +981,12 @@
       }
     }
     &__body {
+      overflow-x: auto;
+      scrollbar-width: thin; // Firefox
+      scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
       .related-table-wrapper {
         background: #ffffff;
         border-radius: 0 0 12px;
-        overflow: hidden;
-        border: 1px solid #e8edf2;
       }
 
       .related-records {
@@ -1011,7 +1012,7 @@
             color: #6b7280;
             text-align: left;
             border-bottom: 1px solid #e5e7eb;
-
+            white-space: nowrap;
             &:last-child {
               text-align: right;
             }
@@ -1034,6 +1035,7 @@
           td {
             padding: 0.85rem 1rem;
             vertical-align: middle;
+            white-space: nowrap;
 
             a {
               color: #2563eb;

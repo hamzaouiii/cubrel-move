@@ -231,7 +231,7 @@ const formatField = (field, value) => {
           <!-- List -->
           <div class="related-links__list">
             <div class="related-links__modifiers">
-              <h6>Showing {{ records.length }} records</h6>
+              <h6>Showing {{ records?.length ?? "0" }} records</h6>
               <div class="related-links__modifiers__search">
                 <input v-model="search" type="text" placeholder="Search..." />
                 <span class="related-links__modifiers__search__clear">

@@ -10,6 +10,26 @@ const props = defineProps({
   },
 });
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
+
+const formatField = (field, value) => {
+  if (value == null || value === "") return "";
+
+  const type = field?.type?.toLowerCase();
+
+  switch (type) {
+    case "textfield":
+      return value;
+
+    case "datetime":
+      return formatDateTime(value);
+
+    case "longtext":
+      return value.length > 34 ? value.slice(0, 44) + "…" : value;
+
+    default:
+      return value;
+  }
+};
 </script>
 
 <template>
@@ -20,12 +40,8 @@ const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
           {{ record[field.name] }}
         </Link>
       </template>
-      <template v-else-if="field.type === 'datetime'">
-        {{ formatDateTime(record[field.name]) }}
-      </template>
-
       <template v-else>
-        {{ record[field.name] }}
+        {{ formatField(field, record[field.name]) }}
       </template>
     </td>
   </tr>

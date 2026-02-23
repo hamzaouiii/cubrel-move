@@ -32,7 +32,6 @@ return [
       null
     ]
   ],
-
   'record' => [
     'sections' => [
       [
