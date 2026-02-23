@@ -40,6 +40,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'contacts' => [
@@ -80,6 +88,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'leads' => [
@@ -124,6 +140,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'invoices' => [
@@ -184,6 +208,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'quotes' => [
@@ -236,6 +268,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'cases' => [
@@ -276,6 +316,14 @@ return [
       'name' => 'closed_at',
       'type' => 'datetime',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'emails' => [
@@ -303,6 +351,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
   'inquiries' => [
@@ -339,6 +395,14 @@ return [
       'name' => 'description',
       'type' => 'longtext',
     ],
+    'created_at' => [
+      'name' => 'created_at',
+      'type' => 'datetime'
+    ],
+    'updated_at' => [
+      'name' => 'updated_at',
+      'type' => 'datetime'
+    ]
   ],
 
 ];

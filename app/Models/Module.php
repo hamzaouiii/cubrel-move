@@ -146,6 +146,22 @@ class Module extends Model
     throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
   }
 
+  public function linkingPanelLayout()
+  {
+    /** @var Layout|null $recordLayout */
+
+    $linkingPanelLayout = $this->layouts()->where('type', 'linking-panel')->first();
+
+    if ($linkingPanelLayout !== null) {
+      return $linkingPanelLayout->definition;
+    }
+    $globalDefault = Layout::getDefaultLayout('linking-panel');
+    if ($globalDefault !== null) {
+      return $globalDefault;
+    }
+    throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
+  }
+
   public function layoutFor(string $type)
   {
     return $this->layouts()

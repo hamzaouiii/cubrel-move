@@ -23,7 +23,16 @@ const appSettings = page.props.appSettings;
 
 const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
-const getRelatedColor = (slug) => getModule(slug)?.color;
+const getRelatedColor = (slug) => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : getModule(slug)?.color;
+};
+const emit = defineEmits(["open-overlay"]);
+
+const forwardOpenOverlay = (panel) => {
+  emit("open-overlay", panel);
+};
 </script>
 
 <template>
@@ -38,17 +47,17 @@ const getRelatedColor = (slug) => getModule(slug)?.color;
           v-for="panel in col.layout || []"
           :key="panel.name"
           class="relatedpanels__item"
-          :style="
-            appSettings.use_individual_module_colors == '0'
-              ? { '--related-color': appSettings.primary_color }
-              : {
-                  '--related-color': getRelatedColor(
-                    relationshipMap[panel.name].related_slug,
-                  ),
-                }
-          "
+          :style="{
+            '--related-color': getRelatedColor(
+              relationshipMap[panel.name].related_slug,
+            ),
+          }"
         >
-          <Panel :relationships="relationships" :panel="panel"></Panel>
+          <Panel
+            :relationships="relationships"
+            :panel="panel"
+            @open-overlay="forwardOpenOverlay"
+          ></Panel>
         </li>
       </div>
     </ul>

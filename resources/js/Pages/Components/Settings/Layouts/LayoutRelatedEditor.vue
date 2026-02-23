@@ -19,6 +19,7 @@ const props = defineProps({
     default: [],
   },
 });
+
 const emit = defineEmits(["update:panels"]);
 
 const internalpanels = ref([...props.panels]);

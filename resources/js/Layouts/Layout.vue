@@ -26,6 +26,7 @@ provide("useModuleColors", useModuleColors);
 
 <template>
   <div class="root">
+    <!-- <MainOverlay></MainOverlay> -->
     <ConfirmOverlay />
     <Sidebar></Sidebar>
     <Alerts :alerts="alerts" />

@@ -1,7 +1,6 @@
 <?php
 
 use Inertia\Inertia;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
@@ -12,6 +11,7 @@ use App\Http\Controllers\ModuleManagerController;
 use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\FieldsManagerController;
 use App\Http\Controllers\DropdownListController;
+use App\Http\Controllers\RelationshipLinkController;
 
 Route::middleware(['auth'])->group(function () {
 
@@ -81,8 +81,8 @@ Route::middleware(['auth'])->group(function () {
   // Modules routes
   Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
   Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
-
-
+  Route::get('/modules/{module}/{record_id}/relationships/{relationship}/available', [RelationshipLinkController::class, 'getRecordsForLinking'])->name('relationships.available');
+  Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
   Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
   Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
   Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');

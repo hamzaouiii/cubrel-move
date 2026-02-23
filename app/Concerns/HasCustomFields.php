@@ -16,7 +16,7 @@ trait HasCustomFields
       || array_key_exists($key, $this->casts)
       || $this->hasGetMutator($key)
     ) {
-      return parent::setAttribute($key);
+      return parent::setAttribute($key, $value);
     }
 
     if ($this->isCustomField($key)) {

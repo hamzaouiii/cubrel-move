@@ -8,6 +8,8 @@ import LayoutListEditor from "@/Pages/Components/Settings/Layouts/LayoutListEdit
 import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecordEditor.vue";
 import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelatedEditor.vue";
 import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubpanelEditor.vue";
+import LayoutLinkingPanelEditor from "@/Pages/Components/Settings/Layouts/LayoutLinkingPanelEditor.vue";
+
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
@@ -68,10 +70,12 @@ const relatedByName = computed(() => {
   return map;
 });
 
-// list layout
+// list layout + linking panel
 const listLayoutColumnConfigs = computed(() => {
-  if (props.type !== "list") return [];
-  return Object.values(currentLayout?.value?.columns || {}).filter(Boolean);
+  if (props.type === "list" || props.type === "linking-panel") {
+    return Object.values(currentLayout?.value?.columns || {}).filter(Boolean);
+  }
+  return [];
 });
 
 const selectedListColumnsFromDb = computed(() => {
@@ -97,12 +101,13 @@ watch(
   { immediate: true },
 );
 const availableListFields = computed(() => {
-  if (props.type !== "list") return [];
-
   const usedKeys = new Set(
     listColumns.value.map((col) => col?.name).filter(Boolean),
   );
-  return moduleFields.value.filter((field) => !usedKeys.has(field.name));
+  if (props.type === "list" || props.type === "linking-panel") {
+    return moduleFields.value.filter((field) => !usedKeys.has(field.name));
+  }
+  return [];
 });
 
 const cleanedListColumns = computed(() =>
@@ -261,7 +266,7 @@ const availableRecordFields = computed(() => {
 
 // both
 const isDirty = computed(() => {
-  if (props.type === "list") {
+  if (props.type === "list" || props.type === "linking-panel") {
     const current = JSON.stringify(cleanedListColumns.value);
     const original = JSON.stringify(cleanedColumnsFromDb.value);
     return current !== original;
@@ -287,7 +292,7 @@ const form = useForm({
 });
 
 const resetToDatabaseValue = () => {
-  if (props.type === "list") {
+  if (props.type === "list" || props.type === "linking-panel") {
     listColumns.value = [...selectedListColumnsFromDb.value];
   } else if (props.type === "record") {
     recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value);
@@ -312,7 +317,7 @@ const saveLayout = () => {
   info(t("layouts.saving"));
   let definition = { ...(currentLayout.value || {}) };
 
-  if (props.type === "list") {
+  if (props.type === "list" || props.type === "linking-panel") {
     definition.columns = cleanedListColumns.value;
   } else if (props.type === "record") {
     definition.sections = cleanedRecordSections.value;
@@ -360,7 +365,6 @@ const layoutsUrl = () => {
   const u = ("/" + segments.join("/")).toString();
   return u;
 };
-
 // useUnsavedChangesGuard({
 //   getIsDirty: () => isDirty.value,
 // });
@@ -427,6 +431,13 @@ const layoutsUrl = () => {
 
       <div v-else-if="type === 'subpanels'">
         <LayoutSubpanelEditor
+          v-model:columns="listColumns"
+          :available-fields="availableListFields"
+        />
+      </div>
+
+      <div v-else-if="type === 'linking-panel'">
+        <LayoutLinkingPanelEditor
           v-model:columns="listColumns"
           :available-fields="availableListFields"
         />
