@@ -74,7 +74,7 @@ return [
     ]
   ],
   'related' => [
-    'panels' => [
+    'columns' => [
       0 => [],
       1 => [],
     ]

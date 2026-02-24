@@ -35,9 +35,9 @@ const props = defineProps({
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
-const relatedPanels = ref([]);
+const relatedColumns = ref([]);
 const recordSections = ref([]);
-const emptyPanels = ref(new Set());
+const emptyColumns = ref(new Set());
 
 // setup layouts + record + related
 const currentLayout = computed(() => {
@@ -51,7 +51,7 @@ const moduleFields = computed(() => {
 });
 
 const moduleRelationhsips = computed(() => {
-  return props.relationships ?? [];
+  return props.relationships.filter((rel) => rel.role === "parent") ?? [];
 });
 
 const fieldByName = computed(() => {
@@ -125,16 +125,16 @@ const cleanedColumnsFromDb = computed(() =>
 );
 
 //related
-const relatedLayoutPanelConfigs = computed(() => {
+const relatedLayoutColumnConfigs = computed(() => {
   if (props.type !== "related") return [];
-  return Object.values(currentLayout?.value?.panels || {});
+  return Object.values(currentLayout?.value?.columns || {});
 });
 
 const relatedLayoutFromDB = computed(() => {
   if (props.type !== "related") return [];
 
-  return relatedLayoutPanelConfigs.value.map((panel) => {
-    const layout = (panel.layout || [])
+  return relatedLayoutColumnConfigs.value.map((column) => {
+    const layout = (column.layout || [])
       .map((col) => {
         if (!col?.name) return null;
 
@@ -150,30 +150,30 @@ const relatedLayoutFromDB = computed(() => {
       .filter(Boolean);
 
     return {
-      ...panel,
+      ...column,
       layout,
     };
   });
 });
 
-const cloneRelatedPanelsFromDb = (panels) =>
-  (panels || []).map((panel) => ({
-    ...panel,
-    layout: (panel.layout || []).map((col) => ({ ...col })),
+const cloneRelatedColumnsFromDb = (columns) =>
+  (columns || []).map((column) => ({
+    ...column,
+    layout: (column.layout || []).map((col) => ({ ...col })),
   }));
 
 watch(
   relatedLayoutFromDB,
   (val) => {
-    relatedPanels.value = cloneRelatedPanelsFromDb(val);
+    relatedColumns.value = cloneRelatedColumnsFromDb(val);
   },
   { immediate: true },
 );
 
-const cleanedRelatedPanels = computed(() =>
-  relatedPanels.value.map((panel) => ({
-    ...panel,
-    layout: (panel.layout || []).map((col) => {
+const cleanedRelatedColumns = computed(() =>
+  relatedColumns.value.map((column) => ({
+    ...column,
+    layout: (column.layout || []).map((col) => {
       const { rel, ...rest } = col || {};
       return rest;
     }),
@@ -184,8 +184,8 @@ const availableRelationships = computed(() => {
   if (props.type !== "related") return [];
 
   const usedRelationships = new Set();
-  relatedPanels.value.forEach((panel) => {
-    (panel.layout || []).forEach((col) => {
+  relatedColumns.value.forEach((column) => {
+    (column.layout || []).forEach((col) => {
       if (col?.name) usedRelationships.add(col.name);
     });
   });
@@ -194,7 +194,6 @@ const availableRelationships = computed(() => {
     (rel) => !usedRelationships.has(rel.name),
   );
 });
-
 // record layout
 const recordLayoutSectionConfigs = computed(() => {
   if (props.type !== "record") return [];
@@ -275,8 +274,8 @@ const isDirty = computed(() => {
     const original = JSON.stringify(recordLayoutSectionConfigs.value);
     return current !== original;
   } else if (props.type === "related") {
-    const current = JSON.stringify(cleanedRelatedPanels.value);
-    const original = JSON.stringify(relatedLayoutPanelConfigs.value);
+    const current = JSON.stringify(cleanedRelatedColumns.value);
+    const original = JSON.stringify(relatedLayoutColumnConfigs.value);
     return current !== original;
   }
   return false;
@@ -286,7 +285,7 @@ const form = useForm({
   module_id: props.module.id,
   type: props.type,
   definition: currentLayout.value || {
-    [{ list: "columns", record: "sections", related: "panels" }[props.type]]:
+    [{ list: "columns", record: "sections", related: "columns" }[props.type]]:
       [],
   },
 });
@@ -297,18 +296,18 @@ const resetToDatabaseValue = () => {
   } else if (props.type === "record") {
     recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value);
   } else if (props.type === "related") {
-    relatedPanels.value = cloneRelatedPanelsFromDb(relatedLayoutFromDB.value);
+    relatedColumns.value = cloneRelatedColumnsFromDb(relatedLayoutFromDB.value);
   }
   form.definition = currentLayout.value || {};
   clearAllAlerts();
-  emptyPanels.value = new Set();
+  emptyColumns.value = new Set();
   warning(t("layouts.layout_reset_success"));
 };
 
 const getEmptyPanels = () => {
   return new Set(
-    cleanedRelatedPanels.value
-      .map((panel, index) => (!panel.layout?.length ? index : null))
+    cleanedRelatedColumns.value
+      .map((column, index) => (!column.layout?.length ? index : null))
       .filter((index) => index !== null),
   );
 };
@@ -324,13 +323,13 @@ const saveLayout = () => {
   } else if (props.type === "related") {
     const empty = getEmptyPanels();
     if (empty.size) {
-      emptyPanels.value = empty;
+      emptyColumns.value = empty;
       clearAllAlerts();
       error("Has empty Panel cannot save");
       return;
     }
-    emptyPanels.value = new Set();
-    definition.panels = cleanedRelatedPanels.value;
+    emptyColumns.value = new Set();
+    definition.columns = cleanedRelatedColumns.value;
   }
   form.definition = definition;
   const url = page.url;
@@ -422,10 +421,10 @@ const layoutsUrl = () => {
       </div>
       <div v-else-if="type === 'related'">
         <LayoutRelatedEditor
-          v-model:panels="relatedPanels"
+          v-model:columns="relatedColumns"
           :available-relationships="availableRelationships"
           :rel-by-key="relatedByName"
-          :empty-panels="emptyPanels"
+          :empty-columns="emptyColumns"
         />
       </div>
 

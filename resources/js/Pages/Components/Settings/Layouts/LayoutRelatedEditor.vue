@@ -2,7 +2,7 @@
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
 import LayoutRelatedFields from "./LayoutRelatedFields.vue";
 const props = defineProps({
-  panels: {
+  columns: {
     type: Array,
     default: () => [],
   },
@@ -14,24 +14,23 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  emptyPanels: {
+  emptyColumns: {
     type: Set,
     default: [],
   },
 });
+const emit = defineEmits(["update:columns"]);
 
-const emit = defineEmits(["update:panels"]);
-
-const internalpanels = ref([...props.panels]);
+const internalColumns = ref([...props.columns]);
 const internalAvailable = ref([...props.availableRelationships]);
 const confirmSectionIndex = ref(null);
 const showSubpanels = ref([]);
 
 const isConfirm = (index) => confirmSectionIndex.value === index;
 watch(
-  () => props.panels,
+  () => props.columns,
   (val) => {
-    internalpanels.value = [...val];
+    internalColumns.value = [...val];
   },
   { deep: true },
 );
@@ -43,10 +42,11 @@ watch(
   { deep: true },
 );
 
-const hasEmptyPanelError = (index) => {
-  const hasNoItems = props.panels[index].layout?.length === 0;
-  return props.emptyPanels.has(index) && hasNoItems;
+const hasEmptyColumnError = (index) => {
+  const hasNoItems = props.columns[index]?.layout?.length === 0;
+  return props.emptyColumns.has(index) && hasNoItems;
 };
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -60,14 +60,27 @@ const dragTrails = ref([]);
 const ghostRenderPos = ref({ x: 0, y: 0 });
 
 let ghostAnimationFrame = null;
+const ghostLabel = computed(() => {
+  if (!dragging.value) return "";
+  const { source, sectionIndex, columnIndex, isField } = dragging.value;
 
+  if (source === "available") {
+    const item = filteredAvailableRelationships.value[columnIndex];
+    return item ? (t(item.label) ?? item.key) : "";
+  } else if (source === "section") {
+    const section = internalColumns.value[sectionIndex];
+    const item = section?.layout?.[columnIndex];
+    return item ? (t(item.label) ?? item.key) : "";
+  }
+  return "";
+});
 const transparentPixel = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 const dragImage = new Image();
 dragImage.src = transparentPixel;
 
 const usedFieldKeys = computed(() => {
   const used = new Set();
-  internalpanels.value.forEach((section) => {
+  internalColumns.value.forEach((section) => {
     (section.layout || []).forEach((col) => {
       if (col?.key) used.add(col.key);
     });
@@ -80,38 +93,24 @@ const filteredAvailableRelationships = computed(() => {
     (field) => !usedFieldKeys.value.has(field.key),
   );
 });
-const ghostLabel = computed(() => {
-  if (!dragging.value) return "";
-  const { source, sectionIndex, columnIndex, isField } = dragging.value;
 
-  if (source === "available") {
-    const item = filteredAvailableRelationships.value[columnIndex];
-    return item ? (t(item.label) ?? item.key) : "";
-  } else if (source === "section") {
-    const section = internalpanels.value[sectionIndex];
-    const item = section?.layout?.[columnIndex];
-    return item ? (t(item.label) ?? item.key) : "";
-  }
-  return "";
-});
-
-const addNewSection = () => {
-  internalpanels.value.push({
+const addNewColumn = () => {
+  internalColumns.value.push({
     layout: [],
   });
-  emitUpdatedpanels();
+  emitUpdatedColumns();
 };
 
-const removeSection = (sectionIndex) => {
-  const hasLayout = internalpanels.value[sectionIndex]?.layout?.length > 0;
+const removeColumns = (sectionIndex) => {
+  const hasLayout = internalColumns.value[sectionIndex]?.layout?.length > 0;
   if (confirmSectionIndex.value !== sectionIndex && hasLayout) {
     confirmSectionIndex.value = sectionIndex;
     return;
   }
 
-  if (internalpanels.value.length > 1) {
-    internalpanels.value.splice(sectionIndex, 1);
-    emitUpdatedpanels();
+  if (internalColumns.value.length > 1) {
+    internalColumns.value.splice(sectionIndex, 1);
+    emitUpdatedColumns();
   }
   confirmSectionIndex.value = null;
 };
@@ -202,7 +201,7 @@ const moveFieldToSection = (
   const field = filteredAvailableRelationships.value[fieldIndex];
   if (!field) return;
 
-  const panels = [...internalpanels.value];
+  const panels = [...internalColumns.value];
   const targetSection = panels[targetSectionIndex];
 
   if (!targetSection.layout) targetSection.layout = [];
@@ -216,20 +215,20 @@ const moveFieldToSection = (
   };
 
   targetSection.layout.splice(targetColumnIndex, 0, newColumn);
-  internalpanels.value = panels;
-  emitUpdatedpanels();
+  internalColumns.value = panels;
+  emitUpdatedColumns();
 };
 
 const moveColumnWithinSection = (sectionIndex, fromIndex, toIndex) => {
   if (fromIndex === toIndex) return;
-  const panels = [...internalpanels.value];
+  const panels = [...internalColumns.value];
   const section = panels[sectionIndex];
   if (!section?.layout) return;
 
   const [item] = section.layout.splice(fromIndex, 1);
   section.layout.splice(toIndex, 0, item);
-  internalpanels.value = panels;
-  emitUpdatedpanels();
+  internalColumns.value = panels;
+  emitUpdatedColumns();
 };
 
 const moveColumnBetweenpanels = (
@@ -238,7 +237,7 @@ const moveColumnBetweenpanels = (
   toSectionIndex,
   toColumnIndex,
 ) => {
-  const panels = [...internalpanels.value];
+  const panels = [...internalColumns.value];
   const fromSection = panels[fromSectionIndex];
   const toSection = panels[toSectionIndex];
 
@@ -247,18 +246,18 @@ const moveColumnBetweenpanels = (
   const [item] = fromSection.layout.splice(fromColumnIndex, 1);
   toSection.layout.splice(toColumnIndex, 0, item);
 
-  internalpanels.value = panels;
-  emitUpdatedpanels();
+  internalColumns.value = panels;
+  emitUpdatedColumns();
 };
 
 const removeColumnFromSection = (sectionIndex, columnIndex) => {
-  const panels = [...internalpanels.value];
+  const panels = [...internalColumns.value];
   const section = panels[sectionIndex];
 
   if (section?.layout) {
     section.layout.splice(columnIndex, 1);
-    internalpanels.value = panels;
-    emitUpdatedpanels();
+    internalColumns.value = panels;
+    emitUpdatedColumns();
   }
 };
 
@@ -272,17 +271,18 @@ const toggleSubpanel = (column) => {
     showSubpanels.value.splice(index, 1);
   }
 };
+
 const isSubpanelOpen = (column) => {
   return showSubpanels.value.includes(`${column.name}`);
 };
 
 const updateColumnPanelHeader = (sectionIndex, columnIndex, value) => {
-  const panels = [...internalpanels.value];
+  const panels = [...internalColumns.value];
 
   panels[sectionIndex].layout[columnIndex].panelHeader = value;
 
-  internalpanels.value = panels;
-  emitUpdatedpanels();
+  internalColumns.value = panels;
+  emitUpdatedColumns();
 };
 
 // Drop handlers
@@ -336,7 +336,7 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
   if (source === "available") {
     moveFieldToSection(dragColumnIndex, sectionIndex, 0);
   } else if (source === "section") {
-    const panels = [...internalpanels.value];
+    const panels = [...internalColumns.value];
     const targetSection = panels[sectionIndex];
     const sourceSection = panels[dragSectionIndex];
 
@@ -345,8 +345,8 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
     const [item] = sourceSection.layout.splice(dragColumnIndex, 1);
     targetSection.layout.push(item);
 
-    internalpanels.value = panels;
-    emitUpdatedpanels();
+    internalColumns.value = panels;
+    emitUpdatedColumns();
   }
 
   endDrag();
@@ -381,13 +381,8 @@ const stopGhostAnimation = () => {
   }
 };
 
-const emitUpdatedpanels = () => {
-  emit("update:panels", internalpanels.value);
-};
-
-const updateSectionName = (sectionIndex, name) => {
-  internalpanels.value[sectionIndex].name = name;
-  emitUpdatedpanels();
+const emitUpdatedColumns = () => {
+  emit("update:columns", internalColumns.value);
 };
 
 onBeforeUnmount(() => {
@@ -461,34 +456,34 @@ onBeforeUnmount(() => {
             {{ $t("layouts.related") }}
           </div>
           <button
-            @click="addNewSection"
+            @click="addNewColumn"
             class="editor__container__main__header__btn btn"
             type="button"
-            :disabled="internalpanels.length > 2"
+            :disabled="internalColumns.length > 2"
           >
             <i class="fa-solid fa-plus"></i> {{ $t("layouts.add_column") }}
           </button>
         </div>
         <div class="editor__related">
           <div
-            v-for="(section, sectionIndex) in internalpanels"
+            v-for="(section, sectionIndex) in internalColumns"
             :key="sectionIndex"
             :class="[
               'editor__related__column',
-              { 'is-empty': hasEmptyPanelError(sectionIndex) },
+              { 'is-empty': hasEmptyColumnError(sectionIndex) },
             ]"
           >
             <div
               class="editor__related__column__error"
-              v-if="hasEmptyPanelError(sectionIndex)"
+              v-if="hasEmptyColumnError(sectionIndex)"
             >
               <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
 
             <div class="editor__related__column__actions">
               <button
-                v-if="internalpanels.length > 1"
-                @click="removeSection(sectionIndex)"
+                v-if="internalColumns.length > 1"
+                @click="removeColumns(sectionIndex)"
                 :class="[
                   'remove-section',
                   isConfirm(sectionIndex) ? 'confirm-remove' : 'show-remove',
@@ -514,7 +509,7 @@ onBeforeUnmount(() => {
                   },
                   {
                     'editor__related__column__content__empty--has-empty-error':
-                      hasEmptyPanelError(sectionIndex),
+                      hasEmptyColumnError(sectionIndex),
                   },
                 ]"
                 @dragover="
