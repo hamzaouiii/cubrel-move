@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
-import Selectbox from "./FiledTypes/Selectbox.vue";
+import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
 import { formatDateTime } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 

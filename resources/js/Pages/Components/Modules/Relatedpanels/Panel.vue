@@ -7,7 +7,6 @@ const props = defineProps({
   relationships: Object,
   panel: Object,
 });
-
 const openPanels = ref(
   Object.values(props.relationships)
     .filter((r) => r.records?.length)
@@ -43,18 +42,20 @@ const openLinkOverlay = () => {
 </script>
 
 <template>
-  <PanelHeader
-    v-if="relationshipMap[panel.name]"
-    @toggle="togglePanel(panel.name)"
-    @open-overlay="openLinkOverlay"
-    :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
-    :count="relationshipMap[panel.name].records?.length ?? 0"
-    :label="getLabel(relationshipMap[panel.name].related_slug)"
-    :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
-  ></PanelHeader>
-  <PanelBody
-    :relationship="relationshipMap[panel.name]"
-    :isOpenPanel="openPanels.includes(panel.name)"
-    :panel="panel"
-  ></PanelBody>
+  <div v-if="relationshipMap[panel.name]?.role === 'parent'">
+    <PanelHeader
+      v-if="relationshipMap[panel.name]"
+      @toggle="togglePanel(panel.name)"
+      @open-overlay="openLinkOverlay"
+      :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
+      :count="relationshipMap[panel.name].records?.length ?? 0"
+      :label="getLabel(relationshipMap[panel.name].related_slug)"
+      :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
+    ></PanelHeader>
+    <PanelBody
+      :relationship="relationshipMap[panel.name]"
+      :isOpenPanel="openPanels.includes(panel.name)"
+      :panel="panel"
+    ></PanelBody>
+  </div>
 </template>

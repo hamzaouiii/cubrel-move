@@ -15,7 +15,7 @@ const relationshipMap = computed(() => {
   }, {});
 });
 
-const panels = computed(() => props.layout?.panels ?? []);
+const columns = computed(() => props.layout?.columns ?? []);
 
 const page = usePage();
 const modules = computed(() => page.props.modules);
@@ -39,7 +39,7 @@ const forwardOpenOverlay = (panel) => {
   <div class="relatedpanels">
     <ul class="relatedpanels__container">
       <div
-        v-for="(col, colIndex) in panels"
+        v-for="(col, colIndex) in columns"
         :key="colIndex"
         class="relatedpanels__container__column"
       >

@@ -168,7 +168,6 @@ class RelationshipService
    */
   public static function getWithSide(object $relationship, string $model_class, ?string $module_id = null): object
   {
-
     if ($relationship->left_class === $model_class) {
       $relationship->side = 'left';
       $relationship->current_side = 'left';
@@ -186,11 +185,14 @@ class RelationshipService
       $relationship->other_id_field = 'left_id';
       $relationship->related_class = $relationship->left_class;
       $relationship->related_slug = $relationship->left_module;
-
       $relationship->current_module_id = $module_id;
     } else {
-      throw new RuntimeException("Model {$model_class} is not part of relationship {$relationship->name}");
+      throw new RuntimeException(
+        "Model {$model_class} is not part of relationship {$relationship->name}"
+      );
     }
+
+    $relationship->role = self::resolveRole($relationship);
 
     return $relationship;
   }
@@ -345,6 +347,7 @@ class RelationshipService
         'name'    => $relationship->name,
         'type'    => $relationship->relationship_type,
         'label'   =>  $relationship->label,
+        'role'   =>  $relationship->role,
         'records' => $records,
         'related_slug' => $relationship->related_slug,
         'linking_layout' => self::getLinkingLayout($relationship->related_slug)
@@ -408,5 +411,24 @@ class RelationshipService
     }
 
     return $query->orderBy('name')->paginate($perPage);
+  }
+
+  protected static function resolveRole(object $relationship): string
+  {
+    switch ($relationship->relationship_type) {
+      case 'one-to-one':
+        return 'sibling';
+
+      case 'one-to-many':
+        return $relationship->current_side === 'left'
+          ? 'parent'
+          : 'child';
+
+      case 'many-to-many':
+        return 'related';
+
+      default:
+        return 'related';
+    }
   }
 }
