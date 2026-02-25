@@ -74,6 +74,7 @@ const triggerEl = ref(null);
           :getRelatedRecordurl="getRelatedRecordurl"
           @quick-edit="emit('quick-edit', record)"
           @unlink="emit('unlink', record)"
+          @close="emit('toggleMenu', null)"
         />
       </div>
     </td>

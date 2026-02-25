@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   isMenuOpen: Boolean,
@@ -9,23 +9,55 @@ const props = defineProps({
   getRelatedRecordurl: Function,
 });
 
-const emit = defineEmits(["quick-edit", "unlink"]);
+const emit = defineEmits(["quick-edit", "unlink", "close"]);
 
+const menuRef = ref(null);
 const menuStyle = ref({});
 
 const MENU_WIDTH = 180;
+const OFFSET = 6; // small spacing from button
 
 const updatePosition = () => {
-  if (!props.triggerEl) return;
+  if (!props.triggerEl || !menuRef.value) return;
 
   const rect = props.triggerEl.getBoundingClientRect();
+  const menuRect = menuRef.value.getBoundingClientRect();
+
+  let top = rect.bottom + OFFSET;
+  let left = rect.right - MENU_WIDTH;
+
+  // 🔥 Flip vertically if near bottom
+  if (rect.bottom + menuRect.height > window.innerHeight) {
+    top = rect.top - menuRect.height - OFFSET;
+  }
+
+  // Prevent right overflow
+  if (left + MENU_WIDTH > window.innerWidth) {
+    left = window.innerWidth - MENU_WIDTH - 8;
+  }
+
+  // Prevent left overflow
+  if (left < 8) {
+    left = 8;
+  }
 
   menuStyle.value = {
     position: "fixed",
-    top: `${rect.bottom}px`,
-    left: `${rect.right - 180}px`,
+    top: `${top}px`,
+    left: `${left}px`,
     zIndex: 9999,
   };
+};
+
+const handleClickOutside = (e) => {
+  if (!props.isMenuOpen) return;
+
+  const clickedInsideMenu = menuRef.value?.contains(e.target);
+  const clickedTrigger = props.triggerEl?.contains(e.target);
+
+  if (!clickedInsideMenu && !clickedTrigger) {
+    emit("close");
+  }
 };
 
 watch(
@@ -37,11 +69,26 @@ watch(
     }
   },
 );
-console.log("triggerRef:", props.triggerRef?.value);
+
+onMounted(() => {
+  window.addEventListener("resize", updatePosition);
+  window.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updatePosition);
+  window.removeEventListener("click", handleClickOutside);
+});
 </script>
+
 <template>
   <Teleport to="body">
-    <ul v-if="isMenuOpen" class="actiondropdown-menu" :style="menuStyle">
+    <ul
+      v-if="isMenuOpen"
+      ref="menuRef"
+      class="actiondropdown-menu"
+      :style="menuStyle"
+    >
       <a
         :href="getRelatedRecordurl(related_slug, record.id)"
         target="_blank"
