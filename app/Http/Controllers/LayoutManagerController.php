@@ -29,7 +29,7 @@ class LayoutManagerController extends Controller
     } else if ($layoutType == 'related') {
       $validated = $request->validate([
         'definition' => 'required|array',
-        'definition.panels' => 'required|array'
+        'definition.columns' => 'required|array'
       ]);
     }
 

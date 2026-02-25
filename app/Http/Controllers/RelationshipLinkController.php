@@ -24,6 +24,23 @@ class RelationshipLinkController extends Controller
       $request->get('search')
     );
   }
+  public function getRecordsForUpdateSingleLinking(Request $request, string $module, string $record_id, string $relationship)
+  {
+    $moduleModel = Module::where('slug', $module)->firstOrFail();
+
+    $modelClass = $moduleModel->model_class;
+
+    $relationshipObj = RelationshipService::get($relationship);
+
+    return RelationshipService::getRecordsForUpdateSingleLinking(
+      $relationshipObj,
+      $modelClass,
+      $record_id,
+      $request->get('per_page', 25),
+      $request->get('search')
+    );
+  }
+
   public function linkRecords(Request $request, string $module, string $record_id, string $relationship)
   {
 

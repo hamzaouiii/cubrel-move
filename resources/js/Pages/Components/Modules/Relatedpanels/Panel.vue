@@ -19,7 +19,14 @@ const relationshipMap = computed(() => {
     return acc;
   }, {});
 });
+
+const hasRecords = (panel) => {
+  return relationshipMap.value?.[panel]?.records?.length || false;
+};
 const togglePanel = (name) => {
+  if (!hasRecords(name)) {
+    return;
+  }
   const index = openPanels.value.indexOf(name);
   index === -1
     ? openPanels.value.push(name)
@@ -38,7 +45,9 @@ const getLabel = (slug) => getModule(slug)?.label;
 const emit = defineEmits(["open-overlay"]);
 
 const openLinkOverlay = () => {
-  emit("open-overlay", props.panel);
+  const parent =
+    relationshipMap.value?.[props.panel?.name]?.records?.[0] || null;
+  emit("open-overlay", props.panel, parent);
 };
 </script>
 
@@ -51,6 +60,7 @@ const openLinkOverlay = () => {
     :count="relationshipMap[panel.name].records?.length ?? 0"
     :label="getLabel(relationshipMap[panel.name].related_slug)"
     :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
+    :type="relationshipMap[panel.name].role"
   ></PanelHeader>
   <PanelBody
     :relationship="relationshipMap[panel.name]"

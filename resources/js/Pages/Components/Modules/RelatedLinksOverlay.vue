@@ -2,7 +2,8 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
-import Selectbox from "./FiledTypes/Selectbox.vue";
+import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
+import Radiobox from "../FiledTypes/Radiobox.vue";
 import { formatDateTime } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 
@@ -17,8 +18,8 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  selectedParent: Object,
 });
-
 const cleanedLayout = computed(() => {
   if (!props.layout) return [];
 
@@ -27,6 +28,11 @@ const cleanedLayout = computed(() => {
     : Object.values(props.layout);
 
   return values.filter((field) => field && field.name);
+});
+
+const isSingleSelect = computed(() => {
+  const role = props.panel?.relationship?.role;
+  return role === "child" || role === "sibling";
 });
 
 const emit = defineEmits(["close", "saved"]);
@@ -76,20 +82,21 @@ const loadRecords = async () => {
     console.error("Missing relationship context");
     return;
   }
-
+  let url;
   loading.value = true;
-
+  if (isSingleSelect.value) {
+    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single_link`;
+  } else {
+    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
+  }
   try {
-    const response = await axios.get(
-      `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`,
-      {
-        params: {
-          page: page.value,
-          per_page: perPage,
-          search: search.value,
-        },
+    const response = await axios.get(url, {
+      params: {
+        page: page.value,
+        per_page: perPage,
+        search: search.value,
       },
-    );
+    });
 
     records.value = response.data.data;
     page.value = response.data.current_page;
@@ -144,7 +151,7 @@ const save = async () => {
   }
 
   saveLoading.value = true;
-
+  let url;
   try {
     info("Saving");
     await axios.post(
@@ -154,7 +161,6 @@ const save = async () => {
       },
     );
 
-    // Optional: clear selection after success
     selected.value = [];
     clearAllAlerts();
     success("Linking records finished successfully ");
@@ -171,7 +177,7 @@ const save = async () => {
 };
 
 const formatField = (field, value) => {
-  if (value == null || value === "") return "";
+  if (value == null || value === "") return " - ";
 
   const type = field?.type?.toLowerCase();
 
@@ -183,12 +189,71 @@ const formatField = (field, value) => {
       return formatDateTime(value);
 
     case "longtext":
-      return value.length > 34 ? value.slice(0, 44) + "…" : value;
+      // return "test";
+      return value.length > 34 ? value.slice(0, 33) + "…" : value;
 
     default:
       return value;
   }
 };
+
+const displayedRecords = computed(() => {
+  if (!props.selectedParent || props.panel.relationship.role === "parent") {
+    return records.value;
+  }
+
+  const selectedId = props.selectedParent.id;
+
+  // Remove from paginated results if it exists there
+  const filtered = records.value.filter((r) => r.id !== selectedId);
+
+  // Put selected record at top
+  return [props.selectedParent, ...filtered];
+});
+const toggleRow = (id) => {
+  if (isSingleSelect.value) {
+    // Single select mode
+    if (selected.value.includes(id)) {
+      selected.value = [];
+    } else {
+      selected.value = [id];
+    }
+    return;
+  }
+
+  // Multi select mode (default behavior)
+  const index = selected.value.indexOf(id);
+  if (index === -1) {
+    selected.value.push(id);
+  } else {
+    selected.value.splice(index, 1);
+  }
+};
+const initializeSelected = () => {
+  if (props.selectedParent && selected.value.length === 0) {
+    selected.value = [props.selectedParent.id];
+  }
+};
+
+onMounted(() => {
+  initializeSelected();
+});
+
+watch(
+  () => props.selectedParent,
+  (newVal) => {
+    if (newVal) {
+      selected.value = [newVal];
+    }
+  },
+);
+
+const selectedSingle = computed({
+  get: () => selected.value[0] ?? null,
+  set: (val) => {
+    selected.value = val ? [val] : [];
+  },
+});
 </script>
 
 <template>
@@ -239,64 +304,88 @@ const formatField = (field, value) => {
                 </span>
               </div>
             </div>
-            <ul
-              v-if="cleanedLayout && cleanedLayout.length"
-              class="related-links__head"
-            >
-              <li class="related-links__head__space"></li>
-              <li v-for="field in cleanedLayout" :key="field.name">
-                {{ $t(field.label) }}
-              </li>
-            </ul>
-            <template v-if="loading">
-              <div v-for="n in 15" :key="'related-links__skeleton-' + n">
-                <ul class="related-links__record related-links__skeleton">
-                  <li class="skeleton-checkbox"></li>
 
-                  <li
-                    v-for="field in cleanedLayout"
-                    :key="field.name"
-                    class="skeleton skeleton-item"
-                  ></li>
-                </ul>
-              </div>
-            </template>
-            <template v-else>
-              <ul
-                class="related-links__record"
-                v-for="record in records"
-                :key="record.id"
-              >
-                <label>
-                  <li class="related-links__record__checkbox">
+            <table
+              v-if="cleanedLayout && cleanedLayout.length"
+              class="related-links__table"
+            >
+              <!-- HEADER -->
+              <thead>
+                <tr>
+                  <th class="related-links__head__space"></th>
+                  <th v-for="field in cleanedLayout" :key="field.name">
+                    {{ $t(field.label) }}
+                  </th>
+                </tr>
+              </thead>
+
+              <!-- LOADING -->
+              <tbody v-if="loading">
+                <tr
+                  v-for="n in 25"
+                  :key="'related-links__skeleton-' + n"
+                  class="related-links__skeleton"
+                >
+                  <td>
+                    <span class="skeleton skeleton-checkbox"></span>
+                  </td>
+                  <td v-for="field in cleanedLayout" :key="field.name">
+                    <span class="skeleton skeleton-item"></span>
+                  </td>
+                </tr>
+              </tbody>
+
+              <!-- RECORDS -->
+              <tbody v-else>
+                <tr
+                  v-for="record in displayedRecords"
+                  :key="record.id"
+                  class="related-links__record"
+                  @click="toggleRow(record.id)"
+                  :class="{ selected: selected.includes(record.id) }"
+                >
+                  <!-- Checkbox -->
+                  <td class="related-links__record__checkbox">
                     <Selectbox
+                      v-if="!isSingleSelect"
                       :value="record.id"
                       v-model="selected"
+                      @update:modelValue="() => toggleRow(record.id)"
                       :color="getRelatedColor(panel.relationship.related_slug)"
                     />
-                  </li>
 
-                  <li
+                    <Radiobox
+                      v-else
+                      :value="record.id"
+                      v-model="selectedSingle"
+                      @update:modelValue="() => toggleRow(record.id)"
+                      :color="getRelatedColor(panel.relationship.related_slug)"
+                    />
+                  </td>
+
+                  <!-- Fields -->
+                  <td
                     v-for="field in cleanedLayout"
                     :key="field.name"
                     class="related-links__cell"
                   >
-                    <template v-if="field.name === 'name'"
-                      ><span
+                    <template v-if="field.name === 'name'">
+                      <span
                         class="related-links__record-title related-links__record__field"
                       >
                         {{ formatField(field, record[field.name]) }}
-                      </span></template
-                    >
-                    <template v-else
-                      ><span class="related-links__record__field">
+                      </span>
+                    </template>
+
+                    <template v-else>
+                      <span class="related-links__record__field">
                         {{ formatField(field, record[field.name]) }}
-                      </span></template
-                    >
-                  </li>
-                </label>
-              </ul>
-            </template>
+                      </span>
+                    </template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <ul class="related-links__pagination" v-if="lastPage > 1">
             <li

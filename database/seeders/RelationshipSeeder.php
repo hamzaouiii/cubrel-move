@@ -122,6 +122,36 @@ class RelationshipSeeder extends Seeder
         'right_class'  => 'App\Models\Modules\Email',
         'relationship_type' => 'one-to-many',
       ],
+      // contacts ↔ leads
+      [
+        'name' => 'contacts_leads',
+        'label' => 'relationships.contacts_leads',
+        'left_module' => 'contacts',
+        'right_module' => 'leads',
+        'left_class'  => 'App\Models\Modules\Contact',
+        'right_class'  => 'App\Models\Modules\Lead',
+        'relationship_type' => 'one-to-one',
+      ],
+      // contacts ↔ invoices
+      [
+        'name' => 'contacts_invoices',
+        'label' => 'relationships.contacts_invoices',
+        'left_module' => 'contacts',
+        'right_module' => 'invoices',
+        'left_class'  => 'App\Models\Modules\Contact',
+        'right_class'  => 'App\Models\Modules\Invoice',
+        'relationship_type' => 'one-to-many',
+      ],
+      // contacts ↔ cases
+      [
+        'name' => 'contacts_cases',
+        'label' => 'relationships.contacts_cases',
+        'left_module' => 'contacts',
+        'right_module' => 'cases',
+        'left_class'  => 'App\Models\Modules\Contact',
+        'right_class'  => 'App\Models\Modules\SupportCase',
+        'relationship_type' => 'one-to-many',
+      ],
 
       // cases ↔ emails
       [

@@ -15,8 +15,8 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 import ModuleDropdownField from "@/Pages/Components/FiledTypes/ModuleDropdownField.vue";
 import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
-import PanelList from "../Components/Relatedpanels/PanelList.vue";
-import RelatedLinksOverlay from "../Components/RelatedLinksOverlay.vue";
+import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
+import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
@@ -49,6 +49,16 @@ const avatar = computed(() => {
   }
 
   return (words[0]?.slice(0, 2) ?? "").toUpperCase();
+});
+// function debugStructure(obj) {
+//   const raw = JSON.parse(JSON.stringify(obj));
+//   console.log(JSON.stringify(raw, null, 2));
+// }
+// debugStructure(props.relatedLayout);
+const isRelatedLayoutEmpty = computed(() => {
+  return props.relatedLayout?.columns?.every(
+    (column) => Array.isArray(column) && column.length === 0,
+  );
 });
 
 const form = useForm({ ...props.record });
@@ -360,11 +370,16 @@ const switchTabs = (tab) => {
 // for related overlay
 const overlayOpen = ref(false);
 const activePanel = ref(null);
+const activeParentRecord = ref(null);
 
-const openOverlay = (panel) => {
+const openOverlay = (panel, selected) => {
   activePanel.value = panel;
   overlayOpen.value = true;
+  activeParentRecord.value = selected;
 };
+
+const activeLayout = (panel) =>
+  props.record?.related[panel?.name]?.linking_layout.columns || null;
 
 const handleSaved = () => {
   overlayOpen.value = false;
@@ -609,10 +624,11 @@ const handleSaved = () => {
           ></PanelList>
           <RelatedLinksOverlay
             v-if="overlayOpen"
-            :layout="record.related[activePanel.name].linking_layout.columns"
+            :layout="activeLayout(activePanel)"
             :panel="activePanel"
             @close="overlayOpen = false"
             @saved="handleSaved"
+            :selected-parent="activeParentRecord"
           />
         </div>
       </div>
