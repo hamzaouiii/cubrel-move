@@ -2,6 +2,7 @@
 import { formatDateTime } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
+import RelatedRecordsActionDropdown from "./RelatedRecordsActionDropdown.vue";
 
 const props = defineProps({
   record: Object,
@@ -12,8 +13,11 @@ const props = defineProps({
   },
   openMenuId: [String, Number],
 });
-const emit = defineEmits(["toggleMenu"]);
+
+const emit = defineEmits(["toggleMenu", "quick-edit", "unlink"]);
+
 const isMenuOpen = computed(() => props.openMenuId === props.record.id);
+
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
 
 const formatField = (field, value) => {
@@ -35,6 +39,7 @@ const formatField = (field, value) => {
       return value;
   }
 };
+const triggerEl = ref(null);
 </script>
 
 <template>
@@ -45,41 +50,31 @@ const formatField = (field, value) => {
           {{ record[field.name] }}
         </Link>
       </template>
+
       <template v-else>
         {{ formatField(field, record[field.name]) }}
       </template>
     </td>
+
     <td class="related-records__actions">
       <div class="related-records__actions__wrapper">
         <button
+          ref="triggerEl"
           class="related-records__actions__menu-btn"
           @click.stop="emit('toggleMenu', record.id)"
         >
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
 
-        <ul v-if="isMenuOpen" class="related-records__actions__menu">
-          <a
-            :href="getRelatedRecordurl(related_slug, record.id)"
-            target="_blank"
-            rel="noopener noreferrer"
-            ><li>
-              <i class="fa-solid fa-up-right-from-square"></i>
-
-              <span>Open in a new Tab</span>
-            </li>
-          </a>
-          <li>
-            <i class="fa-solid fa-brush"></i>
-
-            <span> Quick edit</span>
-          </li>
-          <li class="related-records__actions__menu__divider"></li>
-          <li class="related-records__actions__menu__unlink">
-            <i class="fa-solid fa-link-slash"></i>
-            <span> Unlink</span>
-          </li>
-        </ul>
+        <RelatedRecordsActionDropdown
+          :isMenuOpen="isMenuOpen"
+          :triggerEl="triggerEl"
+          :related_slug="related_slug"
+          :record="record"
+          :getRelatedRecordurl="getRelatedRecordurl"
+          @quick-edit="emit('quick-edit', record)"
+          @unlink="emit('unlink', record)"
+        />
       </div>
     </td>
   </tr>

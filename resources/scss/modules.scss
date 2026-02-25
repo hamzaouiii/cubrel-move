@@ -980,12 +980,13 @@
       }
     }
     &__body {
-      overflow-x: auto;
       scrollbar-width: thin; // Firefox
       scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+      overflow: visible;
       .related-table-wrapper {
         background: #ffffff;
         border-radius: 0 0 12px 12px;
+        overflow-x: auto;
       }
 
       .related-records {
@@ -994,7 +995,6 @@
         border-spacing: 0;
         font-size: 0.9rem;
         color: #1f2937;
-
         thead {
           background-color: color-mix(
             in srgb,
@@ -1066,43 +1066,6 @@
               color: #000000;
 
               transform: scale(1.2);
-            }
-          }
-          &__menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-
-            display: flex;
-            flex-direction: column;
-
-            min-width: 180px;
-
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            z-index: 50;
-            li {
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              cursor: pointer;
-              padding: 8px 14px;
-
-              &:hover {
-                background: #f3f4f6;
-              }
-            }
-            &__divider {
-              padding: 0 !important;
-
-              height: 1px;
-              background: #e5e7eb;
-            }
-            &__unlink {
-              color: salmon;
             }
           }
         }
@@ -1386,5 +1349,39 @@
         }
       }
     }
+  }
+}
+
+.actiondropdown-menu {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px 14px;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+    &.disabled {
+      background: darkgray;
+      cursor: not-allowed;
+    }
+  }
+  &__divider {
+    padding: 0 !important;
+
+    height: 1px;
+    background: #e5e7eb;
+  }
+  &__unlink {
+    color: salmon;
   }
 }
