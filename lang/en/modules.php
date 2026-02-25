@@ -41,7 +41,18 @@ return [
     'delete_confirm'      => "Are you sure you want to delete this record ?",
     'delete_yes'      => "Yes",
     'delete_no'      => "No",
-    'no_data_entered' => "You have enetered no new data, No record will be saved!"
+    'no_data_entered' => "You have enetered no new data, No record will be saved!",
+    'link' => 'Link',
+    'unlink' => 'Unlink',
+    'unlink_yes' => 'Yes',
+    'unlink_no' => 'No',
+    'unlink_success'  => "Record Unlinked successfully",
+    'unlink_error'  => "An error occurred while linking the records",
+    'unlink_confirm_title'      => "Confirm Unlinking record",
+    'unlink_confirm'      => "Are you sure you want to unlink these records ?",
+    'open_new_tab' => 'Open in a new Tab',
+    'quick_edit'  => 'Quick Edit'
+
   ],
   'delete' => [
     'confirm_delete'  => 'Confirm Delete',

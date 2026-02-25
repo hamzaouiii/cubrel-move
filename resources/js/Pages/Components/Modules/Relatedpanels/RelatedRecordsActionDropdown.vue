@@ -45,7 +45,7 @@ const updatePosition = () => {
     position: "fixed",
     top: `${top}px`,
     left: `${left}px`,
-    zIndex: 9999,
+    zIndex: 99,
   };
 };
 
@@ -96,20 +96,20 @@ onUnmounted(() => {
       >
         <li>
           <i class="fa-solid fa-up-right-from-square"></i>
-          <span>Open in a new Tab</span>
+          <span>{{ $t("modules.actions.open_new_tab") }}</span>
         </li>
       </a>
 
       <li @click="$emit('quick-edit', record)" class="disabled">
         <i class="fa-solid fa-brush"></i>
-        <span>Quick edit</span>
+        <span>{{ $t("modules.actions.quick_edit") }}</span>
       </li>
 
       <li class="actiondropdown-menu__divider"></li>
 
       <li class="actiondropdown-menu__unlink" @click="$emit('unlink', record)">
         <i class="fa-solid fa-link-slash"></i>
-        <span>Unlink</span>
+        <span>{{ $t("modules.actions.unlink") }}</span>
       </li>
     </ul>
   </Teleport>

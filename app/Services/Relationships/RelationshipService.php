@@ -153,8 +153,10 @@ class RelationshipService
   /**
    * Unlink two records in a relationship
    */
-  public static function unlink(object $relationship, string $model_class, string $module_id, string $related_id): void
+  public static function unlink(string $relationship_name, string $model_class, string $module_id, string $related_id): void
   {
+    $relationship = self::get($relationship_name);
+
     $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
     DB::table('relationship_links')
@@ -308,8 +310,10 @@ class RelationshipService
   /**
    * Get related records for a model
    */
-  public static function getRelatedRecords(object $relationship, string $model_class, string $module_id): Collection
+  public static function getRelatedRecords(string $relationship_name, string $model_class, string $module_id): Collection
   {
+    $relationship = self::get($relationship_name);
+
     $relationship = self::getWithSide($relationship, $model_class, $module_id);
 
     $relatedIds = DB::table('relationship_links')

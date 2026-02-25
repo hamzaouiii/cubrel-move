@@ -12,6 +12,7 @@ const props = defineProps({
     required: false,
   },
   openMenuId: [String, Number],
+  isUnlinking: Boolean,
 });
 
 const emit = defineEmits(["toggleMenu", "quick-edit", "unlink"]);
@@ -63,7 +64,8 @@ const triggerEl = ref(null);
           class="related-records__actions__menu-btn"
           @click.stop="emit('toggleMenu', record.id)"
         >
-          <i class="fa-solid fa-ellipsis-vertical"></i>
+          <i v-if="isUnlinking" class="fa-solid fa-circle-notch fa-spin"></i>
+          <i v-else class="fa-solid fa-ellipsis-vertical"></i>
         </button>
 
         <RelatedRecordsActionDropdown
