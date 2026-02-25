@@ -183,10 +183,19 @@ const formatField = (field, value) => {
       return formatDateTime(value);
 
     case "longtext":
-      return value.length > 34 ? value.slice(0, 44) + "…" : value;
+      return value.length > 64 ? value.slice(64) + "…" : value;
 
     default:
       return value;
+  }
+};
+
+const toggleRow = (id) => {
+  const index = selected.value.indexOf(id);
+  if (index === -1) {
+    selected.value.push(id);
+  } else {
+    selected.value.splice(index, 1);
   }
 };
 </script>
@@ -229,6 +238,7 @@ const formatField = (field, value) => {
         </template>
         <template v-else>
           <!-- List -->
+          <!-- List -->
           <div class="related-links__list">
             <div class="related-links__modifiers">
               <h6>Showing {{ records?.length ?? "0" }} records</h6>
@@ -239,64 +249,79 @@ const formatField = (field, value) => {
                 </span>
               </div>
             </div>
-            <ul
-              v-if="cleanedLayout && cleanedLayout.length"
-              class="related-links__head"
-            >
-              <li class="related-links__head__space"></li>
-              <li v-for="field in cleanedLayout" :key="field.name">
-                {{ $t(field.label) }}
-              </li>
-            </ul>
-            <template v-if="loading">
-              <div v-for="n in 15" :key="'related-links__skeleton-' + n">
-                <ul class="related-links__record related-links__skeleton">
-                  <li class="skeleton-checkbox"></li>
 
-                  <li
-                    v-for="field in cleanedLayout"
-                    :key="field.name"
-                    class="skeleton skeleton-item"
-                  ></li>
-                </ul>
-              </div>
-            </template>
-            <template v-else>
-              <ul
-                class="related-links__record"
-                v-for="record in records"
-                :key="record.id"
-              >
-                <label>
-                  <li class="related-links__record__checkbox">
+            <table
+              v-if="cleanedLayout && cleanedLayout.length"
+              class="related-links__table"
+            >
+              <!-- HEADER -->
+              <thead>
+                <tr>
+                  <th class="related-links__head__space"></th>
+                  <th v-for="field in cleanedLayout" :key="field.name">
+                    {{ $t(field.label) }}
+                  </th>
+                </tr>
+              </thead>
+
+              <!-- LOADING -->
+              <tbody v-if="loading">
+                <tr
+                  v-for="n in 25"
+                  :key="'related-links__skeleton-' + n"
+                  class="related-links__skeleton"
+                >
+                  <td>
+                    <span class="skeleton skeleton-checkbox"></span>
+                  </td>
+                  <td v-for="field in cleanedLayout" :key="field.name">
+                    <span class="skeleton skeleton-item"></span>
+                  </td>
+                </tr>
+              </tbody>
+
+              <!-- RECORDS -->
+              <tbody v-else>
+                <tr
+                  v-for="record in records"
+                  :key="record.id"
+                  class="related-links__record"
+                  @click="toggleRow(record.id)"
+                  :class="{ selected: selected.includes(record.id) }"
+                >
+                  <!-- Checkbox -->
+                  <td class="related-links__record__checkbox">
                     <Selectbox
+                      @click="handleCheckBoxClick"
                       :value="record.id"
                       v-model="selected"
                       :color="getRelatedColor(panel.relationship.related_slug)"
                     />
-                  </li>
+                  </td>
 
-                  <li
+                  <!-- Fields -->
+                  <td
                     v-for="field in cleanedLayout"
                     :key="field.name"
                     class="related-links__cell"
                   >
-                    <template v-if="field.name === 'name'"
-                      ><span
+                    <template v-if="field.name === 'name'">
+                      <span
                         class="related-links__record-title related-links__record__field"
                       >
                         {{ formatField(field, record[field.name]) }}
-                      </span></template
-                    >
-                    <template v-else
-                      ><span class="related-links__record__field">
+                      </span>
+                    </template>
+
+                    <template v-else>
+                      <span class="related-links__record__field">
                         {{ formatField(field, record[field.name]) }}
-                      </span></template
-                    >
-                  </li>
-                </label>
-              </ul>
-            </template>
+                      </span>
+                    </template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <ul class="related-links__pagination" v-if="lastPage > 1">
             <li

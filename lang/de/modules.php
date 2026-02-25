@@ -71,6 +71,8 @@ return array(
   'accounts' =>
   array(
     'label' => 'Firmen',
+    'single_label'  => 'Firma',
+
     'fields' =>
     array(
       'id' => 'ID',
@@ -90,6 +92,8 @@ return array(
   'contacts' =>
   array(
     'label' => 'Kontakte',
+    'single_label'  => 'Kontakt',
+
     'fields' =>
     array(
       'id' => 'ID',
@@ -109,6 +113,7 @@ return array(
   'leads' =>
   array(
     'label' => 'Interessenten',
+    'single_label'  => 'Interessent',
     'fields' =>
     array(
       'id' => 'ID',
@@ -142,6 +147,7 @@ return array(
   'invoices' =>
   array(
     'label' => 'Rechnungen',
+    'single_label' => 'Rechnung',
     'fields' =>
     array(
       'id' => 'ID',

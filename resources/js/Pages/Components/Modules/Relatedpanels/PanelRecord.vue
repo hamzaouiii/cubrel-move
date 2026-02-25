@@ -9,6 +9,7 @@ const props = defineProps({
     required: false,
   },
 });
+
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
 
 const formatField = (field, value) => {
@@ -24,7 +25,7 @@ const formatField = (field, value) => {
       return formatDateTime(value);
 
     case "longtext":
-      return value.length > 34 ? value.slice(0, 44) + "…" : value;
+      return value.length > 32 ? value.slice(0, 32) + "…" : value;
 
     default:
       return value;

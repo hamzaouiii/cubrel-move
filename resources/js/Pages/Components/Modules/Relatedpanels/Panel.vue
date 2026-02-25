@@ -42,20 +42,19 @@ const openLinkOverlay = () => {
 </script>
 
 <template>
-  <div v-if="relationshipMap[panel.name]?.role === 'parent'">
-    <PanelHeader
-      v-if="relationshipMap[panel.name]"
-      @toggle="togglePanel(panel.name)"
-      @open-overlay="openLinkOverlay"
-      :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
-      :count="relationshipMap[panel.name].records?.length ?? 0"
-      :label="getLabel(relationshipMap[panel.name].related_slug)"
-      :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
-    ></PanelHeader>
-    <PanelBody
-      :relationship="relationshipMap[panel.name]"
-      :isOpenPanel="openPanels.includes(panel.name)"
-      :panel="panel"
-    ></PanelBody>
-  </div>
+  <PanelHeader
+    v-if="relationshipMap[panel.name]"
+    @toggle="togglePanel(panel.name)"
+    @open-overlay="openLinkOverlay"
+    :icon="getRelatedIcon(relationshipMap[panel.name].related_slug)"
+    :count="relationshipMap[panel.name].records?.length ?? 0"
+    :label="getLabel(relationshipMap[panel.name].related_slug)"
+    :single_label="getSingleLabel(relationshipMap[panel.name].related_slug)"
+    :type="relationshipMap[panel.name].role"
+  ></PanelHeader>
+  <PanelBody
+    :relationship="relationshipMap[panel.name]"
+    :isOpenPanel="openPanels.includes(panel.name)"
+    :panel="panel"
+  ></PanelBody>
 </template>

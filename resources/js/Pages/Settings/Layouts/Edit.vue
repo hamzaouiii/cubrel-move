@@ -46,12 +46,13 @@ const currentLayout = computed(() => {
   );
   return custom?.definition || props.defaultLayout || null;
 });
+
 const moduleFields = computed(() => {
   return props.fields ?? [];
 });
 
 const moduleRelationhsips = computed(() => {
-  return props.relationships.filter((rel) => rel.role === "parent") ?? [];
+  return props.relationships ?? [];
 });
 
 const fieldByName = computed(() => {

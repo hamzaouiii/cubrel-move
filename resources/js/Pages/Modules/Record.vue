@@ -17,7 +17,6 @@ import ModuleDropdownField from "@/Pages/Components/FiledTypes/ModuleDropdownFie
 import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
 import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
-import ParentPanel from "../Components/Modules/ParentRecords/ParentPanel.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
@@ -370,12 +369,21 @@ const switchTabs = (tab) => {
 
 // for related overlay
 const overlayOpen = ref(false);
+const parentOverlayOpen = ref(false);
 const activePanel = ref(null);
+const activeParent = ref(null);
 
 const openOverlay = (panel) => {
   activePanel.value = panel;
   overlayOpen.value = true;
 };
+
+const openOverlayForParent = (parent) => {
+  parentOverlayOpen.value = true;
+  activeParent.value = parent;
+};
+const activeLayout = (panel) =>
+  props.record?.related[panel?.name]?.linking_layout.columns || null;
 
 const handleSaved = () => {
   overlayOpen.value = false;
@@ -613,7 +621,6 @@ const handleSaved = () => {
           v-else-if="currentTab === 'related'"
           class="record-layout__subpanels"
         >
-          <ParentPanel :record="record" />
           <PanelList
             :relationships="record.related"
             :layout="relatedLayout"
@@ -621,7 +628,7 @@ const handleSaved = () => {
           ></PanelList>
           <RelatedLinksOverlay
             v-if="overlayOpen"
-            :layout="record.related[activePanel.name].linking_layout.columns"
+            :layout="activeLayout(activePanel)"
             :panel="activePanel"
             @close="overlayOpen = false"
             @saved="handleSaved"

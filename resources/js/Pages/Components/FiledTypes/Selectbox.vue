@@ -34,7 +34,6 @@ const toggle = () => {
 
   if (Array.isArray(props.modelValue)) {
     const newValue = [...props.modelValue];
-
     const index = newValue.indexOf(props.value);
 
     if (index > -1) {
@@ -70,7 +69,10 @@ const boxColor = props.color ?? "#3b82f6";
     />
 
     <span class="custom-checkbox__box">
-      <i v-if="isChecked" class="custom-checkbox__check fa-solid fa-check"></i>
+      <i
+        class="custom-checkbox__check fa-solid fa-check"
+        :class="{ 'is-visible': isChecked }"
+      ></i>
     </span>
 
     <slot />
@@ -93,22 +95,39 @@ const boxColor = props.color ?? "#3b82f6";
   pointer-events: none;
 }
 
+/* 🔥 LOCKED BOX */
 .custom-checkbox__box {
   width: 20px;
   height: 20px;
   border: 2px solid #cbd5e1;
   border-radius: 6px;
   background: white;
-  display: flex;
+
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+
+  flex-shrink: 0;
+  position: relative;
 }
 
+/* 🔥 ICON NO LONGER AFFECTS LAYOUT */
 .custom-checkbox__check {
-  width: 14px;
-  height: 14px;
+  font-size: 12px;
+  line-height: 1;
   color: white;
+
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.custom-checkbox__check.is-visible {
+  opacity: 1;
 }
 
 .custom-checkbox--checked .custom-checkbox__box {
