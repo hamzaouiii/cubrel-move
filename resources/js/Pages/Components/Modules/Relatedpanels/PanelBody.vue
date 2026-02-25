@@ -3,14 +3,17 @@ import { formatDateTime } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 import PanelRecord from "./PanelRecord.vue";
 import PanelParentRecord from "./PanelParentRecord.vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   isOpenPanel: Boolean,
   relationship: Object,
   panel: Object,
 });
-
+const openMenuId = ref(null);
+const toggleMenu = (id) => {
+  openMenuId.value = openMenuId.value === id ? null : id;
+};
 const parentRecord = computed(() => {
   if (
     props.relationship.role === "child" ||
@@ -37,6 +40,7 @@ const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
               >
                 {{ $t(field.label) }}
               </th>
+              <th></th>
             </tr>
           </thead>
 
@@ -47,6 +51,8 @@ const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
               :record="record"
               :header="panel.panelHeader"
               :related_slug="relationship.related_slug"
+              :openMenuId="openMenuId"
+              @toggleMenu="toggleMenu"
             ></PanelRecord>
           </tbody>
         </table>

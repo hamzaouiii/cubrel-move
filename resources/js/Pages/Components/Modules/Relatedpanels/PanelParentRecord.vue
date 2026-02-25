@@ -62,6 +62,14 @@ const detailFields = computed(() => nonTitleFields.value.slice(2));
         >
           {{ parentRecord?.name }}
         </Link>
+        <a
+          :href="getRelatedRecordurl(related_slug, record.id)"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="parent-card__new-tab"
+        >
+          <i class="fa-solid fa-up-right-from-square"></i>
+        </a>
       </div>
 
       <!-- Fields -->
@@ -84,52 +92,58 @@ const detailFields = computed(() => nonTitleFields.value.slice(2));
     </div>
   </div>
 </template>
-<style scoped>
+<style scoped lang="scss">
 .parent-card {
   background-color: rgba(240, 240, 240, 0.276);
   border-top: 1px solid rgba(211, 211, 211, 0.324);
   padding: 20px 22px;
-  max-width: 720px;
-}
 
-.parent-card__header {
-  margin-bottom: 18px;
-}
+  &__header {
+    margin-bottom: 18px;
+  }
+  &__new-tab {
+    all: unset;
+    margin-left: 10px;
+    cursor: pointer;
+    &:hover {
+      color: #2563eb;
+    }
+  }
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2563eb;
+    text-decoration: none;
 
-.parent-card__title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #2563eb;
-  text-decoration: none;
-}
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 
-.parent-card__title:hover {
-  text-decoration: underline;
-}
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
 
-.parent-card__fields {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-.parent-card__field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+  &__label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+  }
 
-.parent-card__label {
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
-}
-
-.parent-card__value {
-  font-size: 14px;
-  color: #1f2937;
-  word-break: break-word;
+  &__value {
+    font-size: 14px;
+    color: #1f2937;
+    word-break: break-word;
+  }
 }
 </style>
