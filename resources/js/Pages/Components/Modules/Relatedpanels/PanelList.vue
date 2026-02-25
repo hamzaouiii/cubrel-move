@@ -30,8 +30,8 @@ const getRelatedColor = (slug) => {
 };
 const emit = defineEmits(["open-overlay"]);
 
-const forwardOpenOverlay = (panel) => {
-  emit("open-overlay", panel);
+const forwardOpenOverlay = (panel, selected) => {
+  emit("open-overlay", panel, selected);
 };
 </script>
 

@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
+import Radiobox from "../FiledTypes/Radiobox.vue";
 import { formatDateTime } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 
@@ -17,8 +18,8 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  selectedParent: Object,
 });
-
 const cleanedLayout = computed(() => {
   if (!props.layout) return [];
 
@@ -27,6 +28,11 @@ const cleanedLayout = computed(() => {
     : Object.values(props.layout);
 
   return values.filter((field) => field && field.name);
+});
+
+const isSingleSelect = computed(() => {
+  const role = props.panel?.relationship?.role;
+  return role === "child" || role === "sibling";
 });
 
 const emit = defineEmits(["close", "saved"]);
@@ -76,20 +82,21 @@ const loadRecords = async () => {
     console.error("Missing relationship context");
     return;
   }
-
+  let url;
   loading.value = true;
-
+  if (isSingleSelect.value) {
+    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single_link`;
+  } else {
+    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
+  }
   try {
-    const response = await axios.get(
-      `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`,
-      {
-        params: {
-          page: page.value,
-          per_page: perPage,
-          search: search.value,
-        },
+    const response = await axios.get(url, {
+      params: {
+        page: page.value,
+        per_page: perPage,
+        search: search.value,
       },
-    );
+    });
 
     records.value = response.data.data;
     page.value = response.data.current_page;
@@ -144,7 +151,7 @@ const save = async () => {
   }
 
   saveLoading.value = true;
-
+  let url;
   try {
     info("Saving");
     await axios.post(
@@ -154,7 +161,6 @@ const save = async () => {
       },
     );
 
-    // Optional: clear selection after success
     selected.value = [];
     clearAllAlerts();
     success("Linking records finished successfully ");
@@ -171,7 +177,7 @@ const save = async () => {
 };
 
 const formatField = (field, value) => {
-  if (value == null || value === "") return "";
+  if (value == null || value === "") return " - ";
 
   const type = field?.type?.toLowerCase();
 
@@ -183,14 +189,39 @@ const formatField = (field, value) => {
       return formatDateTime(value);
 
     case "longtext":
-      return value.length > 64 ? value.slice(64) + "…" : value;
+      // return "test";
+      return value.length > 34 ? value.slice(0, 33) + "…" : value;
 
     default:
       return value;
   }
 };
 
+const displayedRecords = computed(() => {
+  if (!props.selectedParent || props.panel.relationship.role === "parent") {
+    return records.value;
+  }
+
+  const selectedId = props.selectedParent.id;
+
+  // Remove from paginated results if it exists there
+  const filtered = records.value.filter((r) => r.id !== selectedId);
+
+  // Put selected record at top
+  return [props.selectedParent, ...filtered];
+});
 const toggleRow = (id) => {
+  if (isSingleSelect.value) {
+    // Single select mode
+    if (selected.value.includes(id)) {
+      selected.value = [];
+    } else {
+      selected.value = [id];
+    }
+    return;
+  }
+
+  // Multi select mode (default behavior)
   const index = selected.value.indexOf(id);
   if (index === -1) {
     selected.value.push(id);
@@ -198,6 +229,31 @@ const toggleRow = (id) => {
     selected.value.splice(index, 1);
   }
 };
+const initializeSelected = () => {
+  if (props.selectedParent && selected.value.length === 0) {
+    selected.value = [props.selectedParent.id];
+  }
+};
+
+onMounted(() => {
+  initializeSelected();
+});
+
+watch(
+  () => props.selectedParent,
+  (newVal) => {
+    if (newVal) {
+      selected.value = [newVal];
+    }
+  },
+);
+
+const selectedSingle = computed({
+  get: () => selected.value[0] ?? null,
+  set: (val) => {
+    selected.value = val ? [val] : [];
+  },
+});
 </script>
 
 <template>
@@ -237,7 +293,6 @@ const toggleRow = (id) => {
           </div>
         </template>
         <template v-else>
-          <!-- List -->
           <!-- List -->
           <div class="related-links__list">
             <div class="related-links__modifiers">
@@ -283,7 +338,7 @@ const toggleRow = (id) => {
               <!-- RECORDS -->
               <tbody v-else>
                 <tr
-                  v-for="record in records"
+                  v-for="record in displayedRecords"
                   :key="record.id"
                   class="related-links__record"
                   @click="toggleRow(record.id)"
@@ -292,9 +347,18 @@ const toggleRow = (id) => {
                   <!-- Checkbox -->
                   <td class="related-links__record__checkbox">
                     <Selectbox
-                      @click="handleCheckBoxClick"
+                      v-if="!isSingleSelect"
                       :value="record.id"
                       v-model="selected"
+                      @update:modelValue="() => toggleRow(record.id)"
+                      :color="getRelatedColor(panel.relationship.related_slug)"
+                    />
+
+                    <Radiobox
+                      v-else
+                      :value="record.id"
+                      v-model="selectedSingle"
+                      @update:modelValue="() => toggleRow(record.id)"
                       :color="getRelatedColor(panel.relationship.related_slug)"
                     />
                   </td>

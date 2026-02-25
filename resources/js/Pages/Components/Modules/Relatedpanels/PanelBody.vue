@@ -12,8 +12,11 @@ const props = defineProps({
 });
 
 const parentRecord = computed(() => {
-  if (props.relationship.role === "child") {
-    return props.relationship?.records[0] || [];
+  if (
+    props.relationship.role === "child" ||
+    props.relationship.role === "sibling"
+  ) {
+    return props.relationship?.records[0] || null;
   }
   return null;
 });
@@ -48,15 +51,15 @@ const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
           </tbody>
         </table>
         <div
-          class="parent_records__body"
           v-if="
             relationship.role === 'child' || relationship.role === 'sibling'
           "
         >
           <PanelParentRecord
-            :record="relationship.records[0]"
+            :record="parentRecord"
             :header="panel.panelHeader"
             :related_slug="relationship.related_slug"
+            :key="parentRecord?.id"
           >
           </PanelParentRecord>
         </div>

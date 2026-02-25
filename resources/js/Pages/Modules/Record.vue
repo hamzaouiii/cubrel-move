@@ -369,19 +369,15 @@ const switchTabs = (tab) => {
 
 // for related overlay
 const overlayOpen = ref(false);
-const parentOverlayOpen = ref(false);
 const activePanel = ref(null);
-const activeParent = ref(null);
+const activeParentRecord = ref(null);
 
-const openOverlay = (panel) => {
+const openOverlay = (panel, selected) => {
   activePanel.value = panel;
   overlayOpen.value = true;
+  activeParentRecord.value = selected;
 };
 
-const openOverlayForParent = (parent) => {
-  parentOverlayOpen.value = true;
-  activeParent.value = parent;
-};
 const activeLayout = (panel) =>
   props.record?.related[panel?.name]?.linking_layout.columns || null;
 
@@ -632,6 +628,7 @@ const handleSaved = () => {
             :panel="activePanel"
             @close="overlayOpen = false"
             @saved="handleSaved"
+            :selected-parent="activeParentRecord"
           />
         </div>
       </div>

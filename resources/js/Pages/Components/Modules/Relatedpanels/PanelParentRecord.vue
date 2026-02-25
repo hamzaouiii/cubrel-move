@@ -1,8 +1,13 @@
 <script setup>
+import { computed } from "vue";
+
 import { formatDateTime } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 const props = defineProps({
-  record: Object,
+  record: {
+    type: Object,
+    default: () => ({}),
+  },
   header: Object,
   related_slug: {
     type: String,
@@ -10,6 +15,7 @@ const props = defineProps({
   },
 });
 
+const parentRecord = props.record;
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
 
 const formatField = (field, value) => {
@@ -31,32 +37,99 @@ const formatField = (field, value) => {
       return value;
   }
 };
+
+const titleField = computed(() => props.header.find((f) => f.name === "name"));
+
+const nonTitleFields = computed(() =>
+  props.header.filter((f) => f.name !== "name"),
+);
+
+// First 2 become meta line
+const metaFields = computed(() => nonTitleFields.value.slice(0, 2));
+
+// Rest go into detail grid
+const detailFields = computed(() => nonTitleFields.value.slice(2));
 </script>
 
 <template>
-  <div v-for="field in header" :key="field.name">
-    <template v-if="field.name === 'name'">
-      <Link
-        :href="getRelatedRecordurl(related_slug, record.id)"
-        class="parent_records__body__title"
-      >
-        {{ record[field.name] }}
-      </Link>
-    </template>
-    <template v-else>
-      {{ formatField(field, record[field.name]) }}
-    </template>
+  <div class="parent-wrapper">
+    <div class="parent-card">
+      <!-- Title -->
+      <div class="parent-card__header">
+        <Link
+          :href="getRelatedRecordurl(related_slug, parentRecord?.id)"
+          class="parent-card__title"
+        >
+          {{ parentRecord?.name }}
+        </Link>
+      </div>
+
+      <!-- Fields -->
+      <div class="parent-card__fields">
+        <div
+          v-for="field in header"
+          :key="field.name"
+          v-if="field?.name !== 'name'"
+          class="parent-card__field"
+        >
+          <div class="parent-card__label">
+            {{ $t(field.label) }}
+          </div>
+
+          <div class="parent-card__value">
+            {{ formatField(field, parentRecord?.[field.name]) }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+<style scoped>
+.parent-card {
+  background-color: rgba(240, 240, 240, 0.276);
+  border-top: 1px solid rgba(211, 211, 211, 0.324);
+  padding: 20px 22px;
+  max-width: 720px;
+}
 
-<!-- <Link
-            :href="
-              getRelatedRecordurl(relationship.related_slug, parentRecord.id)
-            "
-            class="parent_records__body__title"
-            >{{ parentRecord.name }}</Link
-          >
-          <div class="parent_records__body__details">
-            <span>{{ parentRecord?.email || "-" }}</span>
-            <span>{{ parentRecord?.phone || "-" }}</span>
-          </div> -->
+.parent-card__header {
+  margin-bottom: 18px;
+}
+
+.parent-card__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.parent-card__title:hover {
+  text-decoration: underline;
+}
+
+.parent-card__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.parent-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.parent-card__label {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.parent-card__value {
+  font-size: 14px;
+  color: #1f2937;
+  word-break: break-word;
+}
+</style>

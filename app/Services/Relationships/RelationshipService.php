@@ -76,6 +76,94 @@ class RelationshipService
   }
 
   /**
+   * Link two records in a relationship
+   */
+  public static function link(
+    string $relationship_name,
+    string $model_class,
+    string $module_id,
+    string $related_id
+  ): void {
+
+    $relationship = self::get($relationship_name);
+    $relationship = self::getWithResolvedIds(
+      $relationship,
+      $model_class,
+      $module_id,
+      $related_id
+    );
+
+    DB::transaction(function () use ($relationship) {
+
+      $leftId  = $relationship->left_id;
+      $rightId = $relationship->right_id;
+
+      switch ($relationship->relationship_type) {
+
+        case 'one-to-one':
+
+          // Remove any existing link involving either side
+          DB::table('relationship_links')
+            ->where('relationship_id', $relationship->id)
+            ->where(function ($q) use ($leftId, $rightId) {
+              $q->where('left_id', $leftId)
+                ->orWhere('right_id', $rightId);
+            })
+            ->delete();
+
+          break;
+
+        case 'one-to-many':
+
+          // Remove existing parent of this child
+          DB::table('relationship_links')
+            ->where('relationship_id', $relationship->id)
+            ->where('right_id', $rightId)
+            ->delete();
+
+          break;
+
+        case 'many-to-many':
+
+          // Still prevent duplicates
+          $exists = DB::table('relationship_links')
+            ->where('relationship_id', $relationship->id)
+            ->where('left_id', $leftId)
+            ->where('right_id', $rightId)
+            ->exists();
+
+          if ($exists) {
+            throw new RuntimeException(
+              "Records are already linked in many-to-many relationship"
+            );
+          }
+
+          break;
+      }
+
+      // Now insert safely
+      RelationshipLink::create([
+        'relationship_id' => $relationship->id,
+        'left_id'         => $leftId,
+        'right_id'        => $rightId,
+      ]);
+    });
+  }
+
+  /**
+   * Unlink two records in a relationship
+   */
+  public static function unlink(object $relationship, string $model_class, string $module_id, string $related_id): void
+  {
+    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
+
+    DB::table('relationship_links')
+      ->where('relationship_id', $relationship->id)
+      ->where('left_id', $relationship->left_id)
+      ->where('right_id', $relationship->right_id)
+      ->delete();
+  }
+  /**
    * returns the relationship object between two modules given the type
    */
   public static function getRelationshipBetween(string $module1, string $module2, string $type): Collection
@@ -215,42 +303,7 @@ class RelationshipService
     return $relationship;
   }
 
-  /**
-   * Link two records in a relationship
-   */
-  public static function link(string $relationship_name, string $model_class, string $module_id, string $related_id): void
-  {
-    $relationship = self::get($relationship_name);
-    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
-    DB::transaction(function () use ($relationship) {
-      self::enforceCardinality(
-        $relationship,
-        $relationship->left_id,
-        $relationship->right_id
-      );
-
-      RelationshipLink::updateorcreate([
-        'relationship_id' => $relationship->id,
-        'left_id' => $relationship->left_id,
-        'right_id' => $relationship->right_id
-      ]);
-    });
-  }
-
-  /**
-   * Unlink two records in a relationship
-   */
-  public static function unlink(object $relationship, string $model_class, string $module_id, string $related_id): void
-  {
-    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
-
-    DB::table('relationship_links')
-      ->where('relationship_id', $relationship->id)
-      ->where('left_id', $relationship->left_id)
-      ->where('right_id', $relationship->right_id)
-      ->delete();
-  }
 
   /**
    * Get related records for a model
@@ -410,6 +463,24 @@ class RelationshipService
       $query->where('name', 'like', "%{$search}%");
     }
 
+    return $query->orderBy('name')->paginate($perPage);
+  }
+  public static function getRecordsForUpdateSingleLinking(
+    object $relationship,
+    string $modelClass,
+    string $recordId,
+    int $perPage = 25,
+    ?string $search = null
+  ) {
+
+    $relationship = self::getWithSide($relationship, $modelClass, $recordId);
+    $relatedClass = $relationship->related_class;
+    $query = $relatedClass::query();
+
+    // Search
+    if ($search) {
+      $query->where('name', 'like', "%{$search}%");
+    }
     return $query->orderBy('name')->paginate($perPage);
   }
 

@@ -36,7 +36,7 @@ const emittogglePanel = () => {
       <div v-if="hasRecords && type != 'parent'">
         <button
           class="relatedpanels__item__header__actions__btn"
-          @click.prevent
+          @click.stop="openOverlay"
         >
           <i class="fa-solid fa-pen"></i>
         </button>
