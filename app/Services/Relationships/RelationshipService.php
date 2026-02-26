@@ -499,11 +499,12 @@ class RelationshipService
           ? 'parent'
           : 'child';
 
+        // the resaon we want why many-to-many to behave as a parent role in this relationship is because effectively both records are parents to each other
       case 'many-to-many':
-        return 'related';
+        return 'parent';
 
       default:
-        return 'related';
+        return 'parent';
     }
   }
 }

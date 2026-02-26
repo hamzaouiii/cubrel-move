@@ -24,7 +24,17 @@ const getDefaultFields = () => {
   const fieldsArray = Object.values(props.fields.related_fields || {});
 
   return defaultFields
-    .map((name) => fieldsArray.find((field) => field.name === name))
+    .map((fieldName) => {
+      const field = fieldsArray.find((f) => f.name === fieldName);
+
+      if (!field) return null;
+
+      return {
+        name: field.name,
+        type: field.type,
+        label: field.label,
+      };
+    })
     .filter(Boolean);
 };
 

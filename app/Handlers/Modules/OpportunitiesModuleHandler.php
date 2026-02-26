@@ -6,7 +6,7 @@ use App\Models\Modules\Opportunity;
 use Illuminate\Database\Eloquent\Builder;
 use App\Handlers\Modules\BaseModuleHandler;
 
-class OpportuntiesModuleHandler extends BaseModuleHandler
+class OpportunitiesModuleHandler extends BaseModuleHandler
 {
   protected string $model = Opportunity::class;
 
