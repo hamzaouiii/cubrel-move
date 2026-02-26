@@ -248,36 +248,62 @@ return array(
       'description' => 'Beschreibung',
     ),
   ),
-  'money' =>
-  array(
-    'label' => 'Geld',
-    'fields' =>
-    array(
-      'id' => 'ID',
-      'name' => 'Name',
-      'description' => 'Beschreibung',
-      'data' => 'Daten',
-      'created_at' => 'Erstellt am',
-      'updated_at' => 'Aktualisiert am',
-      'deleted_at' => 'Gelöscht am',
-    ),
-  ),
-  'books' =>
-  array(
-    'label' => 'Bücher',
-    'fields' =>
-    array(
-      'id' => 'ID',
-      'name' => 'Name',
-      'description' => 'Beschreibung',
-      'data' => 'Daten',
-      'created_at' => 'Erstellt am',
-      'updated_at' => 'Aktualisiert am',
-      'deleted_at' => 'Gelöscht am',
-    ),
-  ),
   'settings' =>
   array(
     'label' => 'Einstellungen',
   ),
+  'opportunities' => [
+    'label'  => 'Verkaufschancen',
+    'single_label'  => 'Verkaufschance',
+    'fields' => [
+      'id'                   => 'ID',
+      'name'                 => 'Name',
+      'account_id'           => 'Konto',
+      'amount'               => 'Betrag',
+      'currency'             => 'Währung',
+      'description'          => 'Beschreibung',
+      'sales_stage'          => 'Verkaufsphase',
+      'probability'          => 'Wahrscheinlichkeit',
+      'expected_close_date'  => 'Erwartetes Abschlussdatum',
+      'type'                 => 'Typ',
+      'assigned_user_id'     => 'Zugewiesener Benutzer',
+      'created_at'           => 'Erstellt am',
+      'updated_at'           => 'Aktualisiert am',
+    ],
+  ],
+  'products' => [
+    'label'  => 'Produkte',
+    'single_label'  => 'Produkt',
+    'fields' => [
+      'id'          => 'ID',
+      'name'        => 'Name',
+      'sku'         => 'Artikelnummer',
+      'description' => 'Beschreibung',
+      'category'    => 'Kategorie',
+      'price'       => 'Preis',
+      'currency'    => 'Währung',
+      'is_active'   => 'Aktiv',
+      'created_at'  => 'Erstellt am',
+      'updated_at'  => 'Aktualisiert am',
+    ],
+  ],
+  'orders' => [
+    'label'  => 'Bestellungen',
+    'single_label'  => 'Bestellung',
+    'fields' => [
+      'id'               => 'ID',
+      'order_number'     => 'Bestellnummer',
+      'account_id'       => 'Konto',
+      'opportunity_id'   => 'Verkaufschance',
+      'description'      => 'Beschreibung',
+      'total_amount'     => 'Gesamtbetrag',
+      'currency'         => 'Währung',
+      'status'           => 'Status',
+      'order_date'       => 'Bestelldatum',
+      'due_date'         => 'Fälligkeitsdatum',
+      'assigned_user_id' => 'Zugewiesener Benutzer',
+      'created_at'       => 'Erstellt am',
+      'updated_at'       => 'Aktualisiert am',
+    ],
+  ],
 );

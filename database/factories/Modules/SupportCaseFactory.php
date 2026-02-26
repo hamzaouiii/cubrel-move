@@ -20,6 +20,7 @@ class SupportCaseFactory extends Factory
 
     return [
       'name'        => $faker->name(),
+      'subject' => $faker->sentence(),
       'description' => $faker->realText(150),
       'status'      => $closed ? 'closed' : 'open',
       'priority'    => $faker->randomElement(['low', 'medium', 'high']),

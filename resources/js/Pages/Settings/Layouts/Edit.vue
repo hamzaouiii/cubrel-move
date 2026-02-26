@@ -102,13 +102,26 @@ watch(
   { immediate: true },
 );
 const availableListFields = computed(() => {
+  if (props.type !== "list" && props.type !== "linking-panel") {
+    return [];
+  }
+
   const usedKeys = new Set(
     listColumns.value.map((col) => col?.name).filter(Boolean),
   );
-  if (props.type === "list" || props.type === "linking-panel") {
-    return moduleFields.value.filter((field) => !usedKeys.has(field.name));
-  }
-  return [];
+
+  return moduleFields.value
+    .filter((field) => !usedKeys.has(field.name))
+    .map((field) => ({
+      name: field.name,
+      key: field.key,
+      label: field.label ?? field.name,
+      type: field.type,
+      sortable: field.sortable ?? false,
+      readonly: field.readonly ?? false,
+      required: field.required ?? false,
+      dropdown_list: field.dropdown_list ?? null,
+    }));
 });
 
 const cleanedListColumns = computed(() =>

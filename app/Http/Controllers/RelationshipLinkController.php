@@ -61,4 +61,14 @@ class RelationshipLinkController extends Controller
       'success' => true,
     ]);
   }
+
+  public function unlink(Request $request, string $module, string $record_id, string $relationship, string $related_id)
+  {
+    $moduleModel = Module::where('slug', $module)->firstOrFail();
+    $modelClass = $moduleModel->model_class;
+
+    $record = $modelClass::findOrFail($record_id);
+
+    $record->unlinkRelation($relationship, $related_id);
+  }
 }

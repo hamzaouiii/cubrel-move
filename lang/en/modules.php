@@ -41,7 +41,18 @@ return [
     'delete_confirm'      => "Are you sure you want to delete this record ?",
     'delete_yes'      => "Yes",
     'delete_no'      => "No",
-    'no_data_entered' => "You have enetered no new data, No record will be saved!"
+    'no_data_entered' => "You have enetered no new data, No record will be saved!",
+    'link' => 'Link',
+    'unlink' => 'Unlink',
+    'unlink_yes' => 'Yes',
+    'unlink_no' => 'No',
+    'unlink_success'  => "Record Unlinked successfully",
+    'unlink_error'  => "An error occurred while linking the records",
+    'unlink_confirm_title'      => "Confirm Unlinking record",
+    'unlink_confirm'      => "Are you sure you want to unlink these records ?",
+    'open_new_tab' => 'Open in a new Tab',
+    'quick_edit'  => 'Quick Edit'
+
   ],
   'delete' => [
     'confirm_delete'  => 'Confirm Delete',
@@ -226,10 +237,62 @@ return [
     ],
   ],
 
-
-
   'settings' => [
     'label' => 'Settings',
     'single_label' => 'Setting',
+  ],
+  'opportunities' => [
+    'label'  => 'Opportunities',
+    'single_label'  => 'Opportunity',
+    'fields' => [
+      'id'                   => 'ID',
+      'name'                 => 'Name',
+      'account_id'           => 'Account',
+      'amount'               => 'Amount',
+      'currency'             => 'Currency',
+      'description'          => 'Description',
+      'sales_stage'          => 'Sales Stage',
+      'probability'          => 'Probability',
+      'expected_close_date'  => 'Expected Close Date',
+      'type'                 => 'Type',
+      'assigned_user_id'     => 'Assigned User',
+      'created_at'           => 'Created At',
+      'updated_at'           => 'Updated At',
+    ],
+  ],
+  'products' => [
+    'label'  => 'Products',
+    'single_label'  => 'Product',
+    'fields' => [
+      'id'          => 'ID',
+      'name'        => 'Name',
+      'sku'         => 'SKU',
+      'description' => 'Description',
+      'category'    => 'Category',
+      'price'       => 'Price',
+      'currency'    => 'Currency',
+      'is_active'   => 'Active',
+      'created_at'  => 'Created At',
+      'updated_at'  => 'Updated At',
+    ],
+  ],
+  'orders' => [
+    'label'  => 'Orders',
+    'single_label'  => 'Order',
+    'fields' => [
+      'id'              => 'ID',
+      'order_number'    => 'Order Number',
+      'account_id'      => 'Account',
+      'opportunity_id'  => 'Opportunity',
+      'description'     => 'Description',
+      'total_amount'    => 'Total Amount',
+      'currency'        => 'Currency',
+      'status'          => 'Status',
+      'order_date'      => 'Order Date',
+      'due_date'        => 'Due Date',
+      'assigned_user_id' => 'Assigned User',
+      'created_at'      => 'Created At',
+      'updated_at'      => 'Updated At',
+    ],
   ],
 ];

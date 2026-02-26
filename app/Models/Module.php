@@ -54,7 +54,8 @@ class Module extends Model
     'can_edit'   => 'boolean',
     'can_delete' => 'boolean',
   ];
-
+  protected $guarded = [];
+  public $timestamps = true;
   public static function forSidebar(): Collection
   {
     return self::active()
@@ -96,17 +97,25 @@ class Module extends Model
   {
     /** @var Layout|null $layout */
     $layout = $this->layouts()->where('type', 'list')->first();
+
     if ($layout !== null) {
       return $layout->definition;
     }
 
+    // Module specific config fallback
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig['list'])) {
+      return $moduleConfig['list'];
+    }
+
+    // Global fallback
     $globalDefault = Layout::getDefaultLayout('list');
     if ($globalDefault !== null) {
       return $globalDefault;
     }
+
     throw new \Exception("No list layout found for module {$this->name} and no global fallback available.");
   }
-
 
   /**
    * @return array
@@ -114,16 +123,22 @@ class Module extends Model
   public function recordLayout()
   {
     /** @var Layout|null $recordLayout */
-
     $recordLayout = $this->layouts()->where('type', 'record')->first();
 
     if ($recordLayout !== null) {
       return $recordLayout->definition;
     }
+
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig['record'])) {
+      return $moduleConfig['record'];
+    }
+
     $globalDefault = Layout::getDefaultLayout('record');
     if ($globalDefault !== null) {
       return $globalDefault;
     }
+
     throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
   }
 
@@ -132,34 +147,46 @@ class Module extends Model
    */
   public function relatedLayout()
   {
-    /** @var Layout|null $recordLayout */
-
+    /** @var Layout|null $relatedLayout */
     $relatedLayout = $this->layouts()->where('type', 'related')->first();
 
     if ($relatedLayout !== null) {
       return $relatedLayout->definition;
     }
+
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig['related'])) {
+      return $moduleConfig['related'];
+    }
+
     $globalDefault = Layout::getDefaultLayout('related');
     if ($globalDefault !== null) {
       return $globalDefault;
     }
-    throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
+
+    throw new \Exception("No related layout found for module {$this->name} and no global fallback available.");
   }
 
   public function linkingPanelLayout()
   {
-    /** @var Layout|null $recordLayout */
-
+    /** @var Layout|null $linkingPanelLayout */
     $linkingPanelLayout = $this->layouts()->where('type', 'linking-panel')->first();
 
     if ($linkingPanelLayout !== null) {
       return $linkingPanelLayout->definition;
     }
+
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig['linking-panel'])) {
+      return $moduleConfig['linking-panel'];
+    }
+
     $globalDefault = Layout::getDefaultLayout('linking-panel');
     if ($globalDefault !== null) {
       return $globalDefault;
     }
-    throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
+
+    throw new \Exception("No linking-panel layout found for module {$this->name} and no global fallback available.");
   }
 
   public function layoutFor(string $type)

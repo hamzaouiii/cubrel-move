@@ -68,7 +68,7 @@ const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const appSettings = usePage().props.appSettings;
 
-const currentTab = ref("related");
+const currentTab = ref("overview");
 
 const isDirty = computed(() => form.isDirty);
 
@@ -341,7 +341,7 @@ const isDropDown = (f) => {
 
 const getFieldDropDownList = (f) => {
   const field = props.fields.find((field) => field.name === f.name);
-  return field?.dropdown_list.values || [];
+  return field?.dropdown_list?.values || [];
 };
 
 const getDropDownListLabel = (f) => {
@@ -523,7 +523,7 @@ const handleSaved = () => {
             </ul>
           </div>
         </div>
-        <div v-if="currentTab === 'overview'" class="record-layout__sections">
+        <div v-if="currentTab !== 'related'" class="record-layout__sections">
           <div
             class="record-layout__sections__item"
             v-for="s in overviewLayout.sections"

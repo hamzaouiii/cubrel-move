@@ -7,5 +7,6 @@ return [
   'dropdown',
   'date',
   'number',
-  'relationship'
+  'relationship',
+  'checkbox'
 ];

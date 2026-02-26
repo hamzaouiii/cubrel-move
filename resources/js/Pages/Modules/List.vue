@@ -320,7 +320,7 @@ const handleMassUpdate = async (payload) => {
 const getFieldDropDownList = (f) => {
   const field = pageProps.fields.find((field) => field.name === f);
 
-  return field?.dropdown_list.values || [];
+  return field?.dropdown_list?.values || [];
 };
 
 const getDropDownListLabel = (f, i) => {

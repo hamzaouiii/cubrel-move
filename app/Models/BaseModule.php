@@ -36,7 +36,7 @@ abstract class BaseModule extends Model
     RelationshipService::link($relationship_name, static::class, $this->id, $related_id);
   }
 
-  public function unlink(string $relationship_name, string $related_id): void
+  public function unlinkRelation(string $relationship_name, string $related_id): void
   {
     RelationshipService::unlink($relationship_name, static::class, $this->id, $related_id);
   }

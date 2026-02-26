@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Handlers\Modules\Custom;
+namespace App\Handlers\Modules;
 
-use App\Models\Modules\Custom\Money;
+use App\Models\Modules\Order;
 use Illuminate\Database\Eloquent\Builder;
 use App\Handlers\Modules\BaseModuleHandler;
 
-class MoneyModuleHandler extends BaseModuleHandler
+class OrdersModuleHandler extends BaseModuleHandler
 {
-  protected string $model = Money::class;
+  protected string $model = Order::class;
 
   protected function query(array $params = []): Builder
   {
-    $query = Money::query();
+    $query = Order::query();
 
     // apply filters if needed
 
