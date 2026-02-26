@@ -19,7 +19,7 @@ class OrderFactory extends Factory
 
     return [
       'id' => (string) Str::uuid(),
-
+      'name' => $this->faker->words(3, true),
       'order_number' => 'ORD-' . strtoupper(Str::random(6)),
       'description' => $this->faker->sentence(),
 

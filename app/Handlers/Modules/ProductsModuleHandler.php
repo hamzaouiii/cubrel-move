@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Handlers\Modules\Custom;
+namespace App\Handlers\Modules;
 
-use App\Models\Modules\Custom\Products;
+use App\Models\Modules\Product;
 use Illuminate\Database\Eloquent\Builder;
 use App\Handlers\Modules\BaseModuleHandler;
 
 class ProductsModuleHandler extends BaseModuleHandler
 {
-    protected string $model = Products::class;
+  protected string $model = Product::class;
 
-    protected function query(array $params = []): Builder
-    {
-        $query = Products::query();
+  protected function query(array $params = []): Builder
+  {
+    $query = Product::query();
 
-        // apply filters if needed
+    // apply filters if needed
 
-        return $query;
-    }
+    return $query;
+  }
 }
