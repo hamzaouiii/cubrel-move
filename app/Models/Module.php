@@ -54,7 +54,8 @@ class Module extends Model
     'can_edit'   => 'boolean',
     'can_delete' => 'boolean',
   ];
-
+  protected $guarded = [];
+  public $timestamps = true;
   public static function forSidebar(): Collection
   {
     return self::active()

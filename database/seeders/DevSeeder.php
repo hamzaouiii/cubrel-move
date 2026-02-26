@@ -8,6 +8,9 @@ use App\Models\Modules\Contact;
 use App\Models\Modules\Invoice;
 use App\Models\Modules\Quote;
 use App\Models\Modules\SupportCase;
+use App\Models\Modules\Opportunity;
+use App\Models\Modules\Product;
+use App\Models\Modules\Order;
 
 class DevSeeder extends Seeder
 {
@@ -16,10 +19,13 @@ class DevSeeder extends Seeder
    */
   public function run(): void
   {
-    Account::factory(20)->create();
-    Contact::factory(50)->create();
+    Account::factory(80)->create();
+    Contact::factory(80)->create();
     Quote::factory(30)->create();
-    Invoice::factory(30)->create();
-    SupportCase::factory(15)->create();
+    Invoice::factory(100)->create();
+    SupportCase::factory(25)->create();
+    Product::factory()->count(50)->create();
+    Opportunity::factory()->count(50)->create();
+    Order::factory()->count(50)->create();
   }
 }
