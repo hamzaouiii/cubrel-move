@@ -14,8 +14,8 @@ import { useConfirm } from "@/Composables/useConfirm";
 
 import Layout from "@/Layouts/Layout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
-import ListDeleteZone from "../Components/ListView/ListDeleteZone.vue";
-import MassUpdateZone from "../Components/ListView/MassUpdateZone.vue";
+import ListDeleteZone from "@/Pages/Components/ListActions/ListDeleteZone.vue";
+import MassUpdateZone from "@/Pages/Components/ListActions/MassUpdateZone.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
