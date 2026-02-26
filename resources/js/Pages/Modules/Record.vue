@@ -381,9 +381,10 @@ const openOverlay = (panel, selected) => {
 const activeLayout = (panel) =>
   props.record?.related[panel?.name]?.linking_layout.columns || null;
 
-const handleSaved = () => {
+const expandPanelName = ref(null);
+const handleSaved = (panelName) => {
   overlayOpen.value = false;
-
+  expandPanelName.value = panelName;
   router.reload({
     only: ["record"],
     preserveScroll: true,
@@ -621,6 +622,7 @@ const handleSaved = () => {
             :relationships="record.related"
             :layout="relatedLayout"
             @open-overlay="openOverlay"
+            :expandPanel="expandPanelName"
           ></PanelList>
           <RelatedLinksOverlay
             v-if="overlayOpen"

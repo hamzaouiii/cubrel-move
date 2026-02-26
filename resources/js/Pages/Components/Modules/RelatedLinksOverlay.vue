@@ -46,7 +46,6 @@ const closeOverlay = () => {
 const handleAfterLeave = () => {
   emit("close");
 };
-
 const pageData = usePage();
 
 const appSettings = pageData.props.appSettings;
@@ -151,7 +150,6 @@ const save = async () => {
   }
 
   saveLoading.value = true;
-  let url;
   try {
     info("Saving");
     await axios.post(
@@ -164,7 +162,7 @@ const save = async () => {
     selected.value = [];
     clearAllAlerts();
     success("Linking records finished successfully ");
-    emit("saved");
+    emit("saved", props.panel.name);
     closeOverlay();
   } catch (error) {
     console.error(

@@ -58,7 +58,6 @@ const unlink = async (record) => {
   try {
     await axios.delete(url);
     records.value = records.value.filter((r) => r.id !== record.id);
-    console.log("it worked");
   } catch (error) {
     console.error("Unlink failed:", error);
   } finally {

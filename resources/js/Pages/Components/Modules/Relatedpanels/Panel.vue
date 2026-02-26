@@ -1,17 +1,31 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
 import PanelHeader from "./PanelHeader.vue";
 import PanelBody from "./PanelBody.vue";
 const props = defineProps({
   relationships: Object,
   panel: Object,
+  expandPanel: String,
 });
 
 const openPanels = ref(
   Object.values(props.relationships)
     .filter((r) => r.records?.length)
     .map((r) => r.name),
+);
+
+watch(
+  () => props.expandPanel,
+  (newVal) => {
+    if (newVal === props.panel.name) {
+      console.log(newVal);
+      const index = openPanels.value.indexOf(newVal);
+      if (index === -1) {
+        openPanels.value.push(newVal);
+      }
+    }
+  },
 );
 const relationshipMap = computed(() => {
   return Object.values(props.relationships).reduce((acc, rel) => {
@@ -23,6 +37,7 @@ const relationshipMap = computed(() => {
 const hasRecords = (panel) => {
   return relationshipMap.value?.[panel]?.records?.length || false;
 };
+
 const togglePanel = (name) => {
   if (!hasRecords(name)) {
     return;

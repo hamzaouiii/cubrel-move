@@ -6,6 +6,7 @@ import Panel from "./Panel.vue";
 const props = defineProps({
   relationships: { type: Object, required: true },
   layout: { type: Object, required: true },
+  expandPanel: { type: String },
 });
 
 const relationshipMap = computed(() => {
@@ -57,6 +58,7 @@ const forwardOpenOverlay = (panel, selected) => {
             :relationships="relationships"
             :panel="panel"
             @open-overlay="forwardOpenOverlay"
+            :expandPanel="expandPanel"
           ></Panel>
         </li>
       </div>
