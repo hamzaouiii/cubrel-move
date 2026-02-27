@@ -43,7 +43,8 @@ const parentRecord = computed(() => {
   return null;
 });
 const unlinkingId = ref(null);
-const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
+
+const emit = defineEmits("update-panel");
 const unlink = async (record) => {
   const ok = await confirm({
     title: t("modules.actions.unlink_confirm_title"),
@@ -58,6 +59,7 @@ const unlink = async (record) => {
   try {
     await axios.delete(url);
     records.value = records.value.filter((r) => r.id !== record.id);
+    emit("update-panel");
   } catch (error) {
     console.error("Unlink failed:", error);
   } finally {

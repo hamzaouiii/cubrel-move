@@ -57,12 +57,16 @@ const getRelatedIcon = (slug) => getModule(slug)?.icon;
 const getSingleLabel = (slug) => getModule(slug)?.single_label;
 const getLabel = (slug) => getModule(slug)?.label;
 
-const emit = defineEmits(["open-overlay"]);
+const emit = defineEmits(["open-overlay", "update-panel-trigger"]);
 
 const openLinkOverlay = () => {
   const parent =
     relationshipMap.value?.[props.panel?.name]?.records?.[0] || null;
   emit("open-overlay", props.panel, parent);
+};
+
+const handleUpdatePanel = () => {
+  emit("update-panel-trigger");
 };
 </script>
 
@@ -81,5 +85,6 @@ const openLinkOverlay = () => {
     :relationship="relationshipMap[panel.name]"
     :isOpenPanel="openPanels.includes(panel.name)"
     :panel="panel"
+    @update-panel="handleUpdatePanel"
   ></PanelBody>
 </template>

@@ -29,10 +29,13 @@ const getRelatedColor = (slug) => {
     ? appSettings.primary_color
     : getModule(slug)?.color;
 };
-const emit = defineEmits(["open-overlay"]);
+const emit = defineEmits(["open-overlay", "panel-update"]);
 
 const forwardOpenOverlay = (panel, selected) => {
   emit("open-overlay", panel, selected);
+};
+const triggerPanelUpdate = () => {
+  emit("panel-update");
 };
 </script>
 
@@ -58,7 +61,7 @@ const forwardOpenOverlay = (panel, selected) => {
             :relationships="relationships"
             :panel="panel"
             @open-overlay="forwardOpenOverlay"
-            :expandPanel="expandPanel"
+            @update-panel-trigger="triggerPanelUpdate"
           ></Panel>
         </li>
       </div>
