@@ -259,7 +259,6 @@ const handleListDelete = async () => {
       clearAllAlerts();
       success(t("modules.actions.delete_success"));
       clearSelection();
-      resetDeleteZone();
     },
     onError: () => {
       clearAllAlerts();

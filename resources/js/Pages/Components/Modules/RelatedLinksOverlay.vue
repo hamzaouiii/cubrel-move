@@ -4,7 +4,7 @@ import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
 import Radiobox from "../FiledTypes/Radiobox.vue";
-import { formatDateTime } from "@/utils/datetime";
+import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { success, error, info, warning, removeAlert, clearAllAlerts } =
@@ -186,6 +186,8 @@ const formatField = (field, value) => {
     case "datetime":
       return formatDateTime(value);
 
+    case "date":
+      return formatDate(value);
     case "longtext":
       // return "test";
       return value.length > 34 ? value.slice(0, 33) + "…" : value;

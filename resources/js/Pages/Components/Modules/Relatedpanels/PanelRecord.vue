@@ -1,5 +1,5 @@
 <script setup>
-import { formatDateTime } from "@/utils/datetime";
+import { formatDateTime, formatDate } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import RelatedRecordsActionDropdown from "./RelatedRecordsActionDropdown.vue";
@@ -32,6 +32,9 @@ const formatField = (field, value) => {
 
     case "datetime":
       return formatDateTime(value);
+
+    case "date":
+      return formatDate(value);
 
     case "longtext":
       return value.length > 32 ? value.slice(0, 32) + "…" : value;
