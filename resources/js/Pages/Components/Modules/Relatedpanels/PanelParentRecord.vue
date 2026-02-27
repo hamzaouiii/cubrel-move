@@ -63,7 +63,7 @@ const detailFields = computed(() => nonTitleFields.value.slice(2));
           {{ parentRecord?.name }}
         </Link>
         <a
-          :href="getRelatedRecordurl(related_slug, record.id)"
+          :href="getRelatedRecordurl(related_slug, parentRecord?.id)"
           target="_blank"
           rel="noopener noreferrer"
           class="parent-card__new-tab"

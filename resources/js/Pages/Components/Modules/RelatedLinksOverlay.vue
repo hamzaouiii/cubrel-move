@@ -294,7 +294,9 @@ const selectedSingle = computed({
           <!-- List -->
           <div class="related-links__list">
             <div class="related-links__modifiers">
-              <h6>Showing {{ records?.length ?? "0" }} records</h6>
+              <span class="related-links__modifiers__info"
+                >Showing {{ records?.length ?? "0" }} records</span
+              >
               <div class="related-links__modifiers__search">
                 <input v-model="search" type="text" placeholder="Search..." />
                 <span class="related-links__modifiers__search__clear">
