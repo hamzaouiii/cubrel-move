@@ -42,13 +42,12 @@ const emittogglePanel = () => {
         </button>
       </div>
       <div v-else>
-        <button
+        <!-- <button
           class="relatedpanels__item__header__actions__btn"
           @click.prevent
         >
           <i class="fa-solid fa-plus"></i>
-          <!-- <span>add {{ $t(single_label) }}</span> -->
-        </button>
+        </button> -->
         <button
           class="relatedpanels__item__header__actions__btn"
           @click.stop="openOverlay"

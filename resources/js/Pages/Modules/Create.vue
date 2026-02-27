@@ -218,29 +218,29 @@ const getTextareaRows = (f) => {
   </Head>
 
   <div
-    class="module-layout"
+    class="record-layout"
     :style="
       appSettings.use_individual_module_colors == '0'
         ? { '--module-color': appSettings.primary_color }
         : { '--module-color': module.color }
     "
   >
-    <div class="module-layout__header">
-      <div class="module-layout__header__details">
-        <h1 class="module-layout__header__details__title"></h1>
+    <div class="record-layout__header">
+      <div class="record-layout__header__details">
+        <h1 class="record-layout__header__details__title"></h1>
       </div>
 
-      <div class="module-layout__header__actions" ref="actionDropDownref">
-        <div class="module-layout__header__actions__create">
+      <div class="record-layout__header__actions" ref="actionDropDownref">
+        <div class="record-layout__header__actions__create">
           <button
-            class="module-layout__header__actions__create__cancel-btn"
+            class="record-layout__header__actions__create__cancel-btn"
             @click="cancelCreate"
           >
             {{ $t("modules.actions.cancel") || "Cancel" }}
           </button>
 
           <button
-            class="module-layout__header__actions__create_save-btn"
+            class="record-layout__header__actions__create_save-btn"
             :disabled="!form.isDirty"
             @click="saveRecord"
           >

@@ -30,3 +30,4 @@ Thumbs.db
 *.ps1
 package-lock.json
 .prettierrc
+/screenshots/*

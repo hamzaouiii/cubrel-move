@@ -388,19 +388,19 @@ const sortedItems = computed(() => {
         : { '--module-color': module.color }
     "
   >
-    <div class="module-layout__header">
-      <div class="module-layout__header__details">
-        <h3 class="module-layout__header__details__title">
+    <div class="list-layout__header">
+      <div class="list-layout__header__details">
+        <h3 class="list-layout__header__details__title">
           {{ $t(module.label) }}
         </h3>
-        <span class="module-layout__header__details__meta">{{
+        <span class="list-layout__header__details__meta">{{
           recordsNumberPhrase
         }}</span>
       </div>
 
-      <div class="module-layout__header__actions" ref="actionDropDownref">
+      <div class="list-layout__header__actions" ref="actionDropDownref">
         <div
-          class="module-layout__header__actions__list"
+          class="list-layout__header__actions__list"
           :style="
             appSettings.use_individual_module_colors == '0'
               ? { '--module-color': appSettings.primary_color }
@@ -410,7 +410,7 @@ const sortedItems = computed(() => {
           <input
             type="text"
             name="search"
-            class="module-layout__header__actions__list__search"
+            class="list-layout__header__actions__list__search"
             :placeholder="$t('modules.actions.search_placeholder')"
             v-model="search"
             @input="handleSearchInput"
@@ -420,7 +420,7 @@ const sortedItems = computed(() => {
           <span
             @click="resetSearchValue()"
             :class="[
-              'module-layout__header__actions__list__search-reseter',
+              'list-layout__header__actions__list__search-reseter',
               { 'hide-reseter': !search },
             ]"
             ><i class="fa-regular fa-circle-xmark"></i>
@@ -443,11 +443,11 @@ const sortedItems = computed(() => {
           <transition name="fade">
             <ul
               v-if="showActionDropDown"
-              class="module-layout__header__actions__list__dropdown show"
+              class="list-layout__header__actions__list__dropdown show"
             >
               <li>
                 <Link
-                  class="module-layout__header__actions__list__dropdown__item"
+                  class="list-layout__header__actions__list__dropdown__item"
                   :href="editModuleUrl"
                 >
                   <i class="fa-solid fa-wrench"></i>
@@ -456,7 +456,7 @@ const sortedItems = computed(() => {
               </li>
               <li>
                 <span
-                  class="module-layout__header__actions__list__dropdown__item"
+                  class="list-layout__header__actions__list__dropdown__item"
                   @click="toggleMassUpdateZone()"
                 >
                   <i class="fa-solid fa-square-pen"></i>
@@ -466,7 +466,7 @@ const sortedItems = computed(() => {
 
               <li>
                 <span
-                  class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
+                  class="list-layout__header__actions__list__dropdown__item list-layout__header__actions__list__dropdown__item--delete"
                   @click.prevent="toggleDeleteZone()"
                 >
                   <i class="fa-solid fa-trash-can"></i>

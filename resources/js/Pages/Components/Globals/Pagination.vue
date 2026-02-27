@@ -74,7 +74,7 @@ const pageKey = (page) => page.page;
 </script>
 
 <template>
-  <nav v-if="meta" class="mt-3" aria-label="Pagination">
+  <nav v-if="meta" aria-label="Pagination">
     <ul class="pagination">
       <!-- Previous -->
       <li
