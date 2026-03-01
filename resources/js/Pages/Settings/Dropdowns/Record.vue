@@ -57,7 +57,12 @@ const valueExistsError = ref(false);
 
 const addItem = () => {
   if (!newItem.isDirty) return;
-  if (form.values.some((item) => item.value === newItem.value)) {
+  console.log(form.values);
+  if (
+    form.values.some(
+      (item) => item.value === generatedSystemvalue(newItem.label),
+    )
+  ) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
@@ -67,6 +72,7 @@ const addItem = () => {
     value: generatedSystemvalue(newItem.label),
   });
   newItem.reset();
+  valueExistsError.value = false;
 };
 
 const deleteItem = (value) => {
@@ -127,7 +133,10 @@ useUnsavedChangesGuard({
   </Head>
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--danger-color': appSettings.danger_color,
+    }"
   >
     <div class="settings__header">
       <div class="settings__header__title">

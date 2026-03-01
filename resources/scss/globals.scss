@@ -290,13 +290,13 @@
   grid-template-rows: auto auto;
   &__search {
     input {
-      border: 2px solid lightgray;
-      padding-left: 10px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      width: 350px;
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.95rem;
+      border: 1px solid #dcdfe6;
+      border-radius: 6px;
+      transition: all 0.2s ease-in-out;
+      color: #2d3748;
     }
     &__close {
       position: relative;

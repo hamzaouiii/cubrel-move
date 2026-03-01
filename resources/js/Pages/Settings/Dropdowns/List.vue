@@ -14,11 +14,33 @@ const props = defineProps({
   item: Object,
   list: Array,
 });
+
 const page = usePage();
+
 const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
 
+/*
+|--------------------------------------------------------------------------
+| Search
+|--------------------------------------------------------------------------
+*/
+const search = ref("");
+
+const filteredFields = computed(() => {
+  if (!search.value) return props.list;
+
+  return props.list.filter((f) =>
+    String(f.key).toLowerCase().includes(search.value.toLowerCase()),
+  );
+});
+
+/*
+|--------------------------------------------------------------------------
+| Sorting
+|--------------------------------------------------------------------------
+*/
 const sortKey = ref(null);
 const sortDirection = ref("asc");
 
@@ -30,10 +52,11 @@ function sortBy(key) {
     sortDirection.value = "asc";
   }
 }
-const sortedFields = computed(() => {
-  if (!sortKey.value) return props.list;
 
-  return [...props.list].sort((a, b) => {
+const sortedFields = computed(() => {
+  if (!sortKey.value) return filteredFields.value;
+
+  return [...filteredFields.value].sort((a, b) => {
     const valA = a[sortKey.value] ?? "";
     const valB = b[sortKey.value] ?? "";
 
@@ -42,16 +65,19 @@ const sortedFields = computed(() => {
     return 0;
   });
 });
+
 const editUrl = (f) => {
   return `${page.url.replace(/\/+$/, "")}/${f}`;
 };
 </script>
+
 <template>
   <Head>
     <title>
       {{ $t("settings.items.dropdowns") }} - {{ $t("settings.label") }}
     </title>
   </Head>
+
   <div
     class="settings"
     :style="{
@@ -61,54 +87,61 @@ const editUrl = (f) => {
   >
     <div class="settings__header">
       <div class="settings__header__title">
-        <DropdownBreadcrumbs :setting-module="item"></DropdownBreadcrumbs>
+        <DropdownBreadcrumbs :setting-module="item" />
       </div>
+
       <div class="settings__header__action">
         <Link class="settings__header__action__create" :href="createUrl">
-          {{ $t("settings.dropdown.create") }}</Link
-        >
+          {{ $t("settings.dropdown.create") }}
+        </Link>
       </div>
     </div>
 
-    <div class="fields">
-      <table class="fields__table">
-        <thead>
-          <tr>
-            <th @click="sortBy('key')">
-              {{ $t("key") }}
+    <!-- Search -->
+    <div class="dropdowns__search">
+      <input
+        v-model="search"
+        type="text"
+        class="dropdowns__search__input"
+        :placeholder="$t('settings.search')"
+      />
+    </div>
 
-              <i
-                v-if="sortKey === 'key'"
-                class="fa-solid sort-icon is-active"
-                :class="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
-              ></i>
-
-              <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
-            </th>
-            <th></th>
-          </tr>
-        </thead>
+    <div class="dropdowns">
+      <table class="dropdowns__table">
         <tbody>
-          <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
-            <td>
+          <tr
+            class="dropdowns__table__row"
+            v-for="f in sortedFields"
+            :key="f.key"
+          >
+            <td @click="sortBy('key')" style="cursor: pointer">
               {{ f.key }}
             </td>
-            <td class="fields__table__row__actions">
+
+            <td class="dropdowns__table__row__actions">
               <span
-                class="fields__table__row__actions__delete btn fields__table__row__actions__delete--disabled"
+                class="dropdowns__table__row__actions__delete btn dropdowns__table__row__actions__delete--disabled"
               >
                 <i
-                  class="fields__table__row__actions__delete__icon fa-solid fa-trash-can"
+                  class="dropdowns__table__row__actions__delete__icon fa-solid fa-trash-can"
                 ></i>
               </span>
+
               <Link
-                class="fields__table__row__actions__edit btn"
+                class="dropdowns__table__row__actions__edit btn"
                 :href="editUrl(f.key)"
               >
                 <i
-                  class="fields__table__row__actions__edit__icon fa-solid fa-pen-to-square"
+                  class="dropdowns__table__row__actions__edit__icon fa-solid fa-pen-to-square"
                 ></i>
               </Link>
+            </td>
+          </tr>
+
+          <tr v-if="!sortedFields.length">
+            <td colspan="2" style="text-align: center; padding: 1rem">
+              {{ $t("settings.no_results") }}
             </td>
           </tr>
         </tbody>
