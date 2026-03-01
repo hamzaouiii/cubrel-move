@@ -133,9 +133,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="dropdown-field" ref="root">
+  <div class="field-dropdown" ref="root">
     <div
-      class="dropdown-field_button"
+      class="field-dropdown__control"
       :class="{
         'is-open': isOpen,
         'is-invalid': error,
@@ -143,45 +143,49 @@ onBeforeUnmount(() => {
       }"
       @click="toggle"
     >
-      <span class="dropdown-field_selected">
+      <span class="field-dropdown__selected">
         {{ selectedOption?.label ?? $t("settings.select") }}
       </span>
 
       <i
-        class="dropdown-field__icon"
-        :class="isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"
+        class="field-dropdown__chevron fa-solid"
+        :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"
       ></i>
     </div>
 
     <transition name="dropdown-fade">
-      <div v-if="isOpen" class="dropdown-field_menu" role="listbox" @click.stop>
-        <!-- Search -->
-        <div v-if="searchable" class="dropdown-field_search">
+      <div
+        v-if="isOpen"
+        class="field-dropdown__menu"
+        role="listbox"
+        @click.stop
+      >
+        <div v-if="searchable" class="field-dropdown__search-wrapper">
           <input
             ref="searchInput"
             v-model="search"
             type="text"
-            class="dropdown-field_search_input"
-            :placeholder="t('settings.search_in_drop_down')"
+            class="field-dropdown__search-input"
+            :placeholder="$t('settings.search_in_drop_down')"
             @keydown.stop
           />
         </div>
 
-        <ul class="dropdown-field_list">
+        <ul class="field-dropdown__list">
           <li
             v-for="option in filteredOptions"
             :key="option.value"
-            class="dropdown-field_option"
+            class="field-dropdown__option"
             :class="{ 'is-active': option.value === modelValue }"
             role="option"
             @click="selectOption(option.value)"
           >
-            <div class="dropdown-field_option_label">
+            <div class="field-dropdown__option-label">
               {{ option.label }}
             </div>
             <div
               v-if="option.description"
-              class="dropdown-field_option_description"
+              class="field-dropdown__option-description"
             >
               {{ option.description }}
             </div>
@@ -189,16 +193,12 @@ onBeforeUnmount(() => {
 
           <li
             v-if="filteredOptions.length === 0"
-            class="dropdown-field_no_results"
+            class="field-dropdown__no-results"
           >
             {{ $t("settings.dropdown_no_results") }}
           </li>
         </ul>
       </div>
     </transition>
-
-    <div v-if="error" class="invalid-feedback d-block mt-1">
-      {{ error }}
-    </div>
   </div>
 </template>
