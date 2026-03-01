@@ -186,7 +186,7 @@ function handleKeydown(e) {
 
 const getFieldDropDownList = (f) => {
   const field = props.fields.find((field) => field.name === f.name);
-  return field?.dropdown_list.values || [];
+  return field?.dropdown_list?.values || [];
 };
 
 onMounted(() => {
@@ -210,6 +210,22 @@ const getTextareaRows = (f) => {
   }
   return 2;
 };
+
+const isDatetime = (type) => {
+  return type?.toLowerCase() === "datetime" || false;
+};
+
+const isDate = (type) => {
+  return type?.toLowerCase() === "date" || false;
+};
+
+const isDropdown = (type) => {
+  return type?.toLowerCase() === "dropdown" || false;
+};
+
+const isLongText = (type) => {
+  return type?.toLowerCase() === "longtext" || false;
+};
 </script>
 
 <template>
@@ -225,92 +241,111 @@ const getTextareaRows = (f) => {
         : { '--module-color': module.color }
     "
   >
-    <div class="record-layout__header">
-      <div class="record-layout__header__details">
-        <h1 class="record-layout__header__details__title"></h1>
-      </div>
+    <div class="record-layout__scroll">
+      <div class="record-layout__header">
+        <div class="record-layout__header__details">
+          <div class="record-layout__header__details__info">
+            <div class="record-layout__header__details__info__avatar">
+              <i class="fa-solid fa-plus"></i>
+            </div>
+            <div class="record-layout__header__details__info__text">
+              <div class="record-layout__header__details__info__text__name">
+                {{ $t("modules.actions.create_new") }}
+              </div>
+              <div
+                class="record-layout__header__details__info__text__description"
+              >
+                {{ $t("modules.fill_details") }}
+              </div>
+            </div>
+          </div>
 
-      <div class="record-layout__header__actions" ref="actionDropDownref">
-        <div class="record-layout__header__actions__create">
-          <button
-            class="record-layout__header__actions__create__cancel-btn"
-            @click="cancelCreate"
-          >
-            {{ $t("modules.actions.cancel") || "Cancel" }}
-          </button>
-
-          <button
-            class="record-layout__header__actions__create_save-btn"
-            :disabled="!form.isDirty"
-            @click="saveRecord"
-          >
-            {{ $t("modules.actions.save") || "Save" }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="record-layout">
-      <div
-        class="record-layout__section"
-        v-for="s in recordLayout.sections"
-        :key="s.name"
-      >
-        <div class="record-layout__section__title">
-          {{ s.name }}
+          <div class="record-layout__header__details__actions">
+            <div class="record-layout__header__details__actions__edit">
+              <button @click="cancelCreate">
+                {{ $t("modules.actions.cancel") }}
+              </button>
+              <button :disabled="!form.isDirty" @click="saveRecord">
+                {{ $t("modules.actions.save") }}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="record-layout__section__layout">
-          <div
-            v-for="f in s.layout.filter((f) => !f.readonly)"
-            :key="f.name"
-            class="record-layout__section__layout__field"
-          >
-            <span class="record-layout__section__layout__field__label">
-              {{ $t(f.label) }}:
-            </span>
+        <div class="record-layout__header__tabs">
+          <ul>
+            <li class="active">{{ $t("modules.overview") }}</li>
+          </ul>
+        </div>
+      </div>
 
+      <div class="record-layout__sections">
+        <div
+          class="record-layout__sections__item"
+          v-for="s in recordLayout.sections"
+          :key="s.name"
+        >
+          <div class="record-layout__sections__item__title">
+            {{ s.name }}
+          </div>
+
+          <div class="record-layout__sections__item__layout">
             <div
-              class="record-layout__section__layout__field__content editing-mode"
-              :class="{ error: hasError(f) }"
+              v-for="f in s.layout.filter((f) => !f.readonly)"
+              :key="f.name"
+              class="record-layout__sections__item__layout__field"
             >
-              <template v-if="f.type === 'datetime'">
-                <DateTime
-                  v-model="form[f.name]"
-                  type="datetime"
-                  @click="removeValidationError(f)"
-                ></DateTime>
-              </template>
-              <template v-else-if="f.type === 'date'">
-                <DateTime
-                  v-model="form[f.name]"
-                  type="date"
-                  @click="removeValidationError(f)"
-                ></DateTime>
-              </template>
-              <template v-else-if="f.type === 'longtext'">
-                <textarea
-                  v-model="form[f.name]"
-                  :rows="getTextareaRows(f)"
-                ></textarea>
-              </template>
-              <template v-else-if="f.type === 'dropdown'">
-                <ModuleDropdownField
-                  :options="getFieldDropDownList(f)"
-                  v-model="form[f.name]"
-                  @click="removeValidationError(f)"
-                ></ModuleDropdownField>
-              </template>
-              <template v-else>
-                <input
-                  type="text"
-                  v-model="form[f.name]"
-                  @input="removeValidationErrorText(f)"
-                />
-              </template>
-              <span v-if="hasError(f)" class="error-icon-container">
-                <i class="error-icon fa-solid fa-circle-exclamation"></i>
+              <span class="record-layout__sections__item__layout__field__label">
+                {{ $t(f.label) }}:
               </span>
+
+              <div
+                :class="[
+                  'record-layout__sections__item__layout__field__content',
+                  'editing-mode',
+                  { error: hasError(f) },
+                ]"
+              >
+                <template v-if="isDatetime(f.type)">
+                  <DateTime
+                    v-model="form[f.name]"
+                    type="datetime"
+                    @click="removeValidationError(f)"
+                  />
+                </template>
+                <template v-else-if="isDate(f.type)">
+                  <DateTime
+                    v-model="form[f.name]"
+                    type="date"
+                    @click="removeValidationError(f)"
+                  />
+                </template>
+                <template v-else-if="isLongText(f.type)">
+                  <textarea
+                    v-model="form[f.name]"
+                    :rows="getTextareaRows(f)"
+                    @input="removeValidationErrorText(f)"
+                  ></textarea>
+                </template>
+                <template v-else-if="isDropdown(f.type)">
+                  <ModuleDropdownField
+                    :options="getFieldDropDownList(f)"
+                    v-model="form[f.name]"
+                    @click="removeValidationError(f)"
+                  />
+                </template>
+                <template v-else>
+                  <input
+                    type="text"
+                    v-model="form[f.name]"
+                    @input="removeValidationErrorText(f)"
+                  />
+                </template>
+
+                <span v-if="hasError(f)" class="error-icon-container">
+                  <i class="error-icon fa-solid fa-circle-exclamation"></i>
+                </span>
+              </div>
             </div>
           </div>
         </div>
