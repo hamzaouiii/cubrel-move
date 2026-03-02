@@ -15,17 +15,12 @@ class DatabaseSeeder extends Seeder
    */
   public function run(): void
   {
-
-
     $this->call(ModulesTableSeeder::class);
     $this->call(ContactMessagesTableSeeder::class);
     $this->call(IconsTableSeeder::class);
-    $this->call(IpWhitelistsTableSeeder::class);
     $this->call(UsersTableSeeder::class);
-    // $this->call(GlobalLayoutUpdater::class);
-    // $this->call(GlobalRecordLayoutUpdater::class);
-    $this->call(StockFieldsSeeder::class);
     $this->call(dropdownListSeeder::class);
+    $this->call(StockFieldsSeeder::class);
     $this->call(SettingValuesSeeder::class);
     $this->call(RelationshipSeeder::class);
     $this->call(DevSeeder::class);

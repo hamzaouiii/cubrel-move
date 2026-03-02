@@ -10,11 +10,11 @@ class OrderFactory extends Factory
   public function definition(): array
   {
     $statuses = [
-      'Draft',
-      'Confirmed',
-      'Shipped',
-      'Completed',
-      'Cancelled',
+      'draft',
+      'confirmed',
+      'shipped',
+      'completed',
+      'cancelled',
     ];
 
     return [

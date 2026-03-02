@@ -1,9 +1,31 @@
 <?php
 return [
+  'opportunities_type_list' => [
+    'new_business' => 'Neukundengeschäft',
+    'existing_business' => 'Bestandskundengeschäft',
+    'renewal' => 'Verlängerung',
+    'upsell' => 'Upsell',
+  ],
+  'orders_status_list' => [
+    'draft' => 'Entwurf',
+    'pending' => 'Ausstehend',
+    'confirmed' => 'Bestätigt',
+    'processing' => 'In Bearbeitung',
+    'complete' => 'Abgeschlossen',
+    'cancelled' => 'Storniert',
+  ],
+  'opportunities_sales_stage_list' => [
+    'prospecting' => 'Akquise',
+    'qualification' => 'Qualifizierung',
+    'proposal' => 'Angebot',
+    'negotiation' => 'Verhandlung',
+    'closed_won' => 'Gewonnen',
+    'closed_lost' => 'Verloren',
+  ],
   'cases_status_list' => [
     'open' => 'Offen',
     'in_progress' => 'In Bearbeitung',
-    'pending_input' => 'Wartet auf Eingabe',
+    'pending_input' => 'Warte auf Rückmeldung',
     'rejected' => 'Abgelehnt',
     'closed' => 'Geschlossen',
   ],
@@ -25,7 +47,7 @@ return [
     'draft' => 'Entwurf',
     'sent' => 'Gesendet',
     'viewed' => 'Angesehen',
-    'accepted' => 'Angenommen',
+    'accepted' => 'Akzeptiert',
     'rejected' => 'Abgelehnt',
     'expired' => 'Abgelaufen',
   ],
@@ -33,7 +55,7 @@ return [
     'new' => 'Neu',
     'acknowledged' => 'Bestätigt',
     'in_progress' => 'In Bearbeitung',
-    'waiting_response' => 'Wartet auf Antwort',
+    'waiting_response' => 'Warte auf Antwort',
     'resolved' => 'Gelöst',
     'closed' => 'Geschlossen',
   ],
@@ -45,5 +67,5 @@ return [
     'paid' => 'Bezahlt',
     'overdue' => 'Überfällig',
     'void' => 'Ungültig',
-  ]
+  ],
 ];
