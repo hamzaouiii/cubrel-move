@@ -66,9 +66,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);
     Route::post('dropdowns', [DropdownListController::class, 'store']);
-    Route::put('dropdowns/{dropdown_key}', [DropdownListController::class, 'update']);
+    Route::put('dropdowns/{dropdown_id}', [DropdownListController::class, 'update']);
     Route::post('dropdowns_in_fields', [DropdownListController::class, 'storeAndAttach']);
-    Route::get('dropdowns/{dropdown_key}', [DropdownListController::class, 'show'])
+    Route::get('dropdowns/{dropdown_id}', [DropdownListController::class, 'show'])
       ->name('dropdowns.show');
   });
 

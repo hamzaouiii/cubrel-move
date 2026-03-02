@@ -21,7 +21,9 @@ return [
     'dropdown' => 'Auswahlliste',
     'date' => 'Datum',
     'number' => 'Zahl',
-    'relationship' => 'Beziehung'
+    'relationship' => 'Beziehung',
+    'checkbox' => 'Checkbox'
+
   ],
   'metadata' => [
     'name' => 'Name',
@@ -42,7 +44,7 @@ return [
   'validation' => [
     'is_required' => "ist ein Pflichtfeld",
     'is_required_several' => "Mehrere Pflichtfelder sind noch leer!"
-
-
-  ]
+  ],
+  'checkbox_yes' => "Ja",
+  'checkbox_no' => "Nein",
 ];

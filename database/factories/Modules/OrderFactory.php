@@ -24,8 +24,7 @@ class OrderFactory extends Factory
       'description' => $this->faker->sentence(),
 
       'total_amount' => $this->faker->randomFloat(2, 500, 20000),
-      'currency' => 'EUR',
-
+      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
       'status' => $this->faker->randomElement($statuses),
 
       'order_date' => $this->faker->dateTimeBetween('-1 month', 'now'),

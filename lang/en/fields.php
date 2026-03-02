@@ -21,8 +21,8 @@ return [
     'dropdown' => 'Dropdown',
     'date' => 'Date',
     'number' => 'Number',
-    'relationship' => 'Relationship'
-
+    'relationship' => 'Relationship',
+    'checkbox' => 'Checkbox'
   ],
   'metadata' => [
     'name' => 'System Name',
@@ -44,5 +44,7 @@ return [
   'validation' => [
     'is_required' => "field is required!",
     'is_required_several' => "Multiple required fields are still empty!"
-  ]
+  ],
+  'checkbox_yes' => "Yes",
+  'checkbox_no' => "No",
 ];

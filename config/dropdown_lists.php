@@ -278,4 +278,95 @@ return array(
       'value' => 'closed',
     ),
   ),
+  'products_category_list' =>
+  array(
+    0 =>
+    array(
+      'label' => 'dropdowns.product_category_list.electronics',
+      'value' => 'electronics',
+    ),
+    1 =>
+    array(
+      'label' => 'dropdowns.product_category_list.software',
+      'value' => 'software',
+    ),
+    2 =>
+    array(
+      'label' => 'dropdowns.product_category_list.hardware',
+      'value' => 'hardware',
+    ),
+    3 =>
+    array(
+      'label' => 'dropdowns.product_category_list.services',
+      'value' => 'services',
+    ),
+    4 =>
+    array(
+      'label' => 'dropdowns.product_category_list.consulting',
+      'value' => 'consulting',
+    ),
+    5 =>
+    array(
+      'label' => 'dropdowns.product_category_list.subscriptions',
+      'value' => 'subscriptions',
+    ),
+    6 =>
+    array(
+      'label' => 'dropdowns.product_category_list.licenses',
+      'value' => 'licenses',
+    ),
+  ),
+  'currency_list' =>
+  array(
+    0 =>
+    array(
+      'label' => 'dropdowns.currency_list.usd',
+      'value' => 'USD',
+    ),
+    1 =>
+    array(
+      'label' => 'dropdowns.currency_list.eur',
+      'value' => 'EUR',
+    ),
+    2 =>
+    array(
+      'label' => 'dropdowns.currency_list.gbp',
+      'value' => 'GBP',
+    ),
+    3 =>
+    array(
+      'label' => 'dropdowns.currency_list.jpy',
+      'value' => 'JPY',
+    ),
+    4 =>
+    array(
+      'label' => 'dropdowns.currency_list.cny',
+      'value' => 'CNY',
+    ),
+    5 =>
+    array(
+      'label' => 'dropdowns.currency_list.aud',
+      'value' => 'AUD',
+    ),
+    6 =>
+    array(
+      'label' => 'dropdowns.currency_list.cad',
+      'value' => 'CAD',
+    ),
+    7 =>
+    array(
+      'label' => 'dropdowns.currency_list.chf',
+      'value' => 'CHF',
+    ),
+    8 =>
+    array(
+      'label' => 'dropdowns.currency_list.inr',
+      'value' => 'INR',
+    ),
+    9 =>
+    array(
+      'label' => 'dropdowns.currency_list.brl',
+      'value' => 'BRL',
+    ),
+  ),
 );

@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 const emit = defineEmits(["update:modelValue"]);
@@ -22,6 +22,10 @@ const props = defineProps({
   moduleColor: {
     type: String,
     required: false,
+  },
+  display: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -49,15 +53,30 @@ const value = computed({
 </script>
 
 <template>
+  <!-- EDIT MODE -->
   <label
+    v-if="!display"
     class="checkbox"
-    :style="
-      moduleColor
-        ? { '--module-color': moduleColor }
-        : { '--module-color': appSettings.primary_color }
-    "
+    :style="{
+      '--module-color': moduleColor ? moduleColor : appSettings.primary_color,
+    }"
   >
     <input type="checkbox" class="checkbox__input" v-model="value" />
     <span class="checkbox__slider"></span>
   </label>
+
+  <!-- DETAILS MODE -->
+  <div
+    v-else
+    class="checkbox-display"
+    :class="{ 'checkbox-display--active': value }"
+    :style="{
+      '--module-color': moduleColor ? moduleColor : appSettings.primary_color,
+    }"
+  >
+    <i class="fa-solid" :class="value ? 'fa-check' : 'fa-xmark'"></i>
+    <span>
+      {{ value ? $t("fields.checkbox_yes") : $t("fields.checkbox_no") }}
+    </span>
+  </div>
 </template>

@@ -91,7 +91,7 @@ const resetList = () => {
 const saveList = () => {
   if (form.isDirty) {
     info(t("modules.actions.saving"));
-    form.put("/settings/dropdowns/" + props.dropdown.key, {
+    form.put("/settings/dropdowns/" + props.dropdown.id, {
       onSuccess: () => {
         clearAllAlerts();
         success(t("settings.dropdown.update_success"));

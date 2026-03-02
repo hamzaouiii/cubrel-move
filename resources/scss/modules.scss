@@ -833,7 +833,6 @@
     }
   }
   &__sections {
-    // Variables for consistency
     $primary-color: var(--module-color);
     $text-main: #1f2937;
     $text-muted: #6b7280;
@@ -885,6 +884,7 @@
             font-size: 0.8rem;
             font-weight: 600;
             color: $text-muted;
+            text-transform: uppercase;
           }
 
           &__content {

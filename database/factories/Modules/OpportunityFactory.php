@@ -31,7 +31,7 @@ class OpportunityFactory extends Factory
 
       'name' => $this->faker->company() . ' Deal',
       'amount' => $this->faker->randomFloat(2, 1000, 50000),
-      'currency' => 'EUR',
+      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
       'description' => $this->faker->sentence(),
 
       'sales_stage' => $this->faker->randomElement($stages),

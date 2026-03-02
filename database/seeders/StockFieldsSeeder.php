@@ -22,8 +22,8 @@ class StockFieldsSeeder extends Seeder
 
         if (($definition['type'] ?? null) === 'dropdown') {
 
-          // Convention: module_field_list
-          $dropdownKey = "{$module->slug}_{$fieldKey}_list";
+          // Convention: module_field_list unless it is currency which is global
+          $dropdownKey = $fieldKey === 'currency' ? "{$fieldKey}_list" : "{$module->slug}_{$fieldKey}_list";
 
           $dropdown = DropDownList::where('key', $dropdownKey)->first();
 

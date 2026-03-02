@@ -103,7 +103,7 @@ const editUrl = (f) => {
         v-model="search"
         type="text"
         class="dropdowns__search__input"
-        :placeholder="$t('settings.search')"
+        :placeholder="$t('dropdowns.search')"
       />
     </div>
 
@@ -130,7 +130,7 @@ const editUrl = (f) => {
 
               <Link
                 class="dropdowns__table__row__actions__edit btn"
-                :href="editUrl(f.key)"
+                :href="editUrl(f.id)"
               >
                 <i
                   class="dropdowns__table__row__actions__edit__icon fa-solid fa-pen-to-square"

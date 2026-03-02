@@ -16,10 +16,10 @@ return new class extends Migration
       $table->text('description')->nullable();
 
       $table->string('category')->nullable()->index();
-      $table->decimal('price', 15, 2);
-      $table->string('currency', 3)->default('EUR');
+      $table->decimal('price', 15, 2)->nullable();
+      $table->string('currency', 3)->nullable();
 
-      $table->boolean('is_active')->default(true)->index();
+      $table->boolean('is_active')->nullable()->index();
 
       $table->timestamps();
     });

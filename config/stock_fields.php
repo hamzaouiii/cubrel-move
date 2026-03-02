@@ -170,7 +170,7 @@ return [
     ],
     'currency' => [
       'name' => 'currency',
-      'type' => 'textfield',
+      'type' => 'dropdown',
     ],
     'subtotal' => [
       'name' => 'subtotal',
@@ -222,7 +222,7 @@ return [
     ],
     'currency' => [
       'name' => 'currency',
-      'type' => 'textfield',
+      'type' => 'dropdown',
     ],
     'subtotal' => [
       'name' => 'subtotal',
@@ -372,6 +372,7 @@ return [
       'type' => 'datetime'
     ]
   ],
+
   'opportunities' => [
 
     'name' => [
@@ -388,7 +389,8 @@ return [
 
     'currency' => [
       'name' => 'currency',
-      'type' => 'textfield',
+      'type' => 'dropdown',
+
     ],
 
     'description' => [
@@ -428,6 +430,7 @@ return [
     ],
 
   ],
+
   'products' => [
 
     'name' => [
@@ -448,7 +451,7 @@ return [
 
     'category' => [
       'name' => 'category',
-      'type' => 'textfield',
+      'type' => 'dropdown',
     ],
 
     'price' => [
@@ -458,7 +461,7 @@ return [
 
     'currency' => [
       'name' => 'currency',
-      'type' => 'textfield',
+      'type' => 'dropdown',
     ],
 
     'is_active' => [
@@ -477,6 +480,7 @@ return [
     ],
 
   ],
+
   'orders' => [
 
     'order_number' => [
@@ -496,7 +500,7 @@ return [
 
     'currency' => [
       'name' => 'currency',
-      'type' => 'textfield',
+      'type' => 'dropdown',
     ],
 
     'status' => [

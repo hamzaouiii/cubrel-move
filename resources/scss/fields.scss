@@ -694,6 +694,29 @@
   }
 }
 
+.checkbox-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 20px;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &--active {
+    background: color-mix(in srgb, var(--module-color) 15%, white);
+    border-color: color-mix(in srgb, var(--module-color) 40%, white);
+    color: var(--module-color);
+  }
+}
 .color-picker {
   position: relative;
   width: 100%;

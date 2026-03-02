@@ -12,16 +12,15 @@ return new class extends Migration
       $table->uuid('id')->primary();
 
       $table->string('name');
-      $table->uuid('account_id')->nullable();
       $table->decimal('amount', 15, 2)->nullable();
       $table->string('currency', 3)->default('EUR');
       $table->text('description')->nullable();
-      $table->string('sales_stage')->index();
+      $table->string('sales_stage')->nullable();
       $table->unsignedTinyInteger('probability')->nullable(); // 0-100
       $table->date('expected_close_date')->nullable();
       $table->string('type')->nullable(); // new_business, existing_business
 
-      $table->uuid('assigned_user_id')->nullable()->index();
+      // $table->uuid('assigned_user_id')->nullable()->index();
 
       $table->timestamps();
 

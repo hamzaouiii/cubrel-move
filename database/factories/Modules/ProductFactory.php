@@ -17,14 +17,14 @@ class ProductFactory extends Factory
       'description' => $this->faker->sentence(),
 
       'category' => $this->faker->randomElement([
-        'Software',
-        'Hardware',
-        'Service',
+        'software',
+        'hardware',
+        'services',
+        'consulting',
       ]),
 
       'price' => $this->faker->randomFloat(2, 50, 5000),
-      'currency' => 'EUR',
-
+      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
       'is_active' => $this->faker->boolean(90),
 
       'created_at' => now(),
