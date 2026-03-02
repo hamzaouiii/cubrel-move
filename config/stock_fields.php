@@ -56,10 +56,6 @@ return [
       'type' => 'textfield',
       'required' => true,
     ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
     'first_name' => [
       'name' => 'first_name',
       'type' => 'textfield',
@@ -156,18 +152,6 @@ return [
       'type' => 'textfield',
       'required' => true,
     ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'contact_id' => [
-      'name' => 'contact_id',
-      'type' => 'relationship',
-    ],
-    'quote_id' => [
-      'name' => 'quote_id',
-      'type' => 'dropdown',
-    ],
     'number' => [
       'name' => 'number',
       'type' => 'number',
@@ -224,14 +208,6 @@ return [
       'type' => 'textfield',
       'required' => true,
     ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'contact_id' => [
-      'name' => 'contact_id',
-      'type' => 'relationship',
-    ],
     'number' => [
       'name' => 'number',
       'type' => 'number',
@@ -283,14 +259,6 @@ return [
       'name' => 'name',
       'type' => 'textfield',
       'required' => true,
-    ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'contact_id' => [
-      'name' => 'contact_id',
-      'type' => 'relationship',
     ],
     'subject' => [
       'name' => 'subject',
@@ -412,10 +380,6 @@ return [
       'required' => true,
     ],
 
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
 
     'amount' => [
       'name' => 'amount',
@@ -452,10 +416,6 @@ return [
       'type' => 'dropdown',
     ],
 
-    'assigned_user_id' => [
-      'name' => 'assigned_user_id',
-      'type' => 'relationship',
-    ],
 
     'created_at' => [
       'name' => 'created_at',
@@ -524,17 +484,6 @@ return [
       'type' => 'textfield',
       'required' => true,
     ],
-
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-
-    'opportunity_id' => [
-      'name' => 'opportunity_id',
-      'type' => 'relationship',
-    ],
-
     'description' => [
       'name' => 'description',
       'type' => 'longtext',
@@ -564,12 +513,6 @@ return [
       'name' => 'due_date',
       'type' => 'date',
     ],
-
-    'assigned_user_id' => [
-      'name' => 'assigned_user_id',
-      'type' => 'relationship',
-    ],
-
     'created_at' => [
       'name' => 'created_at',
       'type' => 'datetime',

@@ -405,123 +405,123 @@ const handleSaved = () => {
         : { '--module-color': module.color }
     "
   >
-    <div class="record-layout__scroll">
-      <div class="record-layout__header">
-        <div class="record-layout__header__details">
-          <div class="record-layout__header__details__info">
-            <div
-              class="record-layout__header__details__info__avatar"
-              v-if="record.avatar"
-            >
-              {{ record.avatar }}
-            </div>
-            <div
-              class="record-layout__header__details__info__avatar"
-              v-else="record.avatar"
-            >
-              {{ avatar }}
-            </div>
-            <div class="record-layout__header__details__info__text">
-              <div class="record-layout__header__details__info__text__name">
-                {{ record.name }}
-              </div>
-              <div
-                class="record-layout__header__details__info__text__description"
-              >
-                {{ record.description }}
-              </div>
-            </div>
+    <div class="record-layout__header">
+      <div class="record-layout__header__details">
+        <div class="record-layout__header__details__info">
+          <div
+            class="record-layout__header__details__info__avatar"
+            v-if="record.avatar"
+          >
+            {{ record.avatar }}
           </div>
           <div
-            class="record-layout__header__details__actions"
-            ref="actionDropDownref"
+            class="record-layout__header__details__info__avatar"
+            v-else="record.avatar"
           >
-            <div class="record-layout__header__details__actions__edit">
-              <button v-if="isEditing" @click="cancelEditing">
-                {{ $t("modules.actions.cancel") }}
-              </button>
-
-              <button v-if="!isEditing" @click="enableEditing">
-                {{ $t("modules.actions.edit") }}
-              </button>
-
-              <button v-else :disabled="!isDirty" @click="saveRecord">
-                {{ $t("modules.actions.save") }}
-              </button>
-
-              <button
-                @click="toggleActionDropDown"
-                class="record-layout__header__details__actions__edit__dropdown-btn"
-              >
-                <i
-                  :class="
-                    showActionDropDown
-                      ? 'fa-solid fa-chevron-up'
-                      : 'fa-solid fa-chevron-down'
-                  "
-                ></i>
-              </button>
-
-              <transition name="fade">
-                <ul
-                  v-if="showActionDropDown"
-                  class="record-layout__header__details__actions__edit__dropdown show"
-                >
-                  <li
-                    class="record-layout__header__details__actions__edit__dropdown__item disabled"
-                  >
-                    <i class="fa-solid fa-share-from-square"></i>
-                    <span>{{ $t("modules.actions.share") }}</span>
-                  </li>
-                  <li
-                    class="record-layout__header__details__actions__edit__dropdown__item disabled"
-                  >
-                    <i class="fa-solid fa-download"></i>
-                    <span>{{ $t("modules.actions.export") }}</span>
-                  </li>
-                  <li
-                    class="record-layout__header__details__actions__edit__dropdown__item"
-                  >
-                    <i class="fa-solid fa-hourglass-end"></i>
-                    <span>{{ $t("modules.actions.placeholder") }}</span>
-                  </li>
-                  <li
-                    class="record-layout__header__details__actions__edit__dropdown__item"
-                  >
-                    <i class="fa-solid fa-file-pdf"></i>
-                    <span>{{ $t("modules.actions.bulk_action") }}</span>
-                  </li>
-                  <li
-                    @click="deleteRecord()"
-                    class="record-layout__header__details__actions__edit__dropdown__item"
-                    style="color: salmon"
-                  >
-                    <i class="fa-solid fa-trash-can"></i>
-                    <span>{{ $t("modules.actions.delete") }}</span>
-                  </li>
-                </ul>
-              </transition>
+            {{ avatar }}
+          </div>
+          <div class="record-layout__header__details__info__text">
+            <div class="record-layout__header__details__info__text__name">
+              {{ record.name }}
+            </div>
+            <div
+              class="record-layout__header__details__info__text__description"
+            >
+              {{ record.description }}
             </div>
           </div>
         </div>
+        <div
+          class="record-layout__header__details__actions"
+          ref="actionDropDownref"
+        >
+          <div class="record-layout__header__details__actions__edit">
+            <button v-if="isEditing" @click="cancelEditing">
+              {{ $t("modules.actions.cancel") }}
+            </button>
 
-        <div class="record-layout__header__tabs">
-          <ul>
-            <li
-              @click="switchTabs('overview')"
-              :class="{ active: currentTab === 'overview' }"
+            <button v-if="!isEditing" @click="enableEditing">
+              {{ $t("modules.actions.edit") }}
+            </button>
+
+            <button v-else :disabled="!isDirty" @click="saveRecord">
+              {{ $t("modules.actions.save") }}
+            </button>
+
+            <button
+              @click="toggleActionDropDown"
+              class="record-layout__header__details__actions__edit__dropdown-btn"
             >
-              {{ $t("modules.overview") }}
-            </li>
-            <li
-              @click="switchTabs('related')"
-              :class="{ active: currentTab === 'related' }"
-            >
-              {{ $t("modules.related") }}
-            </li>
-          </ul>
+              <i
+                :class="
+                  showActionDropDown
+                    ? 'fa-solid fa-chevron-up'
+                    : 'fa-solid fa-chevron-down'
+                "
+              ></i>
+            </button>
+
+            <transition name="fade">
+              <ul
+                v-if="showActionDropDown"
+                class="record-layout__header__details__actions__edit__dropdown show"
+              >
+                <li
+                  class="record-layout__header__details__actions__edit__dropdown__item disabled"
+                >
+                  <i class="fa-solid fa-share-from-square"></i>
+                  <span>{{ $t("modules.actions.share") }}</span>
+                </li>
+                <li
+                  class="record-layout__header__details__actions__edit__dropdown__item disabled"
+                >
+                  <i class="fa-solid fa-download"></i>
+                  <span>{{ $t("modules.actions.export") }}</span>
+                </li>
+                <li
+                  class="record-layout__header__details__actions__edit__dropdown__item"
+                >
+                  <i class="fa-solid fa-hourglass-end"></i>
+                  <span>{{ $t("modules.actions.placeholder") }}</span>
+                </li>
+                <li
+                  class="record-layout__header__details__actions__edit__dropdown__item"
+                >
+                  <i class="fa-solid fa-file-pdf"></i>
+                  <span>{{ $t("modules.actions.bulk_action") }}</span>
+                </li>
+                <li
+                  @click="deleteRecord()"
+                  class="record-layout__header__details__actions__edit__dropdown__item"
+                  style="color: salmon"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                  <span>{{ $t("modules.actions.delete") }}</span>
+                </li>
+              </ul>
+            </transition>
+          </div>
         </div>
       </div>
+
+      <div class="record-layout__header__tabs">
+        <ul>
+          <li
+            @click="switchTabs('overview')"
+            :class="{ active: currentTab === 'overview' }"
+          >
+            {{ $t("modules.overview") }}
+          </li>
+          <li
+            @click="switchTabs('related')"
+            :class="{ active: currentTab === 'related' }"
+          >
+            {{ $t("modules.related") }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="record-layout__scroll">
       <div v-if="currentTab !== 'related'" class="record-layout__sections">
         <div
           class="record-layout__sections__item"

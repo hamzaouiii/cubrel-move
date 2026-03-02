@@ -241,44 +241,43 @@ const isLongText = (type) => {
         : { '--module-color': module.color }
     "
   >
-    <div class="record-layout__scroll">
-      <div class="record-layout__header">
-        <div class="record-layout__header__details">
-          <div class="record-layout__header__details__info">
-            <div class="record-layout__header__details__info__avatar">
-              <i class="fa-solid fa-plus"></i>
-            </div>
-            <div class="record-layout__header__details__info__text">
-              <div class="record-layout__header__details__info__text__name">
-                {{ $t("modules.actions.create_new") }}
-              </div>
-              <div
-                class="record-layout__header__details__info__text__description"
-              >
-                {{ $t("modules.fill_details") }}
-              </div>
-            </div>
+    <div class="record-layout__header">
+      <div class="record-layout__header__details">
+        <div class="record-layout__header__details__info">
+          <div class="record-layout__header__details__info__avatar">
+            <i class="fa-solid fa-plus"></i>
           </div>
-
-          <div class="record-layout__header__details__actions">
-            <div class="record-layout__header__details__actions__edit">
-              <button @click="cancelCreate">
-                {{ $t("modules.actions.cancel") }}
-              </button>
-              <button :disabled="!form.isDirty" @click="saveRecord">
-                {{ $t("modules.actions.save") }}
-              </button>
+          <div class="record-layout__header__details__info__text">
+            <div class="record-layout__header__details__info__text__name">
+              <!-- {{ $t("modules.actions.create_new") }} -->
+            </div>
+            <div
+              class="record-layout__header__details__info__text__description"
+            >
+              <!-- {{ $t("modules.fill_details") }} -->
             </div>
           </div>
         </div>
 
-        <div class="record-layout__header__tabs">
-          <ul>
-            <li class="active">{{ $t("modules.overview") }}</li>
-          </ul>
+        <div class="record-layout__header__details__actions">
+          <div class="record-layout__header__details__actions__edit">
+            <button @click="cancelCreate">
+              {{ $t("modules.actions.cancel") }}
+            </button>
+            <button :disabled="!form.isDirty" @click="saveRecord">
+              {{ $t("modules.actions.save") }}
+            </button>
+          </div>
         </div>
       </div>
 
+      <div class="record-layout__header__tabs">
+        <ul>
+          <li class="active">{{ $t("modules.overview") }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="record-layout__scroll">
       <div class="record-layout__sections">
         <div
           class="record-layout__sections__item"
