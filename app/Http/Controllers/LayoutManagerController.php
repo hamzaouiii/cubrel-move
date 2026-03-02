@@ -11,8 +11,6 @@ use App\Services\Relationships\RelationshipService;
 
 class LayoutManagerController extends Controller
 {
-
-
   public function store(Request $request, \App\Models\Module $module, string $layoutType)
   {
     $validated = [];
@@ -71,14 +69,14 @@ class LayoutManagerController extends Controller
         },
       ])->firstOrFail();
     $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
-    $defaultLayout = Layout::getDefaultLayout($type);
+    $layout = $module->getDefaultLayout($type);
     $fields = $module->fields;
     $relationships = RelationshipService::getRelationshipForModule($module->model_class);
     return Inertia::render('Settings/Layouts/Edit', [
       'item'     => $item,
       'module' => $module,
       'type'  => $type,
-      'defaultLayout' => $defaultLayout,
+      'defaultLayout' => $layout,
       'fields'   => $fields,
       'relationships' => $relationships
     ]);

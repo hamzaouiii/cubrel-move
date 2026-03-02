@@ -90,6 +90,27 @@ class Module extends Model
     return $this->hasMany(Layout::class);
   }
 
+  public function getDefaultLayout(String $type)
+  {
+    $layout = $this->layouts()->where('type', $type)->first();
+
+    if ($layout !== null) {
+      return $layout->definition;
+    }
+
+    // Module specific config fallback
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
+      return $moduleConfig[$type];
+    }
+
+    // Global fallback
+    $globalDefault = Layout::getDefaultLayout($type);
+    if ($globalDefault !== null) {
+      return $globalDefault;
+    }
+  }
+
   /**
    * @return array
    */
