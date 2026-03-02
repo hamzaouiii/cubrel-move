@@ -8,14 +8,10 @@ import {
   onBeforeUnmount,
   getCurrentInstance,
 } from "vue";
-import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
-
-import ModuleDropdownField from "@/Pages/Components/FiledTypes/ModuleDropdownField.vue";
-import Checkbox from "../Components/FiledTypes/Checkbox.vue";
-import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
+import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
@@ -68,6 +64,10 @@ const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const appSettings = usePage().props.appSettings;
+
+const mode = computed(() => {
+  return isEditing.value === true ? "edit" : "detail";
+});
 
 const currentTab = ref("overview");
 
@@ -322,7 +322,7 @@ const displayValueFor = (f) => {
       return val.substring(0, 64) + "...";
     }
   }
-  if (type === "dropdown") {
+  if (type === "select") {
     return getDropDownListLabel(f);
   }
 
@@ -338,18 +338,11 @@ const getTextareaRows = (f) => {
 };
 
 const isDropDown = (f) => {
-  return f.type === "dropdown";
+  return f.type === "select";
 };
 
-const getFieldDropDownList = (f) => {
-  const field = props.fields.find((field) => field.name === f.name);
-  return field?.dropdown_list?.values || [];
-};
-
-const getDropDownListLabel = (f) => {
-  const list = getFieldDropDownList(f);
-  const label = list.find((l) => l.value === form[f.name])?.label || "---";
-  return t(label);
+const getField = (f) => {
+  return props.fields.find((field) => field.name === f.name);
 };
 
 onMounted(() => {
@@ -403,7 +396,9 @@ const module_color =
   <Head>
     <title>{{ record.name }} - {{ title }}</title>
   </Head>
-
+  <div class="mode">
+    {{ mode }}
+  </div>
   <div class="record-layout" :style="{ '--module-color': module_color }">
     <div class="record-layout__header">
       <div class="record-layout__header__details">
@@ -539,91 +534,15 @@ const module_color =
                 {{ $t(f.label) }}:
               </span>
 
-              <!-- Display Mode -->
-              <div v-if="!isEditing" @click="!f.readonly && enableEditing()">
-                <span v-if="f.type === 'checkbox'">
-                  <Checkbox
-                    v-model="form[f.name]"
-                    :display="true"
-                    :module-color="module_color"
-                  />
-                </span>
-                <div
-                  v-else
-                  :class="[
-                    'record-layout__sections__item__layout__field__content',
-                    { 'view-uneditable-field': f.readonly },
-                  ]"
-                >
-                  <span> {{ displayValueFor(f) }}</span>
-                </div>
-              </div>
-              <!-- Edit Mode -->
-              <div v-else>
-                <div v-if="f.type === 'checkbox'">
-                  <Checkbox
-                    v-model="form[f.name]"
-                    :readonly="false"
-                    :module-color="module_color"
-                  />
-                </div>
-                <div
-                  :class="[
-                    'record-layout__sections__item__layout__field__content',
-                    'editing-mode',
-                    { 'uneditable-field': f.readonly },
-                    { error: hasError(f) },
-                  ]"
-                  v-else
-                >
-                  <template v-if="f.readonly">
-                    <span>
-                      {{ displayValueFor(f) }}
-                    </span>
-                  </template>
-                  <template v-else-if="isDropDown(f)">
-                    <ModuleDropdownField
-                      :options="getFieldDropDownList(f)"
-                      v-model="form[f.name]"
-                      @click="removeValidationError(f)"
-                    ></ModuleDropdownField>
-                  </template>
-                  <template v-else-if="f.type == 'longText'">
-                    <textarea
-                      v-model="form[f.name]"
-                      :rows="getTextareaRows(f)"
-                      @input="removeValidationErrorText(f)"
-                    ></textarea>
-                    <span v-if="hasError(f)" class="error-icon-container">
-                      <i class="error-icon fa-solid fa-circle-exclamation"></i>
-                    </span>
-                  </template>
-                  <template v-else-if="f.type == 'datetime'">
-                    <DateTime
-                      v-model="form[f.name]"
-                      type="datetime"
-                      @click="removeValidationError(f)"
-                    />
-                  </template>
-                  <template v-else-if="f.type == 'date'">
-                    <DateTime
-                      v-model="form[f.name]"
-                      type="date"
-                      @click="removeValidationError(f)"
-                    />
-                  </template>
-                  <template v-else>
-                    <input
-                      type="text"
-                      v-model="form[f.name]"
-                      @input="removeValidationErrorText(f)"
-                    />
-                  </template>
-                  <span v-if="hasError(f)" class="error-icon-container">
-                    <i class="error-icon fa-solid fa-circle-exclamation"></i>
-                  </span>
-                </div>
-              </div>
+              <FieldRenderer
+                :field="getField(f)"
+                v-model="form[f.name]"
+                :mode="mode"
+                :read-only="f.readonly"
+                :module-color="module_color"
+                :has-error="hasError(f)"
+                @click="!f.readonly && enableEditing()"
+              />
             </div>
           </div>
         </div>
@@ -651,3 +570,16 @@ const module_color =
     </div>
   </div>
 </template>
+<style scoped>
+.mode {
+  position: fixed;
+  border: 3px solid saddlebrown;
+  color: saddlebrown;
+  font-size: 2rem;
+  z-index: 99;
+  top: 10%;
+  right: 15%;
+  padding: 5px;
+  border-radius: 5px;
+}
+</style>

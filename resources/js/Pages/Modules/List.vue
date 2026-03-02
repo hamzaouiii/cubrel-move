@@ -11,7 +11,7 @@ import { Head, usePage, Link, router } from "@inertiajs/vue3";
 import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
-
+import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import Layout from "@/Layouts/Layout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 import ListDeleteZone from "@/Pages/Components/Modules/ListActions/ListDeleteZone.vue";
@@ -560,6 +560,14 @@ const sortedItems = computed(() => {
               </td>
 
               <td v-for="col in listLayoutColumns || []" :key="col.name">
+                <!-- <FieldRenderer
+                  :field="{
+                    key: 'name',
+                    type: col.type,
+                  }"
+                  v-model="item[col.name]"
+                  mode="table"
+                /> -->
                 <template v-if="col?.name === 'email' && item[col?.name]">
                   <a :href="'mailto:' + item[col.name]">
                     <span v-html="highlightMatch(item[col.key])"></span>
@@ -572,7 +580,7 @@ const sortedItems = computed(() => {
                 <template v-else-if="col.type === 'date' && item[col.name]">
                   {{ formatDate(item[col.name], appSettings) }}
                 </template>
-                <template v-else-if="col.type === 'dropdown' && item[col.name]">
+                <template v-else-if="col.type === 'select' && item[col.name]">
                   {{ getDropDownListLabel(col.name, item[col.name]) }}
                 </template>
                 <template

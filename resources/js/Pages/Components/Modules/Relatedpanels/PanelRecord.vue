@@ -27,7 +27,7 @@ const formatField = (field, value) => {
   const type = field?.type?.toLowerCase();
 
   switch (type) {
-    case "textfield":
+    case "text":
       return value;
 
     case "datetime":

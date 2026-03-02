@@ -6,7 +6,7 @@ return [
     "columns" => [
       [
         "name" => "name",
-        "type" => "textfield",
+        "type" => "text",
         "label" =>  "modules.defaults.name",
         "sortable" => true
       ],
@@ -39,7 +39,7 @@ return [
         'layout' => [
           [
             'name' => 'name',
-            'type' => 'textfield',
+            'type' => 'text',
             'label' => 'modules.defaults.name',
             'required' => true,
             'readonly' => false,
@@ -83,7 +83,7 @@ return [
     "columns" => [
       [
         "name" => "name",
-        "type" => "textfield",
+        "type" => "text",
         "label" =>  "modules.defaults.name",
         "sortable" => true
       ],

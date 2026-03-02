@@ -20,7 +20,7 @@ class StockFieldsSeeder extends Seeder
 
         $dropdownListId = null;
 
-        if (($definition['type'] ?? null) === 'dropdown') {
+        if (($definition['type'] ?? null) === 'select') {
 
           // Convention: module_field_list unless it is currency which is global
           $dropdownKey = $fieldKey === 'currency' ? "{$fieldKey}_list" : "{$module->slug}_{$fieldKey}_list";

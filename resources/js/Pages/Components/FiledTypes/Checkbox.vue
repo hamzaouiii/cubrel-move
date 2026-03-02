@@ -23,9 +23,9 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  display: {
-    type: Boolean,
-    default: false,
+  mode: {
+    type: String,
+    default: "edit",
   },
 });
 
@@ -55,7 +55,7 @@ const value = computed({
 <template>
   <!-- EDIT MODE -->
   <label
-    v-if="!display"
+    v-if="mode === 'edit'"
     class="checkbox"
     :style="{
       '--module-color': moduleColor ? moduleColor : appSettings.primary_color,

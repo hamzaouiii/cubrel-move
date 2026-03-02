@@ -1,14 +1,4 @@
 <script setup>
-/**
- *
- * for me to remember how to use without having to read the whole component everytime
- * Send an array of options like this :options=array[] and bind it to via v-model
- * options look like this:
- * 'value'
- * 'label'       => "{$city} (UTC{$offset})",
- * 'description' => $tz . ($abbr ? " • {$abbr}" : ''),
- *
- */
 import {
   computed,
   ref,
@@ -43,16 +33,23 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  mode: {
+    type: String,
+    default: "edit", // edit | detail | table
+  },
+  hasError: {
+    type: Boolean,
+    default: false,
+  },
 });
-
 const emit = defineEmits(["update:modelValue", "change"]);
 
 const isOpen = ref(false);
 const root = ref(null);
-
 const search = ref("");
 const searchInput = ref(null);
 
+// Ensure options are always an array
 const normalizedOptions = computed(() => {
   if (Array.isArray(props.options)) return props.options;
   if (props.options && typeof props.options === "object") {
@@ -61,10 +58,19 @@ const normalizedOptions = computed(() => {
   return [];
 });
 
-const selectedOption = computed(
-  () =>
-    normalizedOptions.value.find((o) => o.value === props.modelValue) ?? "---",
-);
+const selectedOption = computed(() => {
+  return (
+    normalizedOptions.value.find((o) => o.value === props.modelValue) || null
+  );
+});
+
+const selectedLabel = computed(() => {
+  if (!selectedOption.value) return "---";
+  // If the label is a translation key, t() handles it.
+  // If it's the pre-formatted string "City (UTC+1)", t() usually returns the string as-is.
+  return t(selectedOption.value.label);
+});
+
 const filteredOptions = computed(() => {
   const q = search.value.trim().toLowerCase();
   if (!props.searchable || !q) return normalizedOptions.value;
@@ -79,7 +85,6 @@ const filteredOptions = computed(() => {
 
 const toggle = async () => {
   if (props.disabled) return;
-
   isOpen.value = !isOpen.value;
 
   if (isOpen.value) {
@@ -99,7 +104,6 @@ const close = () => {
 
 const selectOption = (value) => {
   if (props.disabled) return;
-
   if (value !== props.modelValue) {
     emit("update:modelValue", value);
     emit("change", value);
@@ -124,20 +128,27 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="module-dropdown" ref="root">
+  <div
+    v-if="mode === 'edit'"
+    :class="[
+      'record-layout__sections__item__layout__field__content',
+      'editing-mode',
+      { error: hasError },
+    ]"
+    class="module-dropdown"
+    ref="root"
+  >
     <div
       class="module-dropdown__button"
       :class="{
         'is-open': isOpen,
-        'is-invalid': error,
         'is-disabled': disabled,
       }"
       @click="toggle"
     >
-      <span class="module-dropdown__selected" v-if="selectedOption.label">
-        {{ $t(selectedOption.label) }}
+      <span class="module-dropdown__selected">
+        {{ selectedLabel }}
       </span>
-      <span class="module-dropdown__selected" v-else> --- </span>
 
       <span class="module-dropdown__icon">
         <i
@@ -155,14 +166,15 @@ onBeforeUnmount(() => {
         role="listbox"
         @click.stop
       >
-        <!-- Search -->
         <div v-if="searchable" class="module-dropdown_search">
           <input
             ref="searchInput"
             v-model="search"
             type="text"
             class="module-dropdown_search_input"
-            :placeholder="t('settings.search_in_drop_down')"
+            :placeholder="
+              searchPlaceholder || t('settings.search_in_drop_down')
+            "
             @keydown.stop
           />
         </div>
@@ -170,27 +182,27 @@ onBeforeUnmount(() => {
         <ul class="module-dropdown_list">
           <li
             class="module-dropdown_option"
-            :class="{ 'is-active': modelValue === '---' }"
-            @click="selectOption('---')"
+            :class="{ 'is-active': modelValue === null }"
+            @click="selectOption(null)"
           >
             <div class="module-dropdown_option_label">---</div>
           </li>
+
           <li
             v-for="option in filteredOptions"
             :key="option.value"
             class="module-dropdown_option"
             :class="{ 'is-active': option.value === modelValue }"
-            role="option"
             @click="selectOption(option.value)"
           >
             <div class="module-dropdown_option_label">
-              {{ $t(option.label) }}
+              {{ t(option.label) }}
             </div>
             <div
               v-if="option.description"
               class="module-dropdown_option_description"
             >
-              {{ $t(option.description) }}
+              {{ t(option.description) }}
             </div>
           </li>
 
@@ -198,14 +210,57 @@ onBeforeUnmount(() => {
             v-if="filteredOptions.length === 0"
             class="module-dropdown_no_results"
           >
-            {{ $t("settings.dropdown_no_results") }}
+            {{ t("settings.dropdown_no_results") }}
           </li>
         </ul>
       </div>
     </transition>
+  </div>
 
-    <div v-if="error" class="invalid-feedback d-block mt-1">
-      {{ error }}
-    </div>
+  <div
+    v-else-if="mode === 'detail'"
+    class="record-layout__sections__item__layout__field__content"
+  >
+    <span class="field-display">
+      <template v-if="selectedOption">
+        {{ selectedLabel }}
+      </template>
+      <span v-else class="field-display__empty">---</span>
+    </span>
+  </div>
+
+  <div v-else-if="mode === 'table'" class="field-table" :title="selectedLabel">
+    {{ selectedLabel }}
   </div>
 </template>
+
+<style lang="scss" scoped>
+/* Keeping your requested styles and classes exactly as they were */
+.field-display {
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: #111827;
+
+  &__empty {
+    color: #9ca3af;
+    font-style: italic;
+  }
+}
+
+.field-table {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Added transition for the 'dropdown-fade' name used in template */
+.dropdown-fade-enter-active,
+.dropdown-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.dropdown-fade-enter-from,
+.dropdown-fade-leave-to {
+  opacity: 0;
+}
+</style>

@@ -8,7 +8,7 @@ return array(
       0 =>
       array(
         'name' => 'name',
-        'type' => 'textfield',
+        'type' => 'text',
         'label' => 'modules.defaults.name',
         'sortable' => true,
       ),
@@ -38,7 +38,7 @@ return array(
       array(
         'key' => 'invoices_status',
         'name' => 'status',
-        'type' => 'dropdown',
+        'type' => 'select',
         'label' => 'modules.invoices.fields.status',
         'readonly' => false,
         'required' => false,
@@ -73,7 +73,7 @@ return array(
           0 =>
           array(
             'name' => 'name',
-            'type' => 'textfield',
+            'type' => 'text',
             'label' => 'modules.defaults.name',
             'readonly' => false,
             'required' => true,
@@ -90,7 +90,7 @@ return array(
           2 =>
           array(
             'name' => 'status',
-            'type' => 'dropdown',
+            'type' => 'select',
             'label' => 'modules.invoices.fields.status',
             'readonly' => false,
             'required' => false,
@@ -129,7 +129,7 @@ return array(
           3 =>
           array(
             'name' => 'currency',
-            'type' => 'textfield',
+            'type' => 'text',
             'label' => 'modules.invoices.fields.currency',
             'readonly' => false,
             'required' => true,
@@ -218,13 +218,13 @@ return array(
               0 =>
               array(
                 'name' => 'name',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.accounts.fields.name',
               ),
               1 =>
               array(
                 'name' => 'phone',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.accounts.fields.phone',
               ),
               2 =>
@@ -236,7 +236,7 @@ return array(
               3 =>
               array(
                 'name' => 'website',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.accounts.fields.website',
               ),
             ),
@@ -331,7 +331,7 @@ return array(
                   'id' => '80388c1c-c48a-4eb2-bd32-9ca5e9865a52',
                   'key' => 'accounts_city',
                   'name' => 'city',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.accounts.fields.city',
                   'readonly' => false,
                   'required' => false,
@@ -344,7 +344,7 @@ return array(
                   'id' => '92ddbac5-d8f5-4542-858c-40ebee57240e',
                   'key' => 'accounts_phone',
                   'name' => 'phone',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.accounts.fields.phone',
                   'readonly' => false,
                   'required' => false,
@@ -357,7 +357,7 @@ return array(
                   'id' => '9444e745-7130-4157-a14e-d7e8121c62e6',
                   'key' => 'accounts_website',
                   'name' => 'website',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.accounts.fields.website',
                   'readonly' => false,
                   'required' => false,
@@ -370,7 +370,7 @@ return array(
                   'id' => 'a749709c-20eb-4673-9885-7155586273c4',
                   'key' => 'accounts_country',
                   'name' => 'country',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.accounts.fields.country',
                   'readonly' => false,
                   'required' => false,
@@ -383,7 +383,7 @@ return array(
                   'id' => 'becc86c4-914e-4f76-94f2-0bf36acd1cd5',
                   'key' => 'accounts_name',
                   'name' => 'name',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.accounts.fields.name',
                   'readonly' => false,
                   'required' => true,
@@ -422,7 +422,7 @@ return array(
               0 =>
               array(
                 'name' => 'order_number',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.orders.fields.order_number',
               ),
               1 =>
@@ -434,7 +434,7 @@ return array(
               2 =>
               array(
                 'name' => 'status',
-                'type' => 'dropdown',
+                'type' => 'select',
                 'label' => 'modules.orders.fields.status',
               ),
               3 =>
@@ -489,7 +489,7 @@ return array(
                   'id' => '1d9fae8b-59a2-4636-b913-6c6830b11e33',
                   'key' => 'orders_currency',
                   'name' => 'currency',
-                  'type' => 'dropdown',
+                  'type' => 'select',
                   'label' => 'modules.orders.fields.currency',
                   'readonly' => false,
                   'required' => false,
@@ -541,7 +541,7 @@ return array(
                   'id' => '762b2a05-4289-4b54-9df8-7744d49860d2',
                   'key' => 'orders_order_number',
                   'name' => 'order_number',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.orders.fields.order_number',
                   'readonly' => false,
                   'required' => true,
@@ -619,7 +619,7 @@ return array(
                   'id' => 'f8c1a685-3a75-42aa-8404-05d5025389c5',
                   'key' => 'orders_status',
                   'name' => 'status',
-                  'type' => 'dropdown',
+                  'type' => 'select',
                   'label' => 'modules.orders.fields.status',
                   'readonly' => false,
                   'required' => false,
@@ -651,19 +651,19 @@ return array(
               0 =>
               array(
                 'name' => 'name',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.contacts.fields.name',
               ),
               1 =>
               array(
                 'name' => 'position',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.contacts.fields.position',
               ),
               2 =>
               array(
                 'name' => 'phone',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.contacts.fields.phone',
               ),
               3 =>
@@ -712,7 +712,7 @@ return array(
                   'id' => '2e94cba5-b0dd-4959-b4a9-3a3863d4c915',
                   'key' => 'contacts_phone',
                   'name' => 'phone',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.contacts.fields.phone',
                   'readonly' => false,
                   'required' => false,
@@ -777,7 +777,7 @@ return array(
                   'id' => '8e75d601-1663-4e88-a2cf-8fed8cdcb7e6',
                   'key' => 'contacts_first_name',
                   'name' => 'first_name',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.contacts.fields.first_name',
                   'readonly' => false,
                   'required' => false,
@@ -790,7 +790,7 @@ return array(
                   'id' => 'a581c759-819d-4ade-97c0-65fa1537b078',
                   'key' => 'contacts_name',
                   'name' => 'name',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.contacts.fields.name',
                   'readonly' => false,
                   'required' => true,
@@ -803,7 +803,7 @@ return array(
                   'id' => 'ab103add-6343-4bb5-904c-04ec3447b202',
                   'key' => 'contacts_position',
                   'name' => 'position',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.contacts.fields.position',
                   'readonly' => false,
                   'required' => false,
@@ -829,7 +829,7 @@ return array(
                   'id' => 'cbcaa446-3d7e-4111-8e15-d8f3fcaa90e9',
                   'key' => 'contacts_last_name',
                   'name' => 'last_name',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.contacts.fields.last_name',
                   'readonly' => false,
                   'required' => false,
@@ -855,7 +855,7 @@ return array(
               0 =>
               array(
                 'name' => 'name',
-                'type' => 'textfield',
+                'type' => 'text',
                 'label' => 'modules.quotes.fields.name',
               ),
               1 =>
@@ -873,7 +873,7 @@ return array(
               3 =>
               array(
                 'name' => 'status',
-                'type' => 'dropdown',
+                'type' => 'select',
                 'label' => 'modules.quotes.fields.status',
               ),
               4 =>
@@ -922,7 +922,7 @@ return array(
                   'id' => '10aa8ce0-49f7-4b49-b930-1fe0d05a5db9',
                   'key' => 'quotes_currency',
                   'name' => 'currency',
-                  'type' => 'dropdown',
+                  'type' => 'select',
                   'label' => 'modules.quotes.fields.currency',
                   'readonly' => false,
                   'required' => false,
@@ -948,7 +948,7 @@ return array(
                   'id' => '6779d2a5-9e07-4115-afd0-e7a2ee4d33d9',
                   'key' => 'quotes_name',
                   'name' => 'name',
-                  'type' => 'textfield',
+                  'type' => 'text',
                   'label' => 'modules.quotes.fields.name',
                   'readonly' => false,
                   'required' => true,
@@ -1065,7 +1065,7 @@ return array(
                   'id' => 'd0a97b84-0749-474f-85d2-dece78660878',
                   'key' => 'quotes_status',
                   'name' => 'status',
-                  'type' => 'dropdown',
+                  'type' => 'select',
                   'label' => 'modules.quotes.fields.status',
                   'readonly' => false,
                   'required' => false,
@@ -1105,7 +1105,7 @@ return array(
       0 =>
       array(
         'name' => 'name',
-        'type' => 'textfield',
+        'type' => 'text',
         'label' => 'modules.defaults.name',
         'sortable' => true,
       ),
@@ -1146,7 +1146,7 @@ return array(
       array(
         'key' => 'invoices_status',
         'name' => 'status',
-        'type' => 'dropdown',
+        'type' => 'select',
         'label' => 'modules.invoices.fields.status',
         'readonly' => false,
         'required' => false,

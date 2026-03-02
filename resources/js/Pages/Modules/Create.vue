@@ -10,7 +10,7 @@ import {
 } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
-import ModuleDropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
+import ModuleDropdownField from "../Components/FiledTypes/Select.vue";
 import DateTime from "../Components/FiledTypes/DateTime.vue";
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
@@ -220,7 +220,7 @@ const isDate = (type) => {
 };
 
 const isDropdown = (type) => {
-  return type?.toLowerCase() === "dropdown" || false;
+  return type?.toLowerCase() === "select" || false;
 };
 
 const isLongText = (type) => {

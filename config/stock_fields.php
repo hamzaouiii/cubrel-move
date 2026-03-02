@@ -5,12 +5,12 @@ return [
   'accounts' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'website' => [
       'name' => 'website',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'email' => [
       'name' => 'email',
@@ -18,7 +18,7 @@ return [
     ],
     'phone' => [
       'name' => 'phone',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'billing_address' => [
       'name' => 'billing_address',
@@ -30,11 +30,11 @@ return [
     ],
     'city' => [
       'name' => 'city',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'country' => [
       'name' => 'country',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'description' => [
       'name' => 'description',
@@ -53,16 +53,16 @@ return [
   'contacts' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'first_name' => [
       'name' => 'first_name',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'last_name' => [
       'name' => 'last_name',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'email' => [
       'name' => 'email',
@@ -70,11 +70,11 @@ return [
     ],
     'phone' => [
       'name' => 'phone',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'position' => [
       'name' => 'position',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'notes' => [
       'name' => 'notes',
@@ -97,16 +97,16 @@ return [
   'leads' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'first_name' => [
       'name' => 'first_name',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'last_name' => [
       'name' => 'last_name',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'email' => [
       'name' => 'email',
@@ -114,11 +114,11 @@ return [
     ],
     'phone' => [
       'name' => 'phone',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'company' => [
       'name' => 'company',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'street' => [
       'name' => 'street',
@@ -126,11 +126,11 @@ return [
     ],
     'city' => [
       'name' => 'city',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'zip' => [
       'name' => 'zip',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'description' => [
       'name' => 'description',
@@ -149,7 +149,7 @@ return [
   'invoices' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'number' => [
@@ -158,7 +158,7 @@ return [
     ],
     'status' => [
       'name' => 'status',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'issue_date' => [
       'name' => 'issue_date',
@@ -170,7 +170,7 @@ return [
     ],
     'currency' => [
       'name' => 'currency',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'subtotal' => [
       'name' => 'subtotal',
@@ -205,7 +205,7 @@ return [
   'quotes' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'number' => [
@@ -214,7 +214,7 @@ return [
     ],
     'status' => [
       'name' => 'status',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'valid_until' => [
       'name' => 'valid_until',
@@ -222,7 +222,7 @@ return [
     ],
     'currency' => [
       'name' => 'currency',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'subtotal' => [
       'name' => 'subtotal',
@@ -257,12 +257,12 @@ return [
   'cases' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'subject' => [
       'name' => 'subject',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'description' => [
       'name' => 'description',
@@ -270,11 +270,11 @@ return [
     ],
     'status' => [
       'name' => 'status',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'priority' => [
       'name' => 'priority',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'opened_at' => [
       'name' => 'opened_at',
@@ -301,19 +301,19 @@ return [
     ],
     'subject' => [
       'name' => 'subject',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'mailable_class' => [
       'name' => 'mailable_class',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'related_id' => [
       'name' => 'related_id',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'status' => [
       'name' => 'status',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'description' => [
       'name' => 'description',
@@ -332,7 +332,7 @@ return [
   'inquiries' => [
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'message' => [
@@ -345,15 +345,15 @@ return [
     ],
     'phone' => [
       'name' => 'phone',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'status' => [
       'name' => 'status',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
     'ip' => [
       'name' => 'ip',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
     'user_agent' => [
       'name' => 'user_agent',
@@ -377,19 +377,19 @@ return [
 
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
 
 
     'amount' => [
       'name' => 'amount',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
 
     'currency' => [
       'name' => 'currency',
-      'type' => 'dropdown',
+      'type' => 'select',
 
     ],
 
@@ -400,7 +400,7 @@ return [
 
     'sales_stage' => [
       'name' => 'sales_stage',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
 
     'probability' => [
@@ -415,7 +415,7 @@ return [
 
     'type' => [
       'name' => 'type',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
 
 
@@ -435,13 +435,13 @@ return [
 
     'name' => [
       'name' => 'name',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
 
     'sku' => [
       'name' => 'sku',
-      'type' => 'textfield',
+      'type' => 'text',
     ],
 
     'description' => [
@@ -451,7 +451,7 @@ return [
 
     'category' => [
       'name' => 'category',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
 
     'price' => [
@@ -461,7 +461,7 @@ return [
 
     'currency' => [
       'name' => 'currency',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
 
     'is_active' => [
@@ -485,7 +485,7 @@ return [
 
     'order_number' => [
       'name' => 'order_number',
-      'type' => 'textfield',
+      'type' => 'text',
       'required' => true,
     ],
     'description' => [
@@ -500,12 +500,12 @@ return [
 
     'currency' => [
       'name' => 'currency',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
 
     'status' => [
       'name' => 'status',
-      'type' => 'dropdown',
+      'type' => 'select',
     ],
 
     'order_date' => [

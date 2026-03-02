@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { useForm } from "@inertiajs/vue3";
-import DropdownField from "@/Pages/Components/FiledTypes/ModuleDropdownField.vue";
+import DropdownField from "@/Pages/Components/FiledTypes/Select.vue";
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
   meta: { type: Object, default: () => ({}) },

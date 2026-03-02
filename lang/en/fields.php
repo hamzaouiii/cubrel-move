@@ -15,14 +15,16 @@ return [
   'key_is_taken_error'    => 'A field with the same system name already exists',
   'types' => [
     'longtext' => 'Long text',
-    'textfield' => 'Text',
+    'text' => 'Text',
     'datetime' => 'Date & time',
     'email' => 'Email',
-    'dropdown' => 'Dropdown',
+    'select' => 'Select',
     'date' => 'Date',
     'number' => 'Number',
     'relationship' => 'Relationship',
-    'checkbox' => 'Checkbox'
+    'checkbox' => 'Checkbox',
+    'url' => 'URL',
+    'phone' => 'Phone'
   ],
   'metadata' => [
     'name' => 'System Name',
