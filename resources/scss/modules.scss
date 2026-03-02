@@ -542,16 +542,11 @@
   margin: 1rem;
 
   &__scroll {
+    height: 100%;
+
     overflow: auto;
     scrollbar-width: thin; // Firefox
     scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-    @media (max-width: 1250px) {
-      // padding: 0 20px;
-    }
-
-    @media (max-width: 750px) {
-      // margin: 10px;
-    }
 
     &::-webkit-scrollbar {
       height: 10px;
@@ -842,6 +837,7 @@
 
     &__item {
       display: flex;
+      min-height: fit-content;
       flex-direction: column;
       padding: 1.5rem;
       margin: 1.5rem 0;
@@ -945,7 +941,7 @@
           .uneditable-field {
             background-color: $bg-light;
             border: 1px solid transparent;
-            color: darken($text-muted, 10%);
+            color: $text-muted;
             cursor: not-allowed;
 
             span {

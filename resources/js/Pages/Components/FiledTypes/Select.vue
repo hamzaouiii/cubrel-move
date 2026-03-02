@@ -1,10 +1,21 @@
 <script setup>
+/**
+ *
+ * for me to remember how to use without having to read the whole component everytime
+ * Send an array of options like this :options=array[] and bind it to via v-model
+ * options look like this:
+ * 'value'
+ * 'label'       => "{$city} (UTC{$offset})",
+ * 'description' => $tz . ($abbr ? " • {$abbr}" : ''),
+ *
+ */
 import {
   computed,
   ref,
   onMounted,
   onBeforeUnmount,
   nextTick,
+  watch,
   getCurrentInstance,
 } from "vue";
 
@@ -13,13 +24,18 @@ const t = proxy.$t;
 
 const props = defineProps({
   modelValue: [String, Number, Boolean, Object, null],
-  options: {
-    type: Array,
-    required: true,
-  },
-  label: {
+  dropdown_list: Object,
+  mode: {
     type: String,
-    default: "",
+    default: "edit",
+  },
+  hasError: {
+    type: Boolean,
+    default: false,
+  },
+  readOnly: {
+    type: Boolean,
+    default: false,
   },
   disabled: {
     type: Boolean,
@@ -33,43 +49,30 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  mode: {
-    type: String,
-    default: "edit", // edit | detail | table
-  },
-  hasError: {
-    type: Boolean,
-    default: false,
-  },
 });
-const emit = defineEmits(["update:modelValue", "change"]);
 
+const emit = defineEmits(["update:modelValue", "change"]);
+const options = computed(() => {
+  return props?.dropdown_list?.values || [];
+});
 const isOpen = ref(false);
 const root = ref(null);
+
 const search = ref("");
 const searchInput = ref(null);
 
-// Ensure options are always an array
 const normalizedOptions = computed(() => {
-  if (Array.isArray(props.options)) return props.options;
-  if (props.options && typeof props.options === "object") {
-    return Object.values(props.options).flat();
+  if (Array.isArray(options.value)) return options.value;
+  if (options.value && typeof options.value === "object") {
+    return Object.values(options.value).flat();
   }
   return [];
 });
 
-const selectedOption = computed(() => {
-  return (
-    normalizedOptions.value.find((o) => o.value === props.modelValue) || null
-  );
-});
-
-const selectedLabel = computed(() => {
-  if (!selectedOption.value) return "---";
-  // If the label is a translation key, t() handles it.
-  // If it's the pre-formatted string "City (UTC+1)", t() usually returns the string as-is.
-  return t(selectedOption.value.label);
-});
+const selectedOption = computed(
+  () =>
+    normalizedOptions.value.find((o) => o.value === props.modelValue) ?? null,
+);
 
 const filteredOptions = computed(() => {
   const q = search.value.trim().toLowerCase();
@@ -85,6 +88,7 @@ const filteredOptions = computed(() => {
 
 const toggle = async () => {
   if (props.disabled) return;
+
   isOpen.value = !isOpen.value;
 
   if (isOpen.value) {
@@ -104,6 +108,7 @@ const close = () => {
 
 const selectOption = (value) => {
   if (props.disabled) return;
+
   if (value !== props.modelValue) {
     emit("update:modelValue", value);
     emit("change", value);
@@ -125,142 +130,107 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+const showError = ref(false);
+
+watch(
+  () => props.hasError,
+  (val) => {
+    showError.value = val;
+  },
+  { immediate: true },
+);
+
+const clearErrors = () => {
+  showError.value = false;
+};
 </script>
 
 <template>
-  <div
-    v-if="mode === 'edit'"
-    :class="[
-      'record-layout__sections__item__layout__field__content',
-      'editing-mode',
-      { error: hasError },
-    ]"
-    class="module-dropdown"
-    ref="root"
-  >
-    <div
-      class="module-dropdown__button"
-      :class="{
-        'is-open': isOpen,
-        'is-disabled': disabled,
-      }"
-      @click="toggle"
-    >
-      <span class="module-dropdown__selected">
-        {{ selectedLabel }}
-      </span>
-
-      <span class="module-dropdown__icon">
-        <i
-          :class="
-            isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
-          "
-        ></i>
-      </span>
-    </div>
-
-    <transition name="dropdown-fade">
+  <div v-if="mode === 'edit'" class="">
+    <div class="select-field" ref="root">
       <div
-        v-if="isOpen"
-        class="module-dropdown_menu"
-        role="listbox"
-        @click.stop
+        class="select-field__control"
+        :class="{
+          'is-open': isOpen,
+          'is-invalid': showError,
+          'is-disabled': disabled,
+        }"
+        @click="toggle"
       >
-        <div v-if="searchable" class="module-dropdown_search">
-          <input
-            ref="searchInput"
-            v-model="search"
-            type="text"
-            class="module-dropdown_search_input"
-            :placeholder="
-              searchPlaceholder || t('settings.search_in_drop_down')
-            "
-            @keydown.stop
-          />
-        </div>
-
-        <ul class="module-dropdown_list">
-          <li
-            class="module-dropdown_option"
-            :class="{ 'is-active': modelValue === null }"
-            @click="selectOption(null)"
-          >
-            <div class="module-dropdown_option_label">---</div>
-          </li>
-
-          <li
-            v-for="option in filteredOptions"
-            :key="option.value"
-            class="module-dropdown_option"
-            :class="{ 'is-active': option.value === modelValue }"
-            @click="selectOption(option.value)"
-          >
-            <div class="module-dropdown_option_label">
-              {{ t(option.label) }}
-            </div>
-            <div
-              v-if="option.description"
-              class="module-dropdown_option_description"
-            >
-              {{ t(option.description) }}
-            </div>
-          </li>
-
-          <li
-            v-if="filteredOptions.length === 0"
-            class="module-dropdown_no_results"
-          >
-            {{ t("settings.dropdown_no_results") }}
-          </li>
-        </ul>
+        <span class="select-field__selected">
+          {{ $t(selectedOption?.label) ?? $t("settings.select") }}
+        </span>
+        <span>
+          <i
+            v-if="showError"
+            class="error-icon fa-solid fa-circle-exclamation"
+          ></i>
+          <i
+            class="select-field__chevron fa-solid"
+            :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"
+          ></i>
+        </span>
       </div>
-    </transition>
-  </div>
 
-  <div
-    v-else-if="mode === 'detail'"
-    class="record-layout__sections__item__layout__field__content"
-  >
-    <span class="field-display">
-      <template v-if="selectedOption">
-        {{ selectedLabel }}
-      </template>
-      <span v-else class="field-display__empty">---</span>
+      <transition name="dropdown-fade">
+        <div
+          v-if="isOpen"
+          class="select-field__menu"
+          role="listbox"
+          @click.stop
+        >
+          <div v-if="searchable" class="select-field__search-wrapper">
+            <input
+              ref="searchInput"
+              v-model="search"
+              type="text"
+              class="select-field__search-input"
+              :placeholder="$t('settings.search_in_drop_down')"
+              @keydown.stop
+            />
+          </div>
+
+          <ul class="select-field__list">
+            <li
+              v-for="option in filteredOptions"
+              :key="option.value"
+              class="select-field__option"
+              :class="{ 'is-active': option.value === modelValue }"
+              role="option"
+              @click="selectOption(option.value)"
+            >
+              <div class="select-field__option-label">
+                {{ $t(option.label) }}
+              </div>
+              <div
+                v-if="option.description"
+                class="select-field__option-description"
+              >
+                {{ option.description }}
+              </div>
+            </li>
+
+            <li
+              v-if="filteredOptions.length === 0"
+              class="select-field__no-results"
+            >
+              {{ $t("settings.dropdown_no_results") }}
+            </li>
+          </ul>
+        </div>
+      </transition>
+    </div>
+  </div>
+  <div v-else-if="mode === 'detail'">
+    <span
+      :class="[
+        'record-layout__sections__item__layout__field__content',
+        { 'view-uneditable-field': readOnly },
+      ]"
+    >
+      {{ $t(selectedOption?.label) }}
     </span>
   </div>
-
-  <div v-else-if="mode === 'table'" class="field-table" :title="selectedLabel">
-    {{ selectedLabel }}
-  </div>
 </template>
-
-<style lang="scss" scoped>
-/* Keeping your requested styles and classes exactly as they were */
-.field-display {
-  padding: 6px 0;
-  font-size: 0.95rem;
-  color: #111827;
-
-  &__empty {
-    color: #9ca3af;
-    font-style: italic;
-  }
-}
-
-.field-table {
-  font-size: 0.85rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Added transition for the 'dropdown-fade' name used in template */
-.dropdown-fade-enter-active,
-.dropdown-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.dropdown-fade-enter-from,
-.dropdown-fade-leave-to {
-  opacity: 0;
-}
-</style>
+<style lang="scss" scoped></style>

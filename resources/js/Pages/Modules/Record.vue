@@ -14,6 +14,7 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
@@ -29,16 +30,28 @@ const props = defineProps({
   relatedLayout: Object,
   fields: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+const appSettings = usePage().props.appSettings;
 
+// State
+const form = useForm({ ...props.record });
+const isEditing = ref(false);
+const validationErrors = ref([]);
+const showActionDropDown = ref(false);
+const actionDropDownref = ref(null);
+const currentTab = ref("overview");
+const overlayOpen = ref(false);
+const activePanel = ref(null);
+const activeParentRecord = ref(null);
+
+// Computed
 const avatar = computed(() => {
   const name = props.record?.name?.trim();
   if (!name) return "";
 
-  // Remove numbers
   const cleaned = name.replace(/\d+/g, "");
-
   const words = cleaned.split(/\s+/).filter(Boolean);
 
   if (words.length >= 2) {
@@ -47,29 +60,10 @@ const avatar = computed(() => {
 
   return (words[0]?.slice(0, 2) ?? "").toUpperCase();
 });
-// function debugStructure(obj) {
-//   const raw = JSON.parse(JSON.stringify(obj));
-//   console.log(JSON.stringify(raw, null, 2));
-// }
-// debugStructure(props.relatedLayout);
-const isRelatedLayoutEmpty = computed(() => {
-  return props.relatedLayout?.columns?.every(
-    (column) => Array.isArray(column) && column.length === 0,
-  );
-});
-
-const form = useForm({ ...props.record });
-const isEditing = ref(false);
-const validationErrors = ref([]);
-const showActionDropDown = ref(false);
-const actionDropDownref = ref(null);
-const appSettings = usePage().props.appSettings;
 
 const mode = computed(() => {
   return isEditing.value === true ? "edit" : "detail";
 });
-
-const currentTab = ref("overview");
 
 const isDirty = computed(() => form.isDirty);
 
@@ -77,6 +71,34 @@ const hasError = computed(() => (field) => {
   return validationErrors.value.some((item) => item.field === field.label);
 });
 
+const emptyFields = computed(() => {
+  return Object.entries(form)
+    .filter(([key, value]) => {
+      return (
+        value === "" ||
+        value === "---" ||
+        value === null ||
+        value === undefined ||
+        (Array.isArray(value) && value.length === 0)
+      );
+    })
+    .map(([key]) => key);
+});
+
+const requiredEmptyFields = computed(() => {
+  const requiredFields = getRequiredFields();
+  return requiredFields.filter((field) =>
+    emptyFields.value.includes(field.name),
+  );
+});
+
+const module_color = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : props.module.color;
+});
+
+// Methods
 const getFieldType = (field) => {
   const sections = props.overviewLayout?.sections;
   for (const section of sections) {
@@ -87,44 +109,6 @@ const getFieldType = (field) => {
   }
   return "no_type";
 };
-
-const toggleActionDropDown = () => {
-  showActionDropDown.value = !showActionDropDown.value;
-};
-
-const handleClickOutsideActionDropDown = (event) => {
-  if (
-    actionDropDownref.value &&
-    !actionDropDownref.value.contains(event.target)
-  ) {
-    showActionDropDown.value = false;
-  }
-};
-
-const enableEditing = () => {
-  isEditing.value = true;
-};
-
-const getChangedData = (original, form) => {
-  const changed = {};
-  const edited = form.data();
-  for (const key of Object.keys(edited)) {
-    if (original[key] !== edited[key]) {
-      if (getFieldType(key) === "datetime" || getFieldType(key) === "date") {
-        changed[key] = normalizeDateTime(edited[key]);
-      } else {
-        changed[key] = edited[key];
-      }
-    }
-  }
-
-  return changed;
-};
-
-function normalizeDateTime(value) {
-  const d = new Date(value);
-  return d.toISOString().slice(0, 19).replace("T", " ");
-}
 
 const getRequiredFields = () => {
   const sections = props.overviewLayout?.sections;
@@ -147,85 +131,67 @@ const getRequiredFieldsFromPayload = (payload) => {
   );
 };
 
-const emptyFields = computed(() => {
-  return Object.entries(form)
-    .filter(([key, value]) => {
-      return (
-        value === "" ||
-        value === "---" ||
-        value === null ||
-        value === undefined ||
-        (Array.isArray(value) && value.length === 0)
-      );
-    })
-    .map(([key]) => key);
-});
+const getChangedData = (original, form) => {
+  const changed = {};
+  const edited = form.data();
+  for (const key of Object.keys(edited)) {
+    if (original[key] !== edited[key]) {
+      if (getFieldType(key) === "datetime" || getFieldType(key) === "date") {
+        changed[key] = normalizeDateTime(edited[key]);
+      } else {
+        changed[key] = edited[key];
+      }
+    }
+  }
+  return changed;
+};
 
-const requiredEmptyFields = computed(() => {
-  const requiredFields = getRequiredFields();
+const normalizeDateTime = (value) => {
+  const d = new Date(value);
+  return d.toISOString().slice(0, 19).replace("T", " ");
+};
 
-  return requiredFields.filter((field) =>
-    emptyFields.value.includes(field.name),
-  );
-});
-
-// This ended up being way too complex due to several data manupulations for different data types, I am sure there is a better way to achieve this
 const validateRequiredFields = (payload) => {
-  // upon saving if a field is required and empty then immediately add to validationErrors[] - no need to check anything else. This only validates empty fields that should not be empty. Meaning a record cannot be edited or saved without having to solve this issue. In reality this should never happen since same validation happens upon creating new records.
-  requiredEmptyFields.value.map((item) => {
-    validationErrors.value.push({
+  const requiredErrors = [];
+
+  requiredEmptyFields.value.forEach((item) => {
+    requiredErrors.push({
       field: item.label,
       type: "required",
     });
   });
 
-  // Now we need to check the payload, if a field had a value before and is now empty, we need to stop the saving proccess by adding to validationErrors[]
   const fields = getRequiredFieldsFromPayload(payload);
-  fields.map((item) => {
+  fields.forEach((item) => {
     if (!payload[item.name]) {
-      validationErrors.value.push({
+      requiredErrors.push({
         field: item.label,
         type: "required",
       });
     }
   });
-  if (validationErrors.value.length > 1) {
+
+  const unique = Array.from(
+    new Map(requiredErrors.map((e) => [`${e.field}-${e.type}`, e])).values(),
+  );
+
+  validationErrors.value = unique;
+  if (unique.length > 1) {
     clearAllAlerts();
     error(t("fields.validation.is_required_several"));
-  } else if (validationErrors.value.length === 1) {
+  } else if (unique.length === 1) {
     clearAllAlerts();
-    error(
-      t(validationErrors.value[0].field) +
-        " " +
-        t("fields.validation.is_required"),
-    );
+    error(t(unique[0].field) + " " + t("fields.validation.is_required"));
   }
 };
 
-const clearAllValidartionErrors = () => {
+const clearAllValidationErrors = () => {
   clearAllAlerts();
   validationErrors.value = [];
 };
 
-const removeValidationErrorText = (field) => {
-  if (form[field]?.length >= 3 && hasError.value(field)) {
-    validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field.label,
-    );
-  }
-};
-
-const removeValidationError = (field) => {
-  if (hasError.value(field)) {
-    validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field.label,
-    );
-  }
-};
-
 const saveRecord = () => {
-  clearAllValidartionErrors();
-
+  clearAllValidationErrors();
   info(t("modules.actions.updating"));
 
   const payload = getChangedData(props.record, form);
@@ -233,16 +199,18 @@ const saveRecord = () => {
     isEditing.value = false;
     return;
   }
+
   validateRequiredFields(payload);
   if (validationErrors.value.length > 0) {
     return;
   }
+
   const moduleSlug = props.module.slug ?? props.module;
   const url = `/${moduleSlug}/${props.record.id}`;
+
   form
     .transform((data) => {
-      const payload = { ...data };
-      return payload;
+      return { ...data };
     })
     .put(url, {
       onSuccess: () => {
@@ -282,7 +250,30 @@ const deleteRecord = async () => {
   });
 };
 
-function handleKeydown(e) {
+const enableEditing = () => {
+  isEditing.value = true;
+};
+
+const cancelEditing = () => {
+  form.reset();
+  isEditing.value = false;
+  clearAllValidationErrors();
+};
+
+const toggleActionDropDown = () => {
+  showActionDropDown.value = !showActionDropDown.value;
+};
+
+const handleClickOutsideActionDropDown = (event) => {
+  if (
+    actionDropDownref.value &&
+    !actionDropDownref.value.contains(event.target)
+  ) {
+    showActionDropDown.value = false;
+  }
+};
+
+const handleKeydown = (e) => {
   if (e.ctrlKey && e.key === "s") {
     e.preventDefault();
     if (isEditing.value) {
@@ -298,74 +289,20 @@ function handleKeydown(e) {
   if (e.key === "Escape") {
     cancelEditing();
   }
-}
-
-const cancelEditing = () => {
-  form.reset();
-  isEditing.value = false;
-  clearAllValidartionErrors();
-};
-
-const displayValueFor = (f) => {
-  const type = f.type.toLowerCase();
-  const val = props.record[f.name];
-  if (val == null || val === "") return "";
-  if (type === "datetime") {
-    return formatDateTime(val, appSettings);
-  }
-  if (type === "date") {
-    return formatDate(val, appSettings);
-  }
-
-  if (type === "longtext") {
-    if (val.length > 62) {
-      return val.substring(0, 64) + "...";
-    }
-  }
-  if (type === "select") {
-    return getDropDownListLabel(f);
-  }
-
-  return val;
-};
-
-const getTextareaRows = (f) => {
-  if (form[f.name]) {
-    const val = form[f.name].split(" ").length;
-    return val / 8;
-  }
-  return 3;
-};
-
-const isDropDown = (f) => {
-  return f.type === "select";
 };
 
 const getField = (f) => {
   return props.fields.find((field) => field.name === f.name);
 };
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutsideActionDropDown);
-  window.addEventListener("keydown", handleKeydown);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutsideActionDropDown);
-  window.removeEventListener("keydown", handleKeydown);
-});
-useUnsavedChangesGuard({
-  getIsDirty: () => isDirty.value,
-});
+const getMode = (f) => {
+  if (f.readonly) return "detail";
+  return mode.value;
+};
 
 const switchTabs = (tab) => {
   currentTab.value = tab;
 };
-
-// for related overlay
-const overlayOpen = ref(false);
-const activePanel = ref(null);
-const activeParentRecord = ref(null);
 
 const openOverlay = (panel, selected) => {
   activePanel.value = panel;
@@ -376,7 +313,6 @@ const openOverlay = (panel, selected) => {
 const activeLayout = (panel) =>
   props.record?.related[panel?.name]?.linking_layout.columns || null;
 
-const expandPanelName = ref(null);
 const handleSaved = () => {
   overlayOpen.value = false;
   router.reload({
@@ -386,19 +322,26 @@ const handleSaved = () => {
   });
 };
 
-const module_color =
-  appSettings.use_individual_module_colors == "0"
-    ? appSettings.primary_color
-    : props.module.color;
-</script>
+// Lifecycle
+onMounted(() => {
+  document.addEventListener("click", handleClickOutsideActionDropDown);
+  window.addEventListener("keydown", handleKeydown);
+});
 
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutsideActionDropDown);
+  window.removeEventListener("keydown", handleKeydown);
+});
+
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
+</script>
 <template>
   <Head>
     <title>{{ record.name }} - {{ title }}</title>
   </Head>
-  <div class="mode">
-    {{ mode }}
-  </div>
+
   <div class="record-layout" :style="{ '--module-color': module_color }">
     <div class="record-layout__header">
       <div class="record-layout__header__details">
@@ -537,7 +480,7 @@ const module_color =
               <FieldRenderer
                 :field="getField(f)"
                 v-model="form[f.name]"
-                :mode="mode"
+                :mode="getMode(f)"
                 :read-only="f.readonly"
                 :module-color="module_color"
                 :has-error="hasError(f)"
@@ -570,16 +513,3 @@ const module_color =
     </div>
   </div>
 </template>
-<style scoped>
-.mode {
-  position: fixed;
-  border: 3px solid saddlebrown;
-  color: saddlebrown;
-  font-size: 2rem;
-  z-index: 99;
-  top: 10%;
-  right: 15%;
-  padding: 5px;
-  border-radius: 5px;
-}
-</style>

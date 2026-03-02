@@ -67,7 +67,7 @@ const value = computed({
 
   <!-- DETAILS MODE -->
   <div
-    v-else
+    v-else-if="mode === 'detail' || mode === 'table'"
     class="checkbox-display"
     :class="{ 'checkbox-display--active': value }"
     :style="{

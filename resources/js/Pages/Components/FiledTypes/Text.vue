@@ -4,17 +4,13 @@ import { computed, ref, watch } from "vue";
 const emit = defineEmits(["update:modelValue"]);
 
 const props = defineProps({
-  field: {
-    type: Object,
-    required: true,
-  },
   modelValue: {
     type: [String, Number, null],
     default: "",
   },
   mode: {
     type: String,
-    default: "edit", // edit | detail | table
+    default: "edit",
   },
   hasError: {
     type: Boolean,
@@ -49,8 +45,11 @@ const clearErrors = () => {
   <!-- EDIT MODE DONE -->
   <div v-if="mode === 'edit'">
     <span
-      class="record-layout__sections__item__layout__field__content editing-mode"
-      :class="{ error: showError }"
+      class="text-field text-field--edit"
+      :class="{
+        'text-field--error': showError,
+        'text-field--readonly': readOnly,
+      }"
     >
       <input v-model="localValue" type="text" @input="clearErrors()" />
       <span v-if="showError" class="error-icon-container">
@@ -60,13 +59,8 @@ const clearErrors = () => {
   </div>
 
   <!-- DETAIL MODE DONE-->
-  <div v-else-if="mode === 'detail'">
-    <span
-      :class="[
-        'record-layout__sections__item__layout__field__content',
-        { 'view-uneditable-field': readOnly },
-      ]"
-    >
+  <div v-else-if="mode === 'detail' || 'table'">
+    <span :class="['text-field', { 'text-field--readonly': readOnly }]">
       {{ modelValue }}
     </span>
   </div>
