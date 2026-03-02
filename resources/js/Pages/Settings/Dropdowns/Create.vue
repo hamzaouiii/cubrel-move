@@ -73,7 +73,11 @@ const addItem = () => {
   if (!rowIsDirty.value) {
     return;
   }
-  if (listItems.value.some((item) => item.value === newItem.value)) {
+  if (
+    listItems.value.some(
+      (item) => item.value === generatedSystemvalue(newItem.value.label),
+    )
+  ) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
@@ -85,6 +89,7 @@ const addItem = () => {
 
   newItem.value.value = "";
   newItem.value.label = "";
+  valueExistsError.value = false;
 };
 const deleteItem = (value) => {
   listItems.value = listItems.value.filter((i) => i.value != value);
@@ -214,6 +219,7 @@ useUnsavedChangesGuard({
               <input
                 type="text"
                 :value="generatedSystemvalue(newItem.label)"
+                :class="{ error: valueExistsError }"
                 readonly
                 disabled
               />

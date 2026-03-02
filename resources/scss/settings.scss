@@ -158,7 +158,6 @@
         box-shadow:
           0 6px 24px rgba(26, 29, 46, 0.1),
           0 2px 6px rgba(26, 29, 46, 0.05);
-        transform: translateY(-2px);
       }
 
       &__header {
@@ -1930,11 +1929,17 @@
   display: flex;
   width: 100vw;
   height: 100vh;
-  background-color: #636363b6;
   justify-content: center;
   align-items: center;
+  background: rgba(
+    15,
+    23,
+    42,
+    0.4
+  ); // Cooler, softer backdrop (Slate-900 at 40%)
+  backdrop-filter: blur(4px); // Modern glass effect for the background
+
   &__container {
-    background-color: rgb(227, 227, 227);
     width: 100%;
     margin-left: 180px;
     margin-right: 80px;
@@ -2183,4 +2188,63 @@
       }
     }
   }
+}
+
+/* Container for the dropdown and buttons */
+.dropdown-selector {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 4px;
+}
+
+/* Horizontal alignment for the action buttons */
+.dropdown-selector__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.dropdown-selector__actions button {
+  /* Reset default button styles */
+  background: transparent;
+  border: 1px solid #d1d5db; /* Light border to match dropdown */
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  color: #374151; /* Darker gray for icons */
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+}
+
+/* Hover effects */
+.dropdown-selector__actions button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+/* Disabled state - matches the opacity of Component B */
+.dropdown-selector__actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.settings input[type="text"],
+input[type="search"],
+textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.95rem;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+  color: #2d3748;
+  max-width: 450px;
 }
