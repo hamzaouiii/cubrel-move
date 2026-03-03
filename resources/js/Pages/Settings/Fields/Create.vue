@@ -142,7 +142,7 @@ const saveField = () => {
     form.key = generatedKey.value;
     form.name = generatedName.value;
   }
-  if ((form.type = "select")) {
+  if (form.type === "select") {
     form.dropdown_list = selected_dropdown_list.value;
   }
 

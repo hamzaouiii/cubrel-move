@@ -12,9 +12,7 @@ class TranslationService
     $resolver = function () {
 
       $dbLabels = Label::pluck('value', 'key')
-        ->map(fn($value) => json_decode($value, true))
         ->toArray();
-
       $groups = [
         'settings',
         'modules',
