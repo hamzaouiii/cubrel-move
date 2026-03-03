@@ -111,103 +111,24 @@ class Module extends Model
     }
   }
 
-  /**
-   * @return array
-   */
-  public function listLayout()
+  public function listLayout(): array
   {
-    /** @var Layout|null $layout */
-    $layout = $this->layouts()->where('type', 'list')->first();
-
-    if ($layout !== null) {
-      return $layout->definition;
-    }
-
-    // Module specific config fallback
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['list'])) {
-      return $moduleConfig['list'];
-    }
-
-    // Global fallback
-    $globalDefault = Layout::getDefaultLayout('list');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No list layout found for module {$this->name} and no global fallback available.");
+    return $this->resolveLayout('list');
   }
 
-  /**
-   * @return array
-   */
-  public function recordLayout()
+  public function recordLayout(): array
   {
-    /** @var Layout|null $recordLayout */
-    $recordLayout = $this->layouts()->where('type', 'record')->first();
-
-    if ($recordLayout !== null) {
-      return $recordLayout->definition;
-    }
-
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['record'])) {
-      return $moduleConfig['record'];
-    }
-
-    $globalDefault = Layout::getDefaultLayout('record');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
+    return $this->resolveLayout('record');
   }
 
-  /**
-   * @return array
-   */
-  public function relatedLayout()
+  public function relatedLayout(): array
   {
-    /** @var Layout|null $relatedLayout */
-    $relatedLayout = $this->layouts()->where('type', 'related')->first();
-
-    if ($relatedLayout !== null) {
-      return $relatedLayout->definition;
-    }
-
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['related'])) {
-      return $moduleConfig['related'];
-    }
-
-    $globalDefault = Layout::getDefaultLayout('related');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No related layout found for module {$this->name} and no global fallback available.");
+    return $this->resolveLayout('related');
   }
 
-  public function linkingPanelLayout()
+  public function linkingPanelLayout(): array
   {
-    /** @var Layout|null $linkingPanelLayout */
-    $linkingPanelLayout = $this->layouts()->where('type', 'linking-panel')->first();
-
-    if ($linkingPanelLayout !== null) {
-      return $linkingPanelLayout->definition;
-    }
-
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['linking-panel'])) {
-      return $moduleConfig['linking-panel'];
-    }
-
-    $globalDefault = Layout::getDefaultLayout('linking-panel');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No linking-panel layout found for module {$this->name} and no global fallback available.");
+    return $this->resolveLayout('linking-panel');
   }
 
   public function layoutFor(string $type)
@@ -268,5 +189,28 @@ class Module extends Model
   protected function defaultReadonlyFor(string $key, string $type): bool
   {
     return in_array($key, ['created_at', 'updated_at'], true);
+  }
+
+  protected function resolveLayout(string $type): array
+  {
+    // 1. DB layout
+    $layout = $this->layouts()->where('type', $type)->first();
+    if ($layout !== null) {
+      return Layout::normalize($layout->definition ?? []);
+    }
+
+    // 2. Module config fallback
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
+      return Layout::normalize($moduleConfig[$type]);
+    }
+
+    // 3. Global fallback
+    $globalDefault = Layout::getDefaultLayout($type);
+    if ($globalDefault !== null) {
+      return Layout::normalize($globalDefault);
+    }
+
+    throw new \Exception("No {$type} layout found for module {$this->name}");
   }
 }

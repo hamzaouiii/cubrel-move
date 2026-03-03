@@ -128,7 +128,7 @@ $error-color: #ef4444;
 
   .picker-container {
     display: flex;
-    gap: 20px;
+    gap: 12px;
   }
 
   .date-input,
@@ -136,26 +136,66 @@ $error-color: #ef4444;
     position: relative;
     display: flex;
     align-items: center;
-    background: whitesmoke;
-    padding: 0 12px;
-    height: 40px;
+    padding: 0 0.75rem;
+    height: 2.5rem; // Matches text-field min-height
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease-in-out;
     width: 100%;
-    border-radius: 8px;
-  }
+    border-radius: 6px;
 
-  .date-input:hover,
-  .time-input:hover {
-    background: #f0f0f0;
-  }
+    background-color: white;
+    border: 1px solid $border-color;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    &:hover {
+      background-color: $bg-light;
+      border-color: darken($border-color, 10%);
+    }
+    &:focus-within,
+    &.is-active {
+      // Use a class if your JS toggles the popup
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      outline: none;
+    }
 
-  .date-input i,
-  .time-input i {
-    color: #94a3b8;
-    margin-right: 8px;
+    i {
+      color: $text-muted;
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
   }
+  &--error {
+    border-color: $error-color;
+    color: $error-color;
 
+    &:focus-within {
+      box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+    }
+
+    .text-field__error-icon {
+      color: $error-color;
+      margin-right: 8px;
+    }
+  }
+  &--error {
+    .date-input,
+    .time-input {
+      border-color: $error-color;
+      color: $error-color;
+
+      i {
+        color: $error-color;
+      }
+      .text-field__error-icon {
+        color: $error-color;
+        margin-right: 8px;
+      }
+
+      &:focus-within {
+        box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+      }
+    }
+  }
   .picker-input {
     border: none;
     outline: none;
@@ -1050,5 +1090,124 @@ $error-color: #ef4444;
     font-size: 12px;
     color: #64748b;
     margin-top: 2px;
+  }
+}
+
+.datetime-field {
+  position: relative;
+  font-family: inherit;
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+
+  .picker-container {
+    display: flex;
+    gap: 12px; // Reduced slightly for tighter alignment
+  }
+
+  // Common wrapper for Date and Time blocks
+  .date-input,
+  .time-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    height: 2.5rem; // Matches text-field min-height
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+    border-radius: 6px;
+
+    // Default State (matches .text-field--edit)
+    background-color: white;
+    border: 1px solid $border-color;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      background-color: $bg-light;
+      border-color: darken($border-color, 10%);
+    }
+
+    // Matches focus-within logic of text fields
+    &:focus-within,
+    &.is-active {
+      // Use a class if your JS toggles the popup
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      outline: none;
+    }
+
+    i {
+      color: $text-muted;
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+  }
+
+  .picker-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 0.9rem;
+    color: $text-main;
+    cursor: pointer;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+
+  // ===== ERROR STATE =====
+  &--error {
+    .date-input,
+    .time-input {
+      border-color: $error-color;
+
+      i {
+        color: $error-color;
+      }
+
+      &:focus-within {
+        box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+      }
+    }
+
+    .error-message {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: $error-color;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+  }
+
+  // ===== READONLY / DISABLED STATE =====
+  &--readonly {
+    .date-input,
+    .time-input {
+      background-color: $bg-light;
+      border-color: $border-color;
+      cursor: default;
+      pointer-events: none; // Disables interaction
+      box-shadow: none;
+    }
+  }
+
+  .clear-btn {
+    margin-left: auto;
+    color: $text-muted;
+    font-size: 0.8rem;
+    padding: 4px;
+    border-radius: 4px;
+
+    &:hover {
+      color: $text-main;
+      background: rgba(0, 0, 0, 0.05);
+    }
   }
 }

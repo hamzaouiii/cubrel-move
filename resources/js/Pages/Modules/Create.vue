@@ -10,8 +10,7 @@ import {
 } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
-import ModuleDropdownField from "../Components/FiledTypes/Select.vue";
-import DateTime from "../Components/FiledTypes/DateTime.vue";
+import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -124,28 +123,13 @@ const clearAllValidartionErrors = () => {
   validationErrors.value = [];
 };
 
-const removeValidationError = (field) => {
-  if (hasError.value(field)) {
-    validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field.label,
-    );
-  }
-};
-
-const removeValidationErrorText = (field) => {
-  if (form[field.name].length >= 3 && hasError.value(field)) {
-    validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field.label,
-    );
-  }
-};
-
 const saveRecord = () => {
   if (!form.isDirty) {
     warning(t("modules.actions.no_data_entered"));
   } else {
-    info(t("modules.actions.saving"));
     clearAllValidartionErrors();
+
+    info(t("modules.actions.saving"));
     const moduleSlug = props.module.slug ?? props.module;
     const url = `/${moduleSlug}`;
     validateRequiredFields();
@@ -153,16 +137,20 @@ const saveRecord = () => {
       return;
     }
 
-    form.post(url, {
-      onSuccess: () => {
-        clearAllAlerts();
-        success(t("modules.actions.save_success"));
-      },
-      onError: () => {
-        clearAllAlerts();
-        error(t("modules.actions.save_error") + form.errors);
-      },
-    });
+    form
+      .transform((data) => {
+        return { ...data };
+      })
+      .post(url, {
+        onSuccess: () => {
+          clearAllAlerts();
+          success(t("modules.actions.save_success"));
+        },
+        onError: () => {
+          clearAllAlerts();
+          error(t("modules.actions.save_error") + form.errors);
+        },
+      });
   }
 };
 
@@ -184,11 +172,6 @@ function handleKeydown(e) {
   }
 }
 
-const getFieldDropDownList = (f) => {
-  const field = props.fields.find((field) => field.name === f.name);
-  return field?.dropdown_list?.values || [];
-};
-
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
   window.addEventListener("keydown", handleKeydown);
@@ -199,48 +182,26 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-useUnsavedChangesGuard({
-  getIsDirty: () => form.isDirty,
+// useUnsavedChangesGuard({
+//   getIsDirty: () => form.isDirty,
+// });
+
+const module_color = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : props.module.color;
 });
-
-const getTextareaRows = (f) => {
-  if (form[f.name]) {
-    const val = form[f.name].split(" ").length;
-    return val / 8;
-  }
-  return 2;
-};
-
-const isDatetime = (type) => {
-  return type?.toLowerCase() === "datetime" || false;
-};
-
-const isDate = (type) => {
-  return type?.toLowerCase() === "date" || false;
-};
-
-const isDropdown = (type) => {
-  return type?.toLowerCase() === "select" || false;
-};
-
-const isLongText = (type) => {
-  return type?.toLowerCase() === "longtext" || false;
+const getField = (f) => {
+  return props.fields.find((field) => field.name === f.name);
 };
 </script>
 
 <template>
   <Head>
-    <title>{{ module.label }} - Automatisierung Regensburg</title>
+    <title>{{ module.label }}</title>
   </Head>
 
-  <div
-    class="record-layout"
-    :style="
-      appSettings.use_individual_module_colors == '0'
-        ? { '--module-color': appSettings.primary_color }
-        : { '--module-color': module.color }
-    "
-  >
+  <div class="record-layout" :style="{ '--module-color': module_color }">
     <div class="record-layout__header">
       <div class="record-layout__header__details">
         <div class="record-layout__header__details__info">
@@ -297,54 +258,13 @@ const isLongText = (type) => {
               <span class="record-layout__sections__item__layout__field__label">
                 {{ $t(f.label) }}:
               </span>
-
-              <div
-                :class="[
-                  'record-layout__sections__item__layout__field__content',
-                  'editing-mode',
-                  { error: hasError(f) },
-                ]"
-              >
-                <template v-if="isDatetime(f.type)">
-                  <DateTime
-                    v-model="form[f.name]"
-                    type="datetime"
-                    @click="removeValidationError(f)"
-                  />
-                </template>
-                <template v-else-if="isDate(f.type)">
-                  <DateTime
-                    v-model="form[f.name]"
-                    type="date"
-                    @click="removeValidationError(f)"
-                  />
-                </template>
-                <template v-else-if="isLongText(f.type)">
-                  <textarea
-                    v-model="form[f.name]"
-                    :rows="getTextareaRows(f)"
-                    @input="removeValidationErrorText(f)"
-                  ></textarea>
-                </template>
-                <template v-else-if="isDropdown(f.type)">
-                  <ModuleDropdownField
-                    :options="getFieldDropDownList(f)"
-                    v-model="form[f.name]"
-                    @click="removeValidationError(f)"
-                  />
-                </template>
-                <template v-else>
-                  <input
-                    type="text"
-                    v-model="form[f.name]"
-                    @input="removeValidationErrorText(f)"
-                  />
-                </template>
-
-                <span v-if="hasError(f)" class="error-icon-container">
-                  <i class="error-icon fa-solid fa-circle-exclamation"></i>
-                </span>
-              </div>
+              <FieldRenderer
+                :field="getField(f)"
+                v-model="form[f.name]"
+                mode="edit"
+                :module-color="module_color"
+                :has-error="hasError(f)"
+              />
             </div>
           </div>
         </div>

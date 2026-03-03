@@ -376,11 +376,31 @@ defineExpose({
   toggleDatePicker,
   toggleTimePicker,
 });
+
+const showError = ref(false);
+
+watch(
+  () => props.hasError,
+  (val) => {
+    showError.value = val;
+  },
+  { immediate: true },
+);
+
+const clearErrors = () => {
+  showError.value = false;
+};
 </script>
 <template>
   <div v-if="mode === 'edit'">
-    <div class="module-datetime">
-      <div class="picker-container">
+    <div
+      class="module-datetime"
+      :class="{
+        'module-datetime--error': showError,
+        'module-datetime--readonly': readOnly,
+      }"
+    >
+      <div class="picker-container" @click="clearErrors">
         <div class="date-input" @click="toggleDatePicker">
           <i class="fas fa-calendar"></i>
           <input
@@ -395,6 +415,10 @@ defineExpose({
             v-if="modelValue"
             class="fas fa-times clear-btn"
             @click.stop="clear"
+          ></i>
+          <i
+            v-if="showError"
+            class="error-icon fa-solid fa-circle-exclamation"
           ></i>
         </div>
 
@@ -411,8 +435,12 @@ defineExpose({
             readonly
             class="picker-input"
           />
+          <i
+            v-if="showError"
+            class="error-icon fa-solid fa-circle-exclamation"
+          ></i>
         </div>
-        <i v-if="error" class="error-icon fa-solid fa-circle-exclamation"></i>
+
         <div v-if="showDatePicker" class="picker-popup date-popup">
           <div class="picker-header">
             <button @click="prevMonth" class="nav-btn">
@@ -520,7 +548,7 @@ defineExpose({
     </div>
   </div>
   <div v-else-if="mode === 'detail' || 'table'">
-    <span :class="['text-field', { 'text-field--readonly': readOnly }]">
+    <span :class="['text-field', { 'module-datetime--readonly': readOnly }]">
       {{
         type === "date"
           ? formatDate(modelValue, appSettings)

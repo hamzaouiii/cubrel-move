@@ -18,17 +18,6 @@ return array(
       ),
       1 =>
       array(
-        'key' => 'opportunities_account_id',
-        'name' => 'account_id',
-        'type' => 'relationship',
-        'label' => 'modules.opportunities.fields.account_id',
-        'readonly' => false,
-        'required' => false,
-        'sortable' => false,
-        'dropdown_list' => NULL,
-      ),
-      2 =>
-      array(
         'key' => 'opportunities_expected_close_date',
         'name' => 'expected_close_date',
         'type' => 'date',
@@ -38,7 +27,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      3 =>
+      2 =>
       array(
         'key' => 'opportunities_type',
         'name' => 'type',
@@ -49,7 +38,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      4 =>
+      3 =>
       array(
         'key' => 'opportunities_amount',
         'name' => 'amount',
@@ -60,7 +49,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      5 =>
+      4 =>
       array(
         'key' => 'opportunities_sales_stage',
         'name' => 'sales_stage',
@@ -71,7 +60,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      6 =>
+      5 =>
       array(
         'key' => 'opportunities_probability',
         'name' => 'probability',
@@ -82,7 +71,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      7 =>
+      6 =>
       array(
         'key' => 'opportunities_updated_at',
         'name' => 'updated_at',
@@ -93,7 +82,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      8 =>
+      7 =>
       array(
         'key' => 'opportunities_created_at',
         'name' => 'created_at',
@@ -126,33 +115,17 @@ return array(
           ),
           1 =>
           array(
-            'name' => 'account_id',
-            'type' => 'relationship',
-            'label' => 'modules.opportunities.fields.account_id',
-            'readonly' => false,
-            'required' => false,
-          ),
-          2 =>
-          array(
             'name' => 'sales_stage',
             'type' => 'select',
             'label' => 'modules.opportunities.fields.sales_stage',
             'readonly' => false,
             'required' => false,
           ),
-          3 =>
+          2 =>
           array(
             'name' => 'type',
             'type' => 'select',
             'label' => 'modules.opportunities.fields.type',
-            'readonly' => false,
-            'required' => false,
-          ),
-          4 =>
-          array(
-            'name' => 'assigned_user_id',
-            'type' => 'relationship',
-            'label' => 'modules.opportunities.fields.assigned_user_id',
             'readonly' => false,
             'required' => false,
           ),

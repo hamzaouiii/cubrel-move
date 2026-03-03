@@ -27,14 +27,13 @@ const props = defineProps({
 });
 
 const component = computed(() => {
-  return fieldRegistry[props.field.type] || fieldRegistry["text"];
+  return fieldRegistry[props.field?.type] || fieldRegistry["text"];
 });
 
 const componentProps = computed(() => ({
   ...props.field,
   modelValue: props.modelValue,
   mode: props.mode,
-  disabled: props.readOnly || props.field.disabled,
   moduleColor: props.moduleColor,
   hasError: props.hasError,
   readOnly: props.readOnly,

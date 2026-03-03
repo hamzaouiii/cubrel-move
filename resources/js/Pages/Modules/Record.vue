@@ -99,10 +99,12 @@ const module_color = computed(() => {
 });
 
 // Methods
+
+/// Adjsut this to use props.fields instead of layout as source of truth for type.
 const getFieldType = (field) => {
   const sections = props.overviewLayout?.sections;
   for (const section of sections) {
-    const found = section.layout?.find((item) => item.name === field);
+    const found = section?.layout?.find((item) => item.name === field) || null;
     if (found) {
       return found.type;
     }
@@ -333,9 +335,9 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-useUnsavedChangesGuard({
-  getIsDirty: () => isDirty.value,
-});
+// useUnsavedChangesGuard({
+//   getIsDirty: () => isDirty.value,
+// });
 </script>
 <template>
   <Head>

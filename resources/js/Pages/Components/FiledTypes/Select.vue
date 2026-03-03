@@ -99,6 +99,8 @@ const toggle = async () => {
   } else {
     search.value = "";
   }
+
+  clearErrors();
 };
 
 const close = () => {

@@ -10,7 +10,6 @@ return new class extends Migration
   {
     Schema::create('opportunities', function (Blueprint $table) {
       $table->uuid('id')->primary();
-
       $table->string('name');
       $table->decimal('amount', 15, 2)->nullable();
       $table->string('currency', 3)->default('EUR');
@@ -19,6 +18,7 @@ return new class extends Migration
       $table->unsignedTinyInteger('probability')->nullable(); // 0-100
       $table->date('expected_close_date')->nullable();
       $table->string('type')->nullable(); // new_business, existing_business
+      $table->json('custom_fields')->nullable();
 
       // $table->uuid('assigned_user_id')->nullable()->index();
 

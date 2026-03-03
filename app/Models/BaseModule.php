@@ -26,6 +26,8 @@ abstract class BaseModule extends Model
   ];
   public $incrementing = false;
   protected $keyType = 'string';
+  protected $guarded = [];
+  public $timestamps = true;
   public function uniqueIds()
   {
     return ['id'];
