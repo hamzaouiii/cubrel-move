@@ -19,7 +19,6 @@ watch(
   () => props.expandPanel,
   (newVal) => {
     if (newVal === props.panel.name) {
-      console.log(newVal);
       const index = openPanels.value.indexOf(newVal);
       if (index === -1) {
         openPanels.value.push(newVal);

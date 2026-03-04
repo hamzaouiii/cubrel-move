@@ -30,7 +30,6 @@ const props = defineProps({
   relatedLayout: Object,
   fields: Object,
 });
-
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const appSettings = usePage().props.appSettings;

@@ -59,7 +59,7 @@ const clearErrors = () => {
   </div>
 
   <!-- DETAIL MODE DONE-->
-  <div v-else-if="mode === 'detail' || 'table'">
+  <div v-else-if="mode === 'detail'">
     <span :class="['text-field', { 'text-field--readonly': readOnly }]">
       {{ modelValue }}
     </span>

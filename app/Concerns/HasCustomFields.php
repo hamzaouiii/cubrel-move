@@ -110,10 +110,10 @@ trait HasCustomFields
     return in_array($key, $this->getCachedCustomFields(), true); // line 110
   }
 
-  protected function getCustomFieldValue(string $key): string
+  protected function getCustomFieldValue(string $key): ?string
   {
     $custom = $this->getCustomFieldsArray();
-    return $custom[$key] ?? '';
+    return $custom[$key] ?? null;
   }
 
   protected function getAllCustomFields(): array

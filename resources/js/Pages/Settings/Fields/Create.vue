@@ -273,8 +273,8 @@ useUnsavedChangesGuard({
                   type="text"
                   :name="fieldName"
                   v-model="form.name"
+                  disabled
                   :class="[
-                    'disabled',
                     {
                       'settings__module__edit__element--error-field':
                         displayKeyError(),

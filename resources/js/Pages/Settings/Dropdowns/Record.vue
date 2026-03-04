@@ -57,7 +57,6 @@ const valueExistsError = ref(false);
 
 const addItem = () => {
   if (!newItem.isDirty) return;
-  console.log(form.values);
   if (
     form.values.some(
       (item) => item.value === generatedSystemvalue(newItem.label),

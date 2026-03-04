@@ -14,6 +14,14 @@ return array(
       ),
       1 =>
       array(
+        'name' => 'is_active',
+        'key' => 'products_is_active',
+        'type' => 'checkbox',
+        'label' => 'modules.products.fields.is_active',
+        'sortable' => true,
+      ),
+      2 =>
+      array(
         'key' => 'products_price',
         'name' => 'price',
         'type' => 'number',
@@ -23,7 +31,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      2 =>
+      3 =>
       array(
         'key' => 'products_sku',
         'name' => 'sku',
@@ -34,7 +42,7 @@ return array(
         'sortable' => false,
         'dropdown_list' => NULL,
       ),
-      3 =>
+      4 =>
       array(
         'key' => 'products_category',
         'name' => 'category',

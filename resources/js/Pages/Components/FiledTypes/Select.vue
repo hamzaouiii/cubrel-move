@@ -234,5 +234,10 @@ const clearErrors = () => {
       {{ $t(selectedOption?.label) }}
     </span>
   </div>
+  <div v-else-if="mode === 'table'">
+    <span :title="modelValue">
+      {{ $t(selectedOption?.label) }}
+    </span>
+  </div>
 </template>
 <style lang="scss" scoped></style>

@@ -129,7 +129,7 @@ const displayValue = computed(() => {
 });
 
 const displayTime = computed(() => {
-  if (!selectedHour.value && !selectedMinute.value) return "";
+  if (!selectedHour.value) return "";
 
   let hour = selectedHour.value;
   if (props.showAmPm) {
@@ -142,6 +142,7 @@ const displayTime = computed(() => {
 const isValidDate = (date) => {
   return date instanceof Date && !isNaN(date.getTime());
 };
+
 watch(
   () => props.modelValue,
   (value) => {
@@ -247,8 +248,13 @@ const selectDate = (date) => {
   }
 
   if (props.type === "datetime") {
+    selectedHour.value = 0;
+    selectedMinute.value = 0;
+    isAm.value = true;
+
     showDatePicker.value = false;
     showTimePicker.value = true;
+    emitValue();
   } else {
     showDatePicker.value = false;
   }
@@ -547,8 +553,17 @@ const clearErrors = () => {
       </div>
     </div>
   </div>
-  <div v-else-if="mode === 'detail' || 'table'">
+  <div v-else-if="mode === 'detail'">
     <span :class="['text-field', { 'module-datetime--readonly': readOnly }]">
+      {{
+        type === "date"
+          ? formatDate(modelValue, appSettings)
+          : formatDateTime(modelValue, appSettings)
+      }}
+    </span>
+  </div>
+  <div v-else-if="mode === 'table'">
+    <span>
       {{
         type === "date"
           ? formatDate(modelValue, appSettings)

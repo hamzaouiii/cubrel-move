@@ -50,6 +50,9 @@ const listLayoutColumns = computed(() => {
   );
 });
 
+const getField = (item) => {
+  return Object.values(props.fields)?.find((field) => field.key === item.key);
+};
 const isSelected = (id) => selectedIds.value.includes(id);
 
 const toggleRow = (id) => {
@@ -316,18 +319,6 @@ const handleMassUpdate = async (payload) => {
   // });
 };
 
-const getFieldDropDownList = (f) => {
-  const field = pageProps.fields.find((field) => field.name === f);
-
-  return field?.dropdown_list?.values || [];
-};
-
-const getDropDownListLabel = (f, i) => {
-  const list = getFieldDropDownList(f);
-  const label = list.find((l) => l.value === i)?.label || "";
-  return t(label);
-};
-
 const sortKey = ref(null);
 const sortDir = ref("asc");
 
@@ -372,6 +363,11 @@ const sortedItems = computed(() => {
       : String(valB).localeCompare(String(valA));
   });
 });
+const module_color = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : props.module.color;
+});
 </script>
 
 <template>
@@ -379,14 +375,7 @@ const sortedItems = computed(() => {
     <title>{{ title }}</title>
   </Head>
 
-  <div
-    class="list-layout"
-    :style="
-      appSettings.use_individual_module_colors == '0'
-        ? { '--module-color': appSettings.primary_color }
-        : { '--module-color': module.color }
-    "
-  >
+  <div class="list-layout" :style="{ '--module-color': module_color }">
     <div class="list-layout__header">
       <div class="list-layout__header__details">
         <h3 class="list-layout__header__details__title">
@@ -560,42 +549,12 @@ const sortedItems = computed(() => {
               </td>
 
               <td v-for="col in listLayoutColumns || []" :key="col.name">
-                <!-- <FieldRenderer
-                  :field="{
-                    key: 'name',
-                    type: col.type,
-                  }"
+                <FieldRenderer
+                  :field="getField(col)"
                   v-model="item[col.name]"
                   mode="table"
-                /> -->
-                <template v-if="col?.name === 'email' && item[col?.name]">
-                  <a :href="'mailto:' + item[col.name]">
-                    <span v-html="highlightMatch(item[col.key])"></span>
-                  </a>
-                </template>
-
-                <template v-else-if="col.type === 'datetime' && item[col.name]">
-                  {{ formatDateTime(item[col.name], appSettings) }}
-                </template>
-                <template v-else-if="col.type === 'date' && item[col.name]">
-                  {{ formatDate(item[col.name], appSettings) }}
-                </template>
-                <template v-else-if="col.type === 'select' && item[col.name]">
-                  {{ getDropDownListLabel(col.name, item[col.name]) }}
-                </template>
-                <template
-                  v-else-if="item[col.name] && item[col.name].length > 62"
-                >
-                  <span
-                    v-html="
-                      highlightMatch(item[col.name].substring(0, 64) + '...')
-                    "
-                  ></span>
-                </template>
-
-                <template v-else>
-                  <span v-html="highlightMatch(item[col.name] ?? '-')"></span>
-                </template>
+                  :module-color="module_color"
+                />
               </td>
             </Link>
           </template>
