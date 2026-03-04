@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
     $this->call(SettingValuesSeeder::class);
     $this->call(RelationshipSeeder::class);
     $this->call(DevSeeder::class);
+    $this->call(RelationshipPopulationSeeder::class);
   }
 }

@@ -11,9 +11,7 @@ use Illuminate\Support\Str;
 
 class SettingValuesSeeder extends Seeder
 {
-  /**
-   * Run the database seeds.
-   */
+
   public function run(): void
   {
     DB::table('setting_values')->insert([
