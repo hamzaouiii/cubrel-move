@@ -562,7 +562,7 @@ const clearErrors = () => {
       }}
     </span>
   </div>
-  <div v-else-if="mode === 'table'">
+  <div v-else-if="mode === 'table' || mode === 'related-panel'">
     <span>
       {{
         type === "date"

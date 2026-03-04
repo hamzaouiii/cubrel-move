@@ -40,7 +40,7 @@ const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const currentTab = ref("overview");
+const currentTab = ref("related");
 const overlayOpen = ref(false);
 const activePanel = ref(null);
 const activeParentRecord = ref(null);
@@ -499,6 +499,7 @@ onBeforeUnmount(() => {
         <PanelList
           :relationships="record.related"
           :layout="relatedLayout"
+          :fields="fields"
           @open-overlay="openOverlay"
           @panel-update="handleSaved"
         ></PanelList>

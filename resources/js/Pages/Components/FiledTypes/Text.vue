@@ -66,7 +66,7 @@ const clearErrors = () => {
   </div>
 
   <!-- TABLE MODE -->
-  <div v-else-if="mode === 'table'">
+  <div v-else-if="mode === 'table' || mode === 'related-panel'">
     <span :title="modelValue">
       {{ modelValue || "—" }}
     </span>

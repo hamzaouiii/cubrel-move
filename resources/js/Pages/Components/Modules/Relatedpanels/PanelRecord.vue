@@ -3,7 +3,7 @@ import { formatDateTime, formatDate } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import RelatedRecordsActionDropdown from "./RelatedRecordsActionDropdown.vue";
-
+import FieldRenderer from "../../Globals/FieldRenderer.vue";
 const props = defineProps({
   record: Object,
   header: Object,
@@ -21,28 +21,6 @@ const isMenuOpen = computed(() => props.openMenuId === props.record.id);
 
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
 
-const formatField = (field, value) => {
-  if (value == null || value === "") return "";
-
-  const type = field?.type?.toLowerCase();
-
-  switch (type) {
-    case "text":
-      return value;
-
-    case "datetime":
-      return formatDateTime(value);
-
-    case "date":
-      return formatDate(value);
-
-    case "longtext":
-      return value.length > 32 ? value.slice(0, 32) + "…" : value;
-
-    default:
-      return value;
-  }
-};
 const triggerEl = ref(null);
 </script>
 
@@ -56,7 +34,11 @@ const triggerEl = ref(null);
       </template>
 
       <template v-else>
-        {{ formatField(field, record[field.name]) }}
+        <FieldRenderer
+          :field="field"
+          v-model="record[field.name]"
+          mode="related-panel"
+        ></FieldRenderer>
       </template>
     </td>
 

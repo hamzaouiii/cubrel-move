@@ -66,8 +66,11 @@ const value = computed({
   </label>
 
   <!-- DETAILS MODE -->
+
   <div
-    v-else-if="mode === 'detail' || mode === 'table'"
+    v-else-if="
+      mode === 'detail' || mode === 'table' || mode === 'related-panel'
+    "
     class="checkbox-display"
     :class="{ 'checkbox-display--active': value }"
     :style="{
