@@ -214,7 +214,7 @@ class RelationshipService
       ->unique()
       ->values();
 
-    $modules = Module::with('relatedfields')
+    $modules = Module::with('fields')
       ->whereIn('slug', $relatedSlugs)
       ->get()
       ->keyBy('slug');
@@ -224,7 +224,7 @@ class RelationshipService
       $module = $modules->get($relationship->related_slug);
 
       $relationship->related_fields = $module
-        ? $module->relatedfields
+        ? $module->fields
         : collect();
       return $relationship;
     });
@@ -346,13 +346,13 @@ class RelationshipService
       ->exists();
   }
 
-  public static function getLinkingLayout(string $slug)
+  public static function getDataForPanel(string $slug)
   {
     $module = Module::query()
       ->where('slug', $slug)
       ->firstOrFail();
 
-    return $module->linkingPanelLayout();
+    return $module->getDataForPanel();
   }
 
   /**
@@ -399,7 +399,7 @@ class RelationshipService
           ->whereIn('id', $relatedIds)
           ->get();
       }
-
+      $panelData =  self::getDataForPanel($relationship->related_slug);
       $result[$relationship->name] = [
         'name'    => $relationship->name,
         'type'    => $relationship->relationship_type,
@@ -407,8 +407,8 @@ class RelationshipService
         'role'   =>  $relationship->role,
         'records' => $records,
         'related_slug' => $relationship->related_slug,
-        'linking_layout' => self::getLinkingLayout($relationship->related_slug)
       ];
+      $result[$relationship->name] =  array_merge($result[$relationship->name], $panelData);
     }
 
     return $result;

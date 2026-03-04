@@ -239,5 +239,10 @@ const clearErrors = () => {
       {{ $t(selectedOption?.label) }}
     </span>
   </div>
+
+  <div v-else-if="mode === 'related-panel'">
+    {{ modelValue }}
+    {{ $t(selectedOption?.label) }}
+  </div>
 </template>
 <style lang="scss" scoped></style>

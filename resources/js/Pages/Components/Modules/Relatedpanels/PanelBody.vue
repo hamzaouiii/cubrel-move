@@ -76,7 +76,7 @@ const unlink = async (record) => {
           <thead>
             <tr>
               <th
-                v-for="field in panel.panelHeader"
+                v-for="field in panel.fields"
                 :key="field.name"
                 :class="{ 'is-action': field.type === 'action' }"
               >
@@ -91,7 +91,7 @@ const unlink = async (record) => {
               v-for="record in records"
               :key="record.id"
               :record="record"
-              :header="panel.panelHeader"
+              :header="panel.fields"
               :related_slug="relationship.related_slug"
               :openMenuId="openMenuId"
               @toggleMenu="toggleMenu"
@@ -108,7 +108,7 @@ const unlink = async (record) => {
         >
           <PanelParentRecord
             :record="parentRecord"
-            :header="panel.panelHeader"
+            :header="panel.fields"
             :related_slug="relationship.related_slug"
             :key="parentRecord?.id"
           >

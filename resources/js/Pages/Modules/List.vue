@@ -6,9 +6,9 @@ import {
   onBeforeUnmount,
   getCurrentInstance,
   watch,
+  toRaw,
 } from "vue";
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
-import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
@@ -34,6 +34,7 @@ const pageProps = defineProps({
   filters: Object,
   fields: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const bulkActionmode = ref(false);
@@ -51,7 +52,7 @@ const listLayoutColumns = computed(() => {
 });
 
 const getField = (item) => {
-  return Object.values(props.fields)?.find((field) => field.key === item.key);
+  return Object.values(props.fields)?.find((field) => field.name === item.name);
 };
 const isSelected = (id) => selectedIds.value.includes(id);
 

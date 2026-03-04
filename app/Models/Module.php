@@ -131,6 +131,14 @@ class Module extends Model
     return $this->resolveLayout('linking-panel');
   }
 
+  public function getDataForPanel(): array
+  {
+    return [
+      'linking-panel' => $this->linkingPanelLayout(),
+      'fields' => $this->fields
+    ];
+  }
+
   public function layoutFor(string $type)
   {
     return $this->layouts()
@@ -173,7 +181,7 @@ class Module extends Model
         'sortable',
         'label',
         'required',
-      ]);
+      ])->with('dropdown_list');
   }
   public function getFieldMetadata(string $field): array
   {

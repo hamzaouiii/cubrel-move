@@ -114,13 +114,8 @@ const availableListFields = computed(() => {
     .filter((field) => !usedKeys.has(field.name))
     .map((field) => ({
       name: field.name,
-      key: field.key,
       label: field.label ?? field.name,
       type: field.type,
-      sortable: field.sortable ?? false,
-      readonly: field.readonly ?? false,
-      required: field.required ?? false,
-      dropdown_list: field.dropdown_list ?? null,
     }));
 });
 

@@ -1,4 +1,8 @@
 <script setup>
+// TODO switch validation to field definition instead of layout.
+// layouts now only contain field names and types
+// we can go further and resolve types too based on field names.
+// right now everything has to be resolved based on field names except for type.
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
@@ -7,6 +11,7 @@ import {
   onMounted,
   onBeforeUnmount,
   getCurrentInstance,
+  toRaw,
 } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
@@ -30,6 +35,7 @@ const props = defineProps({
   relatedLayout: Object,
   fields: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const appSettings = usePage().props.appSettings;
@@ -499,7 +505,6 @@ onBeforeUnmount(() => {
         <PanelList
           :relationships="record.related"
           :layout="relatedLayout"
-          :fields="fields"
           @open-overlay="openOverlay"
           @panel-update="handleSaved"
         ></PanelList>
