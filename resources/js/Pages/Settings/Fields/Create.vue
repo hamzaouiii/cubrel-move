@@ -44,18 +44,35 @@ const default_values = {
   type: "",
   dropdown_list: "",
   readonly: false,
-  //hidden: false,
   required: false,
-  //searchable: false,
-  //filterable: false,
   sortable: false,
   default_value: "",
-  //options: "",
   min_length: "",
   max_length: "",
   regex: "",
 };
 
+// to be extended later with more rules
+// defualt value has to be dynamic, based on field type
+const fieldTypeRules = {
+  checkbox: {
+    hide: ["required", "regex", "min_length", "max_length"],
+    set: {
+      required: false,
+    },
+  },
+
+  select: {
+    show: ["dropdown_list"],
+    hide: ["regex", "min_length", "max_length"],
+  },
+  date: {
+    hide: ["regex", "min_length", "max_length"],
+  },
+  datetime: {
+    hide: ["regex", "min_length", "max_length"],
+  },
+};
 const form = useForm({ ...default_values });
 
 const generatedName = computed(() => {
@@ -98,7 +115,36 @@ watch(
   },
   { immediate: true },
 );
+const visibleMetadata = computed(() => {
+  const type = form.type;
 
+  if (!type || !fieldTypeRules[type]) {
+    return props.metadata;
+  }
+
+  const rules = fieldTypeRules[type];
+
+  return Object.values(props.metadata).filter((field) => {
+    if (rules.hide && rules.hide.includes(field)) {
+      return false;
+    }
+    return true;
+  });
+});
+watch(
+  () => form.type,
+  (type) => {
+    const rules = fieldTypeRules[type];
+
+    if (!rules) return;
+
+    if (rules.set) {
+      Object.entries(rules.set).forEach(([field, value]) => {
+        form[field] = value;
+      });
+    }
+  },
+);
 const isCheckbox = (field) => {
   const checkboxFields = [
     "readonly",
@@ -261,7 +307,7 @@ useUnsavedChangesGuard({
         <form @submit.prevent="saveField">
           <div
             class="settings__module__edit__element"
-            v-for="fieldName in metadata"
+            v-for="fieldName in visibleMetadata"
             :key="fieldName"
           >
             <label class="settings__module__edit__element__label">
