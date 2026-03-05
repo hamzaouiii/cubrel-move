@@ -49,7 +49,7 @@ const actionDropDownref = ref(null);
 const validationErrors = ref([]);
 
 const hasError = computed(() => (field) => {
-  return validationErrors.value.some((item) => item.field === field.label);
+  return validationErrors.value.some((item) => item.field === field.name);
 });
 
 const handleClickOutsideActionDropDown = (event) => {
@@ -62,17 +62,15 @@ const handleClickOutsideActionDropDown = (event) => {
 };
 
 const getRequiredFields = () => {
-  const sections = props.recordLayout?.sections;
   let allRequiredFields = [];
 
-  for (const section of sections) {
-    const requiredFields = section.layout?.filter(
-      (item) => item.required === true && item.readonly !== true,
-    );
-    if (requiredFields?.length) {
-      allRequiredFields.push(...requiredFields);
-    }
+  const requiredFields = props.fields?.filter(
+    (field) => field.required === true && field.readonly !== true,
+  );
+  if (requiredFields?.length) {
+    allRequiredFields.push(...requiredFields);
   }
+
   return allRequiredFields;
 };
 
@@ -100,7 +98,8 @@ const requiredEmptyFields = computed(() => {
 const validateRequiredFields = () => {
   requiredEmptyFields.value.map((item) => {
     validationErrors.value.push({
-      field: item.label,
+      field: item.name,
+      label: item.label,
       type: "required",
     });
   });
@@ -111,7 +110,7 @@ const validateRequiredFields = () => {
   } else if (validationErrors.value.length === 1) {
     clearAllAlerts();
     error(
-      t(validationErrors.value[0].field) +
+      t(validationErrors.value[0].label) +
         " " +
         t("fields.validation.is_required"),
     );
@@ -251,7 +250,7 @@ const getField = (f) => {
 
           <div class="record-layout__sections__item__layout">
             <div
-              v-for="f in s.layout.filter((f) => !f.readonly)"
+              v-for="f in s.layout.filter((f) => !getField(f).readonly)"
               :key="f.name"
               class="record-layout__sections__item__layout__field"
             >

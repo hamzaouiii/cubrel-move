@@ -1091,6 +1091,19 @@ $error-color: #ef4444;
     color: #64748b;
     margin-top: 2px;
   }
+  &__icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__clear {
+    cursor: pointer;
+    opacity: 0.6;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .datetime-field {

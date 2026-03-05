@@ -83,7 +83,7 @@ const highlightMatch = (text) => {
   <!-- TABLE MODE -->
   <div v-else-if="mode === 'table' || mode === 'related-panel'">
     <span :title="modelValue">
-      <span v-html="highlightMatch(modelValue ?? '-')"></span>
+      <span v-html="highlightMatch(modelValue ?? '—')"></span>
     </span>
   </div>
 </template>

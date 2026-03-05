@@ -62,11 +62,21 @@ const search = ref("");
 const searchInput = ref(null);
 
 const normalizedOptions = computed(() => {
-  if (Array.isArray(options.value)) return options.value;
-  if (options.value && typeof options.value === "object") {
-    return Object.values(options.value).flat();
+  let list = [];
+
+  if (Array.isArray(options.value)) {
+    list = options.value;
+  } else if (options.value && typeof options.value === "object") {
+    list = Object.values(options.value).flat();
   }
-  return [];
+
+  return [
+    {
+      value: null,
+      label: "—",
+    },
+    ...list,
+  ];
 });
 
 const selectedOption = computed(
@@ -146,6 +156,12 @@ watch(
 const clearErrors = () => {
   showError.value = false;
 };
+
+const clearSelection = (e) => {
+  e.stopPropagation();
+  emit("update:modelValue", null);
+  emit("change", null);
+};
 </script>
 
 <template>
@@ -161,13 +177,24 @@ const clearErrors = () => {
         @click="toggle"
       >
         <span class="select-field__selected">
-          {{ $t(selectedOption?.label) ?? $t("settings.select") }}
+          {{
+            selectedOption?.label
+              ? $t(selectedOption.label)
+              : $t("settings.select")
+          }}
         </span>
-        <span>
+        <span class="select-field__icons">
           <i
             v-if="showError"
             class="error-icon fa-solid fa-circle-exclamation"
           ></i>
+
+          <i
+            v-if="modelValue !== null && modelValue !== '' && !disabled"
+            class="fa-solid fa-xmark select-field__clear"
+            @click="clearSelection"
+          ></i>
+
           <i
             class="select-field__chevron fa-solid"
             :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"
@@ -244,4 +271,3 @@ const clearErrors = () => {
     {{ $t(selectedOption?.label) }}
   </div>
 </template>
-<style lang="scss" scoped></style>

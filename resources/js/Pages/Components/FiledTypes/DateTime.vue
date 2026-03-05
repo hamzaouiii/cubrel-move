@@ -399,7 +399,17 @@ const clearErrors = () => {
 </script>
 <template>
   <div v-if="mode === 'edit'">
+    <div v-if="readOnly">
+      <span class="'text-field module-datetime--readonly'">
+        {{
+          type === "date"
+            ? formatDate(modelValue, appSettings)
+            : formatDateTime(modelValue, appSettings)
+        }}
+      </span>
+    </div>
     <div
+      v-else
       class="module-datetime"
       :class="{
         'module-datetime--error': showError,

@@ -1,8 +1,4 @@
 <script setup>
-// TODO switch validation to field definition instead of layout.
-// layouts now only contain field names and types
-// we can go further and resolve types too based on field names.
-// right now everything has to be resolved based on field names except for type.
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
@@ -46,7 +42,7 @@ const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const currentTab = ref("related");
+const currentTab = ref("");
 const overlayOpen = ref(false);
 const activePanel = ref(null);
 const activeParentRecord = ref(null);
@@ -73,7 +69,7 @@ const mode = computed(() => {
 const isDirty = computed(() => form.isDirty);
 
 const hasError = computed(() => (field) => {
-  return validationErrors.value.some((item) => item.field === field.label);
+  return validationErrors.value.some((item) => item.field === field.name);
 });
 
 const emptyFields = computed(() => {
@@ -106,29 +102,20 @@ const module_color = computed(() => {
 // Methods
 
 /// Adjsut this to use props.fields instead of layout as source of truth for type.
-const getFieldType = (field) => {
-  const sections = props.overviewLayout?.sections;
-  for (const section of sections) {
-    const found = section?.layout?.find((item) => item.name === field) || null;
-    if (found) {
-      return found.type;
-    }
-  }
-  return "no_type";
+const getFieldType = (fieldName) => {
+  return props.fields?.find((field) => field.name === fieldName)?.type || null;
 };
 
 const getRequiredFields = () => {
-  const sections = props.overviewLayout?.sections;
   let allRequiredFields = [];
 
-  for (const section of sections) {
-    const requiredFields = section.layout?.filter(
-      (item) => item.required === true && item.readonly !== true,
-    );
-    if (requiredFields?.length) {
-      allRequiredFields.push(...requiredFields);
-    }
+  const requiredFields = props.fields?.filter(
+    (field) => field.required === true && field.readonly !== true,
+  );
+  if (requiredFields?.length) {
+    allRequiredFields.push(...requiredFields);
   }
+
   return allRequiredFields;
 };
 
@@ -163,7 +150,8 @@ const validateRequiredFields = (payload) => {
 
   requiredEmptyFields.value.forEach((item) => {
     requiredErrors.push({
-      field: item.label,
+      field: item.name,
+      label: item.label,
       type: "required",
     });
   });
@@ -172,7 +160,8 @@ const validateRequiredFields = (payload) => {
   fields.forEach((item) => {
     if (!payload[item.name]) {
       requiredErrors.push({
-        field: item.label,
+        field: item.name,
+        label: item.label,
         type: "required",
       });
     }
@@ -188,7 +177,7 @@ const validateRequiredFields = (payload) => {
     error(t("fields.validation.is_required_several"));
   } else if (unique.length === 1) {
     clearAllAlerts();
-    error(t(unique[0].field) + " " + t("fields.validation.is_required"));
+    error(t(unique[0].label) + " " + t("fields.validation.is_required"));
   }
 };
 
@@ -483,15 +472,14 @@ onBeforeUnmount(() => {
               <span class="record-layout__sections__item__layout__field__label">
                 {{ $t(f.label) }}:
               </span>
-
               <FieldRenderer
                 :field="getField(f)"
                 v-model="form[f.name]"
                 :mode="getMode(f)"
-                :read-only="f.readonly"
+                :read-only="getField(f).readonly"
                 :module-color="module_color"
                 :has-error="hasError(f)"
-                @click="!f.readonly && enableEditing()"
+                @click="!getField(f).readonly && enableEditing()"
               />
             </div>
           </div>

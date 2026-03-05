@@ -1,546 +1,650 @@
 <?php
 
-return [
-
-  'accounts' => [
-    'name' => [
+return array (
+  'accounts' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'website' => [
+    ),
+    'website' => 
+    array (
       'name' => 'website',
       'type' => 'text',
-    ],
-    'email' => [
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
       'type' => 'text',
-    ],
-    'billing_address' => [
+    ),
+    'billing_address' => 
+    array (
       'name' => 'billing_address',
       'type' => 'longtext',
-    ],
-    'shipping_address' => [
+    ),
+    'shipping_address' => 
+    array (
       'name' => 'shipping_address',
       'type' => 'longtext',
-    ],
-    'city' => [
+    ),
+    'city' => 
+    array (
       'name' => 'city',
       'type' => 'text',
-    ],
-    'country' => [
+    ),
+    'country' => 
+    array (
       'name' => 'country',
       'type' => 'text',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'contacts' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'contacts' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'first_name' => [
+    ),
+    'first_name' => 
+    array (
       'name' => 'first_name',
       'type' => 'text',
-    ],
-    'last_name' => [
+    ),
+    'last_name' => 
+    array (
       'name' => 'last_name',
       'type' => 'text',
-    ],
-    'email' => [
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
       'type' => 'text',
-    ],
-    'position' => [
+    ),
+    'position' => 
+    array (
       'name' => 'position',
       'type' => 'text',
-    ],
-    'notes' => [
+    ),
+    'notes' => 
+    array (
       'name' => 'notes',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'leads' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'leads' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'first_name' => [
+    ),
+    'first_name' => 
+    array (
       'name' => 'first_name',
       'type' => 'text',
-    ],
-    'last_name' => [
+    ),
+    'last_name' => 
+    array (
       'name' => 'last_name',
       'type' => 'text',
-    ],
-    'email' => [
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
       'type' => 'text',
-    ],
-    'company' => [
+    ),
+    'company' => 
+    array (
       'name' => 'company',
       'type' => 'text',
-    ],
-    'street' => [
+    ),
+    'street' => 
+    array (
       'name' => 'street',
       'type' => 'longtext',
-    ],
-    'city' => [
+    ),
+    'city' => 
+    array (
       'name' => 'city',
       'type' => 'text',
-    ],
-    'zip' => [
+    ),
+    'zip' => 
+    array (
       'name' => 'zip',
       'type' => 'text',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'invoices' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'invoices' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'number' => [
+    ),
+    'number' => 
+    array (
       'name' => 'number',
       'type' => 'number',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
       'type' => 'select',
-    ],
-    'issue_date' => [
+    ),
+    'issue_date' => 
+    array (
       'name' => 'issue_date',
       'type' => 'date',
-    ],
-    'due_date' => [
+    ),
+    'due_date' => 
+    array (
       'name' => 'due_date',
       'type' => 'date',
-    ],
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
       'type' => 'select',
-    ],
-    'subtotal' => [
+    ),
+    'subtotal' => 
+    array (
       'name' => 'subtotal',
       'type' => 'number',
-    ],
-    'tax' => [
+    ),
+    'tax' => 
+    array (
       'name' => 'tax',
       'type' => 'number',
-    ],
-    'total' => [
+    ),
+    'total' => 
+    array (
       'name' => 'total',
       'type' => 'number',
-    ],
-    'notes' => [
+    ),
+    'notes' => 
+    array (
       'name' => 'notes',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'quotes' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'quotes' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'number' => [
+    ),
+    'number' => 
+    array (
       'name' => 'number',
       'type' => 'number',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
       'type' => 'select',
-    ],
-    'valid_until' => [
+    ),
+    'valid_until' => 
+    array (
       'name' => 'valid_until',
       'type' => 'date',
-    ],
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
       'type' => 'select',
-    ],
-    'subtotal' => [
+    ),
+    'subtotal' => 
+    array (
       'name' => 'subtotal',
       'type' => 'number',
-    ],
-    'tax' => [
+    ),
+    'tax' => 
+    array (
       'name' => 'tax',
       'type' => 'number',
-    ],
-    'total' => [
+    ),
+    'total' => 
+    array (
       'name' => 'total',
       'type' => 'number',
-    ],
-    'notes' => [
+    ),
+    'notes' => 
+    array (
       'name' => 'notes',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'cases' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'cases' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'subject' => [
+    ),
+    'subject' => 
+    array (
       'name' => 'subject',
       'type' => 'text',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
       'type' => 'select',
-    ],
-    'priority' => [
+    ),
+    'priority' => 
+    array (
       'name' => 'priority',
       'type' => 'select',
-    ],
-    'opened_at' => [
+    ),
+    'opened_at' => 
+    array (
       'name' => 'opened_at',
       'type' => 'datetime',
-    ],
-    'closed_at' => [
+    ),
+    'closed_at' => 
+    array (
       'name' => 'closed_at',
       'type' => 'datetime',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'emails' => [
-    'to' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'emails' => 
+  array (
+    'to' => 
+    array (
       'name' => 'to',
       'type' => 'email',
-    ],
-    'subject' => [
+    ),
+    'subject' => 
+    array (
       'name' => 'subject',
       'type' => 'text',
-    ],
-    'mailable_class' => [
+    ),
+    'mailable_class' => 
+    array (
       'name' => 'mailable_class',
       'type' => 'text',
-    ],
-    'related_id' => [
+    ),
+    'related_id' => 
+    array (
       'name' => 'related_id',
       'type' => 'text',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
       'type' => 'select',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'inquiries' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'inquiries' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'message' => [
+    ),
+    'message' => 
+    array (
       'name' => 'message',
       'type' => 'longtext',
-    ],
-    'email' => [
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
       'type' => 'text',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
       'type' => 'select',
-    ],
-    'ip' => [
+    ),
+    'ip' => 
+    array (
       'name' => 'ip',
       'type' => 'text',
-    ],
-    'user_agent' => [
+    ),
+    'user_agent' => 
+    array (
       'name' => 'user_agent',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'opportunities' => [
-
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'opportunities' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-
-
-    'amount' => [
+    ),
+    'amount' => 
+    array (
       'name' => 'amount',
       'type' => 'text',
-    ],
-
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
       'type' => 'select',
-
-    ],
-
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-
-    'sales_stage' => [
+    ),
+    'sales_stage' => 
+    array (
       'name' => 'sales_stage',
       'type' => 'select',
-    ],
-
-    'probability' => [
+    ),
+    'probability' => 
+    array (
       'name' => 'probability',
       'type' => 'number',
-    ],
-
-    'expected_close_date' => [
+    ),
+    'expected_close_date' => 
+    array (
       'name' => 'expected_close_date',
       'type' => 'date',
-    ],
-
-    'type' => [
+    ),
+    'type' => 
+    array (
       'name' => 'type',
       'type' => 'select',
-    ],
-
-
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
       'type' => 'datetime',
-    ],
-
-    'updated_at' => [
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
       'type' => 'datetime',
-    ],
-
-  ],
-
-  'products' => [
-
-    'name' => [
+      'readonly' => true,
+    ),
+  ),
+  'products' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-
-    'sku' => [
+    ),
+    'sku' => 
+    array (
       'name' => 'sku',
       'type' => 'text',
-    ],
-
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-
-    'category' => [
+    ),
+    'category' => 
+    array (
       'name' => 'category',
       'type' => 'select',
-    ],
-
-    'price' => [
+    ),
+    'price' => 
+    array (
       'name' => 'price',
       'type' => 'number',
-    ],
-
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
       'type' => 'select',
-    ],
-
-    'is_active' => [
+    ),
+    'is_active' => 
+    array (
       'name' => 'is_active',
       'type' => 'checkbox',
-    ],
-
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
       'type' => 'datetime',
-    ],
-
-    'updated_at' => [
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
       'type' => 'datetime',
-    ],
-
-  ],
-
-  'orders' => [
-    'name' => [
+      'readonly' => true,
+    ),
+  ),
+  'orders' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
       'searchable' => true,
       'type' => 'text',
       'required' => true,
-    ],
-    'order_number' => [
+    ),
+    'order_number' => 
+    array (
       'name' => 'order_number',
       'type' => 'text',
       'required' => true,
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-
-    'total_amount' => [
+    ),
+    'total_amount' => 
+    array (
       'name' => 'total_amount',
       'type' => 'number',
-    ],
-
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
       'type' => 'select',
-    ],
-
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
       'type' => 'select',
-    ],
-
-    'order_date' => [
+    ),
+    'order_date' => 
+    array (
       'name' => 'order_date',
       'type' => 'date',
-    ],
-
-    'due_date' => [
+    ),
+    'due_date' => 
+    array (
       'name' => 'due_date',
       'type' => 'date',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
       'type' => 'datetime',
-    ],
-
-    'updated_at' => [
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
       'type' => 'datetime',
-    ],
-
-  ],
-
-];
+      'readonly' => true,
+    ),
+  ),
+);
