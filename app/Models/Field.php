@@ -53,10 +53,6 @@ class Field extends Model
     'key',
     'is_custom',
     'is_active',
-    'options',
-    'filterable',
-    'searchable',
-    'hidden',
     'database_type',
     'dropdown_list_id'
 

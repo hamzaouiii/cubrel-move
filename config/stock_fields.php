@@ -5,6 +5,7 @@ return [
   'accounts' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -53,6 +54,7 @@ return [
   'contacts' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -97,6 +99,7 @@ return [
   'leads' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -149,6 +152,7 @@ return [
   'invoices' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -205,6 +209,7 @@ return [
   'quotes' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -257,6 +262,7 @@ return [
   'cases' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -332,6 +338,7 @@ return [
   'inquiries' => [
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -377,6 +384,7 @@ return [
 
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -435,6 +443,7 @@ return [
 
     'name' => [
       'name' => 'name',
+      'searchable' => true,
       'type' => 'text',
       'required' => true,
     ],
@@ -482,7 +491,12 @@ return [
   ],
 
   'orders' => [
-
+    'name' => [
+      'name' => 'name',
+      'searchable' => true,
+      'type' => 'text',
+      'required' => true,
+    ],
     'order_number' => [
       'name' => 'order_number',
       'type' => 'text',

@@ -13,7 +13,7 @@ abstract class BaseModuleHandler implements ModuleHandler
 
   protected string $model;
 
-  protected array $searchable = ['name'];
+  protected array $searchable = ['name', 'description'];
 
   protected function getPerPage(array $params): int
   {

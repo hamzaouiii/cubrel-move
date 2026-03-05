@@ -3,9 +3,17 @@ import Layout from "@/Layouts/Layout.vue";
 import axios from "axios";
 
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
-import { getCurrentInstance, computed, watch, ref, onMounted } from "vue";
+import {
+  getCurrentInstance,
+  computed,
+  watch,
+  ref,
+  onMounted,
+  toRef,
+} from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+import { useFieldRules } from "@/Composables/useFieldRules";
 
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
@@ -27,6 +35,7 @@ const props = defineProps({
   field_types: Array,
   metadata: Object,
 });
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 const { proxy } = getCurrentInstance();
@@ -45,35 +54,24 @@ const default_values = {
   dropdown_list: "",
   readonly: false,
   required: false,
+  searchable: false,
+  filterable: false,
   sortable: false,
+  hidden: false,
   default_value: "",
   min_length: "",
   max_length: "",
   regex: "",
 };
 
-// to be extended later with more rules
-// defualt value has to be dynamic, based on field type
-const fieldTypeRules = {
-  checkbox: {
-    hide: ["required", "regex", "min_length", "max_length"],
-    set: {
-      required: false,
-    },
-  },
-
-  select: {
-    show: ["dropdown_list"],
-    hide: ["regex", "min_length", "max_length"],
-  },
-  date: {
-    hide: ["regex", "min_length", "max_length"],
-  },
-  datetime: {
-    hide: ["regex", "min_length", "max_length"],
-  },
-};
 const form = useForm({ ...default_values });
+
+/**
+ * COMPOSABLE INTEGRATION
+ * Using the centralized rules and UI helpers
+ */
+const { visibleMetadata, applyRules, isCheckbox, isDropDown, isReadonly } =
+  useFieldRules(form, toRef(props, "metadata"));
 
 const generatedName = computed(() => {
   if (!form.label) return "";
@@ -92,6 +90,18 @@ const generatedName = computed(() => {
   return name;
 });
 
+const generatedKey = computed(() => {
+  return props.module.slug + "_" + generatedName.value;
+});
+
+// Watchers
+watch(
+  () => form.type,
+  (newType) => {
+    applyRules(newType);
+  },
+);
+
 watch(
   () => form.label,
   (newName) => {
@@ -102,69 +112,17 @@ watch(
   { immediate: true },
 );
 
-const generatedKey = computed(() => {
-  return props.module.slug + "_" + generatedName.value;
-});
-
 watch(
   () => form.name,
-  (newKey) => {
-    if (newKey) {
+  (newName) => {
+    if (newName) {
       form.key = generatedKey.value;
     }
   },
   { immediate: true },
 );
-const visibleMetadata = computed(() => {
-  const type = form.type;
 
-  if (!type || !fieldTypeRules[type]) {
-    return props.metadata;
-  }
-
-  const rules = fieldTypeRules[type];
-
-  return Object.values(props.metadata).filter((field) => {
-    if (rules.hide && rules.hide.includes(field)) {
-      return false;
-    }
-    return true;
-  });
-});
-watch(
-  () => form.type,
-  (type) => {
-    const rules = fieldTypeRules[type];
-
-    if (!rules) return;
-
-    if (rules.set) {
-      Object.entries(rules.set).forEach(([field, value]) => {
-        form[field] = value;
-      });
-    }
-  },
-);
-const isCheckbox = (field) => {
-  const checkboxFields = [
-    "readonly",
-    "hidden",
-    "required",
-    "searchable",
-    "filterable",
-    "sortable",
-  ];
-  return checkboxFields.includes(field);
-};
-
-const isDropDown = (field) => {
-  return field === "type";
-};
-
-const isReadonly = (field) => {
-  return field === "name";
-};
-
+// UI Helpers
 const typesList = () => {
   return props.field_types.map((type) => ({
     value: type,
@@ -181,6 +139,7 @@ const fieldsUrl = () => {
   return "/" + segments.join("/");
 };
 
+// Form Actions
 const saveField = () => {
   info(t("settings.saving"));
 
@@ -203,12 +162,10 @@ const saveField = () => {
       clearAllAlerts();
       if (Error.table_missing) {
         error(Error.table_missing);
-      } else if (Error) {
+      } else {
         for (const [key, value] of Object.entries(Error)) {
           error(key + " : " + value);
         }
-      } else {
-        error(t("fields.field_create_error"));
       }
     },
   });
@@ -228,21 +185,11 @@ const displayKeyError = () => {
   return form.errors.key || form.errors.name;
 };
 
-const openCreateDialog = () => {
-  showCreateDialog.value = true;
-};
-
-const openEditDialog = () => {
-  showEditDialog.value = true;
-};
-
-const closeCreateDialog = () => {
-  showCreateDialog.value = false;
-};
-
-const closeEditDialog = () => {
-  showEditDialog.value = false;
-};
+// Dropdown Modal Logic
+const openCreateDialog = () => (showCreateDialog.value = true);
+const openEditDialog = () => (showEditDialog.value = true);
+const closeCreateDialog = () => (showCreateDialog.value = false);
+const closeEditDialog = () => (showEditDialog.value = false);
 
 const fetchDrodownList = async () => {
   try {
@@ -265,6 +212,7 @@ const getDropdonwItem = (id) => {
 onMounted(() => {
   fetchDrodownList();
 });
+
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty(),
 });
@@ -318,20 +266,19 @@ useUnsavedChangesGuard({
                 <input
                   type="text"
                   :name="fieldName"
-                  v-model="form.name"
+                  v-model="form[fieldName]"
                   disabled
-                  :class="[
-                    {
-                      'settings__module__edit__element--error-field':
-                        displayKeyError(),
-                    },
-                  ]"
+                  :class="{
+                    'settings__module__edit__element--error-field':
+                      displayKeyError(),
+                  }"
                 />
                 <span
                   v-if="displayKeyError()"
                   class="settings__module__edit__element__error"
-                  >{{ $t("fields.key_is_taken_error") }}</span
                 >
+                  {{ $t("fields.key_is_taken_error") }}
+                </span>
               </template>
 
               <template v-else-if="isCheckbox(fieldName)">
@@ -349,6 +296,7 @@ useUnsavedChangesGuard({
                   v-model="form[fieldName]"
                   :options="typesList()"
                 ></DropdownField>
+
                 <transition name="dropdown-fade">
                   <div
                     class="dropdown-selector"
@@ -359,10 +307,10 @@ useUnsavedChangesGuard({
                       :options="DropDownListOptions"
                       @onOpenCreateDialog="openCreateDialog"
                       @onOpenEditDialog="openEditDialog"
-                    >
-                    </DropdownSelector>
+                    />
                   </div>
                 </transition>
+
                 <span
                   v-if="form.errors[fieldName]"
                   class="settings__module__edit__element__error"
@@ -412,15 +360,16 @@ useUnsavedChangesGuard({
       </div>
     </div>
   </div>
+
   <CreateNewDropdownListModal
     @onCloseModal="closeCreateDialog"
     @listCreated="assignList"
     v-if="showCreateDialog"
-  ></CreateNewDropdownListModal>
+  />
 
   <EditDropdownListModal
     :dropdown="getDropdonwItem(selected_dropdown_list)"
     @onCloseModal="closeEditDialog"
     v-if="showEditDialog"
-  ></EditDropdownListModal>
+  />
 </template>
