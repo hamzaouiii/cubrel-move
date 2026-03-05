@@ -313,15 +313,9 @@
     color: #64748b;
     border: 1px solid #e2e8f0;
 
-    &:hover {
-      background-color: #f1f5f9;
-      color: var(--module-color);
-      border-color: var(--module-color);
-    }
-
     &--active {
       background-color: var(--module-color);
-      color: white !important;
+      color: white;
       border-color: var(--module-color);
       cursor: default;
       box-shadow: 0 4px 6px -1px
@@ -341,8 +335,11 @@
         color: #cbd5e1;
       }
     }
-
-    // Smooth icons
+    &:hover:not(&--active) {
+      background-color: #f1f5f9;
+      color: var(--module-color);
+      border-color: var(--module-color);
+    }
     i {
       font-size: 0.75rem;
     }
