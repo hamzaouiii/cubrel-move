@@ -13,8 +13,8 @@ const props = defineProps({
   },
   openMenuId: [String, Number],
   isUnlinking: Boolean,
+  fields: Object,
 });
-
 const emit = defineEmits(["toggleMenu", "quick-edit", "unlink"]);
 
 const isMenuOpen = computed(() => props.openMenuId === props.record.id);
@@ -22,6 +22,10 @@ const isMenuOpen = computed(() => props.openMenuId === props.record.id);
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
 
 const triggerEl = ref(null);
+
+const fieldResolver = (name) => {
+  return props.fields?.find((field) => field.name === name);
+};
 </script>
 
 <template>
@@ -35,7 +39,7 @@ const triggerEl = ref(null);
 
       <template v-else>
         <FieldRenderer
-          :field="field"
+          :field="fieldResolver(field.name)"
           v-model="record[field.name]"
           mode="related-panel"
         ></FieldRenderer>

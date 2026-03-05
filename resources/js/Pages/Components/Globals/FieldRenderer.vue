@@ -24,14 +24,18 @@ const props = defineProps({
   hasError: {
     Type: Boolean,
   },
+  related_field: Object,
 });
 
 const component = computed(() => {
   return fieldRegistry[props.field?.type] || fieldRegistry["text"];
 });
-
+const dropdown_list = computed(() => {
+  return props?.related_field?.dropdown_list || null;
+});
 const componentProps = computed(() => ({
   ...props.field,
+  ...(dropdown_list.value && { dropdown_list: dropdown_list.value }),
   modelValue: props.modelValue,
   mode: props.mode,
   moduleColor: props.moduleColor,

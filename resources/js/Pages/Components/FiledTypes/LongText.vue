@@ -49,7 +49,6 @@ const getRows = () => {
 </script>
 
 <template>
-  <!-- EDIT MODE DONE -->
   <div v-if="mode === 'edit'">
     <span
       class="text-field text-field--edit"
@@ -71,17 +70,15 @@ const getRows = () => {
     </span>
   </div>
 
-  <!-- DETAIL MODE DONE-->
-  <div v-else-if="mode === 'detail' || 'table'">
+  <div v-else-if="mode === 'detail'">
     <span :class="['text-field', { 'view-uneditable-field': readOnly }]">
       {{ modelValue }}
     </span>
   </div>
 
-  <!-- TABLE MODE -->
   <div v-else-if="mode === 'table'">
-    <span :title="modelValue">
-      {{ modelValue || "—" }}
+    <span>
+      {{ modelValue.substring(0, 64) + "..." || "—" }}
     </span>
   </div>
 </template>

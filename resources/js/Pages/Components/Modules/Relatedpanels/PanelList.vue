@@ -9,13 +9,13 @@ const props = defineProps({
   expandPanel: { type: String },
 });
 
-const relationshipMap = computed(() => {
-  return Object.values(props.relationships).reduce((acc, rel) => {
-    acc[rel.name] = rel;
-    return acc;
-  }, {});
-});
+const relationship = (name) => {
+  return props.relationships?.[name] || null;
+};
 
+const getRelatedSlug = (name) => {
+  return props.relationships?.[name]?.related_slug || null;
+};
 const columns = computed(() => props.layout?.columns ?? []);
 
 const page = usePage();
@@ -52,13 +52,11 @@ const triggerPanelUpdate = () => {
           :key="panel.name"
           class="relatedpanels__item"
           :style="{
-            '--related-color': getRelatedColor(
-              relationshipMap[panel.name].related_slug,
-            ),
+            '--related-color': getRelatedColor(getRelatedSlug(panel.name)),
           }"
         >
           <Panel
-            :relationships="relationships"
+            :relationship="relationship(panel.name)"
             :panel="panel"
             @open-overlay="forwardOpenOverlay"
             @update-panel-trigger="triggerPanelUpdate"

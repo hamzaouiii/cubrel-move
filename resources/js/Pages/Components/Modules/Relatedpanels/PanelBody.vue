@@ -12,6 +12,7 @@ const props = defineProps({
   isOpenPanel: Boolean,
   relationship: Object,
   panel: Object,
+  fields: Object,
 });
 
 const records = ref([]);
@@ -98,6 +99,7 @@ const unlink = async (record) => {
               @unlink="unlink"
               :isUnlinking="unlinkingId === record.id"
               :class="{ isUnlinking: unlinkingId === record.id }"
+              :fields="fields"
             ></PanelRecord>
           </tbody>
         </table>
