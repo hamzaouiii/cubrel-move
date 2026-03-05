@@ -1,8 +1,8 @@
 <?php
 
 
-$dropdown_lists = DB::table('dropdown_lists')->select(['key', 'values'])->get()->mapWithKeys(function ($item) {
-  return [$item->key => json_decode($item->values, true)];
+$layouts = DB::table('layouts')->select(['type', 'definition'])->where('module_name', 'Orders')->get()->mapWithKeys(function ($item) {
+  return [$item->type => json_decode($item->definition, true)];
 })->toArray();
 
-file_put_contents(config_path('dropdown_lists.php'), "<?php\n\nreturn " . var_export($dropdown_lists, true) . ";\n");
+file_put_contents(config_path('orders.php'), "<?php\n\nreturn " . var_export($layouts, true) . ";\n");

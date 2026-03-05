@@ -291,6 +291,7 @@ return array(
     'label'  => 'Bestellungen',
     'single_label'  => 'Bestellung',
     'fields' => [
+      'name'            => 'Name',
       'id'               => 'ID',
       'order_number'     => 'Bestellnummer',
       'account_id'       => 'Konto',

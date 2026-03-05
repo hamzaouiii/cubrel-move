@@ -20,6 +20,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  highlight: String,
 });
 const localValue = computed({
   get: () => props.modelValue ?? "",
@@ -45,6 +46,20 @@ const getRows = () => {
     return Math.max(val / 8, 3);
   }
   return 3;
+};
+
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const highlightMatch = (text) => {
+  if (!text) return "-";
+  if (!props.highlight || !props.highlight.trim()) return text;
+
+  const term = escapeRegExp(props.highlight.trim());
+  const regex = new RegExp(`(${term})`, "gi");
+
+  return text
+    .toString()
+    .replace(regex, '<span class="search-highlight">$1</span>');
 };
 </script>
 
@@ -78,7 +93,15 @@ const getRows = () => {
 
   <div v-else-if="mode === 'table'">
     <span>
-      {{ modelValue.substring(0, 64) + "..." || "—" }}
+      <span
+        v-html="highlightMatch(modelValue.substring(0, 64) + '...' ?? '—')"
+      ></span>
+    </span>
+  </div>
+
+  <div v-else-if="mode === 'related-panel'">
+    <span>
+      {{ modelValue.substring(0, 32) + "..." || "—" }}
     </span>
   </div>
 </template>

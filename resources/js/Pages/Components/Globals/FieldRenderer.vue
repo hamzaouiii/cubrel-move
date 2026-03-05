@@ -25,6 +25,7 @@ const props = defineProps({
     Type: Boolean,
   },
   related_field: Object,
+  highlight: String,
 });
 
 const component = computed(() => {
@@ -36,11 +37,13 @@ const dropdown_list = computed(() => {
 const componentProps = computed(() => ({
   ...props.field,
   ...(dropdown_list.value && { dropdown_list: dropdown_list.value }),
+
   modelValue: props.modelValue,
   mode: props.mode,
   moduleColor: props.moduleColor,
   hasError: props.hasError,
   readOnly: props.readOnly,
+  highlight: props?.highlight || null,
 }));
 </script>
 

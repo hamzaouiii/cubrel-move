@@ -7,15 +7,16 @@ return array (
     array (
       0 => 
       array (
-        'name' => 'order_number',
+        'name' => 'name',
         'type' => 'text',
-        'label' => 'modules.orders.fields.order_number',
+        'label' => 'modules.defaults.name',
+        'sortable' => true,
       ),
       1 => 
       array (
-        'name' => 'total_amount',
-        'type' => 'number',
-        'label' => 'modules.orders.fields.total_amount',
+        'name' => 'order_number',
+        'type' => 'text',
+        'label' => 'modules.orders.fields.order_number',
       ),
       2 => 
       array (
@@ -25,9 +26,9 @@ return array (
       ),
       3 => 
       array (
-        'name' => 'order_date',
-        'type' => 'date',
-        'label' => 'modules.orders.fields.order_date',
+        'name' => 'currency',
+        'type' => 'select',
+        'label' => 'modules.orders.fields.currency',
       ),
       4 => 
       array (
@@ -37,15 +38,23 @@ return array (
       ),
       5 => 
       array (
+        'name' => 'total_amount',
+        'type' => 'number',
+        'label' => 'modules.orders.fields.total_amount',
+      ),
+      6 => 
+      array (
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
+        'sortable' => true,
       ),
-      6 => 
+      7 => 
       array (
         'name' => 'updated_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.updated_at',
+        'sortable' => true,
       ),
     ),
   ),
@@ -55,68 +64,99 @@ return array (
     array (
       0 => 
       array (
-        'name' => 'General',
+        'name' => 'Card',
         'layout' => 
         array (
           0 => 
           array (
-            'name' => 'order_number',
+            'name' => 'name',
             'type' => 'text',
-            'label' => 'modules.orders.fields.order_number',
+            'label' => 'modules.defaults.name',
+            'readonly' => false,
+            'required' => true,
+            'sortable' => true,
           ),
           1 => 
           array (
-            'name' => 'description',
-            'type' => 'longtext',
-            'label' => 'modules.orders.fields.description',
+            'name' => 'order_number',
+            'type' => 'text',
+            'label' => 'modules.orders.fields.order_number',
+            'readonly' => false,
+            'required' => true,
           ),
           2 => 
-          array (
-            'name' => 'total_amount',
-            'type' => 'number',
-            'label' => 'modules.orders.fields.total_amount',
-          ),
-          3 => 
-          array (
-            'name' => 'currency',
-            'type' => 'text',
-            'label' => 'modules.orders.fields.currency',
-          ),
-          4 => 
           array (
             'name' => 'status',
             'type' => 'select',
             'label' => 'modules.orders.fields.status',
+            'readonly' => false,
+            'required' => false,
+          ),
+          3 => 
+          array (
+            'name' => 'total_amount',
+            'type' => 'number',
+            'label' => 'modules.orders.fields.total_amount',
+            'readonly' => false,
+            'required' => false,
+          ),
+          4 => 
+          array (
+            'name' => 'currency',
+            'type' => 'select',
+            'label' => 'modules.orders.fields.currency',
+            'readonly' => false,
+            'required' => false,
           ),
           5 => 
           array (
-            'name' => 'order_date',
-            'type' => 'date',
-            'label' => 'modules.orders.fields.order_date',
+            'name' => 'description',
+            'type' => 'longText',
+            'label' => 'modules.defaults.description',
+            'readonly' => false,
+            'required' => true,
+            'sortable' => true,
           ),
-          6 => 
+        ),
+      ),
+      1 => 
+      array (
+        'name' => 'Dates',
+        'layout' => 
+        array (
+          0 => 
           array (
             'name' => 'due_date',
             'type' => 'date',
             'label' => 'modules.orders.fields.due_date',
+            'readonly' => false,
+            'required' => false,
           ),
-          7 => 
+          1 => 
           array (
-            'name' => 'assigned_user_id',
-            'type' => 'relationship',
-            'label' => 'modules.orders.fields.assigned_user_id',
+            'name' => 'order_date',
+            'type' => 'date',
+            'label' => 'modules.orders.fields.order_date',
+            'readonly' => false,
+            'required' => false,
           ),
-          8 => 
+          2 => 
           array (
             'name' => 'created_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.created_at',
+            'readonly' => true,
+            'required' => true,
+            'sortable' => true,
           ),
-          9 => 
+          3 => 
           array (
             'name' => 'updated_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.updated_at',
+            'readonly' => true,
+            'required' => true,
+            'sortable' => true,
           ),
         ),
       ),
@@ -142,24 +182,28 @@ return array (
                 'name' => 'name',
                 'type' => 'text',
                 'label' => 'modules.accounts.fields.name',
+                'sortable' => false,
               ),
               1 => 
               array (
-                'name' => 'email',
-                'type' => 'email',
-                'label' => 'modules.accounts.fields.email',
+                'name' => 'country',
+                'type' => 'text',
+                'label' => 'modules.accounts.fields.country',
+                'sortable' => false,
               ),
               2 => 
               array (
-                'name' => 'phone',
+                'name' => 'city',
                 'type' => 'text',
-                'label' => 'modules.accounts.fields.phone',
+                'label' => 'modules.accounts.fields.city',
+                'sortable' => false,
               ),
               3 => 
               array (
                 'name' => 'website',
                 'type' => 'text',
                 'label' => 'modules.accounts.fields.website',
+                'sortable' => false,
               ),
             ),
           ),
@@ -175,24 +219,28 @@ return array (
                 'name' => 'name',
                 'type' => 'text',
                 'label' => 'modules.invoices.fields.name',
+                'sortable' => false,
               ),
               1 => 
               array (
                 'name' => 'number',
                 'type' => 'number',
                 'label' => 'modules.invoices.fields.number',
+                'sortable' => false,
               ),
               2 => 
-              array (
-                'name' => 'total',
-                'type' => 'number',
-                'label' => 'modules.invoices.fields.total',
-              ),
-              3 => 
               array (
                 'name' => 'status',
                 'type' => 'select',
                 'label' => 'modules.invoices.fields.status',
+                'sortable' => false,
+              ),
+              3 => 
+              array (
+                'name' => 'total',
+                'type' => 'number',
+                'label' => 'modules.invoices.fields.total',
+                'sortable' => false,
               ),
             ),
           ),
@@ -214,36 +262,42 @@ return array (
                 'name' => 'name',
                 'type' => 'text',
                 'label' => 'modules.opportunities.fields.name',
+                'sortable' => false,
               ),
               1 => 
-              array (
-                'name' => 'type',
-                'type' => 'select',
-                'label' => 'modules.opportunities.fields.type',
-              ),
-              2 => 
-              array (
-                'name' => 'probability',
-                'type' => 'number',
-                'label' => 'modules.opportunities.fields.probability',
-              ),
-              3 => 
               array (
                 'name' => 'sales_stage',
                 'type' => 'select',
                 'label' => 'modules.opportunities.fields.sales_stage',
+                'sortable' => false,
               ),
-              4 => 
+              2 => 
               array (
                 'name' => 'amount',
                 'type' => 'text',
                 'label' => 'modules.opportunities.fields.amount',
+                'sortable' => false,
+              ),
+              3 => 
+              array (
+                'name' => 'probability',
+                'type' => 'number',
+                'label' => 'modules.opportunities.fields.probability',
+                'sortable' => false,
+              ),
+              4 => 
+              array (
+                'name' => 'currency',
+                'type' => 'select',
+                'label' => 'modules.opportunities.fields.currency',
+                'sortable' => false,
               ),
               5 => 
               array (
-                'name' => 'expected_close_date',
-                'type' => 'date',
-                'label' => 'modules.opportunities.fields.expected_close_date',
+                'name' => 'type',
+                'type' => 'select',
+                'label' => 'modules.opportunities.fields.type',
+                'sortable' => false,
               ),
             ),
           ),
@@ -259,30 +313,42 @@ return array (
                 'name' => 'name',
                 'type' => 'text',
                 'label' => 'modules.products.fields.name',
+                'sortable' => false,
               ),
               1 => 
               array (
-                'name' => 'sku',
-                'type' => 'text',
-                'label' => 'modules.products.fields.sku',
+                'name' => 'category',
+                'type' => 'select',
+                'label' => 'modules.products.fields.category',
+                'sortable' => false,
               ),
               2 => 
-              array (
-                'name' => 'price',
-                'type' => 'number',
-                'label' => 'modules.products.fields.price',
-              ),
-              3 => 
-              array (
-                'name' => 'category',
-                'type' => 'text',
-                'label' => 'modules.products.fields.category',
-              ),
-              4 => 
               array (
                 'name' => 'is_active',
                 'type' => 'checkbox',
                 'label' => 'modules.products.fields.is_active',
+                'sortable' => false,
+              ),
+              3 => 
+              array (
+                'name' => 'currency',
+                'type' => 'select',
+                'label' => 'modules.products.fields.currency',
+                'sortable' => false,
+              ),
+              4 => 
+              array (
+                'name' => 'price',
+                'type' => 'number',
+                'label' => 'modules.products.fields.price',
+                'sortable' => false,
+              ),
+              5 => 
+              array (
+                'name' => 'sku',
+                'type' => 'text',
+                'label' => 'modules.products.fields.sku',
+                'sortable' => false,
               ),
             ),
           ),
@@ -296,15 +362,16 @@ return array (
     array (
       0 => 
       array (
-        'name' => 'order_number',
+        'name' => 'name',
         'type' => 'text',
-        'label' => 'modules.orders.fields.order_number',
+        'label' => 'modules.defaults.name',
+        'sortable' => true,
       ),
       1 => 
       array (
-        'name' => 'status',
-        'type' => 'select',
-        'label' => 'modules.orders.fields.status',
+        'name' => 'order_number',
+        'type' => 'text',
+        'label' => 'modules.orders.fields.order_number',
       ),
       2 => 
       array (
@@ -314,15 +381,9 @@ return array (
       ),
       3 => 
       array (
-        'name' => 'order_date',
-        'type' => 'date',
-        'label' => 'modules.orders.fields.order_date',
-      ),
-      4 => 
-      array (
-        'name' => 'due_date',
-        'type' => 'date',
-        'label' => 'modules.orders.fields.due_date',
+        'name' => 'status',
+        'type' => 'select',
+        'label' => 'modules.orders.fields.status',
       ),
     ),
   ),

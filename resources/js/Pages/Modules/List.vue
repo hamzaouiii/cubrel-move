@@ -193,20 +193,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutsideActionDropDown);
 });
 
-const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const highlightMatch = (text) => {
-  if (!text) return "-";
-  if (!search.value || !search.value.trim()) return text;
-
-  const term = escapeRegExp(search.value.trim());
-  const regex = new RegExp(`(${term})`, "gi");
-
-  return text
-    .toString()
-    .replace(regex, '<span class="search-highlight">$1</span>');
-};
-
 const appSettings = usePage().props.appSettings;
 
 const resetSearchValue = () => {
@@ -555,6 +541,7 @@ const module_color = computed(() => {
                   v-model="item[col.name]"
                   mode="table"
                   :module-color="module_color"
+                  :highlight="search"
                 />
               </td>
             </Link>

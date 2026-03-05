@@ -280,6 +280,7 @@ return [
     'label'  => 'Orders',
     'single_label'  => 'Order',
     'fields' => [
+      'name'            => 'Name',
       'id'              => 'ID',
       'order_number'    => 'Order Number',
       'account_id'      => 'Account',
