@@ -7,8 +7,7 @@ import Radiobox from "../FiledTypes/Radiobox.vue";
 import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 
-const { success, error, info, warning, removeAlert, clearAllAlerts } =
-  useAlerts();
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
 const props = defineProps({
   panel: {
     type: Object,
@@ -19,6 +18,7 @@ const props = defineProps({
     required: true,
   },
   selectedParent: Object,
+  relationship: Object,
 });
 const cleanedLayout = computed(() => {
   if (!props.layout) return [];
@@ -31,7 +31,7 @@ const cleanedLayout = computed(() => {
 });
 
 const isSingleSelect = computed(() => {
-  const role = props.panel?.relationship?.role;
+  const role = props.relationship?.role;
   return role === "child" || role === "sibling";
 });
 
@@ -53,7 +53,7 @@ const modules = computed(() => pageData.props.modules);
 
 const currentModule = pageData.props.module.slug;
 const currentRecordId = pageData.props.record?.id;
-const relationshipName = props.panel?.relationship?.name || null;
+const relationshipName = props.relationship?.name || null;
 
 const saveLoading = ref(false);
 const loading = ref(false);
@@ -164,11 +164,12 @@ const save = async () => {
     success("Linking records finished successfully ");
     emit("saved", props.panel.name);
     closeOverlay();
-  } catch (error) {
+  } catch (e) {
     console.error(
       "Failed saving related records:",
-      error.response?.data || error.message,
+      e.response?.data || e.message,
     );
+    error(e.response?.data?.message);
   } finally {
     saveLoading.value = false;
   }
@@ -198,7 +199,7 @@ const formatField = (field, value) => {
 };
 
 const displayedRecords = computed(() => {
-  if (!props.selectedParent || props.panel.relationship.role === "parent") {
+  if (!props.selectedParent || props.relationship.role === "parent") {
     return records.value;
   }
 
@@ -210,6 +211,7 @@ const displayedRecords = computed(() => {
   // Put selected record at top
   return [props.selectedParent, ...filtered];
 });
+
 const toggleRow = (id) => {
   if (isSingleSelect.value) {
     // Single select mode
@@ -229,8 +231,13 @@ const toggleRow = (id) => {
     selected.value.splice(index, 1);
   }
 };
+
 const initializeSelected = () => {
-  if (props.selectedParent && selected.value.length === 0) {
+  if (
+    props.selectedParent &&
+    selected.value.length === 0 &&
+    props.relationship.type != "many-to-many"
+  ) {
     selected.value = [props.selectedParent.id];
   }
 };
@@ -263,7 +270,7 @@ const selectedSingle = computed({
       class="record-overlay"
       @click.self="closeOverlay"
       :style="{
-        '--related-color': getRelatedColor(panel.relationship.related_slug),
+        '--related-color': getRelatedColor(relationship.related_slug),
       }"
     >
       <div class="related-links" ref="overlayRef">
@@ -353,7 +360,7 @@ const selectedSingle = computed({
                       :value="record.id"
                       v-model="selected"
                       @update:modelValue="() => toggleRow(record.id)"
-                      :color="getRelatedColor(panel.relationship.related_slug)"
+                      :color="getRelatedColor(relationship.related_slug)"
                     />
 
                     <Radiobox
@@ -361,7 +368,7 @@ const selectedSingle = computed({
                       :value="record.id"
                       v-model="selectedSingle"
                       @update:modelValue="() => toggleRow(record.id)"
-                      :color="getRelatedColor(panel.relationship.related_slug)"
+                      :color="getRelatedColor(relationship.related_slug)"
                     />
                   </td>
 

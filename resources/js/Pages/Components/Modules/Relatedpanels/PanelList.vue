@@ -34,8 +34,8 @@ const emit = defineEmits(["open-overlay", "panel-update"]);
 const forwardOpenOverlay = (panel, selected) => {
   emit("open-overlay", panel, selected);
 };
-const triggerPanelUpdate = () => {
-  emit("panel-update");
+const triggerPanelUpdate = (panel) => {
+  emit("panel-update", panel);
 };
 </script>
 
@@ -60,6 +60,7 @@ const triggerPanelUpdate = () => {
             :panel="panel"
             @open-overlay="forwardOpenOverlay"
             @update-panel-trigger="triggerPanelUpdate"
+            :expand-panel="expandPanel"
           ></Panel>
         </li>
       </div>

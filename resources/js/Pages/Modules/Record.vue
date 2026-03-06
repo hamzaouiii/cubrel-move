@@ -42,11 +42,11 @@ const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const currentTab = ref("overview");
+const currentTab = ref("related");
 const overlayOpen = ref(false);
 const activePanel = ref(null);
 const activeParentRecord = ref(null);
-
+const expandPanel = ref(null);
 // Computed
 const avatar = computed(() => {
   const name = props.record?.name?.trim();
@@ -306,11 +306,11 @@ const openOverlay = (panel, selected) => {
   activeParentRecord.value = selected;
 };
 const activeLayout = (panel) => {
-  console.log(props.record?.related[panel?.name]);
   return props.record?.related[panel?.name]?.linkingPanel.columns || null;
 };
 
-const handleSaved = () => {
+const handleSaved = (p) => {
+  expandPanel.value = p;
   overlayOpen.value = false;
   router.reload({
     only: ["record"],
@@ -333,6 +333,10 @@ onBeforeUnmount(() => {
 // useUnsavedChangesGuard({
 //   getIsDirty: () => isDirty.value,
 // });
+
+const relationship = (name) => {
+  return props.record?.related?.[name] || null;
+};
 </script>
 <template>
   <Head>
@@ -496,11 +500,13 @@ onBeforeUnmount(() => {
           :layout="relatedLayout"
           @open-overlay="openOverlay"
           @panel-update="handleSaved"
+          :expand-panel="expandPanel"
         ></PanelList>
         <RelatedLinksOverlay
           v-if="overlayOpen"
           :layout="activeLayout(activePanel)"
           :panel="activePanel"
+          :relationship="relationship(activePanel.name)"
           @close="overlayOpen = false"
           @saved="handleSaved"
           :selected-parent="activeParentRecord"
