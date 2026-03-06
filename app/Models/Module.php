@@ -161,6 +161,7 @@ class Module extends Model
         'key',
         'readonly',
         'sortable',
+        'searchable',
         'label',
         'required',
       ])

@@ -309,7 +309,9 @@ const handleMassUpdate = async (payload) => {
 const sortKey = ref(null);
 const sortDir = ref("asc");
 
-const isSortable = (col) => col?.sortable === true;
+const isSortable = (col) => {
+  return col?.sortable === true;
+};
 const isSorted = (col) => sortKey.value === col.name;
 
 const sortIcon = (col) => {
@@ -498,14 +500,14 @@ const module_color = computed(() => {
               v-for="col in listLayoutColumns || []"
               :key="col?.name"
               scope="col"
-              :class="{ sortable: col?.sortable }"
-              @click="sortBy(col)"
+              :class="{ sortable: getField(col)?.sortable }"
+              @click="sortBy(getField(col))"
             >
               <span class="th-label">
                 {{ $t(col.label) }}
                 <i
-                  v-if="col?.sortable"
-                  :class="sortIcon(col)"
+                  v-if="getField(col)?.sortable"
+                  :class="sortIcon(getField(col))"
                   class="sort-icon"
                 ></i>
               </span>

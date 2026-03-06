@@ -21,6 +21,7 @@ const props = defineProps({
     default: false,
   },
   highlight: String,
+  searchable: Boolean,
 });
 const localValue = computed({
   get: () => props.modelValue ?? "",

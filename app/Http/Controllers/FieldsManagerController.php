@@ -105,7 +105,7 @@ class FieldsManagerController extends Controller
       ->firstOrFail();
 
     $data = $request->validate([
-      'label' => ['required', 'string', 'min:4'],
+      'label' => ['required', 'string', 'min:3'],
       'readonly' => ['boolean'],
       'hidden' => ['boolean'],
       'required' => ['boolean'],

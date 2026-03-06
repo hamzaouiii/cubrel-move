@@ -467,7 +467,10 @@
       font-size: 0.75rem;
       border-bottom: 2px solid var(--module-color); // Brand accent line
     }
-
+    .sortable {
+      cursor: pointer;
+      user-select: none;
+    }
     th,
     td {
       padding: 1rem;

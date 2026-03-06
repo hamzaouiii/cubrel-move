@@ -26,7 +26,10 @@ const props = defineProps({
   },
   related_field: Object,
   highlight: String,
+  searchable: Boolean,
+  sortable: Boolean,
 });
+console.log(props.field);
 
 const component = computed(() => {
   return fieldRegistry[props.field?.type] || fieldRegistry["text"];

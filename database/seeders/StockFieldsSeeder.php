@@ -46,6 +46,7 @@ class StockFieldsSeeder extends Seeder
             'dropdown_list_id'  => $dropdownListId,
             'is_custom'         => false,
             'is_active'         => true,
+            'sortable'         => true,
           ])
         );
       }

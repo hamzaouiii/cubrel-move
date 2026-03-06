@@ -21,7 +21,9 @@ const props = defineProps({
     default: false,
   },
   highlight: String,
+  searchable: Boolean,
 });
+
 const localValue = computed({
   get: () => props.modelValue ?? "",
   set: (val) => emit("update:modelValue", val),
@@ -57,7 +59,6 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
-  <!-- EDIT MODE DONE -->
   <div v-if="mode === 'edit'">
     <span
       class="text-field text-field--edit"
@@ -73,17 +74,18 @@ const highlightMatch = (text) => {
     </span>
   </div>
 
-  <!-- DETAIL MODE DONE-->
   <div v-else-if="mode === 'detail'">
     <span :class="['text-field', { 'text-field--readonly': readOnly }]">
       {{ modelValue }}
     </span>
   </div>
 
-  <!-- TABLE MODE -->
   <div v-else-if="mode === 'table' || mode === 'related-panel'">
-    <span :title="modelValue">
+    <span v-if="searchable">
       <span v-html="highlightMatch(modelValue ?? '—')"></span>
+    </span>
+    <span v-else>
+      {{ modelValue || "—" }}
     </span>
   </div>
 </template>

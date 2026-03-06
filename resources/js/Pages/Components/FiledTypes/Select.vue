@@ -49,6 +49,8 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  highlight: String,
+  searchable: Boolean,
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
@@ -162,10 +164,24 @@ const clearSelection = (e) => {
   emit("update:modelValue", null);
   emit("change", null);
 };
+
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const highlightMatch = (text) => {
+  if (!text) return "-";
+  if (!props.highlight || !props.highlight.trim()) return text;
+
+  const term = escapeRegExp(props.highlight.trim());
+  const regex = new RegExp(`(${term})`, "gi");
+
+  return text
+    .toString()
+    .replace(regex, '<span class="search-highlight">$1</span>');
+};
 </script>
 
 <template>
-  <div v-if="mode === 'edit'" class="">
+  <div v-if="mode === 'edit'">
     <div class="select-field" ref="root">
       <div
         class="select-field__control"
@@ -262,8 +278,11 @@ const clearSelection = (e) => {
     </span>
   </div>
   <div v-else-if="mode === 'table'">
-    <span :title="modelValue">
-      {{ $t(selectedOption?.label) }}
+    <span v-if="searchable">
+      <span v-html="highlightMatch($t(selectedOption?.label) ?? '—')"></span>
+    </span>
+    <span v-else>
+      {{ modelValue || "—" }}
     </span>
   </div>
 

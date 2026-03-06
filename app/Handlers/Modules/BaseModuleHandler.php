@@ -6,6 +6,7 @@ use App\Contracts\ModuleHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Services\Relationships\RelationshipService;
+use App\Models\Module;
 
 abstract class BaseModuleHandler implements ModuleHandler
 {
@@ -13,6 +14,8 @@ abstract class BaseModuleHandler implements ModuleHandler
 
   protected string $model;
 
+  // updated to have dynamic searchable fields
+  //TODO: needs tests
   protected array $searchable = ['name', 'description'];
 
   protected function getPerPage(array $params): int
@@ -25,16 +28,17 @@ abstract class BaseModuleHandler implements ModuleHandler
     return $items;
   }
 
-  public function getListData(array $params = []): array
+  public function getListData(Module $module, array $params = []): array
   {
     $perPage = $this->getPerPage($params);
     $query   = $this->query($params);
 
-    if (!empty($params['search']) && !empty($this->searchable)) {
+    $searchable = $this->getSearchableColumns($module);
+    if (!empty($params['search']) && !empty($searchable)) {
       $search = trim($params['search']);
 
-      $query->where(function ($q) use ($search) {
-        foreach ($this->searchable as $column) {
+      $query->where(function ($q) use ($search, $searchable) {
+        foreach ($searchable as $column) {
           $q->orWhere($column, 'LIKE', "%{$search}%");
         }
       });
@@ -98,5 +102,19 @@ abstract class BaseModuleHandler implements ModuleHandler
     } catch (ModelNotFoundException $e) {
       throw $e;
     }
+  }
+
+  protected function getSearchableColumns(Module $module): array
+  {
+    $columns = $this->searchable ?? [];
+    if (!isset($module)) {
+      return $columns;
+    }
+
+    $dbFields = $module->fields()
+      ->where('searchable', true)
+      ->pluck('name')
+      ->toArray();
+    return array_unique(array_merge($columns, $dbFields));
   }
 }
