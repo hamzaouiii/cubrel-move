@@ -1401,6 +1401,17 @@
         font-size: 0.9rem;
         width: 200px;
       }
+      &__clear {
+        margin-left: auto;
+        margin-right: 0;
+        cursor: pointer;
+        transition: color 0.2s;
+        color: #94a3b8;
+
+        &:hover {
+          color: #64748b;
+        }
+      }
     }
   }
 
@@ -1476,11 +1487,6 @@
               }
             }
           }
-
-          // Optional: Make the record title pop even more when selected
-          .related-links__record-title {
-            color: var(--related-color);
-          }
         }
       }
 
@@ -1528,8 +1534,16 @@
       }
     }
   }
+  .search-highlight {
+    padding: 2px 0;
+    background-color: color-mix(in srgb, var(--related-color) 20%, transparent);
+    border-bottom: 2px solid var(--related-color);
+    color: inherit;
+  }
 }
-
+.related-links__record-title {
+  font-weight: 600;
+}
 .actiondropdown-menu {
   background: white;
   border: 1px solid #e5e7eb;

@@ -80,7 +80,11 @@ const highlightMatch = (text) => {
     </span>
   </div>
 
-  <div v-else-if="mode === 'table' || mode === 'related-panel'">
+  <div
+    v-else-if="
+      mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
+    "
+  >
     <span v-if="searchable">
       <span v-html="highlightMatch(modelValue ?? '—')"></span>
     </span>

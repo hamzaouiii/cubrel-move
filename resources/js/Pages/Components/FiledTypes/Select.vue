@@ -50,7 +50,6 @@ const props = defineProps({
     default: "",
   },
   highlight: String,
-  searchable: Boolean,
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
@@ -282,11 +281,11 @@ const highlightMatch = (text) => {
       <span v-html="highlightMatch($t(selectedOption?.label) ?? '—')"></span>
     </span>
     <span v-else>
-      {{ modelValue || "—" }}
+      {{ $t(selectedOption?.label) || "—" }}
     </span>
   </div>
 
-  <div v-else-if="mode === 'related-panel'">
-    {{ $t(selectedOption?.label) }}
+  <div v-else-if="mode === 'related-panel' || mode === 'linkingPanel'">
+    {{ $t(selectedOption?.label) || "—" }}
   </div>
 </template>

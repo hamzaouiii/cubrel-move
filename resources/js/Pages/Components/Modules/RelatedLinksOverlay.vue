@@ -6,6 +6,7 @@ import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
 import Radiobox from "../FiledTypes/Radiobox.vue";
 import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
+import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 const props = defineProps({
@@ -78,7 +79,7 @@ const getRelatedColor = (slug) => {
 
 const loadRecords = async () => {
   if (!relationshipName || !currentModule || !currentRecordId) {
-    console.error("Missing relationship context");
+    error("Missing relationship context");
     return;
   }
   let url;
@@ -175,29 +176,6 @@ const save = async () => {
   }
 };
 
-const formatField = (field, value) => {
-  if (value == null || value === "") return " - ";
-
-  const type = field?.type?.toLowerCase();
-
-  switch (type) {
-    case "text":
-      return value;
-
-    case "datetime":
-      return formatDateTime(value);
-
-    case "date":
-      return formatDate(value);
-    case "longtext":
-      // return "test";
-      return value.length > 34 ? value.slice(0, 33) + "…" : value;
-
-    default:
-      return value;
-  }
-};
-
 const displayedRecords = computed(() => {
   if (!props.selectedParent || props.relationship.role === "parent") {
     return records.value;
@@ -261,6 +239,16 @@ const selectedSingle = computed({
     selected.value = val ? [val] : [];
   },
 });
+
+const getField = (item) => {
+  return Object.values(props.relationship?.fields)?.find(
+    (field) => field.name === item.name,
+  );
+};
+
+const clearSearch = () => {
+  search.value = "";
+};
 </script>
 
 <template>
@@ -300,7 +288,6 @@ const selectedSingle = computed({
           </div>
         </template>
         <template v-else>
-          <!-- List -->
           <div class="related-links__list">
             <div class="related-links__modifiers">
               <span class="related-links__modifiers__info"
@@ -308,7 +295,10 @@ const selectedSingle = computed({
               >
               <div class="related-links__modifiers__search">
                 <input v-model="search" type="text" placeholder="Search..." />
-                <span class="related-links__modifiers__search__clear">
+                <span
+                  class="related-links__modifiers__search__clear"
+                  @click.stop="clearSearch"
+                >
                   <i class="fa-solid fa-xmark" v-if="search.length"></i>
                 </span>
               </div>
@@ -318,7 +308,6 @@ const selectedSingle = computed({
               v-if="cleanedLayout && cleanedLayout.length"
               class="related-links__table"
             >
-              <!-- HEADER -->
               <thead>
                 <tr>
                   <th class="related-links__head__space"></th>
@@ -328,7 +317,6 @@ const selectedSingle = computed({
                 </tr>
               </thead>
 
-              <!-- LOADING -->
               <tbody v-if="loading">
                 <tr
                   v-for="n in 25"
@@ -344,7 +332,6 @@ const selectedSingle = computed({
                 </tr>
               </tbody>
 
-              <!-- RECORDS -->
               <tbody v-else>
                 <tr
                   v-for="record in displayedRecords"
@@ -353,7 +340,6 @@ const selectedSingle = computed({
                   @click="toggleRow(record.id)"
                   :class="{ selected: selected.includes(record.id) }"
                 >
-                  <!-- Checkbox -->
                   <td class="related-links__record__checkbox">
                     <Selectbox
                       v-if="!isSingleSelect"
@@ -372,25 +358,29 @@ const selectedSingle = computed({
                     />
                   </td>
 
-                  <!-- Fields -->
                   <td
                     v-for="field in cleanedLayout"
                     :key="field.name"
                     class="related-links__cell"
                   >
-                    <template v-if="field.name === 'name'">
-                      <span
-                        class="related-links__record-title related-links__record__field"
-                      >
-                        {{ formatField(field, record[field.name]) }}
-                      </span>
-                    </template>
-
-                    <template v-else>
-                      <span class="related-links__record__field">
-                        {{ formatField(field, record[field.name]) }}
-                      </span>
-                    </template>
+                    <span
+                      :class="
+                        ('related-links__record__field',
+                        {
+                          'related-links__record-title': field.name === 'name',
+                        })
+                      "
+                    >
+                      <FieldRenderer
+                        :field="getField(field)"
+                        v-model="record[field.name]"
+                        :module-color="
+                          getRelatedColor(relationship.related_slug)
+                        "
+                        mode="linkingPanel"
+                        :highlight="search"
+                      />
+                    </span>
                   </td>
                 </tr>
               </tbody>

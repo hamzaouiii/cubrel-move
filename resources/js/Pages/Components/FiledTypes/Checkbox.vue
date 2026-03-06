@@ -53,7 +53,6 @@ const value = computed({
 </script>
 
 <template>
-  <!-- EDIT MODE -->
   <label
     v-if="mode === 'edit'"
     class="checkbox"
@@ -65,11 +64,12 @@ const value = computed({
     <span class="checkbox__slider"></span>
   </label>
 
-  <!-- DETAILS MODE -->
-
   <div
     v-else-if="
-      mode === 'detail' || mode === 'table' || mode === 'related-panel'
+      mode === 'detail' ||
+      mode === 'table' ||
+      mode === 'related-panel' ||
+      mode === 'linkingPanel'
     "
     class="checkbox-display"
     :class="{ 'checkbox-display--active': value }"
