@@ -42,7 +42,7 @@ const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const currentTab = ref("");
+const currentTab = ref("overview");
 const overlayOpen = ref(false);
 const activePanel = ref(null);
 const activeParentRecord = ref(null);
@@ -305,9 +305,10 @@ const openOverlay = (panel, selected) => {
   overlayOpen.value = true;
   activeParentRecord.value = selected;
 };
-
-const activeLayout = (panel) =>
-  props.record?.related[panel?.name]?.linking_layout.columns || null;
+const activeLayout = (panel) => {
+  console.log(props.record?.related[panel?.name]);
+  return props.record?.related[panel?.name]?.linkingPanel.columns || null;
+};
 
 const handleSaved = () => {
   overlayOpen.value = false;

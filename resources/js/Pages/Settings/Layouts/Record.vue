@@ -151,10 +151,10 @@ const onItemMouseLeave = () => {
             </span>
           </div>
         </Link>
-        <Link class="layouts__item" :href="currentPath + '/linking-panel'">
+        <Link class="layouts__item" :href="currentPath + '/linkingPanel'">
           <div
             class="layouts__item__content"
-            @mouseenter="onItemMouseEnter($event, 'linking-panel')"
+            @mouseenter="onItemMouseEnter($event, 'linkingPanel')"
             @mouseleave="onItemMouseLeave"
           >
             <div class="layouts__item__content__modifier">
@@ -165,7 +165,7 @@ const onItemMouseLeave = () => {
               <i class="fa-solid fa-link"></i>
             </div>
             <span class="layouts__item__content__label">
-              {{ $t("layouts.linking-panel") }}
+              {{ $t("layouts.linkingPanel") }}
             </span>
           </div>
         </Link>

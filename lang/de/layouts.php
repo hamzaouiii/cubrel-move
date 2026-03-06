@@ -47,5 +47,5 @@ return array(
   'drop_boxes_here' => 'Felder hier ablegen',
   'all_relationships_used' => 'Alle Beziehungen sind bereits im Layout vorhanden',
   'fields_header_hint' => 'Feld anklicken, um es zum Unterbereich Header hinzuzufügen',
-  'linking-panel' => 'Verbindungspanel'
+  'linkingPanel' => 'Verbindungspanel'
 );

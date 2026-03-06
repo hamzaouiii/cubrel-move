@@ -45,6 +45,6 @@ return [
   'back_to_list' => 'Back to layouts',
   'required_field' => 'Required Field',
   'fields_header_hint' => 'Click on a field to add it to the subpanel header',
-  'linking-panel' => 'linking Panel',
+  'linkingPanel' => 'linking Panel',
 
 ];

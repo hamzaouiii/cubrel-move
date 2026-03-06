@@ -128,13 +128,13 @@ class Module extends Model
 
   public function linkingPanelLayout(): array
   {
-    return $this->resolveLayout('linking-panel');
+    return $this->resolveLayout('linkingPanel');
   }
 
   public function getDataForPanel(): array
   {
     return [
-      'linking-panel' => $this->linkingPanelLayout(),
+      'linkingPanel' => $this->linkingPanelLayout(),
       'fields' => $this->fields
     ];
   }

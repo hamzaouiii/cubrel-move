@@ -79,7 +79,7 @@ return [
       1 => [],
     ]
   ],
-  'linking-panel' => [
+  'linkingPanel' => [
     "columns" => [
       [
         "name" => "name",
