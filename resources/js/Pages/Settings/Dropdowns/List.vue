@@ -21,11 +21,6 @@ const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
 
-/*
-|--------------------------------------------------------------------------
-| Search
-|--------------------------------------------------------------------------
-*/
 const search = ref("");
 
 const filteredFields = computed(() => {
@@ -34,36 +29,6 @@ const filteredFields = computed(() => {
   return props.list.filter((f) =>
     String(f.key).toLowerCase().includes(search.value.toLowerCase()),
   );
-});
-
-/*
-|--------------------------------------------------------------------------
-| Sorting
-|--------------------------------------------------------------------------
-*/
-const sortKey = ref(null);
-const sortDirection = ref("asc");
-
-function sortBy(key) {
-  if (sortKey.value === key) {
-    sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
-  } else {
-    sortKey.value = key;
-    sortDirection.value = "asc";
-  }
-}
-
-const sortedFields = computed(() => {
-  if (!sortKey.value) return filteredFields.value;
-
-  return [...filteredFields.value].sort((a, b) => {
-    const valA = a[sortKey.value] ?? "";
-    const valB = b[sortKey.value] ?? "";
-
-    if (valA < valB) return sortDirection.value === "asc" ? -1 : 1;
-    if (valA > valB) return sortDirection.value === "asc" ? 1 : -1;
-    return 0;
-  });
 });
 
 const editUrl = (f) => {
@@ -89,33 +54,33 @@ const editUrl = (f) => {
       <div class="settings__header__title">
         <DropdownBreadcrumbs :setting-module="item" />
       </div>
+    </div>
 
-      <div class="settings__header__action">
-        <Link class="settings__header__action__create" :href="createUrl">
+    <div class="dropdowns__toolbar">
+      <div class="dropdowns__search">
+        <input
+          v-model="search"
+          type="text"
+          class="dropdowns__search__input"
+          :placeholder="$t('settings.dropdown.search')"
+        />
+      </div>
+
+      <div class="dropdowns__actions">
+        <Link class="btn-create" :href="createUrl">
           {{ $t("settings.dropdown.create") }}
         </Link>
       </div>
     </div>
-
-    <!-- Search -->
-    <div class="dropdowns__search">
-      <input
-        v-model="search"
-        type="text"
-        class="dropdowns__search__input"
-        :placeholder="$t('dropdowns.search')"
-      />
-    </div>
-
     <div class="dropdowns">
       <table class="dropdowns__table">
         <tbody>
           <tr
             class="dropdowns__table__row"
-            v-for="f in sortedFields"
+            v-for="f in filteredFields"
             :key="f.key"
           >
-            <td @click="sortBy('key')" style="cursor: pointer">
+            <td style="cursor: pointer">
               {{ f.key }}
             </td>
 
@@ -139,7 +104,7 @@ const editUrl = (f) => {
             </td>
           </tr>
 
-          <tr v-if="!sortedFields.length">
+          <tr v-if="!filteredFields.length">
             <td colspan="2" style="text-align: center; padding: 1rem">
               {{ $t("settings.no_results") }}
             </td>

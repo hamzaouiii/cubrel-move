@@ -1814,107 +1814,150 @@
 .fields {
   margin-top: 20px;
   margin-bottom: 20px;
-  border-radius: 8px;
+
   &__header {
     display: flex;
-    flex-direction: row;
     justify-content: flex-end;
-    margin: 20px 0;
-    .btn {
-      --btn-color: var(--primary-color);
-      --btn-bg-hover: var(--primary-color);
-    }
-  }
-  &__table {
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5);
-    font-family: "Fira Sans", "Heebo", sans-serif;
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    font-size: 14px;
-    th,
-    td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-    }
-    thead th {
-      background: #f9fafb;
-      cursor: pointer;
-      user-select: none;
+    margin-bottom: 16px;
+
+    &__create {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      background: #ffffff;
+      border: 1.5px solid var(--primary-color);
+      color: var(--primary-color);
+      border-radius: 9px;
+      font-size: 0.875rem;
       font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+
       &:hover {
-        background: #f3f4f6;
+        background: var(--primary-color);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(79, 110, 247, 0.2);
       }
     }
-    tbody tr:hover {
-      background: #f9fafb;
+  }
+
+  &__table {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #eaecf4;
+    border-radius: 14px;
+    box-shadow:
+      0 2px 12px rgba(26, 29, 46, 0.06),
+      0 1px 3px rgba(26, 29, 46, 0.04);
+    border-collapse: separate; // Needed for border-radius on tables
+    border-spacing: 0;
+    overflow: hidden;
+
+    thead th {
+      background: #f8f9fc;
+      padding: 14px 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #b0b7cc;
+      border-bottom: 1px solid #f2f4f9;
+      text-align: left;
+      transition: background 0.15s ease;
+      cursor: default;
+      &:hover {
+        background: #f1f3f9;
+        color: #3d4263;
+      }
     }
 
+    tbody tr {
+      transition: background 0.12s ease;
+
+      &:last-child td {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: #f8f9fc;
+
+        .fields__table__row__actions__edit {
+          opacity: 1;
+        }
+      }
+
+      td {
+        padding: 13px 20px;
+        font-size: 0.875rem;
+        color: #1a1d2e;
+        border-bottom: 1px solid #f2f4f9;
+
+        // Apply Mono font to the System Name column
+        &:first-child {
+          font-family: "DM Mono", "Fira Mono", monospace;
+          font-weight: 500;
+          color: #3d4263;
+        }
+      }
+    }
+
+    // Sort Icon Styles
     .sort-icon {
       margin-left: 6px;
-      font-size: 12px;
-      opacity: 0;
-      transform: rotate(0deg);
-      transition:
-        opacity 0.15s ease,
-        transform 0.2s ease;
+      font-size: 11px;
+      opacity: 0.3;
+      transition: opacity 0.15s ease;
+
+      &.is-active {
+        opacity: 1;
+        color: var(--primary-color);
+      }
     }
-    th:hover .sort-icon {
-      opacity: 0.4;
-    }
-    .is-active {
-      opacity: 1;
-    }
+
     &__row {
       &__actions {
         display: flex;
+        align-items: center;
         justify-content: flex-end;
-        align-self: flex-end;
-        align-items: flex-end;
-        &__edit {
-          margin: 0 15px;
-          display: flex;
+        gap: 6px;
+        padding: 10px 16px !important;
+
+        .btn {
+          width: 32px;
+          height: 32px;
+          display: inline-flex;
+          align-items: center;
           justify-content: center;
-          border-radius: 5px;
-          transition: all 0.3s ease;
-          width: initial;
-          --btn-color: var(--primary-color);
-          --btn-bg-hover: var(--primary-color);
-          &__icon {
-            padding: 2px;
-            color: var(--module-color);
-            transition: all 0.3s ease;
-          }
-          &:hover {
-            background-color: var(--module-color);
-            .edit-icon {
-              color: white;
-            }
-          }
+          border-radius: 8px;
+          transition: all 0.15s ease;
+          text-decoration: none;
         }
-        &__delete {
-          display: flex;
+        .btn {
+          width: 32px;
+          height: 32px;
+          display: inline-flex;
+          align-items: center;
           justify-content: center;
-          border-radius: 5px;
-          transition: all 0.3s ease;
-          width: initial;
-          --btn-color: var(--danger-color);
-          --btn-bg-hover: var(--danger-color);
-          &__icon {
-            padding: 2px;
-            transition: all 0.3s ease;
+          border-radius: 8px;
+          border: none;
+          cursor: pointer;
+          font-size: 13px;
+          transition: all 0.15s ease;
+          text-decoration: none;
+        }
+        &__edit {
+          background: rgba(79, 110, 247, 0.08);
+          color: var(--primary-color);
+
+          &:hover {
+            background: var(--primary-color);
+            color: #ffffff;
+            transform: scale(1.08);
+            box-shadow: 0 3px 10px rgba(79, 110, 247, 0.3);
           }
-          &--disabled {
-            cursor: not-allowed;
-            color: darkgray !important;
-            background-color: lightgray !important;
-            border-color: darkgray !important;
+
+          &__icon {
+            font-size: 13px;
           }
         }
       }
@@ -2050,38 +2093,6 @@
   }
 }
 
-.dropdowns__search {
-  margin-bottom: 16px;
-
-  &__input {
-    font-family: "Fira Sans", "Heebo", sans-serif;
-    font-size: 0.875rem;
-    color: #1a1d2e;
-    background: #ffffff;
-    border: 1.5px solid #e2e5ef;
-    border-radius: 9px;
-    padding: 8px 14px 8px 36px;
-    width: 260px;
-    outline: none;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ba3bc' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: 11px center;
-
-    &::placeholder {
-      color: #b8bdd1;
-    }
-
-    &:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.12);
-      background-color: #ffffff;
-    }
-  }
-}
-
 .dropdowns {
   background: #ffffff;
   border: 1px solid #eaecf4;
@@ -2090,7 +2101,70 @@
     0 2px 12px rgba(26, 29, 46, 0.06),
     0 1px 3px rgba(26, 29, 46, 0.04);
   overflow: hidden;
+  &__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+  }
 
+  &__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    &__icon {
+      position: absolute;
+      left: 14px;
+      color: #b8bdd1;
+      font-size: 0.875rem;
+    }
+
+    &__input {
+      font-family: "Fira Sans", "Heebo", sans-serif;
+      font-size: 0.875rem;
+      color: #1a1d2e;
+      background: #ffffff;
+      border: 1.5px solid #e2e5ef;
+      border-radius: 9px;
+      padding: 10px 14px 10px 38px; // Increased left padding for icon
+      width: 320px;
+      outline: none;
+      transition: all 0.15s ease;
+
+      &::placeholder {
+        color: #b8bdd1;
+      }
+
+      &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.12);
+      }
+    }
+  }
+
+  &__actions {
+    .btn-create {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: #ffffff;
+      border: 1.5px solid var(--primary-color);
+      color: var(--primary-color);
+      border-radius: 9px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--primary-color);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(79, 110, 247, 0.2);
+      }
+    }
+  }
   &__table {
     width: 100%;
     border-collapse: collapse;

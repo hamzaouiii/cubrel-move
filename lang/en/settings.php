@@ -95,8 +95,8 @@ return [
     'related_field' => 'Related Field',
     'save_success' => 'Dropdown list saved succefully',
     'update_success' => 'Dropdown list saved succefully',
-    'save_error' => 'An error occurred while saving the Dropdown list'
-
+    'save_error' => 'An error occurred while saving the Dropdown list',
+    'search'    => 'Search dropdown lists'
   ]
 
 ];

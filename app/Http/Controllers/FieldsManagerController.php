@@ -68,7 +68,7 @@ class FieldsManagerController extends Controller
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
-    return Inertia::render('Settings/Fields/Record', [
+    return Inertia::render('Settings/Fields/List', [
       'module' => $module,
       'item'   => $item,
       'fields' => $module->fields

@@ -75,7 +75,7 @@ const editUrl = (f) => {
 
     <div class="fields">
       <div class="fields__header">
-        <Link class="fields__header_create btn" :href="createUrl">
+        <Link class="fields__header__create" :href="createUrl">
           {{ $t("fields.create_new_field") }}</Link
         >
       </div>
