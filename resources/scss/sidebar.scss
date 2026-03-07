@@ -1,153 +1,175 @@
+:root {
+  --sidebar-bg: rgba(253, 253, 253, 0.85); // Frosted glass base
+  --sidebar-collapsed-width: 80px;
+  --sidebar-open-width: 280px;
+  --transition-speed: 0.3s;
+  --radius-md: 8px;
+  --text-main: #4b5563;
+  --text-muted: #6b7280;
+  --item-height: 48px;
+}
+
 .sidebar {
-  background: rgba(253, 253, 253, 0.9);
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(12px); // Modern glassmorphism effect
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
   position: fixed;
   top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding-top: 50px;
-  transition: all 0.3s ease;
-  box-shadow: 5px 0px 5px -5px #000000;
-  min-width: 280px;
   height: 100vh;
+  transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0px 24px rgba(0, 0, 0, 0.04);
   z-index: 100;
-  @media (max-width: 1024px) {
-    min-width: 200px;
+  overflow-x: hidden; // Prevents text spilling during animation
+
+  // State Widths
+  &--open {
+    width: var(--sidebar-open-width);
+  }
+  &--collapsed {
+    width: var(--sidebar-collapsed-width);
   }
 
   &__collapser {
-    width: 80px;
-    text-align: center;
-    transition: all 0.3s ease-in-out;
-    margin-right: 0px;
+    height: 80px; // Gives a generous hit area
+    width: var(
+      --sidebar-collapsed-width
+    ); // Keeps hamburger aligned with icons below
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    color: var(--text-main);
 
     &__icon {
       font-size: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
+      transition: transform 0.2s ease, color 0.2s ease;
       &:hover {
-        color: var(--setting-primary-color);
+        color: var(--setting-primary-color, var(--text-main));
+        transform: scale(1.1); // Subtle pop interaction
       }
     }
   }
+
+  // When open, push the hamburger to the right side
+  &--open &__collapser {
+    width: 100%;
+    justify-content: flex-end;
+    padding-right: 25px;
+  }
+
   &__module-list {
-    align-self: stretch;
-    flex-grow: 5;
+    flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px; // Padding keeps hover backgrounds off the edges
+    gap: 4px; // Modern, consistent spacing between items
+    margin-bottom: 50px;
+    // Refined Scrollbar
     scrollbar-width: thin;
-    scrollbar-color: #94a3b8 rgba(243, 244, 246, 0.8);
+    scrollbar-color: #cbd5e1 transparent;
     &::-webkit-scrollbar {
       width: 6px;
     }
     &::-webkit-scrollbar-track {
-      background: rgba(243, 244, 246, 0.8);
-      border-radius: 10px;
-      margin: 5px 0;
+      background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      background: #cbd5e1;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     &::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(135deg, #94a3b8, #64748b);
+      background: #94a3b8;
     }
 
     &__item {
+      text-decoration: none;
       display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      margin-top: 15px;
-      margin-right: 15px;
-      align-self: first baseline;
-      height: 40px;
-      border-radius: 5px;
-      &--home {
-        margin-top: -15px;
-        margin-bottom: 15px;
-        color: #4b5563;
+      align-items: center;
+      height: var(--item-height);
+      border-radius: var(--radius-md);
+      transition: background 0.2s ease;
+      color: var(--text-main);
+      width: 100%;
+      position: relative; // For the active pill indicator
+      &.active {
+        color: var(--module-color);
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+
+        // Modern vertical active indicator pill
+        &::before {
+          content: "";
+          position: absolute;
+          left: -10px; // Anchors to the far left of the sidebar
+          top: 50%;
+          transform: translateY(-50%);
+          height: 60%;
+          width: 4px;
+          background: var(--module-color);
+          border-radius: 0 4px 4px 0;
+        }
       }
+      &--home {
+        margin-bottom: 8px; // Extra space below home
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+
       &__label {
         display: flex;
-        justify-content: center;
         align-items: center;
-        color: #4b5563;
-        font-size: 1.2rem;
-        position: relative;
-        padding: 5px 0;
-        transition: all 0.3s ease-in-out;
+        width: 100%;
+        height: 100%;
+        font-size: 1.05rem;
+        text-align: center;
 
-        &:hover {
-          color: var(--module-color) !important;
-          &__text {
-            font-weight: 600;
-          }
-        }
         &__icon {
-          width: 80px;
-          text-align: center;
-          font-size: 1.5rem;
-          transition: all 0.3s ease-in-out;
+          // THE MAGIC FIX: Fixed width keeps icons perfectly anchored
+          // 80px sidebar - 20px padding (10px each side) = 60px container
+          width: 60px;
+          min-width: 60px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.35rem;
+          transition: color 0.2s ease;
         }
 
         &__text {
-          flex: 1;
+          white-space: nowrap; // Prevents text wrapping during transition
+          opacity: 1;
+          transition: opacity var(--transition-speed) ease;
+          font-weight: 500;
+
+          &.hide {
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden; // Ensure it's not focusable when hidden
+          }
         }
-        .hide {
-          //  display: none;
-          opacity: 0;
-          width: 0;
-          position: absolute;
-          display: inline-block;
-        }
-        &.active {
-          color: var(--module-color);
-          font-weight: 600;
-        }
+
+        // Active State Styling
+      }
+
+      // Hover logic for the nested icon
+      &:hover &__label {
+        color: var(--module-color);
       }
     }
+
     &__divider {
-      color: #ffffff;
-    }
-  }
-
-  &__footer {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  &--collapsed {
-    min-width: 80px !important;
-    transition: all 0.3s ease-in-out;
-    @media (max-width: 1024px) {
-      min-width: 80px !important;
-    }
-    &__module-list {
-      display: flex;
-      flex-direction: column;
-
-      &__item {
-        position: relative;
-
-        &__label {
-          &__icon {
-            align-self: center;
-          }
-          &:hover &__icon {
-            color: var(--module-color);
-          }
-        }
-      }
-    }
-  }
-  &--open {
-    .sidebar__collapser {
-      align-self: flex-end;
+      border: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      margin: 10px 15px;
     }
   }
 
@@ -155,10 +177,11 @@
     position: fixed;
     top: 0;
     left: 0;
-    overflow: hidden;
     width: 100vw;
     height: 100vh;
-    background-color: #000000a7;
+    background-color: rgba(15, 23, 42, 0.4); // Slate overlay
+    backdrop-filter: blur(2px);
     z-index: 99;
+    transition: opacity var(--transition-speed) ease;
   }
 }

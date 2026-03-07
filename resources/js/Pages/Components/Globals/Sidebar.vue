@@ -112,10 +112,12 @@ const onCollapserMouseLeave = () => {
     <div class="sidebar__module-list">
       <Link
         class="sidebar__module-list__item sidebar__module-list__item--home"
+        :class="[{ active: currentUrl === '/' }]"
         @click="collapseSidebar()"
         @mouseenter="onModuleMouseEnter($event, 'home')"
         @mouseleave="onModuleMouseLeave"
         :style="{ '--module-color': appSettings.primary_color }"
+        href="/"
       >
         <div
           :class="[
@@ -137,7 +139,10 @@ const onCollapserMouseLeave = () => {
       </Link>
       <hr class="sidebar__module-list__divider" />
       <Link
-        class="sidebar__module-list__item"
+        :class="[
+          'sidebar__module-list__item',
+          { active: currentUrl.startsWith(mod.path) },
+        ]"
         v-for="mod in modules"
         :key="mod.slug"
         :href="mod.path"
@@ -150,14 +155,8 @@ const onCollapserMouseLeave = () => {
         @mouseenter="onModuleMouseEnter($event, mod)"
         @mouseleave="onModuleMouseLeave"
       >
-        <div
-          :class="[
-            'sidebar__module-list__item__label',
-            { active: currentUrl.startsWith(mod.path) },
-          ]"
-        >
+        <div class="sidebar__module-list__item__label">
           <i
-            v-if="mod.icon"
             :class="[
               'sidebar__module-list__item__label__icon',
               'fa-solid',
@@ -165,12 +164,11 @@ const onCollapserMouseLeave = () => {
             ]"
           ></i>
           <span
-            :class="[
-              'sidebar__module-list__item__label__text',
-              { hide: collapsedSidebar },
-            ]"
-            >{{ mod.label }}</span
+            v-if="!collapsedSidebar"
+            class="sidebar__module-list__item__label__text"
           >
+            {{ mod.label }}
+          </span>
         </div>
       </Link>
     </div>
