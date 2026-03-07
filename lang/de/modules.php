@@ -44,6 +44,17 @@ return array(
     'no_data_entered' => 'Sie haben keine neuen Daten eingegeben, es wird kein Datensatz gespeichert!',
     'delete_title' => 'Löschen bestätigen',
     'delete_confirm' => 'Möchten Sie diesen Eintrag wirklich löschen?',
+    'link' => 'Verknüpfen',
+    'unlink' => 'Verknüpfung aufheben',
+    'unlink_yes' => 'Ja',
+    'unlink_no' => 'Nein',
+    'unlink_process' => 'Verknüpfung wird aufgehoben...',
+    'unlink_success' => 'Verknüpfung wurde erfolgreich aufgehoben',
+    'unlink_error' => 'Beim Aufheben der Verknüpfung ist ein Fehler aufgetreten',
+    'unlink_confirm_title' => 'Verknüpfung aufheben bestätigen',
+    'unlink_confirm' => 'Sind Sie sicher, dass Sie die Verknüpfung dieser Datensätze aufheben möchten?',
+    'open_new_tab' => 'In neuem Tab öffnen',
+    'quick_edit' => 'Schnellbearbeitung',
   ),
   'delete' =>
   array(
@@ -71,8 +82,7 @@ return array(
   'accounts' =>
   array(
     'label' => 'Firmen',
-    'single_label'  => 'Firma',
-
+    'single_label' => 'Firma',
     'fields' =>
     array(
       'id' => 'ID',
@@ -92,8 +102,7 @@ return array(
   'contacts' =>
   array(
     'label' => 'Kontakte',
-    'single_label'  => 'Kontakt',
-
+    'single_label' => 'Kontakt',
     'fields' =>
     array(
       'id' => 'ID',
@@ -113,7 +122,7 @@ return array(
   'leads' =>
   array(
     'label' => 'Interessenten',
-    'single_label'  => 'Interessent',
+    'single_label' => 'Interessent',
     'fields' =>
     array(
       'id' => 'ID',
@@ -132,16 +141,16 @@ return array(
     ),
     'actions' =>
     array(
-      'cancel' => 'Cancel',
-      'edit' => 'Edit',
-      'save' => 'Save',
-      'share' => 'Share',
-      'export' => 'Export',
-      'placeholder' => 'Something else here',
-      'bulk_action' => 'Bulk Action',
-      'delete' => 'Delete',
-      'create' => 'Create',
-      'search_placeholder' => 'Search In This List',
+      'cancel' => 'Abbrechen',
+      'edit' => 'Bearbeiten',
+      'save' => 'Speichern',
+      'share' => 'Teilen',
+      'export' => 'Exportieren',
+      'placeholder' => 'Irgendetwas hier',
+      'bulk_action' => 'Sammelaktion',
+      'delete' => 'Löschen',
+      'create' => 'Erstellen',
+      'search_placeholder' => 'In dieser Liste suchen',
     ),
   ),
   'invoices' =>
@@ -190,6 +199,7 @@ return array(
       'updated_at' => 'Aktualisiert am',
       'description' => 'Beschreibung',
     ),
+    'single_label' => 'Angebot',
   ),
   'cases' =>
   array(
@@ -209,6 +219,7 @@ return array(
       'created_at' => 'Erstellt am',
       'updated_at' => 'Aktualisiert am',
     ),
+    'single_label' => 'Ticket',
   ),
   'emails' =>
   array(
@@ -228,6 +239,7 @@ return array(
       'updated_at' => 'Aktualisiert am',
       'description' => 'Beschreibung',
     ),
+    'single_label' => 'E-Mail',
   ),
   'inquiries' =>
   array(
@@ -247,64 +259,72 @@ return array(
       'updated_at' => 'Aktualisiert am',
       'description' => 'Beschreibung',
     ),
+    'single_label' => 'Anfrage',
   ),
   'settings' =>
   array(
     'label' => 'Einstellungen',
+    'single_label' => 'Einstellung',
   ),
-  'opportunities' => [
-    'label'  => 'Verkaufschancen',
-    'single_label'  => 'Verkaufschance',
-    'fields' => [
-      'id'                   => 'ID',
-      'name'                 => 'Name',
-      'account_id'           => 'Konto',
-      'amount'               => 'Betrag',
-      'currency'             => 'Währung',
-      'description'          => 'Beschreibung',
-      'sales_stage'          => 'Verkaufsphase',
-      'probability'          => 'Wahrscheinlichkeit',
-      'expected_close_date'  => 'Erwartetes Abschlussdatum',
-      'type'                 => 'Typ',
-      'assigned_user_id'     => 'Zugewiesener Benutzer',
-      'created_at'           => 'Erstellt am',
-      'updated_at'           => 'Aktualisiert am',
-    ],
-  ],
-  'products' => [
-    'label'  => 'Produkte',
-    'single_label'  => 'Produkt',
-    'fields' => [
-      'id'          => 'ID',
-      'name'        => 'Name',
-      'sku'         => 'Artikelnummer',
+  'opportunities' =>
+  array(
+    'label' => 'Verkaufschancen',
+    'single_label' => 'Verkaufschance',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'account_id' => 'Konto',
+      'amount' => 'Betrag',
+      'currency' => 'Währung',
       'description' => 'Beschreibung',
-      'category'    => 'Kategorie',
-      'price'       => 'Preis',
-      'currency'    => 'Währung',
-      'is_active'   => 'Aktiv',
-      'created_at'  => 'Erstellt am',
-      'updated_at'  => 'Aktualisiert am',
-    ],
-  ],
-  'orders' => [
-    'label'  => 'Bestellungen',
-    'single_label'  => 'Bestellung',
-    'fields' => [
-      'name'            => 'Name',
-      'id'               => 'ID',
-      'order_number'     => 'Bestellnummer',
-      'account_id'       => 'Konto',
-      'opportunity_id'   => 'Verkaufschance',
-      'description'      => 'Beschreibung',
-      'total_amount'     => 'Gesamtbetrag',
-      'currency'         => 'Währung',
-      'status'           => 'Status',
-      'order_date'       => 'Bestelldatum',
-      'due_date'         => 'Fälligkeitsdatum',
+      'sales_stage' => 'Verkaufsphase',
+      'probability' => 'Wahrscheinlichkeit',
+      'expected_close_date' => 'Erwartetes Abschlussdatum',
+      'type' => 'Typ',
       'assigned_user_id' => 'Zugewiesener Benutzer',
-      'created_at'       => 'Erstellt am',
-      'updated_at'       => 'Aktualisiert am',
-    ],
-  ],
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+    ),
+  ),
+  'products' =>
+  array(
+    'label' => 'Produkte',
+    'single_label' => 'Produkt',
+    'fields' =>
+    array(
+      'id' => 'ID',
+      'name' => 'Name',
+      'sku' => 'Artikelnummer',
+      'description' => 'Beschreibung',
+      'category' => 'Kategorie',
+      'price' => 'Preis',
+      'currency' => 'Währung',
+      'is_active' => 'Aktiv',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+    ),
+  ),
+  'orders' =>
+  array(
+    'label' => 'Bestellungen',
+    'single_label' => 'Bestellung',
+    'fields' =>
+    array(
+      'name' => 'Name',
+      'id' => 'ID',
+      'order_number' => 'Bestellnummer',
+      'account_id' => 'Konto',
+      'opportunity_id' => 'Verkaufschance',
+      'description' => 'Beschreibung',
+      'total_amount' => 'Gesamtbetrag',
+      'currency' => 'Währung',
+      'status' => 'Status',
+      'order_date' => 'Bestelldatum',
+      'due_date' => 'Fälligkeitsdatum',
+      'assigned_user_id' => 'Zugewiesener Benutzer',
+      'created_at' => 'Erstellt am',
+      'updated_at' => 'Aktualisiert am',
+    ),
+  ),
 );

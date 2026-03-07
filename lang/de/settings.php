@@ -101,6 +101,7 @@ return array(
     'save_success' => 'Dropdown Liste erfolgreich gespeichert',
     'update_success' => 'Dropdown Liste erfolgreich gespeichert',
     'save_error' => 'Beim Speichern der Dropdown Liste ist ein Fehler aufgetreten',
+    'search' => 'In dieser Liste suchen',
   ),
   'select_dropdown_list' => 'Dropdown Liste auswählen...',
 );
