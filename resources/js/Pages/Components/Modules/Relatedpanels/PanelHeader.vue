@@ -11,12 +11,16 @@ const props = defineProps({
 const hasRecords = computed(() => {
   return props.count ?? false;
 });
-const emit = defineEmits(["toggle", "open-overlay"]);
+const emit = defineEmits(["toggle", "open-overlay", "unlink-parent"]);
 const openOverlay = () => {
   emit("open-overlay");
 };
 const emittogglePanel = () => {
   emit("toggle");
+};
+
+const emitUnlinkParent = () => {
+  emit("unlink-parent");
 };
 </script>
 
@@ -34,6 +38,12 @@ const emittogglePanel = () => {
     </div>
     <div class="relatedpanels__item__header__actions">
       <div v-if="hasRecords && type != 'parent'">
+        <button
+          class="relatedpanels__item__header__actions__btn"
+          @click.stop="emitUnlinkParent"
+        >
+          <i class="fa-solid fa-link-slash"></i>
+        </button>
         <button
           class="relatedpanels__item__header__actions__btn"
           @click.stop="openOverlay"

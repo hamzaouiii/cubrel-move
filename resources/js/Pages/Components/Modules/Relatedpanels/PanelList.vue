@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import { usePage, Link } from "@inertiajs/vue3";
+import { usePage, router } from "@inertiajs/vue3";
 import Panel from "./Panel.vue";
 
 const props = defineProps({
@@ -17,7 +17,7 @@ const getRelatedSlug = (name) => {
   return props.relationships?.[name]?.related_slug || null;
 };
 const columns = computed(() => props.layout?.columns ?? []);
-
+const collapsePanel = ref(null);
 const page = usePage();
 const modules = computed(() => page.props.modules);
 const appSettings = page.props.appSettings;
@@ -36,6 +36,11 @@ const forwardOpenOverlay = (panel, selected) => {
 };
 const triggerPanelUpdate = (panel) => {
   emit("panel-update", panel);
+  router.reload({
+    only: ["panel"],
+    preserveScroll: true,
+    preserveState: true,
+  });
 };
 </script>
 
@@ -61,6 +66,7 @@ const triggerPanelUpdate = (panel) => {
             @open-overlay="forwardOpenOverlay"
             @update-panel-trigger="triggerPanelUpdate"
             :expand-panel="expandPanel"
+            :collapse-panel="collapsePanel"
           ></Panel>
         </li>
       </div>

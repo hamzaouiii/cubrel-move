@@ -46,6 +46,7 @@ return [
     'unlink' => 'Unlink',
     'unlink_yes' => 'Yes',
     'unlink_no' => 'No',
+    'unlink_process'  => "Unlinking...",
     'unlink_success'  => "Record Unlinked successfully",
     'unlink_error'  => "An error occurred while linking the records",
     'unlink_confirm_title'      => "Confirm Unlinking record",
