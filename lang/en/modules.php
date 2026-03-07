@@ -56,6 +56,17 @@ return array(
     'open_new_tab' => 'Open in a new Tab',
     'quick_edit' => 'Quick Edit',
   ),
+  'linking' => array(
+    'link_existing_records'  => 'Link Existing Records',
+    'save'    => 'Save',
+    'close'   => 'Close',
+    'search'  => 'Search',
+    'showing_count' => 'Showing :count records',
+    'success'   => 'Linking records finished successfully',
+    'error_missing_context'   => 'Missing relationship context',
+    'error_lodaing_related_records' => 'Failed loading available records',
+    'info_linking'  => 'Linking Records'
+  ),
   'delete' =>
   array(
     'confirm_delete' => 'Confirm Delete',

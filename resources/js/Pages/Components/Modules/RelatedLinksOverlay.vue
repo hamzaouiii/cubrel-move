@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
@@ -48,7 +48,8 @@ const handleAfterLeave = () => {
   emit("close");
 };
 const pageData = usePage();
-
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 const appSettings = pageData.props.appSettings;
 const modules = computed(() => pageData.props.modules);
 
@@ -79,7 +80,7 @@ const getRelatedColor = (slug) => {
 
 const loadRecords = async () => {
   if (!relationshipName || !currentModule || !currentRecordId) {
-    error("Missing relationship context");
+    error(t("modules.linking.error_missing_context"));
     return;
   }
   let url;
@@ -102,11 +103,12 @@ const loadRecords = async () => {
     page.value = response.data.current_page;
     lastPage.value = response.data.last_page;
     total.value = response.data.total;
-  } catch (error) {
+  } catch (err) {
     console.error(
       "Failed loading available records:",
-      error.response?.data || error.message,
+      err.response?.data || err.message,
     );
+    error(t("modules.linking.error_lodaing_related_records"));
   } finally {
     loading.value = false;
   }
@@ -152,7 +154,7 @@ const save = async () => {
 
   saveLoading.value = true;
   try {
-    info("Saving");
+    info(t("modules.linking.info_linking"));
     await axios.post(
       `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}`,
       {
@@ -162,7 +164,7 @@ const save = async () => {
 
     selected.value = [];
     clearAllAlerts();
-    success("Linking records finished successfully ");
+    success(t("modules.linking.success"));
     emit("saved", props.panel.name);
     closeOverlay();
   } catch (e) {
@@ -264,7 +266,7 @@ const clearSearch = () => {
       <div class="related-links" ref="overlayRef">
         <div class="related-links__header">
           <div class="related-links__header__title">
-            {{ $t("Link Existing Records") }}
+            {{ $t("modules.linking.link_existing_records") }}
           </div>
 
           <div class="related-links__header__actions">
@@ -272,10 +274,10 @@ const clearSearch = () => {
               class="related-links__header__actions__btn"
               @click="closeOverlay"
             >
-              {{ $t("Close") }}
+              {{ $t("modules.linking.close") }}
             </button>
             <button class="related-links__header__actions__btn" @click="save">
-              {{ $t("Save") }}
+              {{ $t("modules.linking.save") }}
             </button>
           </div>
         </div>
@@ -290,11 +292,19 @@ const clearSearch = () => {
         <template v-else>
           <div class="related-links__list">
             <div class="related-links__modifiers">
-              <span class="related-links__modifiers__info"
-                >Showing {{ records?.length ?? "0" }} records</span
-              >
+              <span class="related-links__modifiers__info">
+                {{
+                  $t("modules.linking.showing_count", {
+                    count: records?.length ?? "0",
+                  })
+                }}
+              </span>
               <div class="related-links__modifiers__search">
-                <input v-model="search" type="text" placeholder="Search..." />
+                <input
+                  v-model="search"
+                  type="text"
+                  :placeholder="$t('modules.linking.search')"
+                />
                 <span
                   class="related-links__modifiers__search__clear"
                   @click.stop="clearSearch"
