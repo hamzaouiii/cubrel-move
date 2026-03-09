@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use App\Models\RelationshipLink;
 use App\Models\Module;
 use RuntimeException;
+use App\Support\Settings;
 
 class RelationshipService
 {
@@ -78,20 +79,10 @@ class RelationshipService
   /**
    * Link two records in a relationship
    */
-  public static function link(
-    string $relationship_name,
-    string $model_class,
-    string $module_id,
-    string $related_id
-  ): void {
-
+  public static function link(string $relationship_name,    string $model_class,    string $module_id,    string $related_id): void
+  {
     $relationship = self::get($relationship_name);
-    $relationship = self::getWithResolvedIds(
-      $relationship,
-      $model_class,
-      $module_id,
-      $related_id
-    );
+    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
     DB::transaction(function () use ($relationship) {
 
@@ -214,7 +205,7 @@ class RelationshipService
       ->unique()
       ->values();
 
-    $modules = Module::with('relatedfields')
+    $modules = Module::with('fields')
       ->whereIn('slug', $relatedSlugs)
       ->get()
       ->keyBy('slug');
@@ -224,7 +215,7 @@ class RelationshipService
       $module = $modules->get($relationship->related_slug);
 
       $relationship->related_fields = $module
-        ? $module->relatedfields
+        ? $module->fields
         : collect();
       return $relationship;
     });
@@ -346,13 +337,13 @@ class RelationshipService
       ->exists();
   }
 
-  public static function getLinkingLayout(string $slug)
+  public static function getDataForPanel(string $slug)
   {
     $module = Module::query()
       ->where('slug', $slug)
       ->firstOrFail();
 
-    return $module->linkingPanelLayout();
+    return $module->getDataForPanel();
   }
 
   /**
@@ -392,23 +383,48 @@ class RelationshipService
         ->unique()
         ->values();
 
+      $count = $relatedIds->count();
       $records = collect();
+      $pagination = null;
+      $panel_limit = Settings::get('related_panel_limit');
 
       if ($relatedIds->isNotEmpty()) {
-        $records = $rel->related_class::query()
+        $paginator = $rel->related_class::query()
           ->whereIn('id', $relatedIds)
-          ->get();
-      }
+          ->paginate($panel_limit, ['*'], $relationship->name . '_page');
 
+        $records = collect($paginator->items());
+        $count = $paginator->total();
+
+        // Structure the pagination data for the frontend
+        $pagination = [
+          'from'          => $paginator->firstItem() ?: 0,
+          'to'            => $paginator->lastItem() ?: 0,
+          'current_page'  => $paginator->currentPage(),
+          'last_page'     => $paginator->lastPage(),
+          'prev_page_url' => $paginator->previousPageUrl(),
+          'next_page_url' => $paginator->nextPageUrl(),
+        ];
+      }
+      $panelData =  self::getDataForPanel($relationship->related_slug);
       $result[$relationship->name] = [
         'name'    => $relationship->name,
         'type'    => $relationship->relationship_type,
         'label'   =>  $relationship->label,
         'role'   =>  $relationship->role,
+        'count'   => $count,
         'records' => $records,
+        'pagination'   => $pagination,
         'related_slug' => $relationship->related_slug,
-        'linking_layout' => self::getLinkingLayout($relationship->related_slug)
       ];
+      $result[$relationship->name] =  array_merge($result[$relationship->name], $panelData);
+
+      if ($relationship->role === "child" || $relationship->role === "sibling") {
+        if ($count == 1) {
+          $parent_record =  array('parent_record' => $rel->related_class::query()->whereIn('id', $relatedIds)->first());
+          $result[$relationship->name] =  array_merge($result[$relationship->name], $parent_record);
+        }
+      }
     }
 
     return $result;
@@ -421,7 +437,7 @@ class RelationshipService
     object $relationship,
     string $modelClass,
     string $recordId,
-    int $perPage = 25,
+    int $perPage,
     ?string $search = null
   ) {
 
@@ -473,7 +489,7 @@ class RelationshipService
     object $relationship,
     string $modelClass,
     string $recordId,
-    int $perPage = 25,
+    int $perPage,
     ?string $search = null
   ) {
 
@@ -506,5 +522,26 @@ class RelationshipService
       default:
         return 'parent';
     }
+  }
+
+  /**
+   * Returns a query builder for related records in a given relationship,
+   * Loads related records for panels
+   */
+  public static function loadRelatedRecords(object $moduleModel, string $record_id, string $relationshipName): \Illuminate\Database\Eloquent\Builder
+  {
+    $relationship = self::get($relationshipName);
+    $relationship = self::getWithSide($relationship, $moduleModel->model_class, $record_id);
+    $relatedIds = DB::table('relationship_links')
+      ->where('relationship_id', $relationship->id)
+      ->where($relationship->current_id_field, $record_id)
+      ->pluck($relationship->other_id_field);
+
+    $relatedClass = $relationship->related_class;
+
+    // todo: update the order by to be dynamic
+    return $relatedClass::query()
+      ->whereIn('id', $relatedIds)
+      ->orderBy('created_at', 'desc');
   }
 }

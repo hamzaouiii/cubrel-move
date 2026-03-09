@@ -53,8 +53,12 @@ const valueExistsError = ref(false);
 
 const addItem = () => {
   if (!newItem.isDirty) return;
-  if (form.values.some((item) => item.value === newItem.value)) {
-    error("Value Already Exists");
+  if (
+    form.values.some(
+      (item) => item.value === generatedSystemvalue(newItem.value.label),
+    )
+  ) {
+    error(t("dropdowns.value_already_exists"));
     valueExistsError.value = true;
     return;
   }
@@ -63,6 +67,7 @@ const addItem = () => {
     value: generatedSystemvalue(newItem.label),
   });
   newItem.reset();
+  valueExistsError.value = false;
 };
 
 const deleteItem = (value) => {

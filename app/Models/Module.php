@@ -90,13 +90,9 @@ class Module extends Model
     return $this->hasMany(Layout::class);
   }
 
-  /**
-   * @return array
-   */
-  public function listLayout()
+  public function getDefaultLayout(String $type)
   {
-    /** @var Layout|null $layout */
-    $layout = $this->layouts()->where('type', 'list')->first();
+    $layout = $this->layouts()->where('type', $type)->first();
 
     if ($layout !== null) {
       return $layout->definition;
@@ -104,89 +100,43 @@ class Module extends Model
 
     // Module specific config fallback
     $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['list'])) {
-      return $moduleConfig['list'];
+    if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
+      return $moduleConfig[$type];
     }
 
     // Global fallback
-    $globalDefault = Layout::getDefaultLayout('list');
+    $globalDefault = Layout::getDefaultLayout($type);
     if ($globalDefault !== null) {
       return $globalDefault;
     }
-
-    throw new \Exception("No list layout found for module {$this->name} and no global fallback available.");
   }
 
-  /**
-   * @return array
-   */
-  public function recordLayout()
+  public function listLayout(): array
   {
-    /** @var Layout|null $recordLayout */
-    $recordLayout = $this->layouts()->where('type', 'record')->first();
-
-    if ($recordLayout !== null) {
-      return $recordLayout->definition;
-    }
-
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['record'])) {
-      return $moduleConfig['record'];
-    }
-
-    $globalDefault = Layout::getDefaultLayout('record');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No record layout found for module {$this->name} and no global fallback available.");
+    return $this->resolveLayout('list');
   }
 
-  /**
-   * @return array
-   */
-  public function relatedLayout()
+  public function recordLayout(): array
   {
-    /** @var Layout|null $relatedLayout */
-    $relatedLayout = $this->layouts()->where('type', 'related')->first();
-
-    if ($relatedLayout !== null) {
-      return $relatedLayout->definition;
-    }
-
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['related'])) {
-      return $moduleConfig['related'];
-    }
-
-    $globalDefault = Layout::getDefaultLayout('related');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No related layout found for module {$this->name} and no global fallback available.");
+    return $this->resolveLayout('record');
   }
 
-  public function linkingPanelLayout()
+  public function relatedLayout(): array
   {
-    /** @var Layout|null $linkingPanelLayout */
-    $linkingPanelLayout = $this->layouts()->where('type', 'linking-panel')->first();
+    return $this->resolveLayout('related');
+  }
 
-    if ($linkingPanelLayout !== null) {
-      return $linkingPanelLayout->definition;
-    }
+  public function linkingPanelLayout(): array
+  {
+    return $this->resolveLayout('linkingPanel');
+  }
 
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig['linking-panel'])) {
-      return $moduleConfig['linking-panel'];
-    }
-
-    $globalDefault = Layout::getDefaultLayout('linking-panel');
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-
-    throw new \Exception("No linking-panel layout found for module {$this->name} and no global fallback available.");
+  public function getDataForPanel(): array
+  {
+    return [
+      'linkingPanel' => $this->linkingPanelLayout(),
+      'fields' => $this->fields
+    ];
   }
 
   public function layoutFor(string $type)
@@ -211,6 +161,7 @@ class Module extends Model
         'key',
         'readonly',
         'sortable',
+        'searchable',
         'label',
         'required',
       ])
@@ -231,7 +182,7 @@ class Module extends Model
         'sortable',
         'label',
         'required',
-      ]);
+      ])->with('dropdown_list');
   }
   public function getFieldMetadata(string $field): array
   {
@@ -247,5 +198,28 @@ class Module extends Model
   protected function defaultReadonlyFor(string $key, string $type): bool
   {
     return in_array($key, ['created_at', 'updated_at'], true);
+  }
+
+  protected function resolveLayout(string $type): array
+  {
+    // 1. DB layout
+    $layout = $this->layouts()->where('type', $type)->first();
+    if ($layout !== null) {
+      return Layout::normalize($layout->definition ?? []);
+    }
+
+    // 2. Module config fallback
+    $moduleConfig = config("module_layouts.{$this->slug}");
+    if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
+      return Layout::normalize($moduleConfig[$type]);
+    }
+
+    // 3. Global fallback
+    $globalDefault = Layout::getDefaultLayout($type);
+    if ($globalDefault !== null) {
+      return Layout::normalize($globalDefault);
+    }
+
+    throw new \Exception("No {$type} layout found for module {$this->name}");
   }
 }

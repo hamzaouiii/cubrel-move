@@ -8,7 +8,7 @@ import { computed, provide } from "vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
 
-const { alerts } = useAlerts();
+const { alerts, info, error, warning, success } = useAlerts();
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;
@@ -22,6 +22,11 @@ const appSettings = computed(() => page.props.appSettings || {});
 const useModuleColors = computed(() => appSettings.value.useModuleColors);
 
 provide("useModuleColors", useModuleColors);
+// test alerts
+// info("Operation completed successfully", { timeout: 0 });
+// error("Failed to connect to the database", { timeout: 0 });
+// warning("Disk space is running low", { timeout: 0, progressable: true });
+// success("Your changes have been saved", { timeout: 0 });
 </script>
 
 <template>

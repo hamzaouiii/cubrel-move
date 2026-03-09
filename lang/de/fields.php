@@ -15,13 +15,18 @@ return [
   'key_is_taken_error'    => 'Ein Feld mit demselben Systemnamen existiert bereits.',
   'types' => [
     'longtext' => 'Langer Text',
-    'textfield' => 'Text',
+    'text' => 'Text',
     'datetime' => 'Datum und Uhrzeit',
     'email' => 'E Mail',
-    'dropdown' => 'Auswahlliste',
+    'select' => 'Auswahlliste',
     'date' => 'Datum',
     'number' => 'Zahl',
-    'relationship' => 'Beziehung'
+    'relationship' => 'Beziehung',
+    'checkbox' => 'Checkbox',
+    'url'  => 'URL',
+    'phone' => 'Telefonenummer'
+
+
   ],
   'metadata' => [
     'name' => 'Name',
@@ -42,7 +47,7 @@ return [
   'validation' => [
     'is_required' => "ist ein Pflichtfeld",
     'is_required_several' => "Mehrere Pflichtfelder sind noch leer!"
-
-
-  ]
+  ],
+  'checkbox_yes' => "Ja",
+  'checkbox_no' => "Nein",
 ];

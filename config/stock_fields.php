@@ -1,585 +1,650 @@
 <?php
 
-return [
-
-  'accounts' => [
-    'name' => [
+return array (
+  'accounts' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'website' => [
+    ),
+    'website' => 
+    array (
       'name' => 'website',
-      'type' => 'textfield',
-    ],
-    'email' => [
+      'type' => 'text',
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
-      'type' => 'textfield',
-    ],
-    'billing_address' => [
+      'type' => 'text',
+    ),
+    'billing_address' => 
+    array (
       'name' => 'billing_address',
       'type' => 'longtext',
-    ],
-    'shipping_address' => [
+    ),
+    'shipping_address' => 
+    array (
       'name' => 'shipping_address',
       'type' => 'longtext',
-    ],
-    'city' => [
+    ),
+    'city' => 
+    array (
       'name' => 'city',
-      'type' => 'textfield',
-    ],
-    'country' => [
+      'type' => 'text',
+    ),
+    'country' => 
+    array (
       'name' => 'country',
-      'type' => 'textfield',
-    ],
-    'description' => [
+      'type' => 'text',
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'contacts' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'contacts' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'first_name' => [
+    ),
+    'first_name' => 
+    array (
       'name' => 'first_name',
-      'type' => 'textfield',
-    ],
-    'last_name' => [
+      'type' => 'text',
+    ),
+    'last_name' => 
+    array (
       'name' => 'last_name',
-      'type' => 'textfield',
-    ],
-    'email' => [
+      'type' => 'text',
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
-      'type' => 'textfield',
-    ],
-    'position' => [
+      'type' => 'text',
+    ),
+    'position' => 
+    array (
       'name' => 'position',
-      'type' => 'textfield',
-    ],
-    'notes' => [
+      'type' => 'text',
+    ),
+    'notes' => 
+    array (
       'name' => 'notes',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'leads' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'leads' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'first_name' => [
+    ),
+    'first_name' => 
+    array (
       'name' => 'first_name',
-      'type' => 'textfield',
-    ],
-    'last_name' => [
+      'type' => 'text',
+    ),
+    'last_name' => 
+    array (
       'name' => 'last_name',
-      'type' => 'textfield',
-    ],
-    'email' => [
+      'type' => 'text',
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
-      'type' => 'textfield',
-    ],
-    'company' => [
+      'type' => 'text',
+    ),
+    'company' => 
+    array (
       'name' => 'company',
-      'type' => 'textfield',
-    ],
-    'street' => [
+      'type' => 'text',
+    ),
+    'street' => 
+    array (
       'name' => 'street',
       'type' => 'longtext',
-    ],
-    'city' => [
+    ),
+    'city' => 
+    array (
       'name' => 'city',
-      'type' => 'textfield',
-    ],
-    'zip' => [
+      'type' => 'text',
+    ),
+    'zip' => 
+    array (
       'name' => 'zip',
-      'type' => 'textfield',
-    ],
-    'description' => [
+      'type' => 'text',
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'invoices' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'invoices' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'contact_id' => [
-      'name' => 'contact_id',
-      'type' => 'relationship',
-    ],
-    'quote_id' => [
-      'name' => 'quote_id',
-      'type' => 'dropdown',
-    ],
-    'number' => [
+    ),
+    'number' => 
+    array (
       'name' => 'number',
       'type' => 'number',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
-      'type' => 'dropdown',
-    ],
-    'issue_date' => [
+      'type' => 'select',
+    ),
+    'issue_date' => 
+    array (
       'name' => 'issue_date',
       'type' => 'date',
-    ],
-    'due_date' => [
+    ),
+    'due_date' => 
+    array (
       'name' => 'due_date',
       'type' => 'date',
-    ],
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
-      'type' => 'textfield',
-    ],
-    'subtotal' => [
+      'type' => 'select',
+    ),
+    'subtotal' => 
+    array (
       'name' => 'subtotal',
       'type' => 'number',
-    ],
-    'tax' => [
+    ),
+    'tax' => 
+    array (
       'name' => 'tax',
       'type' => 'number',
-    ],
-    'total' => [
+    ),
+    'total' => 
+    array (
       'name' => 'total',
       'type' => 'number',
-    ],
-    'notes' => [
+    ),
+    'notes' => 
+    array (
       'name' => 'notes',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'quotes' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'quotes' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'contact_id' => [
-      'name' => 'contact_id',
-      'type' => 'relationship',
-    ],
-    'number' => [
+    ),
+    'number' => 
+    array (
       'name' => 'number',
       'type' => 'number',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
-      'type' => 'dropdown',
-    ],
-    'valid_until' => [
+      'type' => 'select',
+    ),
+    'valid_until' => 
+    array (
       'name' => 'valid_until',
       'type' => 'date',
-    ],
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
-      'type' => 'textfield',
-    ],
-    'subtotal' => [
+      'type' => 'select',
+    ),
+    'subtotal' => 
+    array (
       'name' => 'subtotal',
       'type' => 'number',
-    ],
-    'tax' => [
+    ),
+    'tax' => 
+    array (
       'name' => 'tax',
       'type' => 'number',
-    ],
-    'total' => [
+    ),
+    'total' => 
+    array (
       'name' => 'total',
       'type' => 'number',
-    ],
-    'notes' => [
+    ),
+    'notes' => 
+    array (
       'name' => 'notes',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'cases' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'cases' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-    'contact_id' => [
-      'name' => 'contact_id',
-      'type' => 'relationship',
-    ],
-    'subject' => [
+    ),
+    'subject' => 
+    array (
       'name' => 'subject',
-      'type' => 'textfield',
-    ],
-    'description' => [
+      'type' => 'text',
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'status' => [
+    ),
+    'status' => 
+    array (
       'name' => 'status',
-      'type' => 'dropdown',
-    ],
-    'priority' => [
+      'type' => 'select',
+    ),
+    'priority' => 
+    array (
       'name' => 'priority',
-      'type' => 'dropdown',
-    ],
-    'opened_at' => [
+      'type' => 'select',
+    ),
+    'opened_at' => 
+    array (
       'name' => 'opened_at',
       'type' => 'datetime',
-    ],
-    'closed_at' => [
+    ),
+    'closed_at' => 
+    array (
       'name' => 'closed_at',
       'type' => 'datetime',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'emails' => [
-    'to' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'emails' => 
+  array (
+    'to' => 
+    array (
       'name' => 'to',
       'type' => 'email',
-    ],
-    'subject' => [
+    ),
+    'subject' => 
+    array (
       'name' => 'subject',
-      'type' => 'textfield',
-    ],
-    'mailable_class' => [
+      'type' => 'text',
+    ),
+    'mailable_class' => 
+    array (
       'name' => 'mailable_class',
-      'type' => 'textfield',
-    ],
-    'related_id' => [
+      'type' => 'text',
+    ),
+    'related_id' => 
+    array (
       'name' => 'related_id',
-      'type' => 'textfield',
-    ],
-    'status' => [
+      'type' => 'text',
+    ),
+    'status' => 
+    array (
       'name' => 'status',
-      'type' => 'dropdown',
-    ],
-    'description' => [
+      'type' => 'select',
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-
-  'inquiries' => [
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'inquiries' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-    'message' => [
+    ),
+    'message' => 
+    array (
       'name' => 'message',
       'type' => 'longtext',
-    ],
-    'email' => [
+    ),
+    'email' => 
+    array (
       'name' => 'email',
       'type' => 'email',
-    ],
-    'phone' => [
+    ),
+    'phone' => 
+    array (
       'name' => 'phone',
-      'type' => 'textfield',
-    ],
-    'status' => [
+      'type' => 'text',
+    ),
+    'status' => 
+    array (
       'name' => 'status',
-      'type' => 'dropdown',
-    ],
-    'ip' => [
+      'type' => 'select',
+    ),
+    'ip' => 
+    array (
       'name' => 'ip',
-      'type' => 'textfield',
-    ],
-    'user_agent' => [
+      'type' => 'text',
+    ),
+    'user_agent' => 
+    array (
       'name' => 'user_agent',
       'type' => 'longtext',
-    ],
-    'description' => [
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
-      'type' => 'datetime'
-    ],
-    'updated_at' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
-      'type' => 'datetime'
-    ]
-  ],
-  'opportunities' => [
-
-    'name' => [
+      'type' => 'datetime',
+      'readonly' => true,
+    ),
+  ),
+  'opportunities' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-
-    'amount' => [
+    ),
+    'amount' => 
+    array (
       'name' => 'amount',
-      'type' => 'textfield',
-    ],
-
-    'currency' => [
+      'type' => 'text',
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
-      'type' => 'textfield',
-    ],
-
-    'description' => [
+      'type' => 'select',
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-
-    'sales_stage' => [
+    ),
+    'sales_stage' => 
+    array (
       'name' => 'sales_stage',
-      'type' => 'dropdown',
-    ],
-
-    'probability' => [
+      'type' => 'select',
+    ),
+    'probability' => 
+    array (
       'name' => 'probability',
       'type' => 'number',
-    ],
-
-    'expected_close_date' => [
+    ),
+    'expected_close_date' => 
+    array (
       'name' => 'expected_close_date',
       'type' => 'date',
-    ],
-
-    'type' => [
+    ),
+    'type' => 
+    array (
       'name' => 'type',
-      'type' => 'dropdown',
-    ],
-
-    'assigned_user_id' => [
-      'name' => 'assigned_user_id',
-      'type' => 'relationship',
-    ],
-
-    'created_at' => [
+      'type' => 'select',
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
       'type' => 'datetime',
-    ],
-
-    'updated_at' => [
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
       'type' => 'datetime',
-    ],
-
-  ],
-  'products' => [
-
-    'name' => [
+      'readonly' => true,
+    ),
+  ),
+  'products' => 
+  array (
+    'name' => 
+    array (
       'name' => 'name',
-      'type' => 'textfield',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-
-    'sku' => [
+    ),
+    'sku' => 
+    array (
       'name' => 'sku',
-      'type' => 'textfield',
-    ],
-
-    'description' => [
+      'type' => 'text',
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-
-    'category' => [
+    ),
+    'category' => 
+    array (
       'name' => 'category',
-      'type' => 'textfield',
-    ],
-
-    'price' => [
+      'type' => 'select',
+    ),
+    'price' => 
+    array (
       'name' => 'price',
       'type' => 'number',
-    ],
-
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
-      'type' => 'textfield',
-    ],
-
-    'is_active' => [
+      'type' => 'select',
+    ),
+    'is_active' => 
+    array (
       'name' => 'is_active',
       'type' => 'checkbox',
-    ],
-
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
       'type' => 'datetime',
-    ],
-
-    'updated_at' => [
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
       'type' => 'datetime',
-    ],
-
-  ],
-  'orders' => [
-
-    'order_number' => [
-      'name' => 'order_number',
-      'type' => 'textfield',
+      'readonly' => true,
+    ),
+  ),
+  'orders' => 
+  array (
+    'name' => 
+    array (
+      'name' => 'name',
+      'searchable' => true,
+      'type' => 'text',
       'required' => true,
-    ],
-
-    'account_id' => [
-      'name' => 'account_id',
-      'type' => 'relationship',
-    ],
-
-    'opportunity_id' => [
-      'name' => 'opportunity_id',
-      'type' => 'relationship',
-    ],
-
-    'description' => [
+    ),
+    'order_number' => 
+    array (
+      'name' => 'order_number',
+      'type' => 'text',
+      'required' => true,
+    ),
+    'description' => 
+    array (
       'name' => 'description',
       'type' => 'longtext',
-    ],
-
-    'total_amount' => [
+    ),
+    'total_amount' => 
+    array (
       'name' => 'total_amount',
       'type' => 'number',
-    ],
-
-    'currency' => [
+    ),
+    'currency' => 
+    array (
       'name' => 'currency',
-      'type' => 'textfield',
-    ],
-
-    'status' => [
+      'type' => 'select',
+    ),
+    'status' => 
+    array (
       'name' => 'status',
-      'type' => 'dropdown',
-    ],
-
-    'order_date' => [
+      'type' => 'select',
+    ),
+    'order_date' => 
+    array (
       'name' => 'order_date',
       'type' => 'date',
-    ],
-
-    'due_date' => [
+    ),
+    'due_date' => 
+    array (
       'name' => 'due_date',
       'type' => 'date',
-    ],
-
-    'assigned_user_id' => [
-      'name' => 'assigned_user_id',
-      'type' => 'relationship',
-    ],
-
-    'created_at' => [
+    ),
+    'created_at' => 
+    array (
       'name' => 'created_at',
       'type' => 'datetime',
-    ],
-
-    'updated_at' => [
+      'readonly' => true,
+    ),
+    'updated_at' => 
+    array (
       'name' => 'updated_at',
       'type' => 'datetime',
-    ],
-
-  ],
-
-];
+      'readonly' => true,
+    ),
+  ),
+);

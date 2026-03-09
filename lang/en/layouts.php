@@ -21,6 +21,7 @@ return [
   'edit_subpanels_tooltip' => "Edit Related Panels Layout for ",
   'available_fields' => "Available Fields",
   'available_fields_hint' => "Drag fields into the list on the right.",
+  'available_relationships_hint' => 'Drag fields into the list on the right.',
   'list_columns' => "List Columns",
   'list_columns_hint' => "Reorder columns using drag and drop.",
   'sortable_label' => "Sortable",
@@ -45,6 +46,6 @@ return [
   'back_to_list' => 'Back to layouts',
   'required_field' => 'Required Field',
   'fields_header_hint' => 'Click on a field to add it to the subpanel header',
-  'linking-panel' => 'linking Panel',
+  'linkingPanel' => 'linking Panel',
 
 ];

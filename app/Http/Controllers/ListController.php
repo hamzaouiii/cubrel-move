@@ -6,6 +6,7 @@ use App\Models\Module;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use App\Contracts\ModuleHandler;
+use App\Support\Settings;
 
 class ListController extends Controller
 {
@@ -30,9 +31,9 @@ class ListController extends Controller
 
       if ($handler instanceof ModuleHandler) {
         $params = request()->all();
-        $params['perPage'] = $params['perPage'] ?? request()->query('perPage', 31);
+        $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
 
-        $props = $handler->getListData($params);
+        $props = $handler->getListData($moduleModel, $params);
       }
     }
 

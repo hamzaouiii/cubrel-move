@@ -1,9 +1,9 @@
 <script setup>
-import { formatDateTime } from "@/utils/datetime";
+import { formatDateTime, formatDate } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import RelatedRecordsActionDropdown from "./RelatedRecordsActionDropdown.vue";
-
+import FieldRenderer from "../../Globals/FieldRenderer.vue";
 const props = defineProps({
   record: Object,
   header: Object,
@@ -13,34 +13,19 @@ const props = defineProps({
   },
   openMenuId: [String, Number],
   isUnlinking: Boolean,
+  fields: Object,
 });
-
 const emit = defineEmits(["toggleMenu", "quick-edit", "unlink"]);
 
 const isMenuOpen = computed(() => props.openMenuId === props.record.id);
 
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
 
-const formatField = (field, value) => {
-  if (value == null || value === "") return "";
-
-  const type = field?.type?.toLowerCase();
-
-  switch (type) {
-    case "textfield":
-      return value;
-
-    case "datetime":
-      return formatDateTime(value);
-
-    case "longtext":
-      return value.length > 32 ? value.slice(0, 32) + "…" : value;
-
-    default:
-      return value;
-  }
-};
 const triggerEl = ref(null);
+
+const fieldResolver = (name) => {
+  return props.fields?.find((field) => field.name === name);
+};
 </script>
 
 <template>
@@ -53,7 +38,11 @@ const triggerEl = ref(null);
       </template>
 
       <template v-else>
-        {{ formatField(field, record[field.name]) }}
+        <FieldRenderer
+          :field="fieldResolver(field.name)"
+          v-model="record[field.name]"
+          mode="related-panel"
+        ></FieldRenderer>
       </template>
     </td>
 

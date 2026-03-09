@@ -66,9 +66,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);
     Route::post('dropdowns', [DropdownListController::class, 'store']);
-    Route::put('dropdowns/{dropdown_key}', [DropdownListController::class, 'update']);
+    Route::put('dropdowns/{dropdown_id}', [DropdownListController::class, 'update']);
     Route::post('dropdowns_in_fields', [DropdownListController::class, 'storeAndAttach']);
-    Route::get('dropdowns/{dropdown_key}', [DropdownListController::class, 'show'])
+    Route::get('dropdowns/{dropdown_id}', [DropdownListController::class, 'show'])
       ->name('dropdowns.show');
   });
 
@@ -82,7 +82,7 @@ Route::middleware(['auth'])->group(function () {
   Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
   Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
   Route::get('/modules/{module}/{record_id}/relationships/{relationship}/available', [RelationshipLinkController::class, 'getRecordsForLinking'])->name('relationships.available');
-  Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single_link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single_link');
+  Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single-link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single-link');
   Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
   Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
   Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');

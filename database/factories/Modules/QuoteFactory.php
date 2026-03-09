@@ -26,9 +26,6 @@ class QuoteFactory extends Factory
 
       'description' => $this->faker->optional()->paragraph(),
 
-      'account_id' => null,
-      'contact_id' => null,
-
       'number' => $this->faker->unique()->numerify('Q-#####'),
 
       'status' => $this->faker->randomElement([
@@ -41,7 +38,7 @@ class QuoteFactory extends Factory
 
       'valid_until' => $this->faker->optional()->dateTimeBetween('now', '+30 days'),
 
-      'currency' => 'EUR',
+      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
 
       'subtotal' => $subtotal,
       'tax'      => $tax,

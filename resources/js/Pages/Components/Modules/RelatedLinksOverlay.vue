@@ -1,14 +1,14 @@
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
 import Radiobox from "../FiledTypes/Radiobox.vue";
-import { formatDateTime } from "@/utils/datetime";
+import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
+import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 
-const { success, error, info, warning, removeAlert, clearAllAlerts } =
-  useAlerts();
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
 const props = defineProps({
   panel: {
     type: Object,
@@ -19,6 +19,7 @@ const props = defineProps({
     required: true,
   },
   selectedParent: Object,
+  relationship: Object,
 });
 const cleanedLayout = computed(() => {
   if (!props.layout) return [];
@@ -31,7 +32,7 @@ const cleanedLayout = computed(() => {
 });
 
 const isSingleSelect = computed(() => {
-  const role = props.panel?.relationship?.role;
+  const role = props.relationship?.role;
   return role === "child" || role === "sibling";
 });
 
@@ -46,15 +47,15 @@ const closeOverlay = () => {
 const handleAfterLeave = () => {
   emit("close");
 };
-
 const pageData = usePage();
-
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 const appSettings = pageData.props.appSettings;
 const modules = computed(() => pageData.props.modules);
 
 const currentModule = pageData.props.module.slug;
 const currentRecordId = pageData.props.record?.id;
-const relationshipName = props.panel?.relationship?.name || null;
+const relationshipName = props.relationship?.name || null;
 
 const saveLoading = ref(false);
 const loading = ref(false);
@@ -64,7 +65,6 @@ const selected = ref([]);
 const page = ref(1);
 const lastPage = ref(1);
 const total = ref(0);
-const perPage = 25;
 
 const search = ref("");
 let searchTimeout = null;
@@ -79,13 +79,13 @@ const getRelatedColor = (slug) => {
 
 const loadRecords = async () => {
   if (!relationshipName || !currentModule || !currentRecordId) {
-    console.error("Missing relationship context");
+    error(t("modules.linking.error_missing_context"));
     return;
   }
   let url;
   loading.value = true;
   if (isSingleSelect.value) {
-    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single_link`;
+    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single-link`;
   } else {
     url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
   }
@@ -93,7 +93,6 @@ const loadRecords = async () => {
     const response = await axios.get(url, {
       params: {
         page: page.value,
-        per_page: perPage,
         search: search.value,
       },
     });
@@ -102,11 +101,12 @@ const loadRecords = async () => {
     page.value = response.data.current_page;
     lastPage.value = response.data.last_page;
     total.value = response.data.total;
-  } catch (error) {
+  } catch (err) {
     console.error(
       "Failed loading available records:",
-      error.response?.data || error.message,
+      err.response?.data || err.message,
     );
+    error(t("modules.linking.error_lodaing_related_records"));
   } finally {
     loading.value = false;
   }
@@ -151,9 +151,8 @@ const save = async () => {
   }
 
   saveLoading.value = true;
-  let url;
   try {
-    info("Saving");
+    info(t("modules.linking.info_linking"));
     await axios.post(
       `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}`,
       {
@@ -163,42 +162,22 @@ const save = async () => {
 
     selected.value = [];
     clearAllAlerts();
-    success("Linking records finished successfully ");
-    emit("saved");
+    success(t("modules.linking.success"));
+    emit("saved", props.panel.name);
     closeOverlay();
-  } catch (error) {
+  } catch (e) {
     console.error(
       "Failed saving related records:",
-      error.response?.data || error.message,
+      e.response?.data || e.message,
     );
+    error(e.response?.data?.message);
   } finally {
     saveLoading.value = false;
   }
 };
 
-const formatField = (field, value) => {
-  if (value == null || value === "") return " - ";
-
-  const type = field?.type?.toLowerCase();
-
-  switch (type) {
-    case "textfield":
-      return value;
-
-    case "datetime":
-      return formatDateTime(value);
-
-    case "longtext":
-      // return "test";
-      return value.length > 34 ? value.slice(0, 33) + "…" : value;
-
-    default:
-      return value;
-  }
-};
-
 const displayedRecords = computed(() => {
-  if (!props.selectedParent || props.panel.relationship.role === "parent") {
+  if (!props.selectedParent || props.relationship.role === "parent") {
     return records.value;
   }
 
@@ -210,6 +189,7 @@ const displayedRecords = computed(() => {
   // Put selected record at top
   return [props.selectedParent, ...filtered];
 });
+
 const toggleRow = (id) => {
   if (isSingleSelect.value) {
     // Single select mode
@@ -229,8 +209,13 @@ const toggleRow = (id) => {
     selected.value.splice(index, 1);
   }
 };
+
 const initializeSelected = () => {
-  if (props.selectedParent && selected.value.length === 0) {
+  if (
+    props.selectedParent &&
+    selected.value.length === 0 &&
+    props.relationship.type != "many-to-many"
+  ) {
     selected.value = [props.selectedParent.id];
   }
 };
@@ -254,6 +239,30 @@ const selectedSingle = computed({
     selected.value = val ? [val] : [];
   },
 });
+
+const allSelected = computed(() => {
+  if (!displayedRecords.value.length) return false;
+
+  return displayedRecords.value.every((r) => selected.value.includes(r.id));
+});
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selected.value = [];
+  } else {
+    selected.value = displayedRecords.value.map((r) => r.id);
+  }
+};
+
+const getField = (item) => {
+  return Object.values(props.relationship?.fields)?.find(
+    (field) => field.name === item.name,
+  );
+};
+
+const clearSearch = () => {
+  search.value = "";
+};
 </script>
 
 <template>
@@ -263,13 +272,13 @@ const selectedSingle = computed({
       class="record-overlay"
       @click.self="closeOverlay"
       :style="{
-        '--related-color': getRelatedColor(panel.relationship.related_slug),
+        '--related-color': getRelatedColor(relationship.related_slug),
       }"
     >
       <div class="related-links" ref="overlayRef">
         <div class="related-links__header">
           <div class="related-links__header__title">
-            {{ $t("Link Existing Records") }}
+            {{ $t("modules.linking.link_existing_records") }}
           </div>
 
           <div class="related-links__header__actions">
@@ -277,10 +286,10 @@ const selectedSingle = computed({
               class="related-links__header__actions__btn"
               @click="closeOverlay"
             >
-              {{ $t("Close") }}
+              {{ $t("modules.linking.close") }}
             </button>
             <button class="related-links__header__actions__btn" @click="save">
-              {{ $t("Save") }}
+              {{ $t("modules.linking.save") }}
             </button>
           </div>
         </div>
@@ -293,13 +302,25 @@ const selectedSingle = computed({
           </div>
         </template>
         <template v-else>
-          <!-- List -->
           <div class="related-links__list">
             <div class="related-links__modifiers">
-              <h6>Showing {{ records?.length ?? "0" }} records</h6>
+              <span class="related-links__modifiers__info">
+                {{
+                  $t("modules.linking.showing_count", {
+                    count: records?.length ?? "0",
+                  })
+                }}
+              </span>
               <div class="related-links__modifiers__search">
-                <input v-model="search" type="text" placeholder="Search..." />
-                <span class="related-links__modifiers__search__clear">
+                <input
+                  v-model="search"
+                  type="text"
+                  :placeholder="$t('modules.linking.search')"
+                />
+                <span
+                  class="related-links__modifiers__search__clear"
+                  @click.stop="clearSearch"
+                >
                   <i class="fa-solid fa-xmark" v-if="search.length"></i>
                 </span>
               </div>
@@ -309,17 +330,23 @@ const selectedSingle = computed({
               v-if="cleanedLayout && cleanedLayout.length"
               class="related-links__table"
             >
-              <!-- HEADER -->
               <thead>
                 <tr>
-                  <th class="related-links__head__space"></th>
+                  <th class="related-links__head__space">
+                    <Selectbox
+                      v-if="!isSingleSelect"
+                      :value="'all'"
+                      :modelValue="allSelected ? ['all'] : []"
+                      @update:modelValue="toggleSelectAll"
+                      :color="getRelatedColor(relationship.related_slug)"
+                    />
+                  </th>
                   <th v-for="field in cleanedLayout" :key="field.name">
                     {{ $t(field.label) }}
                   </th>
                 </tr>
               </thead>
 
-              <!-- LOADING -->
               <tbody v-if="loading">
                 <tr
                   v-for="n in 25"
@@ -335,7 +362,6 @@ const selectedSingle = computed({
                 </tr>
               </tbody>
 
-              <!-- RECORDS -->
               <tbody v-else>
                 <tr
                   v-for="record in displayedRecords"
@@ -344,14 +370,13 @@ const selectedSingle = computed({
                   @click="toggleRow(record.id)"
                   :class="{ selected: selected.includes(record.id) }"
                 >
-                  <!-- Checkbox -->
                   <td class="related-links__record__checkbox">
                     <Selectbox
                       v-if="!isSingleSelect"
                       :value="record.id"
                       v-model="selected"
                       @update:modelValue="() => toggleRow(record.id)"
-                      :color="getRelatedColor(panel.relationship.related_slug)"
+                      :color="getRelatedColor(relationship.related_slug)"
                     />
 
                     <Radiobox
@@ -359,29 +384,33 @@ const selectedSingle = computed({
                       :value="record.id"
                       v-model="selectedSingle"
                       @update:modelValue="() => toggleRow(record.id)"
-                      :color="getRelatedColor(panel.relationship.related_slug)"
+                      :color="getRelatedColor(relationship.related_slug)"
                     />
                   </td>
 
-                  <!-- Fields -->
                   <td
                     v-for="field in cleanedLayout"
                     :key="field.name"
                     class="related-links__cell"
                   >
-                    <template v-if="field.name === 'name'">
-                      <span
-                        class="related-links__record-title related-links__record__field"
-                      >
-                        {{ formatField(field, record[field.name]) }}
-                      </span>
-                    </template>
-
-                    <template v-else>
-                      <span class="related-links__record__field">
-                        {{ formatField(field, record[field.name]) }}
-                      </span>
-                    </template>
+                    <span
+                      :class="
+                        ('related-links__record__field',
+                        {
+                          'related-links__record-title': field.name === 'name',
+                        })
+                      "
+                    >
+                      <FieldRenderer
+                        :field="getField(field)"
+                        v-model="record[field.name]"
+                        :module-color="
+                          getRelatedColor(relationship.related_slug)
+                        "
+                        mode="linkingPanel"
+                        :highlight="search"
+                      />
+                    </span>
                   </td>
                 </tr>
               </tbody>

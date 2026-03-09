@@ -26,10 +26,6 @@ class InvoiceFactory extends Factory
 
       'description' => $this->faker->optional()->paragraph(),
 
-      'account_id' => null,
-      'contact_id' => null,
-      'quote_id'   => null,
-
       'number' => $this->faker->unique()->numerify('INV-#####'),
 
       'status' => $this->faker->randomElement([
@@ -43,7 +39,7 @@ class InvoiceFactory extends Factory
       'issue_date' => $this->faker->optional()->date(),
       'due_date'   => $this->faker->optional()->date(),
 
-      'currency' => 'EUR',
+      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
 
       'subtotal' => $subtotal,
       'tax'      => $tax,

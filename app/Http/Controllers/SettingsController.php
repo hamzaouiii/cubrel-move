@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
-use App\Contracts\ModuleHandler;
 use Illuminate\Http\Request;
 use App\Models\Settings\Settings;
-use App\Models\Settings\SettingItem;
 use App\Models\Settings\SettingValue;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;

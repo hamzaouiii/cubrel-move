@@ -10,8 +10,7 @@ import {
 } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
-import ModuleDropdownField from "../Components/FiledTypes/ModuleDropdownField.vue";
-import DateTime from "../Components/FiledTypes/DateTime.vue";
+import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -50,7 +49,7 @@ const actionDropDownref = ref(null);
 const validationErrors = ref([]);
 
 const hasError = computed(() => (field) => {
-  return validationErrors.value.some((item) => item.field === field.label);
+  return validationErrors.value.some((item) => item.field === field.name);
 });
 
 const handleClickOutsideActionDropDown = (event) => {
@@ -63,17 +62,15 @@ const handleClickOutsideActionDropDown = (event) => {
 };
 
 const getRequiredFields = () => {
-  const sections = props.recordLayout?.sections;
   let allRequiredFields = [];
 
-  for (const section of sections) {
-    const requiredFields = section.layout?.filter(
-      (item) => item.required === true && item.readonly !== true,
-    );
-    if (requiredFields?.length) {
-      allRequiredFields.push(...requiredFields);
-    }
+  const requiredFields = props.fields?.filter(
+    (field) => field.required === true && field.readonly !== true,
+  );
+  if (requiredFields?.length) {
+    allRequiredFields.push(...requiredFields);
   }
+
   return allRequiredFields;
 };
 
@@ -101,7 +98,8 @@ const requiredEmptyFields = computed(() => {
 const validateRequiredFields = () => {
   requiredEmptyFields.value.map((item) => {
     validationErrors.value.push({
-      field: item.label,
+      field: item.name,
+      label: item.label,
       type: "required",
     });
   });
@@ -112,7 +110,7 @@ const validateRequiredFields = () => {
   } else if (validationErrors.value.length === 1) {
     clearAllAlerts();
     error(
-      t(validationErrors.value[0].field) +
+      t(validationErrors.value[0].label) +
         " " +
         t("fields.validation.is_required"),
     );
@@ -124,28 +122,13 @@ const clearAllValidartionErrors = () => {
   validationErrors.value = [];
 };
 
-const removeValidationError = (field) => {
-  if (hasError.value(field)) {
-    validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field.label,
-    );
-  }
-};
-
-const removeValidationErrorText = (field) => {
-  if (form[field.name].length >= 3 && hasError.value(field)) {
-    validationErrors.value = validationErrors.value.filter(
-      (item) => item.field !== field.label,
-    );
-  }
-};
-
 const saveRecord = () => {
   if (!form.isDirty) {
     warning(t("modules.actions.no_data_entered"));
   } else {
-    info(t("modules.actions.saving"));
     clearAllValidartionErrors();
+
+    info(t("modules.actions.saving"));
     const moduleSlug = props.module.slug ?? props.module;
     const url = `/${moduleSlug}`;
     validateRequiredFields();
@@ -153,16 +136,20 @@ const saveRecord = () => {
       return;
     }
 
-    form.post(url, {
-      onSuccess: () => {
-        clearAllAlerts();
-        success(t("modules.actions.save_success"));
-      },
-      onError: () => {
-        clearAllAlerts();
-        error(t("modules.actions.save_error") + form.errors);
-      },
-    });
+    form
+      .transform((data) => {
+        return { ...data };
+      })
+      .post(url, {
+        onSuccess: () => {
+          clearAllAlerts();
+          success(t("modules.actions.save_success"));
+        },
+        onError: () => {
+          clearAllAlerts();
+          error(t("modules.actions.save_error") + form.errors);
+        },
+      });
   }
 };
 
@@ -184,11 +171,6 @@ function handleKeydown(e) {
   }
 }
 
-const getFieldDropDownList = (f) => {
-  const field = props.fields.find((field) => field.name === f.name);
-  return field?.dropdown_list.values || [];
-};
-
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
   window.addEventListener("keydown", handleKeydown);
@@ -199,118 +181,89 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-useUnsavedChangesGuard({
-  getIsDirty: () => form.isDirty,
-});
+// useUnsavedChangesGuard({
+//   getIsDirty: () => form.isDirty,
+// });
 
-const getTextareaRows = (f) => {
-  if (form[f.name]) {
-    const val = form[f.name].split(" ").length;
-    return val / 8;
-  }
-  return 2;
+const module_color = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : props.module.color;
+});
+const getField = (f) => {
+  return props.fields.find((field) => field.name === f.name);
 };
 </script>
 
 <template>
   <Head>
-    <title>{{ module.label }} - Automatisierung Regensburg</title>
+    <title>{{ module.label }}</title>
   </Head>
 
-  <div
-    class="module-layout"
-    :style="
-      appSettings.use_individual_module_colors == '0'
-        ? { '--module-color': appSettings.primary_color }
-        : { '--module-color': module.color }
-    "
-  >
-    <div class="module-layout__header">
-      <div class="module-layout__header__details">
-        <h1 class="module-layout__header__details__title"></h1>
+  <div class="record-layout" :style="{ '--module-color': module_color }">
+    <div class="record-layout__header">
+      <div class="record-layout__header__details">
+        <div class="record-layout__header__details__info">
+          <div class="record-layout__header__details__info__avatar">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+          <div class="record-layout__header__details__info__text">
+            <div class="record-layout__header__details__info__text__name">
+              <!-- {{ $t("modules.actions.create_new") }} -->
+            </div>
+            <div
+              class="record-layout__header__details__info__text__description"
+            >
+              <!-- {{ $t("modules.fill_details") }} -->
+            </div>
+          </div>
+        </div>
+
+        <div class="record-layout__header__details__actions">
+          <div class="record-layout__header__details__actions__edit">
+            <button @click="cancelCreate">
+              {{ $t("modules.actions.cancel") }}
+            </button>
+            <button :disabled="!form.isDirty" @click="saveRecord">
+              {{ $t("modules.actions.save") }}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="module-layout__header__actions" ref="actionDropDownref">
-        <div class="module-layout__header__actions__create">
-          <button
-            class="module-layout__header__actions__create__cancel-btn"
-            @click="cancelCreate"
-          >
-            {{ $t("modules.actions.cancel") || "Cancel" }}
-          </button>
-
-          <button
-            class="module-layout__header__actions__create_save-btn"
-            :disabled="!form.isDirty"
-            @click="saveRecord"
-          >
-            {{ $t("modules.actions.save") || "Save" }}
-          </button>
-        </div>
+      <div class="record-layout__header__tabs">
+        <ul>
+          <li class="active">{{ $t("modules.overview") }}</li>
+        </ul>
       </div>
     </div>
+    <div class="record-layout__scroll">
+      <div class="record-layout__sections">
+        <div
+          class="record-layout__sections__item"
+          v-for="s in recordLayout.sections"
+          :key="s.name"
+        >
+          <div class="record-layout__sections__item__title">
+            {{ s.name }}
+          </div>
 
-    <div class="record-layout">
-      <div
-        class="record-layout__section"
-        v-for="s in recordLayout.sections"
-        :key="s.name"
-      >
-        <div class="record-layout__section__title">
-          {{ s.name }}
-        </div>
-
-        <div class="record-layout__section__layout">
-          <div
-            v-for="f in s.layout.filter((f) => !f.readonly)"
-            :key="f.name"
-            class="record-layout__section__layout__field"
-          >
-            <span class="record-layout__section__layout__field__label">
-              {{ $t(f.label) }}:
-            </span>
-
+          <div class="record-layout__sections__item__layout">
             <div
-              class="record-layout__section__layout__field__content editing-mode"
-              :class="{ error: hasError(f) }"
+              v-for="f in s.layout.filter((f) => !getField(f).readonly)"
+              :key="f.name"
+              class="record-layout__sections__item__layout__field"
             >
-              <template v-if="f.type === 'datetime'">
-                <DateTime
-                  v-model="form[f.name]"
-                  type="datetime"
-                  @click="removeValidationError(f)"
-                ></DateTime>
-              </template>
-              <template v-else-if="f.type === 'date'">
-                <DateTime
-                  v-model="form[f.name]"
-                  type="date"
-                  @click="removeValidationError(f)"
-                ></DateTime>
-              </template>
-              <template v-else-if="f.type === 'longtext'">
-                <textarea
-                  v-model="form[f.name]"
-                  :rows="getTextareaRows(f)"
-                ></textarea>
-              </template>
-              <template v-else-if="f.type === 'dropdown'">
-                <ModuleDropdownField
-                  :options="getFieldDropDownList(f)"
-                  v-model="form[f.name]"
-                  @click="removeValidationError(f)"
-                ></ModuleDropdownField>
-              </template>
-              <template v-else>
-                <input
-                  type="text"
-                  v-model="form[f.name]"
-                  @input="removeValidationErrorText(f)"
-                />
-              </template>
-              <span v-if="hasError(f)" class="error-icon-container">
-                <i class="error-icon fa-solid fa-circle-exclamation"></i>
+              <span class="record-layout__sections__item__layout__field__label">
+                {{ $t(f.label) }}:
               </span>
+              <FieldRenderer
+                :field="getField(f)"
+                v-model="form[f.name]"
+                mode="edit"
+                :module-color="module_color"
+                :has-error="hasError(f)"
+              />
             </div>
           </div>
         </div>

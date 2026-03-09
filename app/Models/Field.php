@@ -26,10 +26,10 @@ class Field extends Model
   protected $fillable = [
     'id',
     'module_id',
+    'type',
     'label',
     'name',
     'key',
-    'type',
     'is_custom',
     'is_active',
     'readonly',
@@ -53,10 +53,6 @@ class Field extends Model
     'key',
     'is_custom',
     'is_active',
-    'options',
-    'filterable',
-    'searchable',
-    'hidden',
     'database_type',
     'dropdown_list_id'
 

@@ -33,6 +33,7 @@ const getDefaultFields = () => {
         name: field.name,
         type: field.type,
         label: field.label,
+        sortable: field.sortable,
       };
     })
     .filter(Boolean);
@@ -70,6 +71,7 @@ const selectField = (field) => {
       name: field.name,
       label: field.label,
       type: field.type,
+      sortable: field.sortable,
     });
   }
 

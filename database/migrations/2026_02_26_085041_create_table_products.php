@@ -12,14 +12,15 @@ return new class extends Migration
       $table->uuid('id')->primary();
 
       $table->string('name');
-      $table->string('sku')->unique();
+      $table->string('sku')->nullable();
       $table->text('description')->nullable();
 
       $table->string('category')->nullable()->index();
-      $table->decimal('price', 15, 2);
-      $table->string('currency', 3)->default('EUR');
+      $table->decimal('price', 15, 2)->nullable();
+      $table->string('currency', 3)->nullable();
 
-      $table->boolean('is_active')->default(true)->index();
+      $table->boolean('is_active')->nullable()->index();
+      $table->json('custom_fields')->nullable();
 
       $table->timestamps();
     });

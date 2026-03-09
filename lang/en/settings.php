@@ -54,7 +54,11 @@ return [
     'timezone'                  => 'Timezone',
     'first_day_of_week'         => 'First Day of Week',
     'danger_color'              => "Danger Color",
-    'danger_color_hint'              => "Used for dangerous actions such delete warnings and delete buttons"
+    'danger_color_hint'              => "Used for dangerous actions such delete warnings and delete buttons",
+    'related_panel_limit' => 'Related Panel Limit',
+    'list_view_limit' => 'List View Limit',
+    'linking_panel_limit' => 'Linking Panel Limit',
+
   ],
   'groups' => [
     'email'          => 'Email Settings',
@@ -84,7 +88,8 @@ return [
     'languages'           => 'Languages',
     'layouts'             => 'Layouts',
     'system_email_settings' => 'System Email Settings',
-    'dropdowns'           => 'Dropdown Editor'
+    'dropdowns'           => 'Dropdown Editor',
+    'preferences'         => 'Preferences'
   ],
   'dropdown' => [
     'create'  => 'Create new dropdown list',
@@ -95,8 +100,8 @@ return [
     'related_field' => 'Related Field',
     'save_success' => 'Dropdown list saved succefully',
     'update_success' => 'Dropdown list saved succefully',
-    'save_error' => 'An error occurred while saving the Dropdown list'
-
-  ]
+    'save_error' => 'An error occurred while saving the Dropdown list',
+    'search'    => 'Search dropdown lists'
+  ],
 
 ];

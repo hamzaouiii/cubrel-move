@@ -53,11 +53,10 @@ class DropDownListController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(String $dropDownList)
+  public function show(String $dropdown_list_id)
   {
-    $dropdown = DropdownList::query()
-      ->where('key', $dropDownList)
-      ->first();
+    $dropdown = DropdownList::find($dropdown_list_id);
+
     $settingsItem = Settings::getItem('customisation', 'dropdowns');
     return Inertia::render('Settings/Dropdowns/Record', [
       'dropdown' => $dropdown,
@@ -77,16 +76,16 @@ class DropDownListController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, string $dropdownList_key)
+  public function update(Request $request, string $dropdown_list_id)
   {
-    $dropdownList = DropdownList::where('key', $dropdownList_key)
-      ->firstOrFail();
+
+    $dropdown = DropdownList::find($dropdown_list_id);
 
     $data = $request->validate([
       'values' => 'required',
     ]);
 
-    $dropdownList->update($data);
+    $dropdown->update($data);
 
     return back()->with('success', __('settings.dropdown.update_success'));
   }

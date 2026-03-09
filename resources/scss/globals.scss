@@ -28,197 +28,320 @@
 .confirm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 1000; // Increased to ensure it's above everything
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(
+    15,
+    23,
+    42,
+    0.4
+  ); // Cooler, softer backdrop (Slate-900 at 40%)
+  backdrop-filter: blur(4px); // Modern glass effect for the background
 
   &__dialog {
-    width: min(520px, 100%);
+    width: min(440px, 100%); // Slightly narrower for a more "alert" feel
     background: white;
-    border-radius: 12px;
-    padding: 18px;
+    border-radius: 16px; // Match your modern rounded UI
+    padding: 24px;
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
   }
 
   &__title {
-    font-size: 18px;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    color: #1e293b; // Slate-800
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   &__message {
-    font-size: 14px;
-    opacity: 0.9;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #64748b; // Slate-500 for better readability
+    margin-bottom: 24px;
   }
 
   &__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 16px;
+    gap: 12px;
+
+    .btn {
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    &--cancel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+
+      &:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+      }
+    }
+
+    // Default Primary (Accept/Link)
+    .button-primary {
+      background: #2563eb; // Match your "Create" button blue
+      color: white;
+      border: none;
+
+      &:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      }
+    }
 
     &--danger {
-      --btn-color: salmon;
-      --btn-bg-hover: salmon;
+      background: #ef4444; // Modern vibrant Red (Tailwind Red-500)
+      color: white;
+      border: none;
+
+      &:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+      }
     }
   }
 }
 
 .alerts {
   position: fixed;
+  top: 24px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  top: 10%;
-  max-width: 25%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 520px;
   display: flex;
   flex-direction: column;
-  align-self: center;
-  z-index: 99;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none;
   font-family: "Fira Sans", "Heebo", sans-serif;
-  @media (max-width: 1250px) {
-    max-width: 60%;
-    left: 55%;
-  }
 
-  @media (max-width: 750px) {
-    max-width: 75%;
-    left: 55%;
+  @media (max-width: 768px) {
+    max-width: 92%;
+    top: 16px;
   }
 
   &__item {
+    pointer-events: auto;
     position: relative;
-    text-align: center;
-    border-radius: 15px 5px 15px 5px;
-    padding: 16px;
-    margin: 5px 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    @media (max-width: 1250px) {
-      padding: 8px;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 15px 5px 15px 5px;
+    backdrop-filter: blur(8px);
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.08),
+      0 2px 6px rgba(0, 0, 0, 0.05);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    animation: alert-slide-in 0.25s ease-out;
+    border: 1px solid transparent;
+    overflow: hidden;
+    border-left: 5px solid;
+    border-right: 5px solid;
+    &::before {
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      font-size: 1.1rem;
+      flex-shrink: 0;
     }
-
-    @media (max-width: 750px) {
-      padding: 8px 2px;
+    &__progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      width: 100%;
+      background: currentColor;
+      opacity: 0.4;
+      transform-origin: left;
+      animation-name: alert-progress;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
     }
     &__message {
-      align-self: center;
-      padding: 0 15px;
+      flex: 1;
+      padding-right: 8px;
+      font-weight: 500;
     }
+
     &__close {
-      top: 5px;
-      right: 10px;
-      transition: all 0.2s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: all 0.15s ease;
+      opacity: 0.6;
+
+      i {
+        font-size: 0.85rem;
+      }
+
       &:hover {
-        transform: scale(1.3);
+        opacity: 1;
+        transform: scale(1.1);
+        background: rgba(0, 0, 0, 0.05);
       }
     }
 
+    // ERROR
     &--error {
-      background-color: rgba(250, 128, 114, 0.342);
-      color: rgb(119, 20, 8);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 99, 71, 0.12),
+        rgba(220, 53, 69, 0.08)
+      );
+      border-color: rgba(220, 53, 69, 0.25);
+
+      color: #842029;
 
       &::before {
         content: "\f06a";
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        margin-right: 8px;
-        display: inline-block;
+        color: #dc3545;
       }
     }
 
+    // SUCCESS
     &--success {
-      background-color: rgba(144, 238, 144, 0.9);
-      color: darkgreen;
+      background: linear-gradient(
+        135deg,
+        rgba(25, 135, 84, 0.12),
+        rgba(40, 167, 69, 0.08)
+      );
+      border-color: rgba(25, 135, 84, 0.25);
+      color: #0f5132;
 
       &::before {
         content: "\f058";
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        margin-right: 8px;
-        display: inline-block;
+        color: #198754;
       }
     }
 
+    // WARNING
     &--warning {
-      background-color: rgba(255, 250, 205, 0.9);
-      color: rgb(192, 138, 2);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 193, 7, 0.18),
+        rgba(255, 193, 7, 0.1)
+      );
+      border-color: rgba(255, 193, 7, 0.35);
+      color: #664d03;
 
       &::before {
         content: "\f071";
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        margin-right: 8px;
-        display: inline-block;
+        color: #ffc107;
       }
     }
 
+    // INFO
     &--info {
-      background-color: rgba(25, 195, 252, 0.882);
-      color: rgb(0, 128, 255);
+      background: linear-gradient(
+        135deg,
+        rgba(13, 110, 253, 0.12),
+        rgba(13, 202, 240, 0.08)
+      );
+      border-color: rgba(13, 110, 253, 0.25);
+      color: #084298;
 
       &::before {
         content: "\f05a";
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        margin-right: 8px;
-        display: inline-block;
+        color: #0d6efd;
       }
     }
   }
 }
 
+@keyframes alert-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes alert-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
 .pagination {
-  margin-left: 2rem;
   display: flex;
-  padding-left: 0;
+  gap: 5px;
+  align-items: center;
   list-style: none;
-  @media (max-width: 1250px) {
-    margin-left: 1rem;
-  }
-
-  @media (max-width: 750px) {
-    margin-left: 0rem;
-  }
   &__item {
-    background-color: white;
-    padding: 10px;
-    min-width: 40px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.2s ease;
+    background-color: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
 
-    color: var(--module-color);
-
-    &:hover {
-      background-color: lightgray;
-    }
-    &:last-child {
-      border-radius: 0 5px 5px 0;
-    }
-    &:first-child {
-      border-radius: 5px 0 0 5px;
-      border-right: 1px solid lightgray;
-    }
-    &--disabled {
-      background-color: lightgray;
-      color: darkgray;
-      cursor: not-allowed;
-      a {
-        text-decoration: none;
-        color: darkgray;
-        cursor: not-allowed;
-      }
-    }
     &--active {
       background-color: var(--module-color);
-      color: white !important;
+      color: white;
+      border-color: var(--module-color);
       cursor: default;
+      box-shadow: 0 4px 6px -1px
+        color-mix(in srgb, var(--module-color) 25%, transparent);
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: #f8fafc;
+      color: #cbd5e1;
+      border-color: #e2e8f0;
+
       &:hover {
-        background-color: var(--module-color);
+        background-color: #f8fafc;
+        border-color: #e2e8f0;
+        color: #cbd5e1;
       }
+    }
+    &:hover:not(&--active) {
+      background-color: #f1f5f9;
+      color: var(--module-color);
+      border-color: var(--module-color);
+    }
+    i {
+      font-size: 0.75rem;
     }
   }
 }
@@ -230,13 +353,13 @@
   grid-template-rows: auto auto;
   &__search {
     input {
-      border: 2px solid lightgray;
-      padding-left: 10px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      width: 350px;
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.95rem;
+      border: 1px solid #dcdfe6;
+      border-radius: 6px;
+      transition: all 0.2s ease-in-out;
+      color: #2d3748;
     }
     &__close {
       position: relative;
@@ -525,7 +648,6 @@
 }
 .lds-ripple,
 .lds-ripple div {
-  box-sizing: border-box;
 }
 .lds-ripple {
   display: inline-block;

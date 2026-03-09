@@ -4,19 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Module;
-use App\Models\Layout;
 use Inertia\Inertia;
-use App\Models\Settings\SettingItem;
 use App\Services\Relationships\RelationshipService;
 
 class LayoutManagerController extends Controller
 {
-
-
   public function store(Request $request, \App\Models\Module $module, string $layoutType)
   {
     $validated = [];
-    if ($layoutType == 'list' || $layoutType === "linking-panel") {
+    if ($layoutType == 'list' || $layoutType === "linkingPanel") {
       $validated = $request->validate([
         'definition' => 'required|array',
         'definition.columns' => 'required|array',
@@ -70,15 +66,13 @@ class LayoutManagerController extends Controller
           $q->orderBy('type')->orderBy('name');
         },
       ])->firstOrFail();
-    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
-    $defaultLayout = Layout::getDefaultLayout($type);
+    $layout = $module->getDefaultLayout($type);
     $fields = $module->fields;
     $relationships = RelationshipService::getRelationshipForModule($module->model_class);
     return Inertia::render('Settings/Layouts/Edit', [
-      'item'     => $item,
       'module' => $module,
       'type'  => $type,
-      'defaultLayout' => $defaultLayout,
+      'defaultLayout' => $layout,
       'fields'   => $fields,
       'relationships' => $relationships
     ]);

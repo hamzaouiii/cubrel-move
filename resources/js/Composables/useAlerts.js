@@ -13,6 +13,7 @@ const addAlert = (type, message, options = {}) => {
     message,
     dismissible: options.dismissible ?? true,
     timeout: options.timeout ?? 5000,
+    progressable: options.progressable ?? true,
   });
 
   if (options.timeout !== 0) {

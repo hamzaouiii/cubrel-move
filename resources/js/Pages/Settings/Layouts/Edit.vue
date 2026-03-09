@@ -73,7 +73,7 @@ const relatedByName = computed(() => {
 
 // list layout + linking panel
 const listLayoutColumnConfigs = computed(() => {
-  if (props.type === "list" || props.type === "linking-panel") {
+  if (props.type === "list" || props.type === "linkingPanel") {
     return Object.values(currentLayout?.value?.columns || {}).filter(Boolean);
   }
   return [];
@@ -102,7 +102,7 @@ watch(
   { immediate: true },
 );
 const availableListFields = computed(() => {
-  if (props.type !== "list" && props.type !== "linking-panel") {
+  if (props.type !== "list" && props.type !== "linkingPanel") {
     return [];
   }
 
@@ -114,13 +114,8 @@ const availableListFields = computed(() => {
     .filter((field) => !usedKeys.has(field.name))
     .map((field) => ({
       name: field.name,
-      key: field.key,
       label: field.label ?? field.name,
       type: field.type,
-      sortable: field.sortable ?? false,
-      readonly: field.readonly ?? false,
-      required: field.required ?? false,
-      dropdown_list: field.dropdown_list ?? null,
     }));
 });
 
@@ -279,7 +274,7 @@ const availableRecordFields = computed(() => {
 
 // both
 const isDirty = computed(() => {
-  if (props.type === "list" || props.type === "linking-panel") {
+  if (props.type === "list" || props.type === "linkingPanel") {
     const current = JSON.stringify(cleanedListColumns.value);
     const original = JSON.stringify(cleanedColumnsFromDb.value);
     return current !== original;
@@ -305,7 +300,7 @@ const form = useForm({
 });
 
 const resetToDatabaseValue = () => {
-  if (props.type === "list" || props.type === "linking-panel") {
+  if (props.type === "list" || props.type === "linkingPanel") {
     listColumns.value = [...selectedListColumnsFromDb.value];
   } else if (props.type === "record") {
     recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value);
@@ -330,7 +325,7 @@ const saveLayout = () => {
   info(t("layouts.saving"));
   let definition = { ...(currentLayout.value || {}) };
 
-  if (props.type === "list" || props.type === "linking-panel") {
+  if (props.type === "list" || props.type === "linkingPanel") {
     definition.columns = cleanedListColumns.value;
   } else if (props.type === "record") {
     definition.sections = cleanedRecordSections.value;
@@ -449,7 +444,7 @@ const layoutsUrl = () => {
         />
       </div>
 
-      <div v-else-if="type === 'linking-panel'">
+      <div v-else-if="type === 'linkingPanel'">
         <LayoutLinkingPanelEditor
           v-model:columns="listColumns"
           :available-fields="availableListFields"

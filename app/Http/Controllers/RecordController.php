@@ -99,7 +99,7 @@ class RecordController extends Controller
     $modelClass  = $moduleModel->model_class;
 
     $record = $modelClass::findOrFail($id);
-    $record->fill($request->except('_token', '_method'))->save();
+    $record->fill($request->except('_token', '_method', 'related'))->save();
 
     return back()->with('success', 'Record updated successfully.');
   }

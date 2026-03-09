@@ -93,9 +93,9 @@ const editClicked = () => {
 </script>
 
 <template>
-  <div class="dropdown-field" ref="root">
+  <div class="field-dropdown" ref="root">
     <div
-      class="dropdown-field_button"
+      class="field-dropdown__control"
       :class="{
         'is-open': isOpen,
         'is-invalid': error,
@@ -103,45 +103,50 @@ const editClicked = () => {
       }"
       @click="toggle"
     >
-      <span class="dropdown-field_selected">
+      <span class="field-dropdown__selected">
         {{ selectedOption ?? $t("settings.select_dropdown_list") }}
       </span>
 
       <i
-        class="dropdown-field__icon"
-        :class="isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"
+        class="field-dropdown__chevron fa-solid"
+        :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"
       ></i>
     </div>
 
     <transition name="dropdown-fade">
-      <div v-if="isOpen" class="dropdown-field_menu" role="listbox" @click.stop>
-        <div class="dropdown-field_search">
+      <div
+        v-if="isOpen"
+        class="field-dropdown__menu"
+        role="listbox"
+        @click.stop
+      >
+        <div class="field-dropdown__search-wrapper">
           <input
             ref="searchInput"
             v-model="search"
             type="text"
-            class="dropdown-field_search_input"
-            :placeholder="t('settings.search_in_drop_down')"
+            class="field-dropdown__search-input"
+            :placeholder="$t('settings.search_in_drop_down')"
             @keydown.stop
           />
         </div>
 
-        <ul class="dropdown-field_list">
+        <ul class="field-dropdown__list">
           <li
             v-for="option in filteredOptions"
             :key="option.key"
-            class="dropdown-field_option"
+            class="field-dropdown__option"
             role="option"
             @click="selectOption(option.id)"
           >
-            <div class="dropdown-field_option_label">
+            <div class="field-dropdown__option-label">
               {{ option.key }}
             </div>
           </li>
 
           <li
             v-if="filteredOptions.length === 0"
-            class="dropdown-field_no_results"
+            class="field-dropdown__no-results"
           >
             {{ $t("settings.dropdown_no_results") }}
           </li>
@@ -149,14 +154,15 @@ const editClicked = () => {
       </div>
     </transition>
   </div>
-  <button
-    class="btn"
-    :disabled="selectedOption === null"
-    @click.prevent="editClicked(selectedOption)"
-  >
-    <i class="fa-solid fa-pen-to-square"></i>
-  </button>
-  <button @click.prevent="createClicked" class="btn">
-    <i class="fa-solid fa-circle-plus"></i>
-  </button>
+  <div class="dropdown-selector__actions">
+    <button
+      :disabled="selectedOption === null"
+      @click.prevent="editClicked(selectedOption)"
+    >
+      <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+    <button @click.prevent="createClicked">
+      <i class="fa-solid fa-circle-plus"></i>
+    </button>
+  </div>
 </template>

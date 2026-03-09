@@ -57,7 +57,11 @@ const valueExistsError = ref(false);
 
 const addItem = () => {
   if (!newItem.isDirty) return;
-  if (form.values.some((item) => item.value === newItem.value)) {
+  if (
+    form.values.some(
+      (item) => item.value === generatedSystemvalue(newItem.label),
+    )
+  ) {
     error("Value Already Exists");
     valueExistsError.value = true;
     return;
@@ -67,6 +71,7 @@ const addItem = () => {
     value: generatedSystemvalue(newItem.label),
   });
   newItem.reset();
+  valueExistsError.value = false;
 };
 
 const deleteItem = (value) => {
@@ -85,7 +90,7 @@ const resetList = () => {
 const saveList = () => {
   if (form.isDirty) {
     info(t("modules.actions.saving"));
-    form.put("/settings/dropdowns/" + props.dropdown.key, {
+    form.put("/settings/dropdowns/" + props.dropdown.id, {
       onSuccess: () => {
         clearAllAlerts();
         success(t("settings.dropdown.update_success"));
@@ -127,7 +132,10 @@ useUnsavedChangesGuard({
   </Head>
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--danger-color': appSettings.danger_color,
+    }"
   >
     <div class="settings__header">
       <div class="settings__header__title">

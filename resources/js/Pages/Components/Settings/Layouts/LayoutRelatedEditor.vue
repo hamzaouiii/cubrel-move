@@ -1,6 +1,19 @@
 <script setup>
-import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
+/**
+ * This is the editor for the layout of the table shown in the panel Body
+ */
+
+import {
+  ref,
+  watch,
+  computed,
+  getCurrentInstance,
+  onBeforeUnmount,
+  unref,
+  toRaw,
+} from "vue";
 import LayoutRelatedFields from "./LayoutRelatedFields.vue";
+
 const props = defineProps({
   columns: {
     type: Array,
@@ -22,6 +35,7 @@ const props = defineProps({
 const emit = defineEmits(["update:columns"]);
 
 const internalColumns = ref([...props.columns]);
+// vLog(internalColumns?.value[1]?.layout[0]);
 const internalAvailable = ref([...props.availableRelationships]);
 const confirmSectionIndex = ref(null);
 const showSubpanels = ref([]);
@@ -209,9 +223,6 @@ const moveFieldToSection = (
     name: field.name,
     label: field.label,
     type: field.relationship_type,
-    readonly: field.readonly,
-    required: field.required,
-    relationship: props.relByKey[field.name],
   };
 
   targetSection.layout.splice(targetColumnIndex, 0, newColumn);
@@ -276,10 +287,10 @@ const isSubpanelOpen = (column) => {
   return showSubpanels.value.includes(`${column.name}`);
 };
 
-const updateColumnPanelHeader = (sectionIndex, columnIndex, value) => {
+const updateColumnFields = (sectionIndex, columnIndex, value) => {
   const panels = [...internalColumns.value];
 
-  panels[sectionIndex].layout[columnIndex].panelHeader = value;
+  panels[sectionIndex].layout[columnIndex].fields = value;
 
   internalColumns.value = panels;
   emitUpdatedColumns();
@@ -609,14 +620,10 @@ onBeforeUnmount(() => {
                       <LayoutRelatedFields
                         :fields="relByKey[column.name]"
                         :showFields="isSubpanelOpen(column)"
-                        :selectedFields="column.panelHeader || []"
+                        :selectedFields="column.fields || []"
                         @update:selectedFields="
                           (val) =>
-                            updateColumnPanelHeader(
-                              sectionIndex,
-                              columnIndex,
-                              val,
-                            )
+                            updateColumnFields(sectionIndex, columnIndex, val)
                         "
                       ></LayoutRelatedFields>
                     </div>

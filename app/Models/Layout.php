@@ -43,17 +43,44 @@ class Layout extends Model
 
   public static function getDefaultLayout(string $type)
   {
-    $layout = config("default_layouts.{$type}");
-    return $layout;
+    return self::normalize(config("default_layouts.{$type}", []));
   }
 
   public static function getGlobalListLayout()
   {
-    return config("default_layouts.list", []);
+    return self::normalize(config("default_layouts.list", []));
   }
 
   public static function getGlobalRecordLayout()
   {
-    return config("default_layouts.record", []);
+    return self::normalize(config("default_layouts.record", []));
+  }
+
+  public static function normalize(mixed $value): mixed
+  {
+    if (!is_array($value)) {
+      return $value;
+    }
+
+    // Recursively normalize children first
+    foreach ($value as $key => $child) {
+      $value[$key] = self::normalize($child);
+    }
+
+    // If array has only numeric keys, reindex it
+    if (self::isSequentialArray($value)) {
+      return array_values($value);
+    }
+
+    return $value;
+  }
+
+  protected static function isSequentialArray(array $array): bool
+  {
+    if ($array === []) {
+      return true;
+    }
+
+    return array_keys($array) === range(0, count($array) - 1);
   }
 }

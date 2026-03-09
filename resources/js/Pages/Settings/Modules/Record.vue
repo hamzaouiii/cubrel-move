@@ -8,7 +8,7 @@ import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
-
+import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -173,6 +173,10 @@ useUnsavedChangesGuard({
                 v-else-if="inputTypeFor(key, value) === 'textarea'"
                 v-model="editableModule[key]"
               ></textarea>
+              <ColorPicker
+                v-else-if="inputTypeFor(key, value) === 'color'"
+                v-model="editableModule[key]"
+              ></ColorPicker>
               <input
                 v-else
                 :type="inputTypeFor(key, value)"

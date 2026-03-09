@@ -1,20 +1,22 @@
 <script setup>
-import { formatDateTime } from "@/utils/datetime";
-import { Link, usePage } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 import PanelRecord from "./PanelRecord.vue";
 import PanelParentRecord from "./PanelParentRecord.vue";
 import { computed, ref, getCurrentInstance, watch } from "vue";
 import axios from "axios";
 import { useConfirm } from "@/Composables/useConfirm";
-
+import PanelFooter from "./PanelFooter.vue";
 const { confirm } = useConfirm();
 const props = defineProps({
   isOpenPanel: Boolean,
   relationship: Object,
   panel: Object,
+  fields: Object,
+  pagination: Object,
 });
 
 const records = ref([]);
+const isLoading = ref(false);
 
 watch(
   () => props.relationship.records,
@@ -33,6 +35,10 @@ const openMenuId = ref(null);
 const toggleMenu = (id) => {
   openMenuId.value = openMenuId.value === id ? null : id;
 };
+
+const handleLoading = (state) => {
+  isLoading.value = state;
+};
 const parentRecord = computed(() => {
   if (
     props.relationship.role === "child" ||
@@ -43,7 +49,8 @@ const parentRecord = computed(() => {
   return null;
 });
 const unlinkingId = ref(null);
-const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
+
+const emit = defineEmits("update-panel");
 const unlink = async (record) => {
   const ok = await confirm({
     title: t("modules.actions.unlink_confirm_title"),
@@ -58,13 +65,17 @@ const unlink = async (record) => {
   try {
     await axios.delete(url);
     records.value = records.value.filter((r) => r.id !== record.id);
-    console.log("it worked");
+    emit("update-panel");
   } catch (error) {
     console.error("Unlink failed:", error);
   } finally {
     unlinkingId.value = null;
   }
 };
+console.log(page.props.appSettings?.related_panel_limit);
+const panel_limit = computed(() =>
+  Number(page.props.appSettings?.related_panel_limit),
+);
 </script>
 
 <template>
@@ -75,7 +86,7 @@ const unlink = async (record) => {
           <thead>
             <tr>
               <th
-                v-for="field in panel.panelHeader"
+                v-for="field in panel.fields"
                 :key="field.name"
                 :class="{ 'is-action': field.type === 'action' }"
               >
@@ -86,18 +97,34 @@ const unlink = async (record) => {
           </thead>
 
           <tbody>
-            <PanelRecord
-              v-for="record in records"
-              :key="record.id"
-              :record="record"
-              :header="panel.panelHeader"
-              :related_slug="relationship.related_slug"
-              :openMenuId="openMenuId"
-              @toggleMenu="toggleMenu"
-              @unlink="unlink"
-              :isUnlinking="unlinkingId === record.id"
-              :class="{ isUnlinking: unlinkingId === record.id }"
-            ></PanelRecord>
+            <template v-if="isLoading">
+              <tr
+                v-for="n in panel_limit"
+                :key="'skeleton-' + n"
+                class="skeleton-row"
+              >
+                <td v-for="field in panel.fields" :key="field.name">
+                  <div class="skeleton-bar"></div>
+                </td>
+                <td></td>
+              </tr>
+            </template>
+
+            <template v-else>
+              <PanelRecord
+                v-for="record in records"
+                :key="record.id"
+                :record="record"
+                :header="panel.fields"
+                :related_slug="relationship.related_slug"
+                :openMenuId="openMenuId"
+                @toggleMenu="toggleMenu"
+                @unlink="unlink"
+                :isUnlinking="unlinkingId === record.id"
+                :class="{ isUnlinking: unlinkingId === record.id }"
+                :fields="fields"
+              ></PanelRecord>
+            </template>
           </tbody>
         </table>
         <div
@@ -107,13 +134,20 @@ const unlink = async (record) => {
         >
           <PanelParentRecord
             :record="parentRecord"
-            :header="panel.panelHeader"
+            :header="panel.fields"
             :related_slug="relationship.related_slug"
             :key="parentRecord?.id"
           >
           </PanelParentRecord>
         </div>
       </div>
+      <PanelFooter
+        v-if="relationship.role === 'parent'"
+        :pagination="pagination"
+        :related-slug="relationship.related_slug"
+        :relationship-name="relationship.name"
+        @loading="handleLoading"
+      />
     </div>
   </Transition>
 </template>

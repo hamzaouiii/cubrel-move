@@ -7,9 +7,22 @@ import {
   watch,
   getCurrentInstance,
 } from "vue";
-
+import { formatDateTime, formatDate } from "@/utils/datetime";
+import { usePage } from "@inertiajs/vue3";
 const props = defineProps({
   modelValue: [Date, String, null],
+  mode: {
+    type: String,
+    default: "edit",
+  },
+  hasError: {
+    type: Boolean,
+    default: false,
+  },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
   type: {
     type: String,
     default: "datetime",
@@ -18,17 +31,12 @@ const props = defineProps({
   placeholder: String,
   minDate: [Date, String],
   maxDate: [Date, String],
-  error: String,
   disabled: Boolean,
   format: {
     type: String,
     default: "",
   },
   showAmPm: {
-    type: Boolean,
-    default: false,
-  },
-  error: {
     type: Boolean,
     default: false,
   },
@@ -121,7 +129,7 @@ const displayValue = computed(() => {
 });
 
 const displayTime = computed(() => {
-  if (!selectedHour.value && !selectedMinute.value) return "";
+  if (!selectedHour.value) return "";
 
   let hour = selectedHour.value;
   if (props.showAmPm) {
@@ -134,6 +142,7 @@ const displayTime = computed(() => {
 const isValidDate = (date) => {
   return date instanceof Date && !isNaN(date.getTime());
 };
+
 watch(
   () => props.modelValue,
   (value) => {
@@ -239,8 +248,13 @@ const selectDate = (date) => {
   }
 
   if (props.type === "datetime") {
+    selectedHour.value = 0;
+    selectedMinute.value = 0;
+    isAm.value = true;
+
     showDatePicker.value = false;
     showTimePicker.value = true;
+    emitValue();
   } else {
     showDatePicker.value = false;
   }
@@ -352,6 +366,7 @@ const handleClickOutside = (e) => {
     showTimePicker.value = false;
   }
 };
+const appSettings = usePage().props.appSettings;
 
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
@@ -367,143 +382,207 @@ defineExpose({
   toggleDatePicker,
   toggleTimePicker,
 });
+
+const showError = ref(false);
+
+watch(
+  () => props.hasError,
+  (val) => {
+    showError.value = val;
+  },
+  { immediate: true },
+);
+
+const clearErrors = () => {
+  showError.value = false;
+};
 </script>
 <template>
-  <div class="module-datetime">
-    <div class="picker-container">
-      <div class="date-input" @click="toggleDatePicker">
-        <i class="fas fa-calendar"></i>
-        <input
-          type="text"
-          :value="displayValue"
-          :placeholder="placeholder"
-          readonly
-          class="picker-input"
-          @keydown="handleKeydown"
-        />
-        <i
-          v-if="modelValue"
-          class="fas fa-times clear-btn"
-          @click.stop="clear"
-        ></i>
-      </div>
-
-      <div
-        v-if="type === 'datetime'"
-        class="time-input"
-        @click="toggleTimePicker"
-      >
-        <i class="fas fa-clock"></i>
-        <input
-          type="text"
-          :value="displayTime"
-          :placeholder="t('calendar.time_format')"
-          readonly
-          class="picker-input"
-        />
-      </div>
-      <i v-if="error" class="error-icon fa-solid fa-circle-exclamation"></i>
-      <div v-if="showDatePicker" class="picker-popup date-popup">
-        <div class="picker-header">
-          <button @click="prevMonth" class="nav-btn">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <div class="current-month">{{ currentMonth }} {{ currentYear }}</div>
-          <button @click="nextMonth" class="nav-btn">
-            <i class="fas fa-chevron-right"></i>
-          </button>
+  <div v-if="mode === 'edit'">
+    <div v-if="readOnly">
+      <span class="'text-field module-datetime--readonly'">
+        {{
+          type === "date"
+            ? formatDate(modelValue, appSettings)
+            : formatDateTime(modelValue, appSettings)
+        }}
+      </span>
+    </div>
+    <div
+      v-else
+      class="module-datetime"
+      :class="{
+        'module-datetime--error': showError,
+        'module-datetime--readonly': readOnly,
+      }"
+    >
+      <div class="picker-container" @click="clearErrors">
+        <div class="date-input" @click="toggleDatePicker">
+          <i class="fas fa-calendar"></i>
+          <input
+            type="text"
+            :value="displayValue"
+            :placeholder="placeholder"
+            readonly
+            class="picker-input"
+            @keydown="handleKeydown"
+          />
+          <i
+            v-if="modelValue"
+            class="fas fa-times clear-btn"
+            @click.stop="clear"
+          ></i>
+          <i
+            v-if="showError"
+            class="error-icon fa-solid fa-circle-exclamation"
+          ></i>
         </div>
 
-        <div class="weekdays">
-          <div v-for="day in getWeekdayShort" :key="day" class="weekday">
-            {{ $t(day) }}
+        <div
+          v-if="type === 'datetime'"
+          class="time-input"
+          @click="toggleTimePicker"
+        >
+          <i class="fas fa-clock"></i>
+          <input
+            type="text"
+            :value="displayTime"
+            :placeholder="t('calendar.time_format')"
+            readonly
+            class="picker-input"
+          />
+          <i
+            v-if="showError"
+            class="error-icon fa-solid fa-circle-exclamation"
+          ></i>
+        </div>
+
+        <div v-if="showDatePicker" class="picker-popup date-popup">
+          <div class="picker-header">
+            <button @click="prevMonth" class="nav-btn">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="current-month">
+              {{ currentMonth }} {{ currentYear }}
+            </div>
+            <button @click="nextMonth" class="nav-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
-        </div>
 
-        <div class="days-grid">
-          <div
-            v-for="day in daysInMonth"
-            :key="day.date.getTime()"
-            :class="[
-              'day',
-              {
-                today: day.isToday,
-                selected: day.isSelected,
-                'current-month': day.isCurrentMonth,
-                disabled: day.isDisabled,
-              },
-            ]"
-            @click="selectDate(day.date)"
-          >
-            {{ day.date.getDate() }}
-          </div>
-        </div>
-
-        <div class="quick-actions">
-          <button @click="selectToday" class="quick-btn">
-            {{ $t("calendar.today") }}
-          </button>
-          <button @click="clear" class="quick-btn">
-            {{ $t("calendar.clear") }}
-          </button>
-        </div>
-      </div>
-
-      <div
-        v-if="showTimePicker && type === 'datetime'"
-        class="picker-popup time-popup"
-      >
-        <div class="time-header">Select Time</div>
-
-        <div class="time-selector">
-          <div class="hour-selector">
-            <div class="time-label">Hour</div>
-            <div class="time-scroll">
-              <button
-                v-for="hour in hours"
-                :key="hour"
-                :class="['time-option', { selected: selectedHour === hour }]"
-                @click="selectHour(hour)"
-              >
-                {{ hour.toString().padStart(2, "0") }}
-              </button>
+          <div class="weekdays">
+            <div v-for="day in getWeekdayShort" :key="day" class="weekday">
+              {{ $t(day) }}
             </div>
           </div>
 
-          <div class="minute-selector">
-            <div class="time-label">Minute</div>
-            <div class="time-scroll">
-              <button
-                v-for="minute in minutes"
-                :key="minute"
-                :class="[
-                  'time-option',
-                  { selected: selectedMinute === minute },
-                ]"
-                @click="selectMinute(minute)"
-              >
-                {{ minute.toString().padStart(2, "0") }}
-              </button>
+          <div class="days-grid">
+            <div
+              v-for="day in daysInMonth"
+              :key="day.date.getTime()"
+              :class="[
+                'day',
+                {
+                  today: day.isToday,
+                  selected: day.isSelected,
+                  'current-month': day.isCurrentMonth,
+                  disabled: day.isDisabled,
+                },
+              ]"
+              @click="selectDate(day.date)"
+            >
+              {{ day.date.getDate() }}
             </div>
           </div>
 
-          <div v-if="showAmPm" class="ampm-selector">
-            <div class="time-label">AM/PM</div>
-            <button
-              :class="['ampm-btn', { selected: isAm }]"
-              @click="toggleAmPm(true)"
-            >
-              AM
+          <div class="quick-actions">
+            <button @click="selectToday" class="quick-btn">
+              {{ $t("calendar.today") }}
             </button>
-            <button
-              :class="['ampm-btn', { selected: !isAm }]"
-              @click="toggleAmPm(false)"
-            >
-              PM
+            <button @click="clear" class="quick-btn">
+              {{ $t("calendar.clear") }}
             </button>
+          </div>
+        </div>
+
+        <div
+          v-if="showTimePicker && type === 'datetime'"
+          class="picker-popup time-popup"
+        >
+          <div class="time-header">Select Time</div>
+
+          <div class="time-selector">
+            <div class="hour-selector">
+              <div class="time-label">Hour</div>
+              <div class="time-scroll">
+                <button
+                  v-for="hour in hours"
+                  :key="hour"
+                  :class="['time-option', { selected: selectedHour === hour }]"
+                  @click="selectHour(hour)"
+                >
+                  {{ hour.toString().padStart(2, "0") }}
+                </button>
+              </div>
+            </div>
+
+            <div class="minute-selector">
+              <div class="time-label">Minute</div>
+              <div class="time-scroll">
+                <button
+                  v-for="minute in minutes"
+                  :key="minute"
+                  :class="[
+                    'time-option',
+                    { selected: selectedMinute === minute },
+                  ]"
+                  @click="selectMinute(minute)"
+                >
+                  {{ minute.toString().padStart(2, "0") }}
+                </button>
+              </div>
+            </div>
+
+            <div v-if="showAmPm" class="ampm-selector">
+              <div class="time-label">AM/PM</div>
+              <button
+                :class="['ampm-btn', { selected: isAm }]"
+                @click="toggleAmPm(true)"
+              >
+                AM
+              </button>
+              <button
+                :class="['ampm-btn', { selected: !isAm }]"
+                @click="toggleAmPm(false)"
+              >
+                PM
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+  <div v-else-if="mode === 'detail'">
+    <span :class="['text-field', { 'module-datetime--readonly': readOnly }]">
+      {{
+        type === "date"
+          ? formatDate(modelValue, appSettings)
+          : formatDateTime(modelValue, appSettings)
+      }}
+    </span>
+  </div>
+  <div
+    v-else-if="
+      mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
+    "
+  >
+    <span>
+      {{
+        type === "date"
+          ? formatDate(modelValue, appSettings)
+          : formatDateTime(modelValue, appSettings)
+      }}
+    </span>
   </div>
 </template>

@@ -11,18 +11,23 @@ const appSettings = usePage().props.appSettings;
 const currentLocation = usePage()?.url;
 </script>
 <template>
-  <div>
-    <div
-      class="settings__header__title__breadcrumbs"
-      :style="[{ '--primary-color': appSettings.primary_color }]"
-    >
-      <span>
-        <Link href="/settings">{{ $t("settings.label") }} </Link>
-      </span>
-      <span><i class="fa-solid fa-angle-right"></i></span>
-      <span>
-        {{ $t(settingItem.label) }}
-      </span>
+  <nav
+    class="settings__breadcrumbs"
+    :style="{ '--primary-color': appSettings.primary_color }"
+    aria-label="Breadcrumb"
+  >
+    <div class="breadcrumb-item">
+      <Link href="/settings" class="breadcrumb-link">
+        {{ $t("settings.label") }}
+      </Link>
     </div>
-  </div>
+
+    <span class="breadcrumb-separator">
+      <i class="fa-solid fa-angle-right"></i>
+    </span>
+
+    <div class="breadcrumb-item breadcrumb-item--current">
+      {{ $t(settingItem.label) }}
+    </div>
+  </nav>
 </template>

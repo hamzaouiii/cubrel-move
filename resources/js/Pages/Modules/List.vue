@@ -6,16 +6,16 @@ import {
   onBeforeUnmount,
   getCurrentInstance,
   watch,
+  toRaw,
 } from "vue";
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
-import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
-
+import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import Layout from "@/Layouts/Layout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
-import ListDeleteZone from "../Components/ListView/ListDeleteZone.vue";
-import MassUpdateZone from "../Components/ListView/MassUpdateZone.vue";
+import ListDeleteZone from "@/Pages/Components/Modules/ListActions/ListDeleteZone.vue";
+import MassUpdateZone from "@/Pages/Components/Modules/ListActions/MassUpdateZone.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -34,6 +34,7 @@ const pageProps = defineProps({
   filters: Object,
   fields: Object,
 });
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const bulkActionmode = ref(false);
@@ -50,6 +51,9 @@ const listLayoutColumns = computed(() => {
   );
 });
 
+const getField = (item) => {
+  return Object.values(props.fields)?.find((field) => field.name === item.name);
+};
 const isSelected = (id) => selectedIds.value.includes(id);
 
 const toggleRow = (id) => {
@@ -189,20 +193,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutsideActionDropDown);
 });
 
-const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const highlightMatch = (text) => {
-  if (!text) return "-";
-  if (!search.value || !search.value.trim()) return text;
-
-  const term = escapeRegExp(search.value.trim());
-  const regex = new RegExp(`(${term})`, "gi");
-
-  return text
-    .toString()
-    .replace(regex, '<span class="search-highlight">$1</span>');
-};
-
 const appSettings = usePage().props.appSettings;
 
 const resetSearchValue = () => {
@@ -259,7 +249,6 @@ const handleListDelete = async () => {
       clearAllAlerts();
       success(t("modules.actions.delete_success"));
       clearSelection();
-      resetDeleteZone();
     },
     onError: () => {
       clearAllAlerts();
@@ -317,22 +306,12 @@ const handleMassUpdate = async (payload) => {
   // });
 };
 
-const getFieldDropDownList = (f) => {
-  const field = pageProps.fields.find((field) => field.name === f);
-
-  return field?.dropdown_list?.values || [];
-};
-
-const getDropDownListLabel = (f, i) => {
-  const list = getFieldDropDownList(f);
-  const label = list.find((l) => l.value === i)?.label || "";
-  return t(label);
-};
-
 const sortKey = ref(null);
 const sortDir = ref("asc");
 
-const isSortable = (col) => col?.sortable === true;
+const isSortable = (col) => {
+  return col?.sortable === true;
+};
 const isSorted = (col) => sortKey.value === col.name;
 
 const sortIcon = (col) => {
@@ -373,6 +352,11 @@ const sortedItems = computed(() => {
       : String(valB).localeCompare(String(valA));
   });
 });
+const module_color = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : props.module.color;
+});
 </script>
 
 <template>
@@ -380,27 +364,20 @@ const sortedItems = computed(() => {
     <title>{{ title }}</title>
   </Head>
 
-  <div
-    class="list-layout"
-    :style="
-      appSettings.use_individual_module_colors == '0'
-        ? { '--module-color': appSettings.primary_color }
-        : { '--module-color': module.color }
-    "
-  >
-    <div class="module-layout__header">
-      <div class="module-layout__header__details">
-        <h3 class="module-layout__header__details__title">
+  <div class="list-layout" :style="{ '--module-color': module_color }">
+    <div class="list-layout__header">
+      <div class="list-layout__header__details">
+        <h3 class="list-layout__header__details__title">
           {{ $t(module.label) }}
         </h3>
-        <span class="module-layout__header__details__meta">{{
+        <span class="list-layout__header__details__meta">{{
           recordsNumberPhrase
         }}</span>
       </div>
 
-      <div class="module-layout__header__actions" ref="actionDropDownref">
+      <div class="list-layout__header__actions" ref="actionDropDownref">
         <div
-          class="module-layout__header__actions__list"
+          class="list-layout__header__actions__list"
           :style="
             appSettings.use_individual_module_colors == '0'
               ? { '--module-color': appSettings.primary_color }
@@ -410,7 +387,7 @@ const sortedItems = computed(() => {
           <input
             type="text"
             name="search"
-            class="module-layout__header__actions__list__search"
+            class="list-layout__header__actions__list__search"
             :placeholder="$t('modules.actions.search_placeholder')"
             v-model="search"
             @input="handleSearchInput"
@@ -420,7 +397,7 @@ const sortedItems = computed(() => {
           <span
             @click="resetSearchValue()"
             :class="[
-              'module-layout__header__actions__list__search-reseter',
+              'list-layout__header__actions__list__search-reseter',
               { 'hide-reseter': !search },
             ]"
             ><i class="fa-regular fa-circle-xmark"></i>
@@ -443,11 +420,11 @@ const sortedItems = computed(() => {
           <transition name="fade">
             <ul
               v-if="showActionDropDown"
-              class="module-layout__header__actions__list__dropdown show"
+              class="list-layout__header__actions__list__dropdown show"
             >
               <li>
                 <Link
-                  class="module-layout__header__actions__list__dropdown__item"
+                  class="list-layout__header__actions__list__dropdown__item"
                   :href="editModuleUrl"
                 >
                   <i class="fa-solid fa-wrench"></i>
@@ -456,7 +433,7 @@ const sortedItems = computed(() => {
               </li>
               <li>
                 <span
-                  class="module-layout__header__actions__list__dropdown__item"
+                  class="list-layout__header__actions__list__dropdown__item"
                   @click="toggleMassUpdateZone()"
                 >
                   <i class="fa-solid fa-square-pen"></i>
@@ -466,7 +443,7 @@ const sortedItems = computed(() => {
 
               <li>
                 <span
-                  class="module-layout__header__actions__list__dropdown__item module-layout__header__actions__list__dropdown__item--delete"
+                  class="list-layout__header__actions__list__dropdown__item list-layout__header__actions__list__dropdown__item--delete"
                   @click.prevent="toggleDeleteZone()"
                 >
                   <i class="fa-solid fa-trash-can"></i>
@@ -523,14 +500,14 @@ const sortedItems = computed(() => {
               v-for="col in listLayoutColumns || []"
               :key="col?.name"
               scope="col"
-              :class="{ sortable: col?.sortable }"
-              @click="sortBy(col)"
+              :class="{ sortable: getField(col)?.sortable }"
+              @click="sortBy(getField(col))"
             >
               <span class="th-label">
                 {{ $t(col.label) }}
                 <i
-                  v-if="col?.sortable"
-                  :class="sortIcon(col)"
+                  v-if="getField(col)?.sortable"
+                  :class="sortIcon(getField(col))"
                   class="sort-icon"
                 ></i>
               </span>
@@ -561,34 +538,13 @@ const sortedItems = computed(() => {
               </td>
 
               <td v-for="col in listLayoutColumns || []" :key="col.name">
-                <template v-if="col?.name === 'email' && item[col?.name]">
-                  <a :href="'mailto:' + item[col.name]">
-                    <span v-html="highlightMatch(item[col.key])"></span>
-                  </a>
-                </template>
-
-                <template v-else-if="col.type === 'datetime' && item[col.name]">
-                  {{ formatDateTime(item[col.name], appSettings) }}
-                </template>
-                <template v-else-if="col.type === 'date' && item[col.name]">
-                  {{ formatDate(item[col.name], appSettings) }}
-                </template>
-                <template v-else-if="col.type === 'dropdown' && item[col.name]">
-                  {{ getDropDownListLabel(col.name, item[col.name]) }}
-                </template>
-                <template
-                  v-else-if="item[col.name] && item[col.name].length > 62"
-                >
-                  <span
-                    v-html="
-                      highlightMatch(item[col.name].substring(0, 64) + '...')
-                    "
-                  ></span>
-                </template>
-
-                <template v-else>
-                  <span v-html="highlightMatch(item[col.name] ?? '-')"></span>
-                </template>
+                <FieldRenderer
+                  :field="getField(col)"
+                  v-model="item[col.name]"
+                  mode="table"
+                  :module-color="module_color"
+                  :highlight="search"
+                />
               </td>
             </Link>
           </template>

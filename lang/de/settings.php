@@ -56,6 +56,10 @@ return array(
     'first_day_of_week' => 'Erster Wochentag',
     'danger_color' => 'Gefahrfarbe',
     'danger_color_hint' => 'Wird für gefährliche Aktionen wie Löschwarnungen und Löschbuttons verwendet',
+    'related_panel_limit' => 'Limit verknüpfte Panels',
+    'list_view_limit'    => 'Limit Listenansicht',
+    'linking_panel_limit' => 'Limit Verknüpfte Listenansicht',
+
   ),
   'groups' =>
   array(
@@ -89,6 +93,7 @@ return array(
     'layouts' => 'Layouts',
     'system_email_settings' => 'System-E-Mail-Einstellungen',
     'dropdowns' => 'Dropdown Editor',
+    'preferences'         => 'Präferenzen'
   ),
   'dropdown' =>
   array(
@@ -101,6 +106,7 @@ return array(
     'save_success' => 'Dropdown Liste erfolgreich gespeichert',
     'update_success' => 'Dropdown Liste erfolgreich gespeichert',
     'save_error' => 'Beim Speichern der Dropdown Liste ist ein Fehler aufgetreten',
+    'search' => 'In dieser Liste suchen',
   ),
   'select_dropdown_list' => 'Dropdown Liste auswählen...',
 );

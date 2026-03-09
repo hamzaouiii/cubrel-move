@@ -11,9 +11,7 @@ use Illuminate\Support\Str;
 
 class SettingValuesSeeder extends Seeder
 {
-  /**
-   * Run the database seeds.
-   */
+
   public function run(): void
   {
     DB::table('setting_values')->insert([
@@ -217,6 +215,42 @@ class SettingValuesSeeder extends Seeder
         'label' => 'settings.fields.use_individual_module_colors',
         'type' => 'bool',
         'sort_order' => 7,
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'preferences',
+        'key' => 'related_panel_limit',
+        'value' => 5,
+        'label' => 'settings.fields.related_panel_limit',
+        'type' => 'int',
+        'sort_order' => 1,
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'preferences',
+        'key' => 'list_view_limit',
+        'value' => 31,
+        'label' => 'settings.fields.list_view_limit',
+        'type' => 'int',
+        'sort_order' => 1,
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'preferences',
+        'key' => 'linking_panel_limit',
+        'value' => 25,
+        'label' => 'settings.fields.linking_panel_limit',
+        'type' => 'int',
+        'sort_order' => 1,
         'autoload' => 1,
         'created_at' => Carbon::now(),
         'updated_at' => Carbon::now(),

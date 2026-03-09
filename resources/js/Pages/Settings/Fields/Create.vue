@@ -3,9 +3,17 @@ import Layout from "@/Layouts/Layout.vue";
 import axios from "axios";
 
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
-import { getCurrentInstance, computed, watch, ref, onMounted } from "vue";
+import {
+  getCurrentInstance,
+  computed,
+  watch,
+  ref,
+  onMounted,
+  toRef,
+} from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+import { useFieldRules } from "@/Composables/useFieldRules";
 
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
@@ -27,6 +35,7 @@ const props = defineProps({
   field_types: Array,
   metadata: Object,
 });
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 const { proxy } = getCurrentInstance();
@@ -44,19 +53,25 @@ const default_values = {
   type: "",
   dropdown_list: "",
   readonly: false,
-  //hidden: false,
   required: false,
-  //searchable: false,
-  //filterable: false,
+  searchable: false,
+  filterable: false,
   sortable: false,
+  hidden: false,
   default_value: "",
-  //options: "",
   min_length: "",
   max_length: "",
   regex: "",
 };
 
 const form = useForm({ ...default_values });
+
+/**
+ * COMPOSABLE INTEGRATION
+ * Using the centralized rules and UI helpers
+ */
+const { visibleMetadata, applyRules, isCheckbox, isDropDown, isReadonly } =
+  useFieldRules(form, toRef(props, "metadata"));
 
 const generatedName = computed(() => {
   if (!form.label) return "";
@@ -75,6 +90,18 @@ const generatedName = computed(() => {
   return name;
 });
 
+const generatedKey = computed(() => {
+  return props.module.slug + "_" + generatedName.value;
+});
+
+// Watchers
+watch(
+  () => form.type,
+  (newType) => {
+    applyRules(newType);
+  },
+);
+
 watch(
   () => form.label,
   (newName) => {
@@ -85,40 +112,17 @@ watch(
   { immediate: true },
 );
 
-const generatedKey = computed(() => {
-  return props.module.slug + "_" + generatedName.value;
-});
-
 watch(
   () => form.name,
-  (newKey) => {
-    if (newKey) {
+  (newName) => {
+    if (newName) {
       form.key = generatedKey.value;
     }
   },
   { immediate: true },
 );
 
-const isCheckbox = (field) => {
-  const checkboxFields = [
-    "readonly",
-    "hidden",
-    "required",
-    "searchable",
-    "filterable",
-    "sortable",
-  ];
-  return checkboxFields.includes(field);
-};
-
-const isDropDown = (field) => {
-  return field === "type";
-};
-
-const isReadonly = (field) => {
-  return field === "name";
-};
-
+// UI Helpers
 const typesList = () => {
   return props.field_types.map((type) => ({
     value: type,
@@ -135,6 +139,7 @@ const fieldsUrl = () => {
   return "/" + segments.join("/");
 };
 
+// Form Actions
 const saveField = () => {
   info(t("settings.saving"));
 
@@ -142,7 +147,7 @@ const saveField = () => {
     form.key = generatedKey.value;
     form.name = generatedName.value;
   }
-  if ((form.type = "dropdown")) {
+  if (form.type === "select") {
     form.dropdown_list = selected_dropdown_list.value;
   }
 
@@ -157,12 +162,10 @@ const saveField = () => {
       clearAllAlerts();
       if (Error.table_missing) {
         error(Error.table_missing);
-      } else if (Error) {
+      } else {
         for (const [key, value] of Object.entries(Error)) {
           error(key + " : " + value);
         }
-      } else {
-        error(t("fields.field_create_error"));
       }
     },
   });
@@ -182,21 +185,11 @@ const displayKeyError = () => {
   return form.errors.key || form.errors.name;
 };
 
-const openCreateDialog = () => {
-  showCreateDialog.value = true;
-};
-
-const openEditDialog = () => {
-  showEditDialog.value = true;
-};
-
-const closeCreateDialog = () => {
-  showCreateDialog.value = false;
-};
-
-const closeEditDialog = () => {
-  showEditDialog.value = false;
-};
+// Dropdown Modal Logic
+const openCreateDialog = () => (showCreateDialog.value = true);
+const openEditDialog = () => (showEditDialog.value = true);
+const closeCreateDialog = () => (showCreateDialog.value = false);
+const closeEditDialog = () => (showEditDialog.value = false);
 
 const fetchDrodownList = async () => {
   try {
@@ -219,6 +212,7 @@ const getDropdonwItem = (id) => {
 onMounted(() => {
   fetchDrodownList();
 });
+
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty(),
 });
@@ -244,136 +238,138 @@ useUnsavedChangesGuard({
         ></ModuleSettingBreadcrumbs>
       </div>
     </div>
+    <div class="settings__module">
+      <ModuleSettingTabs
+        :setting-module="module"
+        active-key="fields"
+      ></ModuleSettingTabs>
 
-    <ModuleSettingTabs
-      :setting-module="module"
-      active-key="fields"
-    ></ModuleSettingTabs>
+      <div class="settings__module__header">
+        <Link :href="fieldsUrl()">
+          <i class="fa-solid fa-arrow-left"></i>
+          {{ $t("fields.back_to_list") }}
+        </Link>
+      </div>
 
-    <div class="settings__module__header">
-      <Link :href="fieldsUrl()">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("fields.back_to_list") }}
-      </Link>
-    </div>
-
-    <div class="settings__module__edit">
-      <form @submit.prevent="saveField">
-        <div
-          class="settings__module__edit__element"
-          v-for="fieldName in metadata"
-          :key="fieldName"
-        >
-          <label class="settings__module__edit__element__label">
-            {{ $t("fields.metadata." + fieldName) }}
-          </label>
-          <div class="settings__module__edit__element__content">
-            <template v-if="isReadonly(fieldName)">
-              <input
-                type="text"
-                :name="fieldName"
-                v-model="form.name"
-                :class="[
-                  'disabled',
-                  {
+      <div class="settings__module__edit">
+        <form @submit.prevent="saveField">
+          <div
+            class="settings__module__edit__element"
+            v-for="fieldName in visibleMetadata"
+            :key="fieldName"
+          >
+            <label class="settings__module__edit__element__label">
+              {{ $t("fields.metadata." + fieldName) }}
+            </label>
+            <div class="settings__module__edit__element__content">
+              <template v-if="isReadonly(fieldName)">
+                <input
+                  type="text"
+                  :name="fieldName"
+                  v-model="form[fieldName]"
+                  disabled
+                  :class="{
                     'settings__module__edit__element--error-field':
                       displayKeyError(),
-                  },
-                ]"
-              />
-              <span
-                v-if="displayKeyError()"
-                class="settings__module__edit__element__error"
-                >{{ $t("fields.key_is_taken_error") }}</span
-              >
-            </template>
-
-            <template v-else-if="isCheckbox(fieldName)">
-              <Checkbox v-model="form[fieldName]"></Checkbox>
-              <span
-                v-if="form.errors[fieldName]"
-                class="settings__module__edit__element__error"
-              >
-                {{ form.errors[fieldName] }}
-              </span>
-            </template>
-
-            <template v-else-if="isDropDown(fieldName)">
-              <DropdownField
-                v-model="form[fieldName]"
-                :options="typesList()"
-              ></DropdownField>
-              <transition name="dropdown-fade">
-                <div
-                  class="dropdown-selector"
-                  v-if="form[fieldName] === 'dropdown'"
+                  }"
+                />
+                <span
+                  v-if="displayKeyError()"
+                  class="settings__module__edit__element__error"
                 >
-                  <DropdownSelector
-                    v-model="selected_dropdown_list"
-                    :options="DropDownListOptions"
-                    @onOpenCreateDialog="openCreateDialog"
-                    @onOpenEditDialog="openEditDialog"
+                  {{ $t("fields.key_is_taken_error") }}
+                </span>
+              </template>
+
+              <template v-else-if="isCheckbox(fieldName)">
+                <Checkbox v-model="form[fieldName]"></Checkbox>
+                <span
+                  v-if="form.errors[fieldName]"
+                  class="settings__module__edit__element__error"
+                >
+                  {{ form.errors[fieldName] }}
+                </span>
+              </template>
+
+              <template v-else-if="isDropDown(fieldName)">
+                <DropdownField
+                  v-model="form[fieldName]"
+                  :options="typesList()"
+                ></DropdownField>
+
+                <transition name="dropdown-fade">
+                  <div
+                    class="dropdown-selector"
+                    v-if="form[fieldName] === 'select'"
                   >
-                  </DropdownSelector>
-                </div>
-              </transition>
-              <span
-                v-if="form.errors[fieldName]"
-                class="settings__module__edit__element__error"
-              >
-                {{ form.errors[fieldName] }}
-              </span>
-            </template>
+                    <DropdownSelector
+                      v-model="selected_dropdown_list"
+                      :options="DropDownListOptions"
+                      @onOpenCreateDialog="openCreateDialog"
+                      @onOpenEditDialog="openEditDialog"
+                    />
+                  </div>
+                </transition>
 
-            <template v-else>
-              <input
-                type="text"
-                v-model="form[fieldName]"
-                :name="fieldName"
-                :class="{
-                  'settings__module__edit__element--error-field':
-                    form.errors[fieldName],
-                }"
-              />
-              <span
-                v-if="form.errors[fieldName]"
-                class="settings__module__edit__element__error"
-              >
-                {{ form.errors[fieldName] }}
-              </span>
-            </template>
+                <span
+                  v-if="form.errors[fieldName]"
+                  class="settings__module__edit__element__error"
+                >
+                  {{ form.errors[fieldName] }}
+                </span>
+              </template>
+
+              <template v-else>
+                <input
+                  type="text"
+                  v-model="form[fieldName]"
+                  :name="fieldName"
+                  :class="{
+                    'settings__module__edit__element--error-field':
+                      form.errors[fieldName],
+                  }"
+                />
+                <span
+                  v-if="form.errors[fieldName]"
+                  class="settings__module__edit__element__error"
+                >
+                  {{ form.errors[fieldName] }}
+                </span>
+              </template>
+            </div>
           </div>
-        </div>
 
-        <div class="settings__module__edit__actions">
-          <button
-            class="settings__module__edit__actions__reset btn"
-            @click="resetForm"
-            :disabled="!isDirty()"
-            type="button"
-          >
-            {{ $t("settings.cancel") }}
-          </button>
-          <button
-            type="submit"
-            class="settings__module__edit__actions__save btn"
-            :disabled="!isDirty()"
-          >
-            {{ $t("settings.save") }}
-          </button>
-        </div>
-      </form>
+          <div class="settings__module__edit__actions">
+            <button
+              class="settings__module__edit__actions__reset btn"
+              @click="resetForm"
+              :disabled="!isDirty()"
+              type="button"
+            >
+              {{ $t("settings.cancel") }}
+            </button>
+            <button
+              type="submit"
+              class="settings__module__edit__actions__save btn"
+              :disabled="!isDirty()"
+            >
+              {{ $t("settings.save") }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
+
   <CreateNewDropdownListModal
     @onCloseModal="closeCreateDialog"
     @listCreated="assignList"
     v-if="showCreateDialog"
-  ></CreateNewDropdownListModal>
+  />
 
   <EditDropdownListModal
     :dropdown="getDropdonwItem(selected_dropdown_list)"
     @onCloseModal="closeEditDialog"
     v-if="showEditDialog"
-  ></EditDropdownListModal>
+  />
 </template>

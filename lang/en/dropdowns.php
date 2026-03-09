@@ -1,17 +1,39 @@
 <?php
 return [
+  'opportunities_type_list' => [
+    'new_business' => 'New Business',
+    'existing_business' => 'Existing Business',
+    'renewal' => 'Renewal',
+    'upsell' => 'Upsell',
+  ],
+  'orders_status_list' => [
+    'draft' => 'Draft',
+    'pending' => 'Pending',
+    'confirmed' => 'Confirmed',
+    'processing' => 'Processing',
+    'complete' => 'Complete',
+    'cancelled' => 'Cancelled',
+  ],
+  'opportunities_sales_stage_list' => [
+    'prospecting' => 'Prospecting',
+    'qualification' => 'Qualification',
+    'proposal' => 'Proposal',
+    'negotiation' => 'Negotiation',
+    'closed_won' => 'Closed Won',
+    'closed_lost' => 'Closed Lost',
+  ],
   'cases_status_list' => [
-    'open'  => 'Open',
+    'open' => 'Open',
     'in_progress' => 'In Progress',
     'pending_input' => 'Pending User Input',
-    'rejected'  => 'Rejected',
-    'closed'  =>  'Closed',
+    'rejected' => 'Rejected',
+    'closed' => 'Closed',
   ],
   'cases_priority_list' => [
     'low' => 'Low',
-    'medium'  => 'Medium',
+    'medium' => 'Medium',
     'high' => 'High',
-    'urgent'  => 'Urgent',
+    'urgent' => 'Urgent',
   ],
   'emails_status_list' => [
     'draft' => 'Draft',
@@ -45,5 +67,26 @@ return [
     'paid' => 'Paid',
     'overdue' => 'Overdue',
     'void' => 'Void',
-  ]
+  ],
+  'product_category_list' => [
+    'electronics' => 'Electronics',
+    'software' => 'Software',
+    'hardware' => 'Hardware',
+    'services' => 'Services',
+    'consulting' => 'Consulting',
+    'subscriptions' => 'Subscriptions',
+    'licenses' => 'Licenses',
+  ],
+  'currency_list' => [
+    'usd' => 'US Dollar (USD)',
+    'eur' => 'Euro (EUR)',
+    'gbp' => 'British Pound (GBP)',
+    'jpy' => 'Japanese Yen (JPY)',
+    'cny' => 'Chinese Yuan (CNY)',
+    'aud' => 'Australian Dollar (AUD)',
+    'cad' => 'Canadian Dollar (CAD)',
+    'chf' => 'Swiss Franc (CHF)',
+    'inr' => 'Indian Rupee (INR)',
+    'brl' => 'Brazilian Real (BRL)',
+  ],
 ];

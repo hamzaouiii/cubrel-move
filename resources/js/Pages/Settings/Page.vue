@@ -7,6 +7,8 @@ import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import SettingBreadcrumbs from "../Components/Settings/SettingBreadcrumbs.vue";
+import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -135,7 +137,9 @@ const isDirty = () => form.isDirty;
                 ]"
               />
             </template>
-
+            <template v-else-if="inputTypeFor(i.type) === 'color'">
+              <ColorPicker v-model="form.values[index].value"></ColorPicker>
+            </template>
             <template v-else>
               <input
                 :type="inputTypeFor(i.type)"

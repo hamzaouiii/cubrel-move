@@ -65,8 +65,12 @@ const addItem = () => {
   if (!rowIsDirty.value) {
     return;
   }
-  if (listItems.value.some((item) => item.value === newItem.value)) {
-    error("Value Already Exists");
+  if (
+    listItems.value.some(
+      (item) => item.value === generatedSystemvalue(newItem.value.label),
+    )
+  ) {
+    error(t("dropdowns.value_already_exists"));
     valueExistsError.value = true;
     return;
   }
@@ -77,6 +81,7 @@ const addItem = () => {
 
   newItem.value.value = "";
   newItem.value.label = "";
+  valueExistsError.value = false;
 };
 const deleteItem = (value) => {
   listItems.value = listItems.value.filter((i) => i.value != value);
@@ -143,7 +148,10 @@ const closeModalClicked = () => {
     <div class="dropdown-list-modal__container">
       <div
         class="settings"
-        :style="{ '--primary-color': appSettings.primary_color }"
+        :style="{
+          '--primary-color': appSettings.primary_color,
+          '--danger-color': appSettings.danger_color,
+        }"
       >
         <div class="settings__dropdown">
           <div class="settings__dropdown__edit">
@@ -209,6 +217,7 @@ const closeModalClicked = () => {
                   <input
                     type="text"
                     :value="generatedSystemvalue(newItem.label)"
+                    :class="{ error: valueExistsError }"
                     readonly
                     disabled
                   />

@@ -75,7 +75,7 @@ const isDropdown = () => {
         $t(item.label)
       }}</span>
 
-      <span v-if="index < breadcrumbs.length - 1">
+      <span class="breadcrumb-separator" v-if="index < breadcrumbs.length - 1">
         <i class="fa-solid fa-angle-right"></i>
       </span>
     </template>
