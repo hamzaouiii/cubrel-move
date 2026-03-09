@@ -56,6 +56,10 @@ return array(
     'first_day_of_week' => 'Erster Wochentag',
     'danger_color' => 'Gefahrfarbe',
     'danger_color_hint' => 'Wird für gefährliche Aktionen wie Löschwarnungen und Löschbuttons verwendet',
+    'related_panel_limit' => 'Limit verknüpfte Panels',
+    'list_view_limit'    => 'Limit Listenansicht',
+    'linking_panel_limit' => 'Limit Verknüpfte Listenansicht',
+
   ),
   'groups' =>
   array(
@@ -89,6 +93,7 @@ return array(
     'layouts' => 'Layouts',
     'system_email_settings' => 'System-E-Mail-Einstellungen',
     'dropdowns' => 'Dropdown Editor',
+    'preferences'         => 'Präferenzen'
   ),
   'dropdown' =>
   array(

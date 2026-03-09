@@ -43,6 +43,14 @@ return [
         'path' => '/settings/system/languages',
         'isActive' => 0,
         'icon' => 'fa-solid fa-language'
+      ],
+      'preferences' => [
+        'name' => 'preferences',
+        'slug' => 'preferences',
+        'label' => 'settings.items.preferences',
+        'path' => '/settings/system/preferences',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-sliders'
       ]
     ]
   ],

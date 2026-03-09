@@ -55,6 +55,9 @@ return array(
     'unlink_confirm' => 'Are you sure you want to unlink these records ?',
     'open_new_tab' => 'Open in a new Tab',
     'quick_edit' => 'Quick Edit',
+    'load_more' => 'Load More',
+    'view_all' => 'View All',
+    'loading' => 'Loading...',
   ),
   'linking' => array(
     'link_existing_records'  => 'Link Existing Records',

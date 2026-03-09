@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Services\Relationships\RelationshipService;
 use App\Models\Module;
+use App\Support\Settings;
 
 abstract class BaseModuleHandler implements ModuleHandler
 {
@@ -20,7 +21,7 @@ abstract class BaseModuleHandler implements ModuleHandler
 
   protected function getPerPage(array $params): int
   {
-    return $params['perPage'] ?? 31;
+    return $params['perPage'] ?? Settings::get('list_view_limit');
   }
 
   protected function transformItems(array $items, array $params): array

@@ -476,7 +476,9 @@
       padding: 1rem;
       text-align: left;
     }
-
+    tbody tr:nth-of-type(even) {
+      background-color: #fafbfc;
+    }
     tbody tr {
       border-bottom: 1px solid #f1f5f9;
       transition: background-color 0.15s ease;
@@ -491,11 +493,6 @@
           color: var(--module-color);
         }
       }
-    }
-
-    // Zebra striping - very subtle
-    tbody tr:nth-of-type(even) {
-      background-color: #fafbfc;
     }
 
     .search-highlight {
@@ -1278,6 +1275,50 @@
               transform: scale(1.2);
             }
           }
+        }
+      }
+    }
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+
+      padding: 4px 16px;
+      background-color: #f9f9fb;
+      border-top: 1px solid #e2e2e8;
+      border-radius: 0 0 6px 6px;
+      width: 100%;
+      font-size: 0.875rem;
+      font-weight: 500;
+
+      a,
+      button {
+        color: #0052cc;
+        text-decoration: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 4px;
+        transition: all 0.1s ease-in-out;
+        min-width: 130px;
+        text-align: center;
+        &:hover,
+        &:focus {
+          background-color: var(--related-color);
+          color: white;
+          outline: none;
+        }
+        &:disabled {
+          background-color: lightgray;
+          color: white;
+          cursor: not-allowed;
+          outline: none;
+        }
+
+        &:active {
+          background-color: rgba(0, 82, 204, 0.12);
         }
       }
     }

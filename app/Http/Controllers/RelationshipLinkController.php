@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use App\Services\Relationships\RelationshipService;
+use App\Support\Settings;
 
 class RelationshipLinkController extends Controller
 {
@@ -15,12 +16,12 @@ class RelationshipLinkController extends Controller
     $modelClass = $moduleModel->model_class;
 
     $relationshipObj = RelationshipService::get($relationship);
-
+    $limit = Settings::get('linking_panel_limit');
     return RelationshipService::getRecordsForLinking(
       $relationshipObj,
       $modelClass,
       $record_id,
-      $request->get('per_page', 25),
+      $limit,
       $request->get('search')
     );
   }
@@ -31,14 +32,9 @@ class RelationshipLinkController extends Controller
     $modelClass = $moduleModel->model_class;
 
     $relationshipObj = RelationshipService::get($relationship);
+    $limit = Settings::get('linking_panel_limit');
 
-    return RelationshipService::getRecordsForUpdateSingleLinking(
-      $relationshipObj,
-      $modelClass,
-      $record_id,
-      $request->get('per_page', 25),
-      $request->get('search')
-    );
+    return RelationshipService::getRecordsForUpdateSingleLinking($relationshipObj, $modelClass, $record_id, $limit, $request->get('search'));
   }
 
   public function linkRecords(Request $request, string $module, string $record_id, string $relationship)
@@ -70,5 +66,34 @@ class RelationshipLinkController extends Controller
     $record = $modelClass::findOrFail($record_id);
 
     $record->unlinkRelation($relationship, $related_id);
+  }
+
+
+  public function loadRecords(Request $request, $module, $record_id, $relationshipName)
+  {
+    $moduleModel = Module::where('slug', $module)->firstOrFail();
+
+    $page = (int) $request->get('page', 1);
+
+    $perPage = (int) Settings::get('related_panel_limit');
+
+    $offset = ($page - 1) * $perPage;
+
+    $query = RelationshipService::loadRelatedRecords($moduleModel, $record_id, $relationshipName);
+
+    $total = $query->count();
+
+    $records = $query
+      ->skip($offset)
+      ->take($perPage)
+      ->get();
+
+    return response()->json([
+      'data' => $records,
+      'page' => $page,
+      'per_page' => $perPage,
+      'total' => $total,
+      'has_more' => ($offset + $perPage) < $total,
+    ]);
   }
 }

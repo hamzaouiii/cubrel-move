@@ -65,7 +65,6 @@ const selected = ref([]);
 const page = ref(1);
 const lastPage = ref(1);
 const total = ref(0);
-const perPage = 25;
 
 const search = ref("");
 let searchTimeout = null;
@@ -86,7 +85,7 @@ const loadRecords = async () => {
   let url;
   loading.value = true;
   if (isSingleSelect.value) {
-    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single_link`;
+    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single-link`;
   } else {
     url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
   }
@@ -94,7 +93,6 @@ const loadRecords = async () => {
     const response = await axios.get(url, {
       params: {
         page: page.value,
-        per_page: perPage,
         search: search.value,
       },
     });
@@ -242,6 +240,20 @@ const selectedSingle = computed({
   },
 });
 
+const allSelected = computed(() => {
+  if (!displayedRecords.value.length) return false;
+
+  return displayedRecords.value.every((r) => selected.value.includes(r.id));
+});
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selected.value = [];
+  } else {
+    selected.value = displayedRecords.value.map((r) => r.id);
+  }
+};
+
 const getField = (item) => {
   return Object.values(props.relationship?.fields)?.find(
     (field) => field.name === item.name,
@@ -320,7 +332,15 @@ const clearSearch = () => {
             >
               <thead>
                 <tr>
-                  <th class="related-links__head__space"></th>
+                  <th class="related-links__head__space">
+                    <Selectbox
+                      v-if="!isSingleSelect"
+                      :value="'all'"
+                      :modelValue="allSelected ? ['all'] : []"
+                      @update:modelValue="toggleSelectAll"
+                      :color="getRelatedColor(relationship.related_slug)"
+                    />
+                  </th>
                   <th v-for="field in cleanedLayout" :key="field.name">
                     {{ $t(field.label) }}
                   </th>

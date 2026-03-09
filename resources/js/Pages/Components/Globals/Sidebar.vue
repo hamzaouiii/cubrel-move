@@ -16,7 +16,6 @@ const page = usePage();
 const modules = computed(() => page.props.modules ?? []);
 const currentUrl = computed(() => page.url);
 const appSettings = usePage().props.appSettings;
-
 const collapsedSidebar = ref(true);
 
 function collapseSidebar() {
@@ -148,7 +147,7 @@ const onCollapserMouseLeave = () => {
         :href="mod.path"
         @click="collapseSidebar()"
         :style="
-          appSettings.use_individual_module_colors == '0'
+          appSettings.use_individual_module_colors === '0'
             ? { '--module-color': appSettings.primary_color }
             : { '--module-color': mod.color }
         "

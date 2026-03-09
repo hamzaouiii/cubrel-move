@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use App\Models\RelationshipLink;
 use App\Models\Module;
 use RuntimeException;
+use App\Support\Settings;
 
 class RelationshipService
 {
@@ -78,20 +79,10 @@ class RelationshipService
   /**
    * Link two records in a relationship
    */
-  public static function link(
-    string $relationship_name,
-    string $model_class,
-    string $module_id,
-    string $related_id
-  ): void {
-
+  public static function link(string $relationship_name,    string $model_class,    string $module_id,    string $related_id): void
+  {
     $relationship = self::get($relationship_name);
-    $relationship = self::getWithResolvedIds(
-      $relationship,
-      $model_class,
-      $module_id,
-      $related_id
-    );
+    $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
     DB::transaction(function () use ($relationship) {
 
@@ -392,11 +383,13 @@ class RelationshipService
         ->unique()
         ->values();
 
+      $count = $relatedIds->count();
       $records = collect();
-
+      $panel_limit = Settings::get('related_panel_limit');
       if ($relatedIds->isNotEmpty()) {
         $records = $rel->related_class::query()
           ->whereIn('id', $relatedIds)
+          ->limit($panel_limit)
           ->get();
       }
       $panelData =  self::getDataForPanel($relationship->related_slug);
@@ -405,10 +398,18 @@ class RelationshipService
         'type'    => $relationship->relationship_type,
         'label'   =>  $relationship->label,
         'role'   =>  $relationship->role,
+        'count'   => $count,
         'records' => $records,
         'related_slug' => $relationship->related_slug,
       ];
       $result[$relationship->name] =  array_merge($result[$relationship->name], $panelData);
+
+      if ($relationship->role === "child" || $relationship->role === "sibling") {
+        if ($count == 1) {
+          $parent_record =  array('parent_record' => $rel->related_class::query()->whereIn('id', $relatedIds)->first());
+          $result[$relationship->name] =  array_merge($result[$relationship->name], $parent_record);
+        }
+      }
     }
 
     return $result;
@@ -421,7 +422,7 @@ class RelationshipService
     object $relationship,
     string $modelClass,
     string $recordId,
-    int $perPage = 25,
+    int $perPage,
     ?string $search = null
   ) {
 
@@ -473,7 +474,7 @@ class RelationshipService
     object $relationship,
     string $modelClass,
     string $recordId,
-    int $perPage = 25,
+    int $perPage,
     ?string $search = null
   ) {
 
@@ -506,5 +507,26 @@ class RelationshipService
       default:
         return 'parent';
     }
+  }
+
+  /**
+   * Returns a query builder for related records in a given relationship,
+   * Loads related records for panels
+   */
+  public static function loadRelatedRecords(object $moduleModel, string $record_id, string $relationshipName): \Illuminate\Database\Eloquent\Builder
+  {
+    $relationship = self::get($relationshipName);
+    $relationship = self::getWithSide($relationship, $moduleModel->model_class, $record_id);
+    $relatedIds = DB::table('relationship_links')
+      ->where('relationship_id', $relationship->id)
+      ->where($relationship->current_id_field, $record_id)
+      ->pluck($relationship->other_id_field);
+
+    $relatedClass = $relationship->related_class;
+
+    // todo: update the order by to be dynamic
+    return $relatedClass::query()
+      ->whereIn('id', $relatedIds)
+      ->orderBy('created_at', 'desc');
   }
 }

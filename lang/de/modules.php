@@ -55,6 +55,10 @@ return array(
     'unlink_confirm' => 'Sind Sie sicher, dass Sie die Verbindung zu diesem Datensatz trennen möchten?',
     'open_new_tab' => 'In neuem Tab öffnen',
     'quick_edit' => 'Schnellbearbeitung',
+    'load_more' => 'Mehr laden',
+    'view_all' => 'Alle ansehen',
+    'loading' => 'Wird geladen...',
+
   ),
   'linking' => array(
     'link_existing_records'  => 'Bestehende Datensätze verknüpfen',

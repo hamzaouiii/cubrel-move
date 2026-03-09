@@ -2,18 +2,17 @@
 
 namespace App\Models\Settings;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Concerns\HasTranslatableLabel;
-use Illuminate\Support\Str;
+use App\Models\Settings\SettingValue;
 
-final class SettingItem extends Model
+final class SettingItem
 {
   use  HasTranslatableLabel;
 
 
   protected $table = null;
 
-  public static function all($columns = ['*'])
+  public static function all()
   {
     $configItems = config('settings', []);
     $items = [];
@@ -21,7 +20,6 @@ final class SettingItem extends Model
     foreach ($configItems as $group) {
       foreach ($group['items'] as $item) {
         $items[] = new static([
-          'id' => Str::uuid()->toString(),
           'name' => $item['name'],
           'slug' => $item['slug'],
           'label' => $item['label'],
@@ -36,7 +34,8 @@ final class SettingItem extends Model
   }
   public function values()
   {
-    return $this->hasMany(SettingValue::class,  'setting_item', 'slug')
-      ->where('autoload', true);
+    return SettingValue::where('setting_item', $this->slug)
+      ->where('autoload', true)
+      ->get();
   }
 }

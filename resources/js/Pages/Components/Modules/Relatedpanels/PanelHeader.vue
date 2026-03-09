@@ -1,13 +1,18 @@
 <script setup>
-import { computed } from "vue";
+import { computed, getCurrentInstance, ref } from "vue";
+
 const props = defineProps({
   icon: String,
-  count: Number,
+  dislplayCount: Number,
+  totalCount: Number,
   label: String,
   single_label: String,
   type: String,
 });
 
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+const isOpen = ref(false);
 const hasRecords = computed(() => {
   return props.count ?? false;
 });
@@ -16,12 +21,19 @@ const openOverlay = () => {
   emit("open-overlay");
 };
 const emittogglePanel = () => {
+  isOpen.value = !isOpen.value;
   emit("toggle");
 };
 
 const emitUnlinkParent = () => {
   emit("unlink-parent");
 };
+
+const countPhrase = computed(() => {
+  if (props.type === "parent" && props.dislplayCount > 0) {
+    return `${props.dislplayCount} ${t("modules.of")} ${props.totalCount}`;
+  } else return false;
+});
 </script>
 
 <template>
@@ -31,9 +43,14 @@ const emitUnlinkParent = () => {
         <i :class="icon"></i>
         {{ $t(type != "parent" ? single_label : label) }}
       </div>
-
-      <div class="relatedpanels__item__header__details__count">
-        {{ type != "parent" ? "" : count }}
+      <div v-if="isOpen" class="relatedpanels__item__header__details__count">
+        {{ totalCount }}
+      </div>
+      <div
+        v-else-if="countPhrase"
+        class="relatedpanels__item__header__details__count"
+      >
+        {{ countPhrase }}
       </div>
     </div>
     <div class="relatedpanels__item__header__actions">
