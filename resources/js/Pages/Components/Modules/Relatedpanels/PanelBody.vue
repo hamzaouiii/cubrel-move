@@ -72,7 +72,6 @@ const unlink = async (record) => {
     unlinkingId.value = null;
   }
 };
-console.log(page.props.appSettings?.related_panel_limit);
 const panel_limit = computed(() =>
   Number(page.props.appSettings?.related_panel_limit),
 );
