@@ -18,27 +18,23 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const emit = defineEmits(["open-overlay", "update-panel-trigger"]);
 
-// 1. Initialize based on existence of records
 const isOpen = ref(!!props.relationship?.records?.length);
 
-// 2. Corrected computed property (no .value on props)
 const hasRecords = computed(() => {
   return !!props.relationship?.records?.length;
 });
 
 const relatedFields = computed(() => props.relationship?.fields || null);
 
-// 3. Watcher to handle external expansion triggers
 watch(
   () => props.expandPanel,
   (newVal) => {
     if (newVal === props.panel.name) {
-      isOpen.value = true; // Usually, you want to force open, not toggle
+      isOpen.value = true;
     }
   },
 );
 
-// 4. Simplified toggle logic
 const togglePanel = () => {
   if (hasRecords.value) {
     isOpen.value = !isOpen.value;
@@ -57,7 +53,6 @@ const current_record_id = page.props.recordId;
 
 const getModule = (slug) => modules.value.find((m) => m.slug === slug);
 
-// Helper methods (kept as is)
 const getRelatedIcon = (slug) => getModule(slug)?.icon;
 const getSingleLabel = (slug) => getModule(slug)?.single_label;
 const getLabel = (slug) => getModule(slug)?.label;
@@ -117,10 +112,11 @@ const unlinkParent = async (record) => {
     @open-overlay="openLinkOverlay"
     @unlink-parent="handleUnlinkParent"
     :icon="getRelatedIcon(relationship.related_slug)"
-    :dislplay-count="relationship.records?.length ?? 0"
+    :display-count="relationship.records?.length ?? 0"
     :total-count="relationship.count ?? 0"
     :label="getLabel(relationship.related_slug)"
     :single_label="getSingleLabel(relationship.related_slug)"
+    :pagination="relationship.pagination"
     :type="relationship.role"
   ></PanelHeader>
   <PanelBody
@@ -129,5 +125,6 @@ const unlinkParent = async (record) => {
     :panel="panel"
     :fields="relatedFields"
     @update-panel="handleUpdatePanel"
+    :pagination="relationship.pagination"
   ></PanelBody>
 </template>
