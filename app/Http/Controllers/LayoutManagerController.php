@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Module;
-use App\Models\Layout;
 use Inertia\Inertia;
-use App\Models\Settings\SettingItem;
 use App\Services\Relationships\RelationshipService;
 
 class LayoutManagerController extends Controller
@@ -68,12 +66,10 @@ class LayoutManagerController extends Controller
           $q->orderBy('type')->orderBy('name');
         },
       ])->firstOrFail();
-    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
     $layout = $module->getDefaultLayout($type);
     $fields = $module->fields;
     $relationships = RelationshipService::getRelationshipForModule($module->model_class);
     return Inertia::render('Settings/Layouts/Edit', [
-      'item'     => $item,
       'module' => $module,
       'type'  => $type,
       'defaultLayout' => $layout,

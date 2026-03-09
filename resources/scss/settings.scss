@@ -344,32 +344,75 @@
             margin: 0;
           }
 
-          // 6. Subtle Hover
           &:hover:not(:focus) {
-            border-color: darken(#d1d5db, 10%);
+            border-color: color-mix(in srgb, #d1d5db, 10%);
           }
         }
       }
+      // &__actions {
+      //   display: flex;
+      //   justify-content: flex-end;
+      //   .btn {
+      //     margin-right: 50px;
+
+      //     &:disabled {
+      //       background-color: rgb(218, 218, 218);
+      //       color: white;
+      //       border-color: rgb(218, 218, 218);
+      //       cursor: not-allowed;
+      //     }
+      //   }
+      //   &__reset {
+      //     --btn-color: salmon;
+      //     --btn-bg-hover: salmon;
+      //   }
+      //   &__save {
+      //     --btn-color: var(--primary-color);
+      //     --btn-bg-hover: var(--primary-color);
+      //   }
+      // }
       &__actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #dcdfe6;
         display: flex;
         justify-content: flex-end;
+        gap: 1rem;
+
         .btn {
-          margin-right: 50px;
+          padding: 0.625rem 1.25rem;
+          font-weight: 600;
+          font-size: 0.9rem;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease-in-out;
+          border: 1px solid transparent;
 
           &:disabled {
-            background-color: rgb(218, 218, 218);
-            color: white;
-            border-color: rgb(218, 218, 218);
+            opacity: 0.5;
             cursor: not-allowed;
           }
         }
+
         &__reset {
-          --btn-color: salmon;
-          --btn-bg-hover: salmon;
+          background: white;
+          color: #718096;
+          border: 1px solid #dcdfe6;
+
+          &:hover:not(:disabled) {
+            background: #f8fafc;
+            color: #2d3748;
+          }
         }
+
         &__save {
-          --btn-color: var(--primary-color);
-          --btn-bg-hover: var(--primary-color);
+          background: var(--primary-color);
+          color: white;
+
+          &:hover:not(:disabled) {
+            // background: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(var(--primary-color), 0.2);
+          }
         }
       }
     }

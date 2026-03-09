@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Contracts\ModuleHandler;
 use Illuminate\Http\Request;
-use App\Models\Settings\SettingItem;
 use App\Models\Module;
 use App\Models\Field;
 use App\Models\Label;
@@ -23,9 +22,7 @@ class FieldsManagerController extends Controller
     $modules = Module::query()
       ->orderBy('id')
       ->get();
-    $item = SettingItem::where('path', 'like', '%' . $request->path())->first();
     return Inertia::render('Settings/Fields/Record', [
-      'item'     => $item,
       'setting_modules' => $modules
     ]);
   }
@@ -43,12 +40,10 @@ class FieldsManagerController extends Controller
     $routeUri = $request->route()->uri();
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
-    $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
     $field_types = config("default_field_types");
     $field  = new Field();
     return Inertia::render('Settings/Fields/Create', [
       'module'     => $module,
-      'item'     => $item,
       'field_types' => $field_types,
       'metadata' => $field->getEmptyMetadata()
     ]);
@@ -67,10 +62,8 @@ class FieldsManagerController extends Controller
     $routeUri = $request->route()->uri();
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
-    $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
     return Inertia::render('Settings/Fields/List', [
       'module' => $module,
-      'item'   => $item,
       'fields' => $module->fields
     ]);
   }
@@ -87,11 +80,9 @@ class FieldsManagerController extends Controller
     $routeUri = $request->route()->uri();
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
-    $item = SettingItem::where('path', 'like', '%' . $ptt)->first();
     $field_types = config("default_field_types");
     return Inertia::render('Settings/Fields/Edit', [
       'module'     => $module,
-      'item'     => $item,
       'metadata' => $module->getFieldMetadata($field),
       'field_types' => $field_types
     ]);

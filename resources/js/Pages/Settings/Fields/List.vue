@@ -12,7 +12,6 @@ defineOptions({
 const props = defineProps({
   module: Object,
   fields: Array,
-  item: Object,
 });
 
 const page = usePage();
