@@ -70,6 +70,7 @@ const resetForm = () => {
   form.reset();
 };
 const isDirty = () => form.isDirty;
+console.log(props.item);
 </script>
 
 <template>

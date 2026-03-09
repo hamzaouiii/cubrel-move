@@ -38,42 +38,50 @@
 
       &__breadcrumbs {
         display: flex;
-        align-items: baseline;
-        font-size: 1.5rem;
+        align-items: center; // Better vertical alignment for icons
+        gap: 12px; // Modern way to handle spacing
         font-family: "Fira Sans", "Heebo", sans-serif;
-        font-weight: 700;
-
-        &__current {
-          font-size: 1.2rem;
-        }
-
-        @media (max-width: 1250px) {
-          font-size: 1.4rem !important;
-          &__current {
-            font-size: 1rem;
-          }
-        }
-
-        @media (max-width: 750px) {
-          font-size: 1.1rem !important;
-          &__current {
-            font-size: 0.91rem;
-          }
-        }
+        font-size: 1.25rem; // Slightly smaller for better UI balance
+        font-weight: 500;
+        line-height: 1.2;
 
         a {
-          color: var(--primary-color);
-          margin-right: 15px;
-          border-bottom: 0px solid var(--primary-color);
-          transition: all 0.1s ease-out 0s;
+          color: var(--primary-color) !important;
+          text-decoration: none;
+          transition: opacity 0.2s ease;
+          font-weight: 600;
+          cursor: pointer;
+
           &:hover {
-            border-bottom: 2px solid;
+            opacity: 0.8;
+            text-decoration: underline;
+            text-underline-offset: 4px;
           }
         }
 
-        i {
-          margin-right: 15px;
+        .breadcrumb-separator {
+          color: #94a3b8; // A neutral slate/grey for the icon
+          font-size: 0.85rem;
+          display: flex;
+          align-items: center;
+        }
+
+        .breadcrumb-item--current {
+          color: #1e293b; // Darker, neutral color for the current page
+          font-weight: 600;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        // Responsive adjustments using clamp or simpler steps
+        @media (max-width: 750px) {
           font-size: 1rem;
+          gap: 8px;
+
+          .breadcrumb-separator {
+            font-size: 0.75rem;
+          }
         }
       }
     }
@@ -304,6 +312,42 @@
           flex: 2;
           max-width: 450px;
           width: 100%;
+        }
+        input[type="number"] {
+          -webkit-appearance: none;
+          -moz-appearance: textfield;
+          appearance: none;
+
+          width: 100%;
+          max-width: 120px;
+          padding: 8px 12px;
+          font-size: 14px;
+          line-height: 1.5;
+
+          background-color: #ffffff;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          color: #374151;
+          transition:
+            border-color 0.2s,
+            box-shadow 0.2s;
+
+          &:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(#3b82f6, 0.15);
+          }
+
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+
+          // 6. Subtle Hover
+          &:hover:not(:focus) {
+            border-color: darken(#d1d5db, 10%);
+          }
         }
       }
       &__actions {
@@ -953,6 +997,54 @@
       &__save {
         --btn-color: var(--module-color);
         --btn-bg-hover: var(--module-color);
+      }
+    }
+  }
+  &__breadcrumbs {
+    display: flex;
+    align-items: center; // Better vertical alignment for icons
+    gap: 12px; // Modern way to handle spacing
+    font-family: "Fira Sans", "Heebo", sans-serif;
+    font-size: 1.25rem; // Slightly smaller for better UI balance
+    font-weight: 500;
+    line-height: 1.2;
+
+    .breadcrumb-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+    }
+
+    .breadcrumb-separator {
+      color: #94a3b8; // A neutral slate/grey for the icon
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .breadcrumb-item--current {
+      color: #1e293b; // Darker, neutral color for the current page
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    // Responsive adjustments using clamp or simpler steps
+    @media (max-width: 750px) {
+      font-size: 1rem;
+      gap: 8px;
+
+      .breadcrumb-separator {
+        font-size: 0.75rem;
       }
     }
   }
