@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Concerns\HasTranslatableLabel;
 use App\Concerns\HasCustomFields;
+use App\Concerns\HasDynamicRelationships;
 use App\Services\Relationships\RelationshipService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -16,6 +17,7 @@ abstract class BaseModule extends Model
   use HasTranslatableLabel;
   use HasCustomFields;
   use HasFactory;
+  use HasDynamicRelationships;
   protected $casts = [
     'custom_fields' => 'array',
   ];

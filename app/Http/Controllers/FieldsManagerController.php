@@ -17,15 +17,7 @@ class FieldsManagerController extends Controller
    * Display a listing of the resource.
    */
 
-  public function index(Request $request)
-  {
-    $modules = Module::query()
-      ->orderBy('id')
-      ->get();
-    return Inertia::render('Settings/Fields/Record', [
-      'setting_modules' => $modules
-    ]);
-  }
+  public function index(Request $request) {}
 
 
   /**
@@ -37,9 +29,6 @@ class FieldsManagerController extends Controller
       ->where('id', $module_id)
       ->firstOrFail();
 
-    $routeUri = $request->route()->uri();
-    $routeUri = explode("/", $routeUri);
-    $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $field_types = config("default_field_types");
     $field  = new Field();
     return Inertia::render('Settings/Fields/Create', [
@@ -58,10 +47,6 @@ class FieldsManagerController extends Controller
     $module = Module::query()
       ->where('id', $module_id)
       ->firstOrFail();
-
-    $routeUri = $request->route()->uri();
-    $routeUri = explode("/", $routeUri);
-    $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     return Inertia::render('Settings/Fields/List', [
       'module' => $module,
       'fields' => $module->fields

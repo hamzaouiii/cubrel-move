@@ -1,6 +1,7 @@
 <?php
 
 return array(
+  'label' => 'Beziehungen',
   'types' =>
   array(
     'one-to-one' => 'Eins zu Eins',

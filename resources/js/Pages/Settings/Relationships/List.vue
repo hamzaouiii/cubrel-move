@@ -16,8 +16,6 @@ const props = defineProps({
 const page = usePage();
 const appSettings = page.props.appSettings;
 
-console.log(props.relationships);
-
 const sortKey = ref(null);
 const sortDirection = ref("asc");
 
@@ -57,6 +55,12 @@ const moduleColor = () =>
 </script>
 
 <template>
+  <Head>
+    <title>
+      {{ module.label }} - {{ $t("relationships.label") }} -
+      {{ $t("settings.label") }}
+    </title>
+  </Head>
   <div
     class="settings"
     :style="[
@@ -148,6 +152,7 @@ const moduleColor = () =>
               <Link
                 class="fields__table__row__actions__edit btn"
                 :href="editUrl(r.name)"
+                :class="{ disabled: r.is_system }"
               >
                 <i
                   class="fields__table__row__actions__edit__icon fa-regular fa-pen-to-square"

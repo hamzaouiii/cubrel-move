@@ -349,28 +349,7 @@
           }
         }
       }
-      // &__actions {
-      //   display: flex;
-      //   justify-content: flex-end;
-      //   .btn {
-      //     margin-right: 50px;
 
-      //     &:disabled {
-      //       background-color: rgb(218, 218, 218);
-      //       color: white;
-      //       border-color: rgb(218, 218, 218);
-      //       cursor: not-allowed;
-      //     }
-      //   }
-      //   &__reset {
-      //     --btn-color: salmon;
-      //     --btn-bg-hover: salmon;
-      //   }
-      //   &__save {
-      //     --btn-color: var(--primary-color);
-      //     --btn-bg-hover: var(--primary-color);
-      //   }
-      // }
       &__actions {
         margin-top: 2rem;
         padding-top: 1.5rem;
@@ -406,12 +385,12 @@
         }
 
         &__save {
-          background: var(--primary-color);
+          background: var(--module-color);
           color: white;
 
           &:hover:not(:disabled) {
             // background: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(var(--primary-color), 0.2);
+            box-shadow: 0 4px 12px rgba(var(--module-color), 0.2);
           }
         }
       }
@@ -947,12 +926,12 @@
         }
 
         &__save {
-          background: var(--primary-color);
+          background: var(--module-color);
           color: white;
 
           &:hover:not(:disabled) {
             // background: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(var(--primary-color), 0.2);
+            box-shadow: 0 4px 12px rgba(var(--module-color), 0.2);
           }
         }
       }
@@ -1179,6 +1158,9 @@
       }
     }
   }
+  .select-field {
+    max-width: 450px;
+  }
 }
 .layouts {
   margin-top: 20px;
@@ -1239,8 +1221,8 @@
         --btn-bg-hover: salmon;
       }
       &__save {
-        --btn-color: var(--primary-color);
-        --btn-bg-hover: var(--primary-color);
+        --btn-color: var(--module-color);
+        --btn-bg-hover: var(--module-color);
       }
     }
     &__list {
@@ -2062,6 +2044,11 @@
 
           &__icon {
             font-size: 13px;
+          }
+          &.disabled {
+            color: darkgray;
+            background-color: lightgray;
+            pointer-events: none;
           }
         }
         &__delete {

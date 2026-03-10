@@ -908,7 +908,7 @@ $error-color: #ef4444;
   }
 
   // display mode hover
-  &:not(&--edit):not(&--readonly) {
+  &:not(&--edit):not(&--readonly):not(&--settings) {
     cursor: pointer;
 
     &:hover {
@@ -948,6 +948,19 @@ $error-color: #ef4444;
   &--readonly {
     background-color: #f9fafb;
     cursor: default;
+  }
+  &--settings {
+    padding: 0;
+    max-width: 450px;
+
+    input,
+    textarea {
+      all: unset;
+      width: 100%;
+      padding: 8px 4px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
   }
 }
 

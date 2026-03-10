@@ -1,6 +1,7 @@
 <?php
 
 return [
+  'label' => 'Relationships',
   'types' => [
     'one-to-one' => "One To One",
     'one-to-many' => "One To Many",
@@ -10,6 +11,7 @@ return [
   'relationship_label' => 'Label',
   'name'  => 'name',
   'create_new'  => 'Create new relationship',
+  'back_to_list'  => 'Back to relationships',
   'accounts_contacts'   => 'Accounts To Contacts',
   'accounts_leads'      => 'Accounts To Leads',
   'accounts_quotes'     => 'Accounts To Quotes',
@@ -34,4 +36,11 @@ return [
   'contacts_emails'     => 'Contacts To Emails',
   'cases_emails'        => 'Cases To Emails',
   'inquiries_emails'    => 'Inquiries To Emails',
+
+  'metadata' => [
+    'name'  => 'Name',
+    'label' => 'Label',
+    'right_module' => 'Related Module',
+    'type'  => 'type',
+  ]
 ];

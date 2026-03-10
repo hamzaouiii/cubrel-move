@@ -24,4 +24,9 @@ class DropdownList extends Model
   protected $casts = [
     'values' => 'array',
   ];
+
+  public function get($key): DropdownList
+  {
+    return DropdownList::query()->where('key', $key);
+  }
 }

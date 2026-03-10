@@ -51,7 +51,6 @@ const props = defineProps({
   },
   highlight: String,
 });
-
 const emit = defineEmits(["update:modelValue", "change"]);
 const options = computed(() => {
   return props?.dropdown_list?.values || [];
@@ -180,7 +179,7 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
-  <div v-if="mode === 'edit'">
+  <div v-if="mode === 'edit' || mode === 'settings'">
     <div class="select-field" ref="root">
       <div
         class="select-field__control"

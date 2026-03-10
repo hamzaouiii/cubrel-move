@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Module;
+use App\Models\Relationship;
+use App\Models\DropdownList;
 
 class RelationshipManagerController extends Controller
 {
@@ -25,9 +27,21 @@ class RelationshipManagerController extends Controller
   /**
    * Show the form for creating a new resource.
    */
-  public function create()
+  public function create(string $module_id)
   {
-    //
+    $module = Module::query()
+      ->where('id', $module_id)->first();
+    $types = config("default_relationship_types");
+    $relationship  = new Relationship();
+    $moduleList = DropdownList::query()->where('key', 'module_list')->firstOrFail();
+    $typeList = DropdownList::query()->where('key', 'relationship_type_list')->firstOrFail();
+    return Inertia::render('Settings/Relationships/Create', [
+      'module'     => $module,
+      'types' => $types,
+      'metadata' => $relationship->getEmptyMetadata(),
+      'moduleList'  => $moduleList,
+      'typeList'  => $typeList,
+    ]);
   }
 
   /**
@@ -41,9 +55,15 @@ class RelationshipManagerController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(string $id)
+  public function show(string $module_id, string $relationship_name)
   {
-    //
+    $module = Module::query()
+      ->where('id', $module_id)->first();
+    $relationship = Relationship::query()->where('name', $relationship_name)->firstOrFail();
+    return Inertia::render('Settings/Relationships/Edit', [
+      'module' => $module,
+      'relationship' => $relationship
+    ]);
   }
 
   /**
