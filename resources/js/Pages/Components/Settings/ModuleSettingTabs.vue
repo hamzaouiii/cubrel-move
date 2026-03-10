@@ -51,7 +51,7 @@ const appSettings = usePage().props.appSettings;
       class="settings__module__tabs__item"
       @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
-        'settings__module__tabs__item--active': activeKey === 'relationship',
+        'settings__module__tabs__item--active': activeKey === 'relationships',
       }"
       >Relationships</Link
     >

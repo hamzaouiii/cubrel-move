@@ -32,7 +32,7 @@ class RelationshipService
    */
   public static function enforceCardinality(object $relationship, string $left_id, string $right_id): void
   {
-    if ($relationship->relationship_type === 'one-to-one') {
+    if ($relationship->type === 'one-to-one') {
       // related record can only have on "parent record" so here the right_id can only exist once under this relationship.
       $exists = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
@@ -48,7 +48,7 @@ class RelationshipService
         );
       }
     }
-    if ($relationship->relationship_type === 'one-to-many') {
+    if ($relationship->type === 'one-to-many') {
       // related record can only have on "parent record" so here the right_id can only exist once under this relationship.
       $exists = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
@@ -62,7 +62,7 @@ class RelationshipService
       }
     }
 
-    if ($relationship->relationship_type === "many-to-many") {
+    if ($relationship->type === "many-to-many") {
       $exists = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
         ->where('right_id', $right_id)
@@ -89,7 +89,7 @@ class RelationshipService
       $leftId  = $relationship->left_id;
       $rightId = $relationship->right_id;
 
-      switch ($relationship->relationship_type) {
+      switch ($relationship->type) {
 
         case 'one-to-one':
 
@@ -176,7 +176,7 @@ class RelationshipService
       });
 
     if ($type) {
-      $query->where('relationship_type', $type);
+      $query->where('type', $type);
     }
 
     return $query->get();
@@ -409,7 +409,7 @@ class RelationshipService
       $panelData =  self::getDataForPanel($relationship->related_slug);
       $result[$relationship->name] = [
         'name'    => $relationship->name,
-        'type'    => $relationship->relationship_type,
+        'type'    => $relationship->type,
         'label'   =>  $relationship->label,
         'role'   =>  $relationship->role,
         'count'   => $count,
@@ -444,7 +444,7 @@ class RelationshipService
     $relationship = self::getWithSide($relationship, $modelClass, $recordId);
 
     // One-to-one: if already linked, nothing available
-    if ($relationship->relationship_type === 'one-to-one') {
+    if ($relationship->type === 'one-to-one') {
       $alreadyLinked = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
         ->where($relationship->current_id_field, $recordId)
@@ -470,7 +470,7 @@ class RelationshipService
     }
 
     // Enforce one-to-many
-    if ($relationship->relationship_type === 'one-to-many') {
+    if ($relationship->type === 'one-to-many') {
       $takenIds = DB::table('relationship_links')
         ->where('relationship_id', $relationship->id)
         ->pluck('right_id');
@@ -506,7 +506,7 @@ class RelationshipService
 
   protected static function resolveRole(object $relationship): string
   {
-    switch ($relationship->relationship_type) {
+    switch ($relationship->type) {
       case 'one-to-one':
         return 'sibling';
 

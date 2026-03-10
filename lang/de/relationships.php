@@ -7,6 +7,11 @@ return array(
     'one-to-many' => 'Eins zu Viele',
     'many-to-many' => 'Viele zu Viele',
   ),
+  'name' => 'Name',
+  'relationship_label' => 'Bezeichnung',
+  'type' => 'Typ',
+  'create_new' => 'Neue Beziehung erstellen',
+
   'accounts_contacts' => 'Kontakte',
   'accounts_leads' => 'Leads',
   'accounts_quotes' => 'Angebote',

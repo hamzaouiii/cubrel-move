@@ -17,18 +17,17 @@ return new class extends Migration {
       $table->string('right_class');
       $table->string('right_module');
 
-      $table->string('relationship_type');
-
+      $table->string('type');
+      $table->boolean('is_system')->default(true);
       // for future DB-level optimizations
       $table->string('join_table')->default("relationship_links");
-      $table->string('left_module_key')->nullable();
-      $table->string('right_module_key')->nullable();
+
 
       $table->timestamps();
 
       $table->index(['left_module']);
       $table->index(['right_module']);
-      $table->index(['relationship_type']);
+      $table->index(['type']);
     });
   }
 

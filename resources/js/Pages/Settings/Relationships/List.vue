@@ -11,11 +11,12 @@ defineOptions({
 
 const props = defineProps({
   module: Object,
-  fields: Array,
+  relationships: Object,
 });
-
 const page = usePage();
 const appSettings = page.props.appSettings;
+
+console.log(props.relationships);
 
 const sortKey = ref(null);
 const sortDirection = ref("asc");
@@ -28,10 +29,11 @@ function sortBy(key) {
     sortDirection.value = "asc";
   }
 }
-const sortedFields = computed(() => {
-  if (!sortKey.value) return props.fields;
 
-  return [...props.fields].sort((a, b) => {
+const sortedRelationships = computed(() => {
+  if (!sortKey.value) return props.relationships;
+
+  return [...props.relationships].sort((a, b) => {
     const valA = a[sortKey.value] ?? "";
     const valB = b[sortKey.value] ?? "";
 
@@ -40,26 +42,28 @@ const sortedFields = computed(() => {
     return 0;
   });
 });
+
 const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
+
 const editUrl = (f) => {
   return `${page.url.replace(/\/+$/, "")}/${f}`;
 };
-
-const color = () =>
+const moduleColor = () =>
   appSettings.use_individual_module_colors
     ? props.module.color
     : appSettings.primary_color;
 </script>
 
 <template>
-  <Head>
-    <title>
-      {{ module.label }} - {{ $t("fields.label") }} - {{ $t("settings.label") }}
-    </title>
-  </Head>
-  <div class="settings" :style="{ '--module-color': color() }">
+  <div
+    class="settings"
+    :style="[
+      { '--module-color': moduleColor() },
+      { '--danger-color': appSettings.danger_color },
+    ]"
+  >
     <div class="settings__header">
       <div class="settings__header__title">
         <ModuleSettingBreadcrumbs
@@ -70,14 +74,13 @@ const color = () =>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"
-        active-key="fields"
+        active-key="relationships"
       ></ModuleSettingTabs>
     </div>
-
     <div class="fields">
       <div class="fields__header">
         <Link class="fields__header__create" :href="createUrl">
-          {{ $t("fields.create_new_field") }}</Link
+          {{ $t("relationships.create_new") }}</Link
         >
       </div>
       <table class="fields__table">
@@ -123,16 +126,28 @@ const color = () =>
         </thead>
 
         <tbody>
-          <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
+          <tr
+            class="fields__table__row"
+            v-for="r in sortedRelationships"
+            :key="r.key"
+          >
             <td>
-              {{ f.name }}
+              {{ r.name }}
             </td>
-            <td>{{ $t(f.label) }}</td>
-            <td>{{ $t("fields.types." + f.type) }}</td>
+            <td>{{ $t(r.label) }}</td>
+            <td>{{ $t("relationships.types." + r.type) }}</td>
             <td style="width: 70px" class="fields__table__row__actions">
+              <button
+                class="fields__table__row__actions__delete btn"
+                :disabled="r.is_system"
+              >
+                <i
+                  class="fields__table__row__actions__delete__icon fa-solid fa-trash"
+                ></i>
+              </button>
               <Link
                 class="fields__table__row__actions__edit btn"
-                :href="editUrl(f.name)"
+                :href="editUrl(r.name)"
               >
                 <i
                   class="fields__table__row__actions__edit__icon fa-regular fa-pen-to-square"

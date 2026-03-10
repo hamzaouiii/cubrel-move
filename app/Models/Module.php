@@ -9,6 +9,7 @@ use App\Concerns\HasTranslatableLabel;
 use App\Models\Layout;
 use App\Models\Field;
 use Illuminate\Support\Collection;
+use App\Services\Relationships\RelationshipService;
 
 /**
  * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
@@ -221,5 +222,10 @@ class Module extends Model
     }
 
     throw new \Exception("No {$type} layout found for module {$this->name}");
+  }
+
+  public function relationships(): Collection
+  {
+    return RelationshipService::getRelationshipForModule($this->model_class);
   }
 }
