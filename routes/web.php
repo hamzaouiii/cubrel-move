@@ -8,6 +8,7 @@ use App\Http\Controllers\ListController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ModuleManagerController;
+use App\Http\Controllers\ModuleBuilderController;
 use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\FieldsManagerController;
 use App\Http\Controllers\DropdownListController;
@@ -61,8 +62,16 @@ Route::middleware(['auth'])->group(function () {
           ->name('modules.layouts.store');
       });
 
-    Route::get('modulebuilder', [ModuleManagerController::class, 'create']);
+    Route::get('modulebuilder', [ModuleBuilderController::class, 'create'])
+      ->name('modules.builder.create');
 
+    // 2. The main Builder view (Tabs: Settings, Fields, Layouts)
+    Route::get('modulebuilder/{module}', [ModuleBuilderController::class, 'show'])
+      ->name('modules.builder.show');
+
+    // 3. Finalizes the draft, builds the table, and makes it active
+    Route::post('modulebuilder/{module}/publish', [ModuleBuilderController::class, 'publish'])
+      ->name('modules.builder.publish');
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);
     Route::post('dropdowns', [DropdownListController::class, 'store']);

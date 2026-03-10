@@ -30,6 +30,7 @@ class Module extends Model
     'name',
     'icon',
     'label',
+    'is_draft',
     'single_label',
     'color',
     'path',
@@ -60,6 +61,8 @@ class Module extends Model
   {
     return self::active()
       ->where('show_in_sidebar', 1)
+      ->where('is_active', 1)
+      ->where('is_draft', 0)
       ->orderBy('id')
       ->get()
       ->map(function (Module $module) {

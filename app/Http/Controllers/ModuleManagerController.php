@@ -21,6 +21,7 @@ class ModuleManagerController extends Controller
 
     $modules = Module::query()
       ->where('is_active', 1)
+      ->where('is_draft', 0)
       ->with([
         'layouts' => function ($q) {
           $q->orderBy('type')->orderBy('name');
