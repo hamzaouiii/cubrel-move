@@ -807,17 +807,9 @@
           color: var(--module-color);
           font-weight: 700;
           background: color-mix(in srgb, var(--module-color) 10%, transparent);
-
+          pointer-events: none;
           &::after {
             width: calc(100% - 20px);
-          }
-
-          &:hover {
-            background: color-mix(
-              in srgb,
-              var(--module-color) 14%,
-              transparent
-            );
           }
         }
       }
