@@ -30,7 +30,7 @@ class RelationshipPopulationSeeder extends Seeder
 
       foreach ($leftRecords as $leftId) {
 
-        $linksToCreate = match ($relationship->relationship_type) {
+        $linksToCreate = match ($relationship->type) {
           'one-to-one'   => 1,
           'one-to-many'  => rand(1, 3),
           'many-to-many' => rand(1, 5),

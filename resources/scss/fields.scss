@@ -908,7 +908,7 @@ $error-color: #ef4444;
   }
 
   // display mode hover
-  &:not(&--edit):not(&--readonly) {
+  &:not(&--edit):not(&--readonly):not(&--settings) {
     cursor: pointer;
 
     &:hover {
@@ -930,10 +930,36 @@ $error-color: #ef4444;
   }
 
   // ===== ERROR MODIFIER =====
+
+  // optional
+  &--readonly {
+    background-color: #f9fafb;
+    cursor: default;
+  }
+  &--settings {
+    padding: 0;
+    max-width: 450px;
+
+    input,
+    textarea {
+      all: unset;
+      width: 100%;
+      padding: 8px 4px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .error-icon {
+      margin-right: 8px;
+    }
+  }
   &--error {
     border-color: $error-color;
     color: $error-color;
-
+    input,
+    textarea {
+      border: none !important;
+      padding: 8px 4px;
+    }
     &:focus-within {
       box-shadow: 0 0 0 3px rgba($error-color, 0.1);
     }
@@ -942,12 +968,6 @@ $error-color: #ef4444;
       color: $error-color;
       margin-right: 8px;
     }
-  }
-
-  // optional
-  &--readonly {
-    background-color: #f9fafb;
-    cursor: default;
   }
 }
 

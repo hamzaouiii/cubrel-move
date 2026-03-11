@@ -222,7 +222,7 @@ const moveFieldToSection = (
   const newColumn = {
     name: field.name,
     label: field.label,
-    type: field.relationship_type,
+    type: field.type,
   };
 
   targetSection.layout.splice(targetColumnIndex, 0, newColumn);
@@ -448,7 +448,7 @@ onBeforeUnmount(() => {
               {{ $t(field.label) ?? field.key }}
             </span>
             <span class="editor__available-fields__item__type">
-              {{ $t("relationships.types." + field.relationship_type) }}
+              {{ $t("relationships.types." + field.type) }}
             </span>
           </div>
 

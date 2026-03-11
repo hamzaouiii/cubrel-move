@@ -19,16 +19,16 @@ class RelationshipLink extends Model
   public static function booted()
   {
     static::creating(function ($model) {
-      // Route to different tables based on relationship_type
+      // Route to different tables based on type
       $model->setTable(self::getTableForRelationship(
-        $model->relationship_type
+        $model->type
       ));
     });
 
     static::retrieved(function ($model) {
       // Dynamically set table for queries
       $model->setTable(self::getTableForRelationship(
-        $model->relationship_type
+        $model->type
       ));
     });
   }

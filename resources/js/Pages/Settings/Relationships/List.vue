@@ -1,18 +1,23 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-
+import { useConfirm } from "@/Composables/useConfirm";
+import { useAlerts } from "@/Composables/useAlerts";
+const { confirm } = useConfirm();
+const { info, success, error, clearAllAlerts } = useAlerts();
 defineOptions({
   layout: Layout,
 });
 
 const props = defineProps({
   module: Object,
-  fields: Array,
+  relationships: Object,
 });
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 const page = usePage();
 const appSettings = page.props.appSettings;
@@ -28,10 +33,11 @@ function sortBy(key) {
     sortDirection.value = "asc";
   }
 }
-const sortedFields = computed(() => {
-  if (!sortKey.value) return props.fields;
 
-  return [...props.fields].sort((a, b) => {
+const sortedRelationships = computed(() => {
+  if (!sortKey.value) return props.relationships;
+
+  return [...props.relationships].sort((a, b) => {
     const valA = a[sortKey.value] ?? "";
     const valB = b[sortKey.value] ?? "";
 
@@ -40,26 +46,70 @@ const sortedFields = computed(() => {
     return 0;
   });
 });
+
 const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
-const editUrl = (f) => {
-  return `${page.url.replace(/\/+$/, "")}/${f}`;
-};
 
-const color = () =>
+const moduleColor = () =>
   appSettings.use_individual_module_colors
     ? props.module.color
     : appSettings.primary_color;
+
+const currentModule = page.props.module.id;
+const deleteRelationship = async (rel) => {
+  let msg;
+  let highlt;
+  if (rel.links_used > 0) {
+    msg = t("relationships.confirm.delete_msg", {
+      count: rel?.links_used || 0,
+    });
+    highlt = rel?.links_used || 0;
+  } else {
+    msg = t("relationships.confirm.delete_msg_no_count");
+    highlt = null;
+  }
+  const ok = await confirm({
+    title: t("relationships.confirm.delete_title"),
+    message: msg,
+    confirmText: t("relationships.confirm.delete_confirm"),
+    cancelText: t("relationships.confirm.delete_cancel"),
+    danger: true,
+    highlight: highlt,
+  });
+  if (!ok) return;
+  router.delete(`/settings/modules/${currentModule}/relationships/${rel.id}`, {
+    preserveScroll: true,
+    onStart: () => {
+      clearAllAlerts();
+      info(t("relationships.deleting"));
+    },
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("relationships.deleting_success"));
+    },
+    onError: (e) => {
+      clearAllAlerts();
+      error(e.rel);
+    },
+  });
+};
 </script>
 
 <template>
   <Head>
     <title>
-      {{ module.label }} - {{ $t("fields.label") }} - {{ $t("settings.label") }}
+      {{ module.label }} - {{ $t("relationships.label") }} -
+      {{ $t("settings.label") }}
     </title>
   </Head>
-  <div class="settings" :style="{ '--module-color': color() }">
+  <div
+    class="settings"
+    :style="[
+      { '--module-color': moduleColor() },
+      { '--danger-color': appSettings.danger_color },
+    ]"
+  >
     <div class="settings__header">
       <div class="settings__header__title">
         <ModuleSettingBreadcrumbs
@@ -70,14 +120,13 @@ const color = () =>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"
-        active-key="fields"
+        active-key="relationships"
       ></ModuleSettingTabs>
     </div>
-
     <div class="fields">
       <div class="fields__header">
         <Link class="fields__header__create" :href="createUrl">
-          {{ $t("fields.create_new_field") }}</Link
+          {{ $t("relationships.create_new") }}</Link
         >
       </div>
       <table class="fields__table">
@@ -123,21 +172,26 @@ const color = () =>
         </thead>
 
         <tbody>
-          <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
+          <tr
+            class="fields__table__row"
+            v-for="r in sortedRelationships"
+            :key="r.key"
+          >
             <td>
-              {{ f.name }}
+              {{ r.name }}
             </td>
-            <td>{{ $t(f.label) }}</td>
-            <td>{{ $t("fields.types." + f.type) }}</td>
+            <td>{{ $t(r.label) }}</td>
+            <td>{{ $t("relationships.types." + r.type) }}</td>
             <td style="width: 70px" class="fields__table__row__actions">
-              <Link
-                class="fields__table__row__actions__edit btn"
-                :href="editUrl(f.name)"
+              <button
+                class="fields__table__row__actions__delete btn"
+                :disabled="r.is_system"
+                @click="deleteRelationship(r)"
               >
                 <i
-                  class="fields__table__row__actions__edit__icon fa-regular fa-pen-to-square"
+                  class="fields__table__row__actions__delete__icon fa-solid fa-trash"
                 ></i>
-              </Link>
+              </button>
             </td>
           </tr>
         </tbody>
