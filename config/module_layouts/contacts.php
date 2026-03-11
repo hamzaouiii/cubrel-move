@@ -11,15 +11,6 @@ return array(
         'type' => 'text',
         'label' => 'modules.defaults.name',
       ),
-      1 =>
-      array(
-        'id' => '21c067b3-9498-4139-8211-f486647c38aa',
-        'name' => 'account_id',
-        'type' => 'relationship',
-        'label' => 'modules.contacts.fields.account_id',
-        'module_id' => '019c9a01-7d25-7136-a50d-5fa6fdc46656',
-        'dropdown_list_id' => NULL,
-      ),
       2 =>
       array(
         'id' => 'ab103add-6343-4bb5-904c-04ec3447b202',
@@ -75,12 +66,6 @@ return array(
             'name' => 'name',
             'type' => 'text',
             'label' => 'modules.defaults.name',
-          ),
-          1 =>
-          array(
-            'name' => 'account_id',
-            'type' => 'relationship',
-            'label' => 'modules.contacts.fields.account_id',
           ),
           2 =>
           array(
@@ -378,15 +363,6 @@ return array(
         'name' => 'name',
         'type' => 'text',
         'label' => 'modules.defaults.name',
-      ),
-      1 =>
-      array(
-        'id' => '21c067b3-9498-4139-8211-f486647c38aa',
-        'name' => 'account_id',
-        'type' => 'relationship',
-        'label' => 'modules.contacts.fields.account_id',
-        'module_id' => '019c9a01-7d25-7136-a50d-5fa6fdc46656',
-        'dropdown_list_id' => NULL,
       ),
       2 =>
       array(

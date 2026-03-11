@@ -122,7 +122,6 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Firma',
       'first_name' => 'Vorname',
       'last_name' => 'Nachname',
       'email' => 'E-Mail',
@@ -176,9 +175,6 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Firma',
-      'contact_id' => 'Kontakt',
-      'quote_id' => 'Angebot',
       'number' => 'Rechnungsnummer',
       'status' => 'Status',
       'issue_date' => 'Rechnungsdatum',
@@ -200,8 +196,6 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Firma',
-      'contact_id' => 'Kontakt',
       'number' => 'Angebotsnummer',
       'status' => 'Status',
       'valid_until' => 'Gültig bis',
@@ -223,8 +217,6 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Firma',
-      'contact_id' => 'Kontakt',
       'subject' => 'Betreff',
       'description' => 'Beschreibung',
       'status' => 'Status',
@@ -289,7 +281,6 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Konto',
       'amount' => 'Betrag',
       'currency' => 'Währung',
       'description' => 'Beschreibung',
@@ -329,7 +320,6 @@ return array(
       'name' => 'Name',
       'id' => 'ID',
       'order_number' => 'Bestellnummer',
-      'account_id' => 'Konto',
       'opportunity_id' => 'Verkaufschance',
       'description' => 'Beschreibung',
       'total_amount' => 'Gesamtbetrag',

@@ -18,24 +18,4 @@ class Account extends BaseModule
     'city',
     'country',
   ];
-
-  public function contacts(): HasMany
-  {
-    return $this->hasMany(Contact::class);
-  }
-
-  public function invoices(): HasMany
-  {
-    return $this->hasMany(Invoice::class);
-  }
-
-  public function quotes(): HasMany
-  {
-    return $this->hasMany(Quote::class);
-  }
-
-  public function cases(): HasMany
-  {
-    return $this->hasMany(SupportCase::class, 'account_id');
-  }
 }

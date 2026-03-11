@@ -41,7 +41,7 @@ const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const currentTab = ref("related");
+const currentTab = ref("overview");
 const overlayOpen = ref(false);
 const activePanel = ref(null);
 const activeParentRecord = ref(null);
@@ -287,7 +287,10 @@ const handleKeydown = (e) => {
 };
 
 const getField = (f) => {
-  return props.fields.find((field) => field.name === f.name);
+  const pp = props.fields.find((field) => field.name === f.name);
+  console.log(f.name);
+  console.log(pp);
+  return pp;
 };
 
 const getMode = (f) => {
@@ -329,9 +332,9 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-// useUnsavedChangesGuard({
-//   getIsDirty: () => isDirty.value,
-// });
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
 
 const relationship = (name) => {
   return props.record?.related?.[name] || null;
@@ -480,10 +483,10 @@ const relationship = (name) => {
                 :field="getField(f)"
                 v-model="form[f.name]"
                 :mode="getMode(f)"
-                :read-only="getField(f).readonly"
+                :read-only="getField(f)?.readonly"
                 :module-color="module_color"
                 :has-error="hasError(f)"
-                @click="!getField(f).readonly && enableEditing()"
+                @click="!getField(f)?.readonly && enableEditing()"
               />
             </div>
           </div>

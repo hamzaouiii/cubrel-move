@@ -107,7 +107,6 @@ return array(
     'fields' =>
     array(
       'name' => 'Name',
-      'account_id' => 'Account',
       'first_name' => 'First Name',
       'last_name' => 'Last Name',
       'email' => 'Email',
@@ -162,9 +161,7 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Account',
-      'contact_id' => 'Contact',
-      'quote_id' => 'Quote',
+
       'number' => 'Invoice Number',
       'status' => 'Status',
       'issue_date' => 'Issue Date',
@@ -187,8 +184,7 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Account',
-      'contact_id' => 'Contact',
+
       'number' => 'Quote Number',
       'status' => 'Status',
       'valid_until' => 'Valid Until',
@@ -210,8 +206,7 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Account',
-      'contact_id' => 'Contact',
+
       'subject' => 'Subject',
       'description' => 'Description',
       'status' => 'Status',
@@ -275,7 +270,7 @@ return array(
     array(
       'id' => 'ID',
       'name' => 'Name',
-      'account_id' => 'Account',
+
       'amount' => 'Amount',
       'currency' => 'Currency',
       'description' => 'Description',
@@ -315,7 +310,7 @@ return array(
       'name' => 'Name',
       'id' => 'ID',
       'order_number' => 'Order Number',
-      'account_id' => 'Account',
+
       'opportunity_id' => 'Opportunity',
       'description' => 'Description',
       'total_amount' => 'Total Amount',
