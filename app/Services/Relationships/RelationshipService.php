@@ -4,6 +4,7 @@ namespace App\Services\Relationships;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use App\Models\Relationship;
 use App\Models\RelationshipLink;
 use App\Models\Module;
 use RuntimeException;
@@ -12,13 +13,11 @@ use App\Support\Settings;
 class RelationshipService
 {
   /**
-   * returns teh relationship object
+   * Returns the relationship object
    */
-  public static function get(string $name): Object
+  public static function get(string $name): Relationship
   {
-    $relationship = DB::table('relationships')
-      ->where('name', $name)
-      ->first();
+    $relationship = Relationship::where('name', $name)->first();
 
     if (!$relationship) {
       throw new \RuntimeException("Unknown relationship {$name}");
@@ -30,7 +29,7 @@ class RelationshipService
   /**
    * Enforces relationship rules
    */
-  public static function enforceCardinality(object $relationship, string $left_id, string $right_id): void
+  public static function enforceCardinality(Relationship $relationship, string $left_id, string $right_id): void
   {
     if ($relationship->type === 'one-to-one') {
       // related record can only have on "parent record" so here the right_id can only exist once under this relationship.
@@ -79,7 +78,7 @@ class RelationshipService
   /**
    * Link two records in a relationship
    */
-  public static function link(string $relationship_name,    string $model_class,    string $module_id,    string $related_id): void
+  public static function link(string $relationship_name, string $model_class, string $module_id, string $related_id): void
   {
     $relationship = self::get($relationship_name);
     $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
@@ -156,12 +155,13 @@ class RelationshipService
       ->where('right_id', $relationship->right_id)
       ->delete();
   }
+
   /**
    * returns the relationship object between two modules given the type
    */
   public static function getRelationshipBetween(string $module1, string $module2, string $type): Collection
   {
-    $query = DB::table('relationships')
+    $query = Relationship::query()
       ->where(function ($q) use ($module1, $module2) {
         // Group 1: module1 as left, module2 as right
         $q->where(function ($q1) use ($module1, $module2) {
@@ -187,7 +187,7 @@ class RelationshipService
    */
   public static function getRelationshipForModule(string $class): Collection
   {
-    $relationships = DB::table('relationships')
+    $relationships = Relationship::query()
       ->where('left_class', $class)
       ->orWhere('right_class', $class)
       ->get();
@@ -196,8 +196,21 @@ class RelationshipService
       return collect();
     }
 
-    $relationships = $relationships->map(function ($relationship) use ($class) {
-      return self::getWithSide($relationship, $class);
+    // Get usage counts in one query
+    $links_used = DB::table('relationship_links')
+      ->select('relationship_id', DB::raw('count(*) as links_used'))
+      ->whereIn('relationship_id', $relationships->pluck('id'))
+      ->groupBy('relationship_id')
+      ->pluck('links_used', 'relationship_id');
+
+    $relationships = $relationships->map(function ($relationship) use ($class, $links_used) {
+
+      $relationship = self::getWithSide($relationship, $class);
+
+      // attach usage
+      $relationship->links_used = $links_used[$relationship->id] ?? 0;
+
+      return $relationship;
     });
 
     $relatedSlugs = $relationships
@@ -217,6 +230,7 @@ class RelationshipService
       $relationship->related_fields = $module
         ? $module->fields
         : collect();
+
       return $relationship;
     });
   }
@@ -228,15 +242,14 @@ class RelationshipService
   public static function loadRelationship(string $relationship_name): Collection
   {
     $relationship = self::get($relationship_name);
-    return DB::table('Relationship_links')
+    return DB::table('relationship_links') // Fixed uppercase 'R' typo here
       ->where('relationship_id', $relationship->id)->get();
   }
 
   /**
    * returns related ids to a record. side discovery happens on a model level
-   * 
-   */
-  public static function getRelatedIds(object $relationship, string $side, string $id)
+   * */
+  public static function getRelatedIds(Relationship $relationship, string $side, string $id)
   {
     return DB::table('relationship_links')
       ->where('relationship_id', $relationship->id)
@@ -247,7 +260,7 @@ class RelationshipService
   /**
    * Get relationship and determine which side the given model is on
    */
-  public static function getWithSide(object $relationship, string $model_class, ?string $module_id = null): object
+  public static function getWithSide(Relationship $relationship, string $model_class, ?string $module_id = null): Relationship
   {
     if ($relationship->left_class === $model_class) {
       $relationship->side = 'left';
@@ -281,7 +294,7 @@ class RelationshipService
   /**
    * Get relationship with resolved IDs for linking
    */
-  public static function getWithResolvedIds(object $relationship, string $model_class, string $module_id, string $related_id): object
+  public static function getWithResolvedIds(Relationship $relationship, string $model_class, string $module_id, string $related_id): Relationship
   {
     $relationship = self::getWithSide($relationship, $model_class, $module_id);
 
@@ -295,8 +308,6 @@ class RelationshipService
 
     return $relationship;
   }
-
-
 
   /**
    * Get related records for a model
@@ -326,7 +337,7 @@ class RelationshipService
   /**
    * Check if a relationship exists between two records
    */
-  public static function exists(object $relationship, string $model_class, string $module_id, string $related_id): bool
+  public static function exists(Relationship $relationship, string $model_class, string $module_id, string $related_id): bool
   {
     $relationship = self::getWithResolvedIds($relationship, $model_class, $module_id, $related_id);
 
@@ -348,7 +359,6 @@ class RelationshipService
 
   /**
    * on second thought this function's name does not sound right, perhaps it required changing in the future
-  
    */
   public static function getAllRelatedRecords(string $modelClass, string $recordId): Collection
   {
@@ -408,12 +418,12 @@ class RelationshipService
       }
       $panelData =  self::getDataForPanel($relationship->related_slug);
       $result[$relationship->name] = [
-        'name'    => $relationship->name,
-        'type'    => $relationship->type,
-        'label'   =>  $relationship->label,
-        'role'   =>  $relationship->role,
-        'count'   => $count,
-        'records' => $records,
+        'name'         => $relationship->name,
+        'type'         => $relationship->type,
+        'label'        =>  $relationship->label,
+        'role'         =>  $relationship->role,
+        'count'        => $count,
+        'records'      => $records,
         'pagination'   => $pagination,
         'related_slug' => $relationship->related_slug,
       ];
@@ -434,7 +444,7 @@ class RelationshipService
    * Get available records from related module for linking.
    */
   public static function getRecordsForLinking(
-    object $relationship,
+    Relationship $relationship,
     string $modelClass,
     string $recordId,
     int $perPage,
@@ -486,7 +496,7 @@ class RelationshipService
     return $query->orderBy('name')->paginate($perPage);
   }
   public static function getRecordsForUpdateSingleLinking(
-    object $relationship,
+    Relationship $relationship,
     string $modelClass,
     string $recordId,
     int $perPage,
@@ -504,7 +514,7 @@ class RelationshipService
     return $query->orderBy('name')->paginate($perPage);
   }
 
-  protected static function resolveRole(object $relationship): string
+  protected static function resolveRole(Relationship $relationship): string
   {
     switch ($relationship->type) {
       case 'one-to-one':
@@ -515,7 +525,7 @@ class RelationshipService
           ? 'parent'
           : 'child';
 
-        // the resaon we want why many-to-many to behave as a parent role in this relationship is because effectively both records are parents to each other
+        // the reason we want why many-to-many to behave as a parent role in this relationship is because effectively both records are parents to each other
       case 'many-to-many':
         return 'parent';
 

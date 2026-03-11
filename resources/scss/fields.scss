@@ -930,19 +930,6 @@ $error-color: #ef4444;
   }
 
   // ===== ERROR MODIFIER =====
-  &--error {
-    border-color: $error-color;
-    color: $error-color;
-
-    &:focus-within {
-      box-shadow: 0 0 0 3px rgba($error-color, 0.1);
-    }
-
-    .text-field__error-icon {
-      color: $error-color;
-      margin-right: 8px;
-    }
-  }
 
   // optional
   &--readonly {
@@ -960,6 +947,26 @@ $error-color: #ef4444;
       padding: 8px 4px;
       box-sizing: border-box;
       font-family: inherit;
+    }
+    .error-icon {
+      margin-right: 8px;
+    }
+  }
+  &--error {
+    border-color: $error-color;
+    color: $error-color;
+    input,
+    textarea {
+      border: none !important;
+      padding: 8px 4px;
+    }
+    &:focus-within {
+      box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+    }
+
+    .text-field__error-icon {
+      color: $error-color;
+      margin-right: 8px;
     }
   }
 }

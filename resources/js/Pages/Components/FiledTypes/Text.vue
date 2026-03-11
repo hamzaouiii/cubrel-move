@@ -95,7 +95,7 @@ const highlightMatch = (text) => {
 
   <div v-if="mode === 'settings'">
     <span
-      class="text-field text-field--settings"
+      class="text-field text-field--edit text-field--settings"
       :class="{
         'text-field--error': showError,
         'text-field--readonly': readOnly,

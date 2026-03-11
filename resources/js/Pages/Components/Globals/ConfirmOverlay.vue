@@ -1,9 +1,12 @@
 <script setup>
 import { ref, watch, nextTick } from "vue";
 import { useConfirm } from "@/Composables/useConfirm";
-
+import { usePage } from "@inertiajs/vue3";
 const { confirmState, accept, cancel } = useConfirm();
 const overlayRef = ref(null);
+
+const page = usePage();
+const appSettings = page.props.appSettings;
 
 watch(
   () => confirmState.isOpen,
@@ -16,8 +19,12 @@ watch(
       document.body.style.overflow = "";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
+
+const primaryColor = appSettings.primary_color;
+const secondaryColor = appSettings.secondary_color;
+const dangerColor = appSettings.danger_color;
 </script>
 
 <template>
@@ -29,13 +36,39 @@ watch(
       tabindex="0"
       ref="overlayRef"
       @click.self="cancel"
+      :style="[
+        { '--primary-color': primaryColor },
+        { '--secondary-color': secondaryColor },
+        { '--danger-color': dangerColor },
+      ]"
     >
       <div class="confirm-overlay__dialog">
         <div class="confirm-overlay__title">{{ confirmState.title }}</div>
-        <div class="confirm-overlay__message">{{ confirmState.message }}</div>
+        <div class="confirm-overlay__message">
+          <template v-if="confirmState.highlight !== null">
+            {{ confirmState.message.split(confirmState.highlight)[0] }}
+            <span
+              :class="[
+                {
+                  'confirm-overlay__highlight--danger': confirmState.danger,
+                },
+                {
+                  'confirm-overlay__highlight': !confirmState.danger,
+                },
+              ]"
+            >
+              {{ confirmState.highlight }}
+            </span>
+            {{ confirmState.message.split(confirmState.highlight)[1] }}
+          </template>
+
+          <template v-else>
+            {{ confirmState.message }}
+          </template>
+        </div>
 
         <div class="confirm-overlay__actions">
-          <button class="confirm-overlay__actions--cancel btn" @click="cancel">
+          <button class="confirm-overlay__actions--cancel" @click="cancel">
             {{ confirmState.cancelText }}
           </button>
 
@@ -43,8 +76,7 @@ watch(
             :class="[
               confirmState.danger
                 ? ' confirm-overlay__actions--danger'
-                : 'button-primary',
-              'btn',
+                : 'confirm-overlay__actions--primary',
             ]"
             @click="accept"
           >

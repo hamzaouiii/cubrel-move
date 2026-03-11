@@ -1,10 +1,12 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
-import { ref, computed, getCurrentInstance } from "vue";
+import { ref, computed, getCurrentInstance, watch } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
+import { useAlerts } from "@/Composables/useAlerts";
+
 defineOptions({
   layout: Layout,
 });
@@ -16,18 +18,35 @@ const props = defineProps({
   typeList: Object,
   moduleList: Object,
 });
+
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
+
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
 const page = usePage();
 const appSettings = page.props.appSettings;
+const nameManuallyChanged = ref(false);
 const default_values = {
   name: "",
   label: "",
   right_module: "",
   type: "",
 };
-
 const form = useForm({ ...default_values });
+
+const getRelationshipName = computed(() => {
+  if (form.right_module?.length) {
+    return `${props.module.slug}_${form.right_module}`;
+  }
+  return "";
+});
+
+watch(getRelationshipName, (value) => {
+  if (!nameManuallyChanged.value) {
+    form.name = value;
+  }
+});
 const relationshipUrl = () => {
   const url = page.url;
   const segments = url.split("/").filter(Boolean);
@@ -35,6 +54,34 @@ const relationshipUrl = () => {
     segments.pop();
   }
   return "/" + segments.join("/");
+};
+
+const storeUrl = () => {
+  return `/settings/modules/${props.module.id}/relationships`;
+};
+
+const saveRelationship = () => {
+  info(t("relationships.saving"));
+
+  form.post(storeUrl(), {
+    preserveScroll: true,
+    onSuccess: () => {
+      clearAllAlerts();
+      form.reset();
+      success(t("relationships.saving_success"));
+    },
+    onError: (errors) => {
+      clearAllAlerts();
+
+      Object.values(errors).forEach((message) => {
+        error(message);
+      });
+    },
+  });
+};
+
+const resetForm = () => {
+  form.reset();
 };
 
 const moduleColor = () =>
@@ -64,12 +111,6 @@ const getField = (field) => {
 const getList = (field) => {
   return field === "type" ? props.typeList : props.moduleList;
 };
-const getRelationshipName = computed(() => {
-  if (form.right_module?.length) {
-    return `${props.module.slug}_${form.right_module}`;
-  }
-  return "";
-});
 </script>
 <template>
   <Head>
@@ -116,11 +157,12 @@ const getRelationshipName = computed(() => {
             </label>
             <template v-if="fieldName === 'name'">
               <FieldRenderer
-                v-model="getRelationshipName"
+                v-model="form.name"
                 :type="mapper[fieldName]"
                 :field="getField(fieldName)"
                 mode="settings"
-                :read-only="true"
+                :hasError="form.errors[fieldName]"
+                @update:modelValue="nameManuallyChanged = true"
               />
             </template>
             <template v-else>
@@ -129,7 +171,7 @@ const getRelationshipName = computed(() => {
                 :type="mapper[fieldName]"
                 :field="getField(fieldName)"
                 mode="settings"
-                :read-only="fieldName === 'name'"
+                :hasError="form.errors[fieldName]"
               />
             </template>
           </div>
@@ -145,7 +187,7 @@ const getRelationshipName = computed(() => {
             <button
               type="submit"
               class="settings__module__edit__actions__save btn"
-              :disabled="!form.isDirty"
+              :disabled="!form.isDirty || !getRelationshipName"
             >
               {{ $t("settings.save") }}
             </button>

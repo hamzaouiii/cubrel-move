@@ -17,6 +17,7 @@ const getRelatedSlug = (name) => {
   return props.relationships?.[name]?.related_slug || null;
 };
 const columns = computed(() => props.layout?.columns ?? []);
+
 const collapsePanel = ref(null);
 const page = usePage();
 const modules = computed(() => page.props.modules);

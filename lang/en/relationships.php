@@ -5,7 +5,7 @@ return [
   'types' => [
     'one-to-one' => "One To One",
     'one-to-many' => "One To Many",
-    'many-to-many' => "One To One",
+    'many-to-many' => "Many To Many",
   ],
   'type'  => 'Type',
   'relationship_label' => 'Label',
@@ -42,5 +42,23 @@ return [
     'label' => 'Label',
     'right_module' => 'Related Module',
     'type'  => 'type',
-  ]
+  ],
+
+  'errors' => [
+    'duplicate_relationship' => 'This relationship already exists.',
+    'self_reference_not_allowed' => 'A module cannot have a relationship with itself.',
+  ],
+  'saving' => 'Saving relationship...',
+  'saving_success' => 'Relationship was saved successfully!',
+  'deleting' => 'Deleting relationship...',
+  'deleting_success' => 'Relationship was deleted successfully!',
+  'system_delete_forbidden' => 'System relationships cannot be deleted.',
+
+  'confirm' => [
+    'delete_title' => 'Delete relationship',
+    'delete_msg' => 'This relationship contains :count linked records. Deleting it will remove all existing links between records. This action cannot be undone.',
+    'delete_msg_no_count' => 'Are you sure you want to delete this relationship ?',
+    'delete_confirm' => 'Delete relationship',
+    'delete_cancel' => 'Cancel',
+  ],
 ];

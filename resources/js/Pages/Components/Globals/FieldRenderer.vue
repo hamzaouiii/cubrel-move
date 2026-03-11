@@ -46,6 +46,7 @@ const componentProps = computed(() => ({
   hasError: props.hasError,
   readOnly: props.readOnly,
   highlight: props?.highlight || null,
+  errorMsg: props?.errorMsg || null,
 }));
 </script>
 

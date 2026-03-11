@@ -19,16 +19,6 @@ return [
   ],
 
   [
-    'name' => 'accounts_leads',
-    'label' => 'relationships.accounts_leads',
-    'left_module' => 'accounts',
-    'left_class'  => App\Models\Modules\Account::class,
-    'right_module' => 'leads',
-    'right_class'  => App\Models\Modules\Lead::class,
-    'type' => 'one-to-many',
-  ],
-
-  [
     'name' => 'accounts_opportunities',
     'label' => 'relationships.accounts_opportunities',
     'left_module' => 'accounts',

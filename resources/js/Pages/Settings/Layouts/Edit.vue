@@ -152,7 +152,6 @@ const relatedLayoutFromDB = computed(() => {
 
         return {
           ...col,
-          rel,
           label: col.label ?? rel.label ?? col.name,
         };
       })

@@ -1,10 +1,13 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-
+import { useConfirm } from "@/Composables/useConfirm";
+import { useAlerts } from "@/Composables/useAlerts";
+const { confirm } = useConfirm();
+const { info, success, error, clearAllAlerts } = useAlerts();
 defineOptions({
   layout: Layout,
 });
@@ -13,6 +16,9 @@ const props = defineProps({
   module: Object,
   relationships: Object,
 });
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 
@@ -45,13 +51,49 @@ const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
 
-const editUrl = (f) => {
-  return `${page.url.replace(/\/+$/, "")}/${f}`;
-};
 const moduleColor = () =>
   appSettings.use_individual_module_colors
     ? props.module.color
     : appSettings.primary_color;
+
+const currentModule = page.props.module.id;
+const deleteRelationship = async (rel) => {
+  let msg;
+  let highlt;
+  if (rel.links_used > 0) {
+    msg = t("relationships.confirm.delete_msg", {
+      count: rel?.links_used || 0,
+    });
+    highlt = rel?.links_used || 0;
+  } else {
+    msg = t("relationships.confirm.delete_msg_no_count");
+    highlt = null;
+  }
+  const ok = await confirm({
+    title: t("relationships.confirm.delete_title"),
+    message: msg,
+    confirmText: t("relationships.confirm.delete_confirm"),
+    cancelText: t("relationships.confirm.delete_cancel"),
+    danger: true,
+    highlight: highlt,
+  });
+  if (!ok) return;
+  router.delete(`/settings/modules/${currentModule}/relationships/${rel.id}`, {
+    preserveScroll: true,
+    onStart: () => {
+      clearAllAlerts();
+      info(t("relationships.deleting"));
+    },
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("relationships.deleting_success"));
+    },
+    onError: (e) => {
+      clearAllAlerts();
+      error(e.rel);
+    },
+  });
+};
 </script>
 
 <template>
@@ -144,20 +186,12 @@ const moduleColor = () =>
               <button
                 class="fields__table__row__actions__delete btn"
                 :disabled="r.is_system"
+                @click="deleteRelationship(r)"
               >
                 <i
                   class="fields__table__row__actions__delete__icon fa-solid fa-trash"
                 ></i>
               </button>
-              <Link
-                class="fields__table__row__actions__edit btn"
-                :href="editUrl(r.name)"
-                :class="{ disabled: r.is_system }"
-              >
-                <i
-                  class="fields__table__row__actions__edit__icon fa-regular fa-pen-to-square"
-                ></i>
-              </Link>
             </td>
           </tr>
         </tbody>

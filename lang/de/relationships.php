@@ -12,7 +12,7 @@ return array(
   'relationship_label' => 'Bezeichnung',
   'type' => 'Typ',
   'create_new' => 'Neue Beziehung erstellen',
-
+  'back_to_list'  => 'Zurück zu Beziehungen',
   'accounts_contacts' => 'Kontakte',
   'accounts_leads' => 'Leads',
   'accounts_quotes' => 'Angebote',
@@ -37,4 +37,27 @@ return array(
   'orders_products' => 'Produkte',
   'contacts_leads' => 'Leads',
   'contacts_cases' => 'Fälle',
+
+  'metadata' => [
+    'name'  => 'Name',
+    'label' => 'Bezeichnung',
+    'right_module' => 'Verwandtes Modul',
+    'type'  => 'Typ',
+  ],
+  'errors' => [
+    'duplicate_relationship' => 'Diese Beziehung existiert bereits.',
+    'self_reference_not_allowed' => 'Ein Modul kann keine Beziehung zu sich selbst haben.',
+  ],
+  'saving' => 'Wird gespeichert...',
+  'saving_success' => 'Beziehung wurde erfolgreich gespeichert!',
+  'deleting' => 'Wird gelöscht....',
+  'deleting_success' => 'Beziehung wurde gelöscht!',
+  'system_delete_forbidden' => 'Systembeziehungen können nicht gelöscht werden.',
+  'confirm' => [
+    'delete_title' => 'Beziehung löschen',
+    'delete_msg' => 'Diese Beziehung enthält :count verknüpfte Datensätze. Beim Löschen werden alle bestehenden Verknüpfungen entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
+    'delete_msg_no_count' => 'Sind Sie sicher, dass Sie diese Beziehung löschen möchten?',
+    'delete_confirm' => 'Beziehung löschen',
+    'delete_cancel' => 'Abbrechen',
+  ],
 );
