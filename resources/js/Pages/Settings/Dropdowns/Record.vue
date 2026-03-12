@@ -134,7 +134,9 @@ useUnsavedChangesGuard({
     class="settings"
     :style="{
       '--primary-color': appSettings.primary_color,
+      '--secondary-color': appSettings.secondary_color,
       '--danger-color': appSettings.danger_color,
+      '--module-color': appSettings.primary_color,
     }"
   >
     <div class="settings__header">
@@ -156,7 +158,7 @@ useUnsavedChangesGuard({
               >
               <span
                 class="settings__dropdown__edit__header__info__data__value"
-                >{{ dropdown.key }}</span
+                >{{ dropdown?.key }}</span
               >
             </li>
             <li
@@ -225,10 +227,10 @@ useUnsavedChangesGuard({
             </div>
           </li>
         </ul>
-        <div class="settings__dropdown__edit__actions">
+        <div class="settings__actions">
           <button
             type="button"
-            class="settings__dropdown__edit__actions__reset btn"
+            class="settings__actions__reset"
             :disabled="!listIsDirty"
             @click="resetList()"
           >
@@ -237,7 +239,7 @@ useUnsavedChangesGuard({
 
           <button
             type="submit"
-            class="settings__dropdown__edit__actions__save btn"
+            class="settings__actions__save"
             :disabled="!listIsDirty"
             @click="saveList()"
           >

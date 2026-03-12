@@ -7,6 +7,7 @@ const state = reactive({
   confirmText: "Confirm",
   cancelText: "Cancel",
   danger: false,
+  highlight: null,
   _resolve: null,
 });
 
@@ -17,7 +18,7 @@ export function useConfirm() {
     state.confirmText = options.confirmText ?? "Confirm";
     state.cancelText = options.cancelText ?? "Cancel";
     state.danger = options.danger ?? false;
-
+    state.highlight = options.highlight ?? null;
     state.isOpen = true;
 
     return new Promise((resolve) => {

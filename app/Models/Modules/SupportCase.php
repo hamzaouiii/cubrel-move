@@ -15,8 +15,6 @@ class SupportCase extends BaseModule
 
   protected $fillable = [
     'name',
-    'account_id',
-    'contact_id',
     'subject',
     'description',
     'status',

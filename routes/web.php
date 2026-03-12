@@ -13,6 +13,8 @@ use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\FieldsManagerController;
 use App\Http\Controllers\DropdownListController;
 use App\Http\Controllers\RelationshipLinkController;
+use App\Http\Controllers\RelationshipManagerController;
+
 
 Route::middleware(['auth'])->group(function () {
 
@@ -60,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('layouts/{layoutType}', [LayoutManagerController::class, 'store'])
           ->name('modules.layouts.store');
+
+        // Relationships
+
+        Route::resource('relationships', RelationshipManagerController::class)->names('relationships');
       });
 
     Route::get('modulebuilder', [ModuleBuilderController::class, 'create'])

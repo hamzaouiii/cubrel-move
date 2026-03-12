@@ -50,7 +50,7 @@
         transform 0.2s ease,
         color 0.2s ease;
       &:hover {
-        color: var(--setting-primary-color, var(--text-main));
+        color: var(--primary-color, var(--text-main));
         transform: scale(1.1); // Subtle pop interaction
       }
     }

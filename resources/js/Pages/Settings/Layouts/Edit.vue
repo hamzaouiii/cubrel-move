@@ -152,7 +152,6 @@ const relatedLayoutFromDB = computed(() => {
 
         return {
           ...col,
-          rel,
           label: col.label ?? rel.label ?? col.name,
         };
       })
@@ -373,9 +372,15 @@ const layoutsUrl = () => {
   const u = ("/" + segments.join("/")).toString();
   return u;
 };
-// useUnsavedChangesGuard({
-//   getIsDirty: () => isDirty.value,
-// });
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
+
+const moduleColor = computed(() =>
+  appSettings.use_individual_module_colors
+    ? props.module.color
+    : appSettings.primary_color,
+);
 </script>
 
 <template>
@@ -392,6 +397,7 @@ const layoutsUrl = () => {
       '--primary-color': appSettings.primary_color,
       '--secondary-color': appSettings.secondary_color,
       '--danger-color': appSettings.danger_color,
+      '--module-color': moduleColor,
     }"
   >
     <div class="settings__header">
@@ -451,10 +457,10 @@ const layoutsUrl = () => {
         />
       </div>
 
-      <div class="layouts__editor__actions">
+      <div class="settings__actions">
         <button
           @click="resetToDatabaseValue()"
-          class="layouts__editor__actions__reset btn"
+          class="settings__actions__reset"
           type="reset"
           :disabled="!isDirty || form.processing"
         >
@@ -465,7 +471,7 @@ const layoutsUrl = () => {
           @click="saveLayout()"
           type="submit"
           :disabled="!isDirty || form.processing"
-          class="layouts__editor__actions__save btn"
+          class="settings__actions__save"
         >
           {{
             form.processing ? $t("layouts.saving") : $t("layouts.save_layout")

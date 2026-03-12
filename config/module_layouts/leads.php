@@ -108,39 +108,6 @@ return array(
         array(
           0 =>
           array(
-            'name' => 'accounts_leads',
-            'type' => 'one-to-many',
-            'label' => 'relationships.accounts_leads',
-            'fields' =>
-            array(
-              0 =>
-              array(
-                'name' => 'name',
-                'type' => 'text',
-                'label' => 'modules.accounts.fields.name',
-              ),
-              1 =>
-              array(
-                'name' => 'email',
-                'type' => 'email',
-                'label' => 'modules.accounts.fields.email',
-              ),
-              2 =>
-              array(
-                'name' => 'phone',
-                'type' => 'text',
-                'label' => 'modules.accounts.fields.phone',
-              ),
-              3 =>
-              array(
-                'name' => 'website',
-                'type' => 'text',
-                'label' => 'modules.accounts.fields.website',
-              ),
-            ),
-          ),
-          1 =>
-          array(
             'name' => 'contacts_leads',
             'type' => 'one-to-one',
             'label' => 'relationships.contacts_leads',
@@ -166,7 +133,7 @@ return array(
               ),
             ),
           ),
-          2 =>
+          1 =>
           array(
             'name' => 'leads_emails',
             'type' => 'one-to-many',

@@ -1,7 +1,7 @@
 <script setup>
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
-import { getCurrentInstance, toRef, watch } from "vue";
+import { getCurrentInstance, toRef, watch, computed } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useFieldRules } from "@/Composables/useFieldRules";
 
@@ -101,6 +101,12 @@ const resetForm = () => {
   form.reset();
   warning(t("fields.field_reset_success"));
 };
+
+const moduleColor = computed(() =>
+  appSettings.use_individual_module_colors
+    ? props.module.color
+    : appSettings.primary_color,
+);
 </script>
 
 <template>
@@ -113,7 +119,10 @@ const resetForm = () => {
 
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="
+      ({ '--primary-color': appSettings.primary_color },
+      { '--module-color': moduleColor })
+    "
   >
     <div class="settings__header">
       <div class="settings__header__title">
@@ -185,10 +194,10 @@ const resetForm = () => {
           </div>
         </div>
 
-        <div class="settings__module__edit__actions">
+        <div class="settings__actions">
           <button
             type="button"
-            class="settings__module__edit__actions__reset btn"
+            class="settings__actions__reset"
             @click="resetForm"
             :disabled="!form.isDirty"
           >
@@ -197,7 +206,7 @@ const resetForm = () => {
 
           <button
             type="submit"
-            class="settings__module__edit__actions__save btn"
+            class="settings__actions__save"
             :disabled="!form.isDirty"
           >
             {{ $t("settings.save") }}

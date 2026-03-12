@@ -15,8 +15,6 @@ return new class extends Migration
       $table->char('id', 36)->primary();
       $table->string('name');
       $table->text('description')->nullable();
-      $table->char('account_id', 36)->nullable()->index('quotes_account_id_foreign');
-      $table->char('contact_id', 36)->nullable()->index('quotes_contact_id_foreign');
       $table->string('number')->unique();
       $table->string('status')->default('draft');
       $table->date('valid_until')->nullable();

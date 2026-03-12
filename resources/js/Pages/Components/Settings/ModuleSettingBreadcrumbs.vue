@@ -20,6 +20,7 @@ const labelMapper = {
   layouts: "settings.items.layouts",
   list: "layouts.list",
   record: "layouts.record",
+  relationships: "relationships.label",
 };
 const isUUID = (str) => {
   const uuidRegex =

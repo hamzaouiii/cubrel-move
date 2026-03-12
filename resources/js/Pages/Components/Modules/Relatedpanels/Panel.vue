@@ -125,6 +125,6 @@ const unlinkParent = async (record) => {
     :panel="panel"
     :fields="relatedFields"
     @update-panel="handleUpdatePanel"
-    :pagination="relationship.pagination"
+    :pagination="relationship?.pagination ?? null"
   ></PanelBody>
 </template>

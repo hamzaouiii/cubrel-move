@@ -15,7 +15,6 @@ return new class extends Migration
       $table->char('id', 36)->primary();
       $table->string('name');
       $table->text('description')->nullable();
-      $table->char('account_id', 36)->nullable()->index('contacts_account_id_foreign');
       $table->string('first_name')->nullable();
       $table->string('last_name')->nullable();
       $table->string('email')->nullable();

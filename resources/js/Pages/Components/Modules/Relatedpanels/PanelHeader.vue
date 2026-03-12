@@ -15,7 +15,7 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const isOpen = ref(false);
 const hasRecords = computed(() => {
-  return props.count ?? false;
+  return props.totalCount ?? false;
 });
 const emit = defineEmits(["toggle", "open-overlay", "unlink-parent"]);
 const openOverlay = () => {
@@ -36,7 +36,7 @@ const countPhrase = computed(() => {
       return `${props.pagination.from}-${props.pagination.to} ${t("modules.of")} ${props.totalCount}`;
     }
     // Otherwise, just show the count of current records (e.g., 5 of 47)
-    return `${props.displayCount} ${t("modules.of")} ${props.totalCount}`;
+    return `${props.displayCount}`;
   }
   return false;
 });
@@ -49,7 +49,10 @@ const countPhrase = computed(() => {
         <i :class="icon"></i>
         {{ $t(type != "parent" ? single_label : label) }}
       </div>
-      <div v-if="isOpen" class="relatedpanels__item__header__details__count">
+      <div
+        v-if="isOpen && totalCount > 0"
+        class="relatedpanels__item__header__details__count"
+      >
         {{ totalCount }}
       </div>
       <div
@@ -75,12 +78,6 @@ const countPhrase = computed(() => {
         </button>
       </div>
       <div v-else>
-        <!-- <button
-          class="relatedpanels__item__header__actions__btn"
-          @click.prevent
-        >
-          <i class="fa-solid fa-plus"></i>
-        </button> -->
         <button
           class="relatedpanels__item__header__actions__btn"
           @click.stop="openOverlay"

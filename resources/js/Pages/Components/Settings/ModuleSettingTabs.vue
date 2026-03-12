@@ -23,6 +23,7 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('edit')"
       class="settings__module__tabs__item"
+      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{ 'settings__module__tabs__item--active': activeKey === 'edit' }"
     >
       {{ $t("settings.tabs.module_settings") }}
@@ -30,6 +31,7 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('layouts')"
       class="settings__module__tabs__item"
+      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
         'settings__module__tabs__item--active': activeKey === 'layouts',
       }"
@@ -38,18 +40,20 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('fields')"
       class="settings__module__tabs__item"
+      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
         'settings__module__tabs__item--active': activeKey === 'fields',
       }"
       >{{ $t("settings.tabs.fields") }}</Link
     >
-    <!-- <Link
+    <Link
       :href="getUrl('relationships')"
       class="settings__module__tabs__item"
+      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
-        'settings__module__tabs__item--active': activeKey === 'relationship',
+        'settings__module__tabs__item--active': activeKey === 'relationships',
       }"
       >Relationships</Link
-    > -->
+    >
   </div>
 </template>
