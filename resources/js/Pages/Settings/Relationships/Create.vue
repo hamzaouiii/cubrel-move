@@ -84,10 +84,11 @@ const resetForm = () => {
   form.reset();
 };
 
-const moduleColor = () =>
+const moduleColor = computed(() =>
   appSettings.use_individual_module_colors
     ? props.module.color
-    : appSettings.primary_color;
+    : appSettings.primary_color,
+);
 const mapper = {
   name: "text",
   label: "text",
@@ -123,7 +124,7 @@ const getList = (field) => {
   <div
     class="settings"
     :style="[
-      { '--module-color': moduleColor() },
+      { '--module-color': moduleColor },
       { '--danger-color': appSettings.danger_color },
     ]"
   >
@@ -175,18 +176,20 @@ const getList = (field) => {
               />
             </template>
           </div>
-          <div class="settings__module__edit__actions">
+
+          <div class="settings__actions">
             <button
-              class="settings__module__edit__actions__reset btn"
+              type="button"
+              class="settings__actions__reset"
               @click="resetForm"
               :disabled="!form.isDirty"
-              type="button"
             >
-              {{ $t("settings.cancel") }}
+              {{ $t("settings.reset") }}
             </button>
+
             <button
               type="submit"
-              class="settings__module__edit__actions__save btn"
+              class="settings__actions__save"
               :disabled="!form.isDirty || !getRelationshipName"
             >
               {{ $t("settings.save") }}

@@ -85,13 +85,13 @@ const editUrl = (f) => {
             </td>
 
             <td class="dropdowns__table__row__actions">
-              <span
+              <!-- <span
                 class="dropdowns__table__row__actions__delete btn dropdowns__table__row__actions__delete--disabled"
               >
                 <i
                   class="dropdowns__table__row__actions__delete__icon fa-solid fa-trash-can"
                 ></i>
-              </span>
+              </span> -->
 
               <Link
                 class="dropdowns__table__row__actions__edit btn"

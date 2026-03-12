@@ -147,7 +147,12 @@ useUnsavedChangesGuard({
   </Head>
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--secondary-color': appSettings.secondary_color,
+      '--danger-color': appSettings.danger_color,
+      '--module-color': appSettings.primary_color,
+    }"
   >
     <div class="settings__header">
       <div class="settings__header__title">
@@ -236,10 +241,10 @@ useUnsavedChangesGuard({
           </form>
         </ul>
 
-        <div class="settings__dropdown__edit__actions">
+        <div class="settings__actions">
           <button
             type="submit"
-            class="settings__dropdown__edit__actions__save btn"
+            class="settings__actions__save"
             :disabled="!listIsDirty"
             @click="saveList()"
           >

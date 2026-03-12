@@ -216,6 +216,11 @@ onMounted(() => {
 useUnsavedChangesGuard({
   getIsDirty: () => isDirty(),
 });
+const moduleColor = computed(() =>
+  appSettings.use_individual_module_colors
+    ? props.module.color
+    : appSettings.primary_color,
+);
 </script>
 
 <template>
@@ -229,7 +234,10 @@ useUnsavedChangesGuard({
 
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="
+      ({ '--primary-color': appSettings.primary_color },
+      { '--module-color': moduleColor })
+    "
   >
     <div class="settings__header">
       <div class="settings__header__title">
@@ -339,19 +347,20 @@ useUnsavedChangesGuard({
             </div>
           </div>
 
-          <div class="settings__module__edit__actions">
+          <div class="settings__actions">
             <button
-              class="settings__module__edit__actions__reset btn"
-              @click="resetForm"
-              :disabled="!isDirty()"
               type="button"
+              class="settings__actions__reset"
+              @click="resetForm"
+              :disabled="!form.isDirty"
             >
-              {{ $t("settings.cancel") }}
+              {{ $t("settings.reset") }}
             </button>
+
             <button
               type="submit"
-              class="settings__module__edit__actions__save btn"
-              :disabled="!isDirty()"
+              class="settings__actions__save"
+              :disabled="!form.isDirty"
             >
               {{ $t("settings.save") }}
             </button>

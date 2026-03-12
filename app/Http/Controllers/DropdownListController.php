@@ -44,9 +44,9 @@ class DropDownListController extends Controller
       'key' => 'required|string',
       'values' => 'required',
     ]);
-    DropdownList::create($data);
+    $dd = DropdownList::create($data);
     return redirect()
-      ->route('settings.dropdowns.show', [$data['key']])
+      ->route('settings.dropdowns.show', $dd->id)
       ->with('success', __('layouts.layout_update_success'));
   }
 

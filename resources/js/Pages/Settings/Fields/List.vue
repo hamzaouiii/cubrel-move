@@ -118,27 +118,21 @@ const color = () =>
 
               <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
             </th>
-            <th style="width: 70px"></th>
           </tr>
         </thead>
 
         <tbody>
-          <tr class="fields__table__row" v-for="f in sortedFields" :key="f.key">
+          <tr
+            class="fields__table__row"
+            v-for="f in sortedFields"
+            :key="f.key"
+            @click="router.visit(editUrl(f.name))"
+          >
             <td>
               {{ f.name }}
             </td>
             <td>{{ $t(f.label) }}</td>
             <td>{{ $t("fields.types." + f.type) }}</td>
-            <td style="width: 70px" class="fields__table__row__actions">
-              <Link
-                class="fields__table__row__actions__edit btn"
-                :href="editUrl(f.name)"
-              >
-                <i
-                  class="fields__table__row__actions__edit__icon fa-regular fa-pen-to-square"
-                ></i>
-              </Link>
-            </td>
           </tr>
         </tbody>
       </table>

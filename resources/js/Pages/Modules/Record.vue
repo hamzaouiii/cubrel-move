@@ -288,8 +288,6 @@ const handleKeydown = (e) => {
 
 const getField = (f) => {
   const pp = props.fields.find((field) => field.name === f.name);
-  console.log(f.name);
-  console.log(pp);
   return pp;
 };
 
@@ -475,6 +473,7 @@ const relationship = (name) => {
             <div
               v-for="f in s.layout"
               class="record-layout__sections__item__layout__field"
+              @click="enableEditing()"
             >
               <span class="record-layout__sections__item__layout__field__label">
                 {{ $t(f.label) }}:
@@ -486,7 +485,6 @@ const relationship = (name) => {
                 :read-only="getField(f)?.readonly"
                 :module-color="module_color"
                 :has-error="hasError(f)"
-                @click="!getField(f)?.readonly && enableEditing()"
               />
             </div>
           </div>

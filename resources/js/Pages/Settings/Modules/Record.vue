@@ -185,10 +185,10 @@ useUnsavedChangesGuard({
             </div>
           </div>
 
-          <div class="settings__module__edit__actions">
+          <div class="settings__actions">
             <button
               @click="resetForm()"
-              class="settings__module__edit__actions__reset btn"
+              class="settings__actions__reset"
               type="reset"
               :disabled="!isDirty"
             >
@@ -196,7 +196,7 @@ useUnsavedChangesGuard({
             </button>
 
             <button
-              class="settings__module__edit__actions__save btn"
+              class="settings__actions__save"
               type="submit"
               :disabled="!isDirty"
             >

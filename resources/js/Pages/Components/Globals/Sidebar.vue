@@ -48,7 +48,7 @@ const onModuleMouseEnter = (event, mod) => {
   } else {
     text = mod.label;
     color =
-      appSettings.use_individual_module_colors == "0"
+      appSettings.use_individual_module_colors === "0"
         ? appSettings.primary_color
         : mod.color;
   }
@@ -96,7 +96,7 @@ const onCollapserMouseLeave = () => {
     <div @click="toggleSidebar" class="sidebar__collapser">
       <div
         class="sidebar__collapser__icon"
-        :style="{ '--setting-primary-color': appSettings.primary_color }"
+        :style="{ '--primary-color': appSettings.primary_color }"
         @mouseenter="onCollapserMouseEnter($event)"
         @mouseleave="onCollapserMouseLeave"
       >

@@ -149,10 +149,10 @@ const isDirty = () => form.isDirty;
           </div>
         </div>
 
-        <div class="settings__system__form__actions">
+        <div class="settings__system__actions">
           <button
             type="button"
-            class="settings__system__form__actions__reset btn"
+            class="settings__system__actions__reset"
             @click="resetForm"
             :disabled="!isDirty()"
           >
@@ -160,7 +160,7 @@ const isDirty = () => form.isDirty;
           </button>
 
           <button
-            class="settings__system__form__actions__save btn"
+            class="settings__system__actions__save"
             type="submit"
             :disabled="!isDirty() || form.processing"
           >

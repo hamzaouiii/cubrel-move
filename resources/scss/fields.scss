@@ -507,22 +507,37 @@ $error-color: #ef4444;
 }
 
 .switcher {
-  display: flex;
+  display: inline-flex;
+  background-color: #f1f3f5; // Light grey track
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+
   .switch-option {
-    padding: 10px;
-    box-shadow: 0px 1px 1px 1px rgba(51, 51, 51, 0.5) !important;
-    border-radius: 5px;
-    margin: 0 5px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6c757d;
+    border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-    background-color: lightgrey;
-    &:hover {
-      transform: scale(1.05);
+    transition: all 0.2s ease;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(.selected) {
+      color: #333;
+      background-color: rgba(0, 0, 0, 0.05);
     }
   }
+
   .selected {
     color: white;
     background-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    // Optional: Subtle scale up without moving neighbors
+    transform: scale(1.02);
   }
 }
 .field-dropdown {

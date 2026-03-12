@@ -132,7 +132,7 @@ const deleteRelationship = async (rel) => {
       <table class="fields__table">
         <thead>
           <tr>
-            <th @click="sortBy('key')">
+            <th @click="sortBy('name')">
               {{ $t("fields.name") }}
 
               <i
