@@ -23,6 +23,7 @@ return [
     'module_settings' => 'Module Settings',
     'layouts' => 'Layouts',
     'fields' => 'Fields',
+    'relationships' => 'Relationships',
   ],
   'modules' => [
     'label' => 'Modules',
@@ -109,5 +110,12 @@ return [
     'save_error' => 'An error occurred while saving the Dropdown list',
     'search'    => 'Search dropdown lists'
   ],
-
+  'iconpicker' => [
+    'search_placeholder' => 'Search icons...',
+    'none'               => 'No icon selected',
+    'no_results'         => 'No icons found!',
+    'prev'               => 'Prev',
+    'next'               => 'Next',
+    'loading'            => 'Searching...',
+  ],
 ];

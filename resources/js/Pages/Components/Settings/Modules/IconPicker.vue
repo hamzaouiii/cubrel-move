@@ -3,41 +3,42 @@ import { ref, watch, onMounted } from "vue";
 import axios from "axios";
 
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default: "",
-  },
-  color: {
-    type: String,
-    default: "#000000",
-  },
+  modelValue: { type: String, default: "" },
+  color: { type: String, default: "#000000" },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
 const search = ref("");
-const style = ref("");
 const icons = ref([]);
 const meta = ref(null);
 const loading = ref(false);
 const page = ref(1);
+const showSelector = ref(false);
 const selected = ref(props.modelValue || "fa-solid fa-bahai");
+
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value();
+      }
+    };
+    document.addEventListener("click", el.clickOutsideEvent);
+  },
+  unmounted(el) {
+    document.removeEventListener("click", el.clickOutsideEvent);
+  },
+};
+
 const fetchIcons = async () => {
   loading.value = true;
   try {
     const { data } = await axios.get("/api/icons", {
-      params: {
-        q: search.value || undefined,
-        style: style.value || undefined,
-        page: page.value,
-      },
+      params: { q: search.value || undefined, page: page.value },
     });
-
     icons.value = data.data;
-    meta.value = {
-      current_page: data.current_page,
-      last_page: data.last_page,
-    };
+    meta.value = { current_page: data.current_page, last_page: data.last_page };
   } finally {
     loading.value = false;
   }
@@ -46,113 +47,103 @@ const fetchIcons = async () => {
 const selectIcon = (icon) => {
   emit("update:modelValue", icon.class);
   selected.value = icon.class;
+  showSelector.value = false;
 };
 
-const isSelected = (icon) => {
-  return icon.class === props.modelValue;
-};
+const toggleSelector = () => (showSelector.value = !showSelector.value);
+const closeSelector = () => (showSelector.value = false);
 
 const changePage = (newPage) => {
-  if (!meta.value) return;
-  if (newPage < 1 || newPage > meta.value.last_page) return;
+  if (!meta.value || newPage < 1 || newPage > meta.value.last_page) return;
   page.value = newPage;
   fetchIcons();
 };
 
-watch([search, style], () => {
+watch(search, () => {
   page.value = 1;
   fetchIcons();
 });
 
-onMounted(() => {
-  fetchIcons();
-});
-const showSelector = ref(false);
-const toggleSelector = () => {
-  if (search.value.length) {
-    showSelector.value = true;
-  } else {
-    showSelector.value = !showSelector.value;
-  }
-};
-const clearSearch = () => {
-  search.value = "";
-};
-// a nice to do here would be to implement some smart search based on module name
+onMounted(fetchIcons);
 </script>
 
 <template>
-  <div class="icon-picker">
-    <div class="icon-picker__search">
-      <input
-        type="search"
-        :placeholder="selected ? selected : 'Search for Icon...'"
-        v-model="search"
-        @click="toggleSelector"
-        @keyup="toggleSelector"
-      />
-      <span
-        v-if="search.length"
-        class="icon-picker__search__close"
-        @click="clearSearch"
-      >
-        <i
-          class="icon-picker__search__close__icon fa-solid fa-circle-xmark"
-        ></i>
-      </span>
+  <div class="icon-picker" v-click-outside="closeSelector">
+    <div
+      class="icon-picker__trigger"
+      @click="toggleSelector"
+      :class="{ 'is-active': showSelector }"
+    >
+      <div class="icon-picker__preview">
+        <i :class="selected" :style="{ color: props.color }"></i>
+      </div>
+      <div class="icon-picker__label">
+        <span class="icon-picker__name">
+          {{
+            selected
+              ? selected.replace("fa-solid ", "").replace("fa-", "")
+              : $t("settings.iconpicker.none")
+          }}
+        </span>
+        <i class="fa-solid fa-chevron-down icon-picker__chevron"></i>
+      </div>
     </div>
 
-    <div class="icon-picker__selected">
-      <i :class="selected" :style="{ color: props.color }"></i>
-    </div>
     <transition name="expande">
       <div v-if="showSelector" class="icon-picker__selector">
-        <div v-if="loading" class="icon-picker__selector__loader">
-          <div class="loader"></div>
+        <div class="icon-picker__dropdown-search">
+          <input
+            type="text"
+            :placeholder="$t('settings.iconpicker.search_placeholder')"
+            v-model="search"
+            @click.stop
+          />
+          <i class="fa-solid fa-magnifying-glass"></i>
         </div>
 
-        <div v-else class="icon-picker__selector__grid">
+        <div class="icon-picker__content-wrapper">
+          <div v-if="loading" class="icon-picker__loading-overlay">
+            <div class="loader"></div>
+            <span>{{ $t("settings.iconpicker.loading") }}</span>
+          </div>
+
           <div
-            v-for="icon in icons"
-            :key="icon.id"
-            class="icon-picker__selector__grid__item"
-            :class="{ 'border-primary': isSelected(icon) }"
-            @click="selectIcon(icon)"
+            class="icon-picker__selector__grid"
+            :class="{ 'is-loading': loading }"
           >
-            <i :class="icon.class"></i>
-            <span>
-              <!-- {{ icon.name }} -->
-            </span>
+            <div
+              v-for="icon in icons"
+              :key="icon.id"
+              class="icon-picker__selector__grid__item"
+              :class="{ 'is-selected': icon.class === props.modelValue }"
+              @click="selectIcon(icon)"
+            >
+              <i :class="icon.class"></i>
+            </div>
+          </div>
+
+          <div v-if="icons.length == 0 && !loading" class="icon-picker__empty">
+            {{ $t("settings.iconpicker.no_results") }}
           </div>
         </div>
-        <div v-if="icons.length == 0" class="text-muted small mb-2">
-          No icons found!
-        </div>
 
-        <div
-          v-if="meta"
-          class="d-flex justify-content-between align-items-center mt-2"
-        >
+        <div v-if="meta && icons.length > 0" class="icon-picker__pagination">
           <button
-            class="btn btn-sm btn-outline-secondary"
             type="button"
-            @click="changePage(meta.current_page - 1)"
+            @click.stop="changePage(meta.current_page - 1)"
             :disabled="meta.current_page <= 1 || loading"
           >
-            Previous
+            {{ $t("settings.iconpicker.prev") }}
           </button>
-
-          <span class="small">
-            {{ meta.current_page }} / {{ meta.last_page }}
-          </span>
-
+          <span class="pagination-info"
+            >{{ meta.current_page }} / {{ meta.last_page }}</span
+          >
           <button
-            class="btn btn-sm btn-outline-secondary"
             type="button"
-            @click="changePage(meta.current_page + 1)"
+            @click.stop="changePage(meta.current_page + 1)"
             :disabled="meta.current_page >= meta.last_page || loading"
           >
-            Next
+            {{ $t("settings.iconpicker.next") }}
           </button>
         </div>
       </div>

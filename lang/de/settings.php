@@ -109,4 +109,12 @@ return array(
     'search' => 'In dieser Liste suchen',
   ),
   'select_dropdown_list' => 'Dropdown Liste auswählen...',
+  'iconpicker' => [
+    'search_placeholder' => 'Icon suchen...',
+    'none'               => 'Kein Icon',
+    'no_results'         => 'Keine Icons gefunden!',
+    'previous'           => 'Zurück',
+    'next'               => 'Weiter',
+    'loading'            => 'Suche...',
+  ],
 );
