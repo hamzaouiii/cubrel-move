@@ -17,7 +17,6 @@ const modules = computed(() => page.props.modules ?? []);
 const currentUrl = computed(() => page.url);
 const appSettings = usePage().props.appSettings;
 const collapsedSidebar = ref(true);
-console.log(modules.value);
 function collapseSidebar() {
   collapsedSidebar.value = true;
 }
@@ -25,7 +24,14 @@ function collapseSidebar() {
 function toggleSidebar() {
   collapsedSidebar.value = !collapsedSidebar.value;
 }
-
+// temporary since this can be user based also, set tup
+const categoryOrder = {
+  sales: 1,
+  revenue: 2,
+  communication: 3,
+  support: 4,
+  general: 5,
+};
 // Group modules by category, excluding 'settings'
 const groupedModules = computed(() => {
   const groups = {};
@@ -40,7 +46,16 @@ const groupedModules = computed(() => {
     }
     groups[category].push(mod);
   });
-  return groups;
+  return Object.keys(groups)
+    .sort((a, b) => {
+      const weightA = categoryOrder[a.toLowerCase()] || 99;
+      const weightB = categoryOrder[b.toLowerCase()] || 99;
+      return weightA - weightB;
+    })
+    .reduce((obj, key) => {
+      obj[key] = groups[key];
+      return obj;
+    }, {});
 });
 
 // Isolate Settings module and check if it is active (is_active == 1)
