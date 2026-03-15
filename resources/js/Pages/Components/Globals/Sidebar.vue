@@ -179,7 +179,7 @@ const onCollapserMouseLeave = () => {
         <hr class="sidebar__module-list__divider" />
 
         <div v-if="!collapsedSidebar" class="sidebar__category-label">
-          {{ category }}
+          {{ $t(`modules.categories.${category}`) }}
         </div>
 
         <Link

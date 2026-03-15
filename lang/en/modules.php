@@ -4,6 +4,13 @@ return array(
   'of' => 'of',
   'overview' => 'Overview',
   'related' => 'Related',
+  'categories' => array(
+    'sales' => 'Sales',
+    'communication' => 'Communication',
+    'revenue' => 'Revenue',
+    'support' => 'Support',
+    'system' => 'System',
+  ),
   'defaults' =>
   array(
     'name' => 'Name',

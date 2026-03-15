@@ -87,7 +87,7 @@ const isDirty = () => form.isDirty;
           :key="i.id || i.key || index"
           class="settings__system__form__field"
         >
-          <label>{{ i.label || i.key }}</label>
+          <label> {{ $t(i.label) }}</label>
           <div class="settings__system__form__field__content">
             <template v-if="i.type === 'bool'">
               <Checkbox v-model="form.values[index].value"></Checkbox>
