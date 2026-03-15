@@ -6,9 +6,11 @@ import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
+import ModuleDetails from "@/Pages/Components/Settings/Builder/ModuleDetails.vue";
+
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -21,6 +23,10 @@ defineOptions({
 
 const props = defineProps({
   settingModule: Object,
+  isDraft: {
+    type: Boolean,
+    default: false,
+  },
 });
 const page = usePage();
 const form = useForm({ ...props.settingModule });
@@ -45,6 +51,9 @@ const editableFields = computed(() => {
     "slug",
     "handler_class",
     "label",
+    "is_draft",
+    "locked_by",
+    "locked_until",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),
@@ -129,81 +138,86 @@ useUnsavedChangesGuard({
       { '--primary-color': appSettings.primary_color },
     ]"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="settingModule"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="settingModule"
         active-key="edit"
       ></ModuleSettingTabs>
       <div class="settings__module__edit">
-        <form @submit.prevent="saveRecord">
-          <div
-            v-for="[key, value] in editableFields"
-            :key="key"
-            class="settings__module__edit__element"
-          >
-            <label class="settings__module__edit__element__label">
-              {{ $t("settings.modules." + key) }}
-            </label>
-            <div class="settings__module__edit__element__content">
-              <Checkbox
-                v-if="inputTypeFor(key, value) === 'checkbox'"
-                v-model="editableModule[key]"
-                :module-color="editableModule.color"
-              ></Checkbox>
-              <IconPicker
-                v-else-if="inputTypeFor(key, value) === 'icon'"
-                v-model="editableModule[key]"
-                :color="editableModule.color"
-              />
-              <input
-                v-else-if="inputTypeFor(key, value) === 'display_label'"
-                :class="{ disabled: disableThis(key) }"
-                type="text"
-                :disabled="disableThis(key)"
-                v-model="settingModule.label"
-              />
-              <textarea
-                v-else-if="inputTypeFor(key, value) === 'textarea'"
-                v-model="editableModule[key]"
-              ></textarea>
-              <ColorPicker
-                v-else-if="inputTypeFor(key, value) === 'color'"
-                v-model="editableModule[key]"
-              ></ColorPicker>
-              <input
-                v-else
-                :type="inputTypeFor(key, value)"
-                v-model="editableModule[key]"
-              />
+        <div v-if="!isDraft">
+          <form @submit.prevent="saveRecord">
+            <div
+              v-for="[key, value] in editableFields"
+              :key="key"
+              class="settings__module__edit__element"
+            >
+              <label class="settings__module__edit__element__label">
+                {{ $t("settings.modules." + key) }}
+              </label>
+              <div class="settings__module__edit__element__content">
+                <Checkbox
+                  v-if="inputTypeFor(key, value) === 'checkbox'"
+                  v-model="editableModule[key]"
+                  :module-color="editableModule.color"
+                ></Checkbox>
+                <IconPicker
+                  v-else-if="inputTypeFor(key, value) === 'icon'"
+                  v-model="editableModule[key]"
+                  :color="editableModule.color"
+                />
+                <input
+                  v-else-if="inputTypeFor(key, value) === 'display_label'"
+                  :class="{ disabled: disableThis(key) }"
+                  type="text"
+                  :disabled="disableThis(key)"
+                  v-model="settingModule.label"
+                />
+                <textarea
+                  v-else-if="inputTypeFor(key, value) === 'textarea'"
+                  v-model="editableModule[key]"
+                ></textarea>
+                <ColorPicker
+                  v-else-if="inputTypeFor(key, value) === 'color'"
+                  v-model="editableModule[key]"
+                ></ColorPicker>
+                <input
+                  v-else
+                  :type="inputTypeFor(key, value)"
+                  v-model="editableModule[key]"
+                />
+              </div>
             </div>
-          </div>
 
-          <div class="settings__actions">
-            <button
-              @click="resetForm()"
-              class="settings__actions__reset"
-              type="reset"
-              :disabled="!isDirty"
-            >
-              {{ $t("settings.reset") }}
-            </button>
+            <div class="settings__actions">
+              <button
+                @click="resetForm()"
+                class="settings__actions__reset"
+                type="reset"
+                :disabled="!isDirty"
+              >
+                {{ $t("settings.reset") }}
+              </button>
 
-            <button
-              class="settings__actions__save"
-              type="submit"
-              :disabled="!isDirty"
-            >
-              {{ $t("settings.save") }}
-            </button>
-          </div>
-        </form>
+              <button
+                class="settings__actions__save"
+                type="submit"
+                :disabled="!isDirty"
+              >
+                {{ $t("settings.save") }}
+              </button>
+            </div>
+          </form>
+        </div>
+        <div v-else-if="isDraft">
+          <ModuleDetails
+            :editable-fields="editableFields"
+            :editable-module="editableModule"
+            :input-type-for="inputTypeFor"
+            :submit-handler="saveRecord"
+            :disable-this="disableThis"
+            :display-label-source="settingModule"
+          />
+        </div>
       </div>
     </div>
   </div>

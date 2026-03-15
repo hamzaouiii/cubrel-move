@@ -3,7 +3,6 @@ import { computed } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import ModuleManager from "@/Pages/Components/Settings/Modules/ModuleManager.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;
 
@@ -29,13 +28,6 @@ const createUrl = computed(() => {
     class="settings"
     :style="{ '--primary-color': appSettings.primary_color }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="item"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__items">
       <ModuleManager v-if="setting_modules" :modules="setting_modules">
       </ModuleManager>

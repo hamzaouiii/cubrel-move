@@ -9,6 +9,7 @@ use App\Services\ModuleScaffolder;
 use Illuminate\Support\Str;
 use App\Support\RandomColorGenerator;
 use App\Support\RandomIconGenerator;
+use Illuminate\Support\Facades\DB;
 
 class ModuleBuilderController extends Controller
 {
@@ -17,25 +18,11 @@ class ModuleBuilderController extends Controller
    */
   public function create()
   {
-    $draftId = uniqid('draft_');
-
-
-    $module = Module::create([
-      'name'          => 'New Module',
-      'slug'          => $draftId,
-      'is_draft'      => 1,
-      'is_active'     => false,
-      'is_custom'     => true,
-      'icon'          => RandomIconGenerator::random(),
-      'color'         => RandomColorGenerator::random(),
-      'sort_order'    => (Module::max('sort_order') ?? 0) + 1,
-      'label'         => '',
-      'table_name'    => 'draft_cstm',
-      'path'          => '/' . $draftId,
-      'show_in_sidebar' => true,
+    $module = $this->getOrCreateDraftModule(auth()->id());
+    return Inertia::render('Settings/Modules/Record', [
+      'settingModule' => $module,
+      'isDraft' => true
     ]);
-
-    return redirect()->route('settings.modules.builder.show', $module->id);
   }
 
   /**
@@ -92,5 +79,67 @@ class ModuleBuilderController extends Controller
     return redirect()
       ->route('modules.show', $module->id)
       ->with('success', __('settings.module_publish_success'));
+  }
+
+
+
+  public function getOrCreateDraftModule(string $userId): Module
+  {
+    return DB::transaction(function () use ($userId) {
+
+      // 1. If the user already has a draft, return it
+      $module = Module::where('is_draft', true)
+        ->where('locked_by', $userId)
+        ->lockForUpdate()
+        ->first();
+
+      if ($module) {
+        $module->update([
+          'locked_until' => now()->addHours(2),
+        ]);
+
+        return $module;
+      }
+
+      // 2. Find an available draft
+      $module = Module::where('is_draft', true)
+        ->where(function ($q) {
+          $q->whereNull('locked_until')
+            ->orWhere('locked_until', '<', now());
+        })
+        ->lockForUpdate()
+        ->first();
+
+      // 3. If none exists create one
+      if (!$module) {
+
+        $draftId = uniqid('draft_');
+
+        $module = Module::create([
+          'name' => 'New Module',
+          'slug' => $draftId,
+          'is_draft' => true,
+          'is_active' => false,
+          'is_custom' => true,
+          'icon' => RandomIconGenerator::random(),
+          'color' => RandomColorGenerator::random(),
+          'sort_order' => (Module::max('sort_order') ?? 0) + 1,
+          'label' => '',
+          'table_name' => 'draft_cstm',
+          'path' => '/' . $draftId,
+          'show_in_sidebar' => false,
+          'locked_by' => $userId,
+          'locked_until' => now()->addHours(2),
+        ]);
+      }
+
+      // 4. Lock the draft for this user
+      $module->update([
+        'locked_by' => $userId,
+        'locked_until' => now()->addHours(2),
+      ]);
+
+      return $module;
+    });
   }
 }

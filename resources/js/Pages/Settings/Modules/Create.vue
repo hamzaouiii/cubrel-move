@@ -5,7 +5,6 @@ import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import { useAlerts } from "@/Composables/useAlerts";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;
 
@@ -91,12 +90,6 @@ const saveModule = () => {
     class="settings"
     :style="{ '--primary-color': appSettings.primary_color }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
-
     <form class="settings__create" @submit.prevent="saveModule">
       <div>
         <div class="settings__create__element">

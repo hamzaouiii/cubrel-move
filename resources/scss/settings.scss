@@ -2122,6 +2122,62 @@
 
     &__row {
       cursor: pointer;
+      &__actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        padding: 10px 16px !important;
+        white-space: nowrap;
+
+        button {
+          width: 32px;
+          height: 32px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          border: none;
+          cursor: pointer;
+          font-size: 13px;
+          transition: all 0.15s ease;
+          text-decoration: none;
+        }
+
+        &__delete {
+          background: #f2f4f9;
+          color: #b0b7cc;
+          transition:
+            opacity 0.15s ease,
+            background 0.15s ease,
+            color 0.15s ease,
+            transform 0.15s ease;
+
+          &:hover {
+            background: rgba(245, 97, 106, 0.1);
+            color: var(--danger-color);
+            transform: scale(1.08);
+          }
+
+          &:disabled {
+            opacity: 0.35 !important;
+            cursor: not-allowed;
+            pointer-events: none;
+          }
+        }
+
+        &__edit {
+          background: rgba(79, 110, 247, 0.08);
+          color: var(--primary-color);
+
+          &:hover {
+            background: var(--primary-color);
+            color: #ffffff;
+            transform: scale(1.08);
+            box-shadow: 0 3px 10px rgba(79, 110, 247, 0.3);
+          }
+        }
+      }
     }
   }
 }

@@ -8,7 +8,6 @@ import {
 } from "vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
 import Layout from "@/Layouts/Layout.vue";
-import DropdownBreadcrumbs from "@/Pages/Components/Settings/Dropdowns/DropdownBreadcrumbs.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
@@ -154,15 +153,6 @@ useUnsavedChangesGuard({
       '--module-color': appSettings.primary_color,
     }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <DropdownBreadcrumbs
-          :setting-module="item"
-          :current="t('settings.dropdown.create')"
-        ></DropdownBreadcrumbs>
-      </div>
-    </div>
-
     <div class="settings__dropdown">
       <div class="settings__dropdown__edit">
         <form class="dropdown-form" action="" method="post">

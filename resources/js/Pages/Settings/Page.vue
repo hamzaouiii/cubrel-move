@@ -6,7 +6,6 @@ import DropdownField from "../Components/FiledTypes/SettingDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
-import SettingBreadcrumbs from "../Components/Settings/SettingBreadcrumbs.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
@@ -81,12 +80,6 @@ const isDirty = () => form.isDirty;
     class="settings"
     :style="{ '--primary-color': appSettings.primary_color }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <SettingBreadcrumbs :setting-item="item"></SettingBreadcrumbs>
-      </div>
-    </div>
-
     <div class="settings__system">
       <form @submit.prevent="saveSetting" class="settings__system__form">
         <div

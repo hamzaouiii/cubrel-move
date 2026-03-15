@@ -33,7 +33,13 @@ return [
     'icon' => 'Icon',
     'color' => 'Color',
     'show_in_sidebar' => 'Show In Sidebar',
-    'description' => 'Descrption'
+    'description' => 'Descrption',
+    'single_label' => 'Single Label',
+    'category'  => 'Category',
+    'save_draft'  => 'Save Draft',
+    'publish_module'  => 'Publish Module',
+    'next'  => 'Next',
+
   ],
   // perhaps I need to change this to system_fields not to conflict with settings.modules.fields
   'fields' => [

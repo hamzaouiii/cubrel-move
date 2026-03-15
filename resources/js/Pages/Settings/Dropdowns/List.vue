@@ -2,7 +2,6 @@
 import { computed, ref } from "vue";
 import Layout from "@/Layouts/Layout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
-import DropdownBreadcrumbs from "@/Pages/Components/Settings/Dropdowns/DropdownBreadcrumbs.vue";
 
 const appSettings = usePage().props.appSettings;
 
@@ -50,12 +49,6 @@ const editUrl = (f) => {
       '--danger-color': appSettings.danger_color,
     }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <DropdownBreadcrumbs :setting-module="item" />
-      </div>
-    </div>
-
     <div class="dropdowns__toolbar">
       <div class="dropdowns__search">
         <input

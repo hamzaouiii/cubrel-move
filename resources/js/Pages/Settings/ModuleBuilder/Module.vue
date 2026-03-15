@@ -5,11 +5,10 @@ import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
-import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
-
+import ModuleDetails from "@/Pages/Components/Settings/Builder/ModuleDetails.vue";
 const appSettings = usePage().props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -17,11 +16,11 @@ const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({ layout: Layout });
 
-const props = defineProps({ settingModule: Object });
+const props = defineProps({ module: Object });
 const page = usePage();
-const form = useForm({ ...props.settingModule });
+const form = useForm({ ...props.module });
 
-const editableModule = reactive({ display_label: "", ...props.settingModule });
+const editableModule = reactive({ display_label: "", ...props.module });
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
 
 // Clean up the dummy data on initial load so the user sees blank fields to fill
@@ -49,6 +48,8 @@ const editableFields = computed(() => {
     "handler_class",
     "label",
     "is_draft",
+    "locked_by",
+    "locked_until",
   ];
   // Note: 'slug' was removed from the ignore list so it renders for the user!
   return Object.entries(editableModule).filter(
@@ -71,7 +72,7 @@ const isDirty = computed(() => {
   return editableFields.value.some(([key, value]) => {
     if (key === "display_label")
       return typeof value === "string" ? value.trim() !== "" : !!value;
-    const original = props.settingModule[key];
+    const original = props.module[key];
     const current = editableModule[key];
     if (typeof original === "number" && typeof current === "boolean")
       return Boolean(original) !== current;
@@ -82,7 +83,7 @@ const isDirty = computed(() => {
 // Saves intermediate progress without publishing
 const saveDraft = () => {
   info(t("settings.saving_draft"));
-  const url = "/settings/modules/" + props.settingModule.id;
+  const url = "/settings/modules/" + props.module.id;
   form
     .transform(() => editableModule)
     .put(url, {
@@ -102,7 +103,7 @@ const saveDraft = () => {
 // Finalizes the module
 const publishModule = () => {
   info(t("settings.publishing_module"));
-  const url = `/settings/modulebuilder/${props.settingModule.id}/publish`;
+  const url = `/settings/modulebuilder/${props.module.id}/publish`;
   form
     .transform(() => editableModule)
     .post(url, {
@@ -136,72 +137,29 @@ const publishModule = () => {
       { '--primary-color': appSettings.primary_color },
     ]"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs :setting-module="settingModule" />
-        <span class="badge bg-warning text-dark ml-2">Draft Mode</span>
-      </div>
-    </div>
-
     <div class="settings__module">
-      <ModuleSettingTabs :setting-module="settingModule" active-key="edit" />
-
       <div class="settings__module__edit">
-        <form @submit.prevent="publishModule">
-          <div
-            v-for="[key, value] in editableFields"
-            :key="key"
-            class="settings__module__edit__element"
+        <ModuleDetails
+          :editable-fields="editableFields"
+          :editable-module="editableModule"
+          :input-type-for="inputTypeFor"
+          :publish-module="publishModule"
+        />
+
+        <div class="settings__actions">
+          <button
+            @click.prevent="saveDraft"
+            class="settings__actions__resety"
+            type="button"
+            :disabled="!isDirty"
           >
-            <label class="settings__module__edit__element__label">
-              {{ $t("settings.modules." + key) }}
-            </label>
-            <div class="settings__module__edit__element__content">
-              <Checkbox
-                v-if="inputTypeFor(key, value) === 'checkbox'"
-                v-model="editableModule[key]"
-                :module-color="editableModule.color"
-              />
-              <IconPicker
-                v-else-if="inputTypeFor(key, value) === 'icon'"
-                v-model="editableModule[key]"
-                :color="editableModule.color"
-              />
-              <textarea
-                v-else-if="inputTypeFor(key, value) === 'textarea'"
-                v-model="editableModule[key]"
-              ></textarea>
-              <ColorPicker
-                v-else-if="inputTypeFor(key, value) === 'color'"
-                v-model="editableModule[key]"
-              />
-              <input
-                v-else
-                :type="inputTypeFor(key, value)"
-                v-model="editableModule[key]"
-                :placeholder="key === 'slug' ? 'e.g., invoices' : ''"
-              />
-            </div>
-          </div>
+            {{ $t("settings.modules.save_draft") }}
+          </button>
 
-          <div class="settings__module__edit__actions">
-            <button
-              @click.prevent="saveDraft"
-              class="settings__module__edit__actions__reset btn btn-secondary"
-              type="button"
-              :disabled="!isDirty"
-            >
-              {{ $t("settings.save_draft") }}
-            </button>
-
-            <button
-              class="settings__module__edit__actions__save btn btn-primary"
-              type="submit"
-            >
-              {{ $t("settings.publish_module") }}
-            </button>
-          </div>
-        </form>
+          <button class="settings__actions__save" type="submit">
+            {{ $t("settings.modules.publish_module") }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

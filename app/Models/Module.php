@@ -65,10 +65,8 @@ class Module extends Model
   public static function forSidebar(): Collection
   {
     return self::active()
-      ->where('show_in_sidebar', 1)
-      ->where('is_active', 1)
       ->where('is_draft', 0)
-      ->orderBy('id')
+      ->orderBy('category')
       ->get()
       ->map(function (Module $module) {
 
@@ -79,7 +77,8 @@ class Module extends Model
           'color' => $module->color,
           'path'  => $module->path,
           'label' => $module->label,
-          'single_label' => $module->single_label
+          'single_label' => $module->single_label,
+          'category' => $module->category
         ];
       })
       ->values();

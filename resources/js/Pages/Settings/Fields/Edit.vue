@@ -5,7 +5,6 @@ import { getCurrentInstance, toRef, watch, computed } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useFieldRules } from "@/Composables/useFieldRules";
 
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
@@ -124,12 +123,6 @@ const moduleColor = computed(() =>
       { '--module-color': moduleColor })
     "
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs :setting-module="module" />
-      </div>
-    </div>
-
     <ModuleSettingTabs :setting-module="module" active-key="fields" />
 
     <div class="settings__module__header">

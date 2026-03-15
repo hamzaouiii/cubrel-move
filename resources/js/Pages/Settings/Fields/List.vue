@@ -2,7 +2,6 @@
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 
 defineOptions({
@@ -60,13 +59,6 @@ const color = () =>
     </title>
   </Head>
   <div class="settings" :style="{ '--module-color': color() }">
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="module"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"
