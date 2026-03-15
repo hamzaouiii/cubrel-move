@@ -34,7 +34,7 @@ class RecordController extends Controller
       $handler = app($handler_class);
 
       if ($handler instanceof ModuleHandler || method_exists($handler, 'getRecordData')) {
-        $props = $handler->getRecordData($recordId, request()->all());
+        $props = $handler->getRecordData($module, $recordId, request()->all());
       } else {
         $props = ['recordId' => $recordId];
       }

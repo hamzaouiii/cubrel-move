@@ -10,6 +10,7 @@ use App\Models\Layout;
 use App\Models\Field;
 use Illuminate\Support\Collection;
 use App\Services\Relationships\RelationshipService;
+use App\Models\BaseModule;
 
 /**
  * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
@@ -46,7 +47,10 @@ class Module extends Model
     'handler_class',
     'table_name',
     'show_in_sidebar',
-    'is_custom'
+    'is_custom',
+    'is_draft',
+    'locked_by',
+    'locked_until'
   ];
 
   protected $casts = [
@@ -229,6 +233,14 @@ class Module extends Model
 
   public function relationships(): Collection
   {
-    return RelationshipService::getRelationshipForModule($this->model_class);
+    return RelationshipService::getRelationshipForModule($this->slug);
+  }
+
+  /**
+   * Instantiate the actual business model this registry entry describes.
+   */
+  public function getInstance(): BaseModule
+  {
+    return new ($this->class_name);
   }
 }

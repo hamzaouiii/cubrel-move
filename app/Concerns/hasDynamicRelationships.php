@@ -10,7 +10,7 @@ trait HasDynamicRelationships
   {
     return RelationshipService::getRelatedRecords(
       $relationshipName,
-      static::class,
+      $this->slug,
       $this->id
     );
   }

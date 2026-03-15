@@ -16,6 +16,9 @@ return new class extends Migration
       $table->string('name');
       $table->string('slug')->unique();
       $table->string('label')->nullable();
+      $table->string('single_label')->nullable();
+      $table->string('category')->nullable();
+
       $table->string('icon')->default('fa-bahai');
       $table->string('color')->default('#0d6efd');
       $table->string('path');
@@ -33,6 +36,15 @@ return new class extends Migration
       $table->timestamps();
       $table->boolean('is_custom')->default(false);
       $table->boolean('is_draft')->default(false);
+      $table->uuid('locked_by')->nullable();
+      $table->timestamp('locked_until')->nullable();
+
+      $table->index('locked_until');
+
+      // $table->foreign('locked_by')
+      // ->references('id')
+      // ->on('users')
+      // ->nullOnDelete();
     });
   }
 
