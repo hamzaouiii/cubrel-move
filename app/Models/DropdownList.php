@@ -25,8 +25,10 @@ class DropdownList extends Model
     'values' => 'array',
   ];
 
-  public function get($key): DropdownList
+  public static function get($key): DropdownList
   {
-    return DropdownList::query()->where('key', $key);
+    return DropdownList::query()
+      ->where('key', $key)
+      ->first();
   }
 }

@@ -33,6 +33,7 @@ class Module extends Model
     'icon',
     'label',
     'is_draft',
+    'category',
     'single_label',
     'color',
     'path',

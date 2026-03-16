@@ -70,12 +70,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('modulebuilder', [ModuleBuilderController::class, 'create'])
       ->name('modules.builder.create');
-
-    // 2. The main Builder view (Tabs: Settings, Fields, Layouts)
-    Route::get('modulebuilder/{module}', [ModuleBuilderController::class, 'show'])
-      ->name('modules.builder.show');
-
-    // 3. Finalizes the draft, builds the table, and makes it active
+    Route::put('modulebuilder/{module}', [ModuleBuilderController::class, 'update'])
+      ->name('modules.builder.update');
     Route::post('modulebuilder/{module}/publish', [ModuleBuilderController::class, 'publish'])
       ->name('modules.builder.publish');
     Route::get('dropdowns', [DropdownListController::class, 'index']);

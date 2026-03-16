@@ -93,10 +93,9 @@ class SettingsController extends Controller
     foreach (CarbonTimeZone::listIdentifiers() as $tz) {
       $now = now()->setTimezone($tz);
 
-      $offset = $now->format('P'); // +01:00
-      $abbr   = $now->format('T'); // CET / CEST etc.
+      $offset = $now->format('P');
+      $abbr   = $now->format('T');
 
-      // Human name (last part) e.g. "Berlin" from "Europe/Berlin"
       $parts = explode('/', $tz);
       $city  = str_replace('_', ' ', end($parts));
 
@@ -108,7 +107,6 @@ class SettingsController extends Controller
       ];
     }
 
-    // OPTIONAL: sort nicely by label
     usort($options, fn($a, $b) => strcmp($a['label'], $b['label']));
 
     return $options;

@@ -1028,6 +1028,9 @@ $error-color: #ef4444;
       cursor: not-allowed;
       border-style: dashed;
     }
+    &.is-builder {
+      padding: 0.625rem 0.875rem !important;
+    }
   }
 
   &__selected {

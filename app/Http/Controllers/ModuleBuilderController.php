@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use App\Support\RandomColorGenerator;
 use App\Support\RandomIconGenerator;
 use Illuminate\Support\Facades\DB;
+use App\Models\DropdownList;
 
 class ModuleBuilderController extends Controller
 {
@@ -18,10 +19,11 @@ class ModuleBuilderController extends Controller
    */
   public function create()
   {
+    $category_list = DropdownList::get('module_category_list');
     $module = $this->getOrCreateDraftModule(auth()->id());
-    return Inertia::render('Settings/Modules/Record', [
+    return Inertia::render('Settings/Modules/Create', [
       'settingModule' => $module,
-      'isDraft' => true
+      'categoryList'  => $category_list
     ]);
   }
 
@@ -40,6 +42,40 @@ class ModuleBuilderController extends Controller
     ]);
   }
 
+  public function update(Request $request, Module $module)
+  {
+    $validated = $request->validate([
+      'display_label'   => ['required', 'string', 'max:255'],
+      'single_label'   => ['required', 'string', 'max:255'],
+      'slug'            => ['required', 'string', 'max:255', 'alpha_dash', 'unique:modules,slug,' . $module->id],
+      'icon'            => ['nullable', 'string', 'max:255'],
+      'color'           => ['nullable', 'string', 'max:255'],
+      'description'     => ['nullable', 'string'],
+      'category'     => ['required', 'string'],
+      'show_in_sidebar' => ['boolean'],
+    ]);
+    $baseName = Str::studly($validated['slug']);
+    $module->update([
+      'name'            => $baseName,
+      'slug'            => $validated['slug'],
+      'icon'            => $validated['icon'] ?? 'fa-solid fa-cube',
+      'color'           => $validated['color'] ?? '#000000',
+      'description'     => $validated['description'] ?? '',
+      'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
+      'category'        => $validated['category'],
+      'is_draft'        => true,
+      'is_active'       => false,
+      'label'           => $validated['display_label'],
+      'single_label'    => $validated['single_label'],
+      'handler_class'   => "App\\Handlers\\Modules\\Custom\\" . $baseName . "ModuleHandler",
+      'model_class'     => "App\\Models\\Modules\\Custom\\" . $baseName,
+      'table_name'      => Str::snake($validated['slug']) . "_cstm",
+      'path'            => '/' . $validated['slug'],
+    ]);
+
+
+    return back();
+  }
   /**
    * Validates final user input, converts the draft to active, and scaffolds the table.
    */
@@ -80,7 +116,6 @@ class ModuleBuilderController extends Controller
       ->route('modules.show', $module->id)
       ->with('success', __('settings.module_publish_success'));
   }
-
 
 
   public function getOrCreateDraftModule(string $userId): Module
@@ -124,7 +159,6 @@ class ModuleBuilderController extends Controller
           'icon' => RandomIconGenerator::random(),
           'color' => RandomColorGenerator::random(),
           'sort_order' => (Module::max('sort_order') ?? 0) + 1,
-          'label' => '',
           'table_name' => 'draft_cstm',
           'path' => '/' . $draftId,
           'show_in_sidebar' => false,
@@ -139,7 +173,9 @@ class ModuleBuilderController extends Controller
         'locked_until' => now()->addHours(2),
       ]);
 
-      return $module;
+      return  Module::where('id', $module->id)
+        ->lockForUpdate()
+        ->first();
     });
   }
 }

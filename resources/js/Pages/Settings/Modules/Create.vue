@@ -1,81 +1,115 @@
 <script setup>
-import { computed, getCurrentInstance } from "vue";
+import { ref, computed } from "vue";
+import ModuleBuilderTabs from "@/Pages/Components/Settings/ModuleBuilderTabs.vue";
+import EditModule from "@/Pages/Components/Settings/Builder/EditModule.vue";
+import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue";
+
 import Layout from "@/Layouts/Layout.vue";
-import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
-import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
-import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
-import { useAlerts } from "@/Composables/useAlerts";
 
-const appSettings = usePage().props.appSettings;
-
-const { proxy } = getCurrentInstance();
-const t = proxy.$t;
-
-const { success, error, info, clearAllAlerts } = useAlerts();
+import { Head, usePage, useForm } from "@inertiajs/vue3";
 
 defineOptions({
   layout: Layout,
 });
+const props = defineProps({
+  settingModule: Object,
+  categoryList: Object,
+});
+const childFormData = ref({});
+const hasMissingFields = ref(false);
+const isFormDirty = ref(false);
 
-const defaultValues = {
-  display_label: "",
-  label: "",
-  icon: "",
-  color: "#0d6efd",
-  show_in_sidebar: true,
-  description: "",
-  slug: "",
+const form = useForm({});
+
+const handleUpdate = (payload) => {
+  childFormData.value = payload;
+};
+const handleMissingFields = (payload) => {
+  hasMissingFields.value = payload;
+};
+const handleIsFormDirty = (payload) => {
+  isFormDirty.value = payload;
 };
 
-const form = useForm({ ...defaultValues });
+// Default tab
+const currentTab = ref("edit");
+const tabs = ["edit", "fields"];
+const appSettings = usePage().props.appSettings;
+const moduleColor = computed(() =>
+  appSettings.use_individual_module_colors === 0
+    ? props.settingModule.color
+    : appSettings.primary_color,
+);
+const isProcessing = ref(false);
 
-const isDirty = computed(() => {
-  return form.display_label.length >= 4;
-});
-
-const slug = computed(() => {
-  return form.display_label
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-});
-
-const resetModule = () => {
-  Object.keys(defaultValues).forEach((key) => {
-    form[key] = defaultValues[key];
-  });
-  form.clearErrors();
+const proceedToNextTab = () => {
+  const currentIndex = tabs.indexOf(currentTab.value);
+  if (currentIndex < tabs.length - 1) {
+    currentTab.value = tabs[currentIndex + 1];
+  } else {
+    publishModule();
+  }
 };
-
-const saveModule = () => {
-  info(t("settings.saving"));
+const saveModuleAndProceed = () => {
+  isProcessing.value = true;
+  const url = "/settings/modulebuilder/" + props.settingModule.id;
 
   form
-    .transform((data) => ({ ...data, slug: slug.value }))
-    .post("/settings/modules", {
-      preserveScroll: true,
+    .transform(() => childFormData.value)
+    .put(url, {
       onSuccess: () => {
-        form.clearErrors();
-        clearAllAlerts();
-        const flash = usePage().props.flash;
-        if (flash?.success) {
-          success(flash.success);
-        } else {
-          success(t("settings.module_save_success"));
-        }
+        isProcessing.value = false;
+        // Reset dirty state locally since it's now saved
+        isFormDirty.value = false;
+        proceedToNextTab(); // Move to next tab only after successful save
       },
-      onError: (errors) => {
-        const serverError = Object.values(errors)[0];
-        clearAllAlerts();
-        error(t("settings.module_save_error") + ": " + serverError);
+      onError: () => {
+        isProcessing.value = false;
       },
     });
+};
+const nextTab = () => {
+  if (hasMissingFields.value) return; // Safety guard
+
+  // If on the edit tab AND they made changes, save it first
+  if (currentTab.value === "edit" && isFormDirty.value) {
+    saveModuleAndProceed();
+  } else {
+    // Nothing changed OR we are on a different tab, just skip saving and move instantly
+    proceedToNextTab();
+  }
+};
+
+const isLastTab = computed(() => {
+  return tabs.indexOf(currentTab.value) === tabs.length - 1;
+});
+
+const publishModule = () => {
+  console.log("Publish module");
+};
+
+const tabDirty = ref({
+  edit: false,
+  layouts: false,
+  fields: false,
+  relationships: false,
+});
+
+const updateDirty = (tab, value) => {
+  tabDirty.value[tab] = value;
+};
+
+const isCurrentDirty = computed(() => {
+  return tabDirty.value[currentTab.value];
+});
+const isAnythingDirty = computed(() =>
+  Object.values(tabDirty.value).some(Boolean),
+);
+
+const saveStep = (step) => {
+  if (step === "edit") {
+    saveModule();
+  } else return;
 };
 </script>
 
@@ -85,84 +119,65 @@ const saveModule = () => {
       {{ $t("settings.create_new_module") }} - {{ $t("settings.label") }}
     </title>
   </Head>
-
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="[
+      { '--module-color': moduleColor },
+      { '--related-color': moduleColor },
+    ]"
   >
-    <form class="settings__create" @submit.prevent="saveModule">
-      <div>
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.display_label") }}
-          </label>
-          <input
-            class=""
-            type="text"
-            name="display_label"
-            v-model="form.display_label"
-            :placeholder="$t('settings.modules.name_placeholder')"
-          />
-        </div>
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.slug") }}
-          </label>
-          <input class="slug" type="text" name="slug" :value="slug" disabled />
-        </div>
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.icon") }}
-          </label>
-          <IconPicker v-model="form.icon" :color="form.color" />
-        </div>
-
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.color") }}
-          </label>
-          <input class="" type="color" name="color" v-model="form.color" />
-        </div>
-
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.show_in_sidebar") }}
-          </label>
-          <Checkbox
-            v-model="form.show_in_sidebar"
-            :module-color="form.color"
-          ></Checkbox>
-        </div>
-
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.description") }}
-          </label>
-          <textarea class="" v-model="form.description"></textarea>
-        </div>
-      </div>
-
+    <div class="settings__module">
       <div
-        class="settings__create__actions"
-        :style="{ '--module-color': form.color }"
+        class="settings__module__edit"
+        :class="{ 'is-loading': isProcessing }"
       >
-        <button
-          class="settings__create__actions__reset btn"
-          type="button"
-          @click="resetModule"
-          v-if="isDirty"
-        >
-          {{ $t("settings.cancel") }}
-        </button>
+        <div v-if="isProcessing" class="settings__module__edit__overlay">
+          <div class="saving-loader">
+            <div class="lds-ripple">
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+        <EditModule
+          v-if="currentTab === 'edit'"
+          :setting-module="settingModule"
+          :category-list="categoryList"
+          @dirty="updateDirty('edit', $event)"
+          @update="handleUpdate"
+          @missing-fields="handleMissingFields"
+          @is-form-dirty="handleIsFormDirty"
+          :color="moduleColor"
+        />
 
-        <button
-          class="settings__create__actions__save btn"
-          type="submit"
-          :disabled="!isDirty"
-        >
-          {{ $t("settings.save") }}
-        </button>
+        <FieldSettings
+          v-if="currentTab === 'fields'"
+          :module="settingModule"
+          @dirty="updateDirty('fields', $event)"
+        />
+
+        <div class="settings__actions">
+          <button
+            v-if="tabs.indexOf(currentTab) > 0"
+            @click="currentTab = tabs[tabs.indexOf(currentTab) - 1]"
+          >
+            {{ $t("settings.back") }}
+          </button>
+          <button
+            class="settings__actions__save"
+            type="button"
+            :disabled="hasMissingFields"
+            @click="nextTab"
+          >
+            <span v-if="!isProcessing">
+              {{
+                isLastTab ? $t("settings.deploy") : $t("settings.add_fields")
+              }}
+            </span>
+            <span v-else class="button-spinner"></span>
+          </button>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </template>

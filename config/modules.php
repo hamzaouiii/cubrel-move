@@ -295,7 +295,7 @@ return [
     'path' => '/settings',
     'sort_order' => 999,
     'category' => 'system',
-    'is_active' => false,
+    'is_active' => true,
     'show_in_sidebar' => 0,
     'handler_class' => 'App\\Handlers\\Modules\\SettingsModuleHandler',
     'description' => 'Application settings.',
