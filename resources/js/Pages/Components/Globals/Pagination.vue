@@ -89,7 +89,7 @@ const pageKey = (page) => page.page;
         @keydown.enter.prevent="meta.links?.prev && goTo(meta.links.prev)"
         @keydown.space.prevent="meta.links?.prev && goTo(meta.links.prev)"
       >
-        <span>{{ $t("pagination.previous") }}</span>
+        <span>{{ $t("modules.pagination.previous") }}</span>
       </li>
 
       <!-- Pages -->
@@ -130,7 +130,7 @@ const pageKey = (page) => page.page;
         @keydown.enter.prevent="meta.links?.next && goTo(meta.links.next)"
         @keydown.space.prevent="meta.links?.next && goTo(meta.links.next)"
       >
-        <span>{{ $t("pagination.next") }}</span>
+        <span>{{ $t("modules.pagination.next") }}</span>
       </li>
     </ul>
   </nav>

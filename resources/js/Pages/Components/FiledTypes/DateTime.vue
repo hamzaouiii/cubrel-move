@@ -56,7 +56,7 @@ const isAm = ref(true);
 
 const currentMonth = computed(() => {
   return t(
-    `calendar.months.${months[currentDate.value.getMonth()].toLowerCase()}`,
+    `fields.calendar.months.${months[currentDate.value.getMonth()].toLowerCase()}`,
   );
 });
 
@@ -202,7 +202,7 @@ const weekDays = [
 
 const getWeekdayShort = computed(() => {
   return weekDays.map((d) => {
-    return `calendar.weekdays_short.${d}`;
+    return `fields.calendar.weekdays_short.${d}`;
   });
 });
 
@@ -447,7 +447,7 @@ const clearErrors = () => {
           <input
             type="text"
             :value="displayTime"
-            :placeholder="t('calendar.time_format')"
+            :placeholder="t('fields.calendar.time_format')"
             readonly
             class="picker-input"
           />
@@ -497,10 +497,10 @@ const clearErrors = () => {
 
           <div class="quick-actions">
             <button @click="selectToday" class="quick-btn">
-              {{ $t("calendar.today") }}
+              {{ $t("fields.calendar.today") }}
             </button>
             <button @click="clear" class="quick-btn">
-              {{ $t("calendar.clear") }}
+              {{ $t("fields.calendar.clear") }}
             </button>
           </div>
         </div>

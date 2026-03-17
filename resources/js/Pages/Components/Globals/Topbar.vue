@@ -39,7 +39,7 @@ onBeforeUnmount(() => {
     <div class="topbar__actions">
       <transition name="slide-search">
         <form v-if="showSearch" class="topbar__actions__search-bar">
-          <input :placeholder="$t('topbar.global_search')" />
+          <input :placeholder="$t('globals.topbar.global_search')" />
         </form>
       </transition>
 
@@ -74,19 +74,19 @@ onBeforeUnmount(() => {
               <li>
                 <Link href="/settings">
                   <i class="fa-solid fa-gears"></i>
-                  {{ $t("topbar.settings") }}
+                  {{ $t("globals.topbar.settings") }}
                 </Link>
               </li>
               <li>
                 <Link href="/profile">
                   <i class="fa-solid fa-id-card-clip"></i>
-                  {{ $t("topbar.profile") }}
+                  {{ $t("globals.topbar.profile") }}
                 </Link>
               </li>
               <li @click="logout">
                 <a href="#">
                   <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                  {{ $t("topbar.logout") }}
+                  {{ $t("globals.topbar.logout") }}
                 </a>
               </li>
             </ul>

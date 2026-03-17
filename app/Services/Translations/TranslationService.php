@@ -16,14 +16,10 @@ class TranslationService
       $groups = [
         'settings',
         'modules',
-        'pagination',
-        'sidebar',
-        'topbar',
         'layouts',
         'fields',
         'globals',
         'dropdowns',
-        'calendar',
         'relationships'
       ];
 

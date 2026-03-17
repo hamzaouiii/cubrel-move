@@ -80,7 +80,7 @@ const onModuleMouseEnter = (event, mod) => {
   let color;
   if (!collapsedSidebar.value) return;
   if (mod === "home") {
-    text = t("sidebar.home");
+    text = t("globals.sidebar.home");
     color = appSettings.primary_color;
   } else {
     text = mod.label;
@@ -107,8 +107,8 @@ const onCollapserMouseEnter = (event) => {
   const rect = event.currentTarget.getBoundingClientRect();
 
   tooltip.text = collapsedSidebar.value
-    ? t("sidebar.expand")
-    : t("sidebar.close");
+    ? t("globals.sidebar.expand")
+    : t("globals.sidebar.close");
   tooltip.color = appSettings.primary_color;
   tooltip.top = rect.top + rect.height / 2;
   tooltip.left = rect.right + 10;
@@ -169,7 +169,7 @@ const onCollapserMouseLeave = () => {
               'sidebar__module-list__item__label__text',
               { hide: collapsedSidebar },
             ]"
-            >{{ $t("sidebar.home") }}</span
+            >{{ $t("globals.sidebar.home") }}</span
           >
         </div>
       </Link>

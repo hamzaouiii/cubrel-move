@@ -343,4 +343,9 @@ return array(
     'update_yes' => 'Ja',
     'update_no' => 'Nein',
   ),
+
+  'pagination' => [
+    'previous' => 'Previous',
+    'next' => 'Next'
+  ]
 );

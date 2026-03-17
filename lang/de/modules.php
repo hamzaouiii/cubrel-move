@@ -4,6 +4,10 @@ return array(
   'of' => 'von',
   'overview' => 'Übersicht',
   'related' => 'Beziehungen',
+  'pagination' => [
+    'previous' => 'Züruck',
+    'next' => 'Weiter'
+  ],
   'categories' => array(
     'sales'         => 'Vertrieb',
     'communication' => 'Kommunikation',
