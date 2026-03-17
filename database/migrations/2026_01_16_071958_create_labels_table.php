@@ -18,6 +18,7 @@ return new class extends Migration
       $table->char('module_id', 36)->nullable();
       $table->boolean('global')->default(false);
       $table->boolean('is_custom')->default(true);
+      $table->boolean('is_draft')->default(false);
       $table->timestamps();
     });
   }

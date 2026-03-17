@@ -18,7 +18,7 @@ return new class extends Migration
       $table->text('description')->nullable();
       $table->string('status')->default('open');
       $table->string('priority')->default('normal');
-      $table->timestamp('opened_at')->useCurrent();
+      $table->timestamp('opened_at')->nullable();
       $table->timestamp('closed_at')->nullable();
       $table->timestamps();
     });

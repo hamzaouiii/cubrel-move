@@ -18,13 +18,11 @@ return new class extends Migration
       $table->string('type')->nullable();
       $table->string('label')->nullable();
       $table->char('module_id', 36);
-
-
+      $table->boolean('is_draft')->default(false);
       $table->boolean('is_custom')->default(false);
       $table->boolean('is_active')->default(false);
       $table->boolean('readonly')->default(false);
       $table->boolean('hidden')->default(false);
-      $table->boolean('nullable')->default(true);
       $table->boolean('required')->default(false);
       $table->boolean('searchable')->default(false);
       $table->boolean('filterable')->default(false);
@@ -36,7 +34,8 @@ return new class extends Migration
       $table->integer('min_length')->nullable();
       $table->integer('max_length')->nullable();
       $table->string('regex')->nullable();
-
+      $table->uuid('dropdown_list_id')->nullable();
+      $table->foreign('dropdown_list_id')->references('id')->on('dropdown_lists')->cascadeOnDelete();
       $table->foreign(['module_id'])->references(['id'])->on('modules')->onUpdate('no action')->onDelete('cascade');
       $table->softDeletes();
       $table->timestamps();
