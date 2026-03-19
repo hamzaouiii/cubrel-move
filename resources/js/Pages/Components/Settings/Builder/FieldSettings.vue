@@ -3,7 +3,9 @@ import axios from "axios";
 import { usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import CreateFieldModal from "./CreateFieldModal.vue";
+import EditFieldModal from "./EditFieldModal.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import EditDropdownListModal from "../Dropdowns/EditDropdownListModal.vue";
 
 const { success, info, error, clearAllAlerts } = useAlerts();
 
@@ -19,6 +21,7 @@ const page = usePage();
 const sortKey = ref(null);
 const sortDirection = ref("asc");
 const showCreateFieldDialog = ref(false);
+const showEditFieldDialog = ref(false);
 const confirmFieldKey = ref(null);
 const isConfirm = (key) => confirmFieldKey.value === key;
 
@@ -75,9 +78,23 @@ const deleteDraftField = async (f) => {
 
 const openCreateFieldDialog = () => (showCreateFieldDialog.value = true);
 const closeCreateFieldDialog = () => (showCreateFieldDialog.value = false);
+const openEditFieldDialog = () => (showEditFieldDialog.value = true);
+const closeEditFieldDialog = () => (showEditFieldDialog.value = false);
+
 const handleNewFieldSaved = () => {
   closeCreateFieldDialog();
   emit("update-field-list");
+};
+
+const handleEditedFieldSaved = () => {
+  closeEditFieldDialog();
+  emit("update-field-list");
+};
+
+const fieldToEdit = ref(null);
+const setFieldToEdit = (f) => {
+  fieldToEdit.value = f;
+  openEditFieldDialog();
 };
 </script>
 
@@ -172,7 +189,10 @@ const handleNewFieldSaved = () => {
                       ]"
                     ></i>
                   </button>
-                  <button class="fields__table__row__actions__edit">
+                  <button
+                    class="fields__table__row__actions__edit"
+                    @click="setFieldToEdit(f)"
+                  >
                     <i
                       class="fields__table__row__actions__edit__icon fa-regular fa-pen-to-square"
                     ></i>
@@ -192,6 +212,15 @@ const handleNewFieldSaved = () => {
           @on-close-modal="closeCreateFieldDialog"
           @saved="handleNewFieldSaved"
         ></CreateFieldModal>
+        <EditFieldModal
+          :module="module"
+          :field_types="field_types"
+          :metadata="metadata"
+          v-if="showEditFieldDialog"
+          @on-close-modal="closeEditFieldDialog"
+          @saved="handleEditedFieldSaved"
+          :field="fieldToEdit"
+        ></EditFieldModal>
       </div>
     </div>
   </div>

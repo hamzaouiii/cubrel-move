@@ -25,6 +25,7 @@ const props = defineProps({
   module: Object,
   field_types: Array,
   metadata: Object,
+  field: Object,
   color: String,
 });
 
@@ -34,28 +35,10 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const showCreateDialog = ref(false);
-const selected_dropdown_list = ref(null);
+const selected_dropdown_list = ref(props.field.dropdown_list_id);
 const DropDownListOptions = ref([]);
 
-const default_values = {
-  label: "",
-  name: "",
-  key: "",
-  type: "",
-  dropdown_list: "",
-  readonly: false,
-  required: false,
-  searchable: false,
-  filterable: false,
-  sortable: false,
-  hidden: false,
-  default_value: "",
-  min_length: "",
-  max_length: "",
-  regex: "",
-};
-
-const form = useForm({ ...default_values });
+const form = useForm({ ...props.field });
 
 /**
  * COMPOSABLE INTEGRATION
@@ -140,13 +123,16 @@ const saveField = () => {
   }
   if (form.type === "select") {
     form.dropdown_list = selected_dropdown_list.value;
+  } else {
+    form.dropdown_list = null;
   }
 
   form.post(url, {
     preserveScroll: true,
     onSuccess: () => {
       clearAllAlerts();
-      isDirty.value = false;
+      initialDropdown.value = selected_dropdown_list.value;
+      form.defaults();
       emit("saved");
     },
     onError: (Error) => {
@@ -161,14 +147,11 @@ const saveField = () => {
     },
   });
 };
-const isDirty = ref(false);
-watch(
-  form,
-  () => {
-    isDirty.value = form.label?.length >= 4 && form.type;
-  },
-  { deep: true },
-);
+const initialDropdown = ref(props.field.dropdown_list_id);
+
+const isDirty = computed(() => {
+  return form.isDirty || selected_dropdown_list.value !== initialDropdown.value;
+});
 
 const displayKeyError = () => {
   return form.errors.key || form.errors.name;
@@ -190,10 +173,6 @@ const fetchDrodownList = async () => {
 const assignList = (value) => {
   DropDownListOptions.value.push(value);
   selected_dropdown_list.value = value.id;
-};
-
-const getDropdonwItem = (id) => {
-  return DropDownListOptions.value.find((e) => e.id === id);
 };
 
 onMounted(() => {

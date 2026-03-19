@@ -118,10 +118,16 @@ class ModuleBuilderController extends Controller
 
   public function saveDraftField(Request $request, Module $module)
   {
+
     $data = $request->validate([
+      'id' => ['nullable', 'exists:fields,id'],
       'label' => ['required', 'string', 'min:4'],
-      'name' => ['required', 'string',  Rule::notIn(array_keys(config('default_fields')))],
-      'key' => ['required', 'string', 'unique:fields,key,except,id'],
+      'name' => ['required', 'string', Rule::notIn(array_keys(config('default_fields')))],
+      'key' => [
+        'required',
+        'string',
+        Rule::unique('fields', 'key')->ignore($request->id),
+      ],
       'type' => ['required'],
       'dropdown_list' => ['nullable', 'required_if:type,select', 'exists:dropdown_lists,id'],
       'readonly' => ['boolean'],
@@ -133,32 +139,38 @@ class ModuleBuilderController extends Controller
       'regex' => ['nullable', 'string'],
     ]);
 
-    $field_name = $data['name'];
-    $label_key = "modules." . $module->slug . ".fields." . $field_name;
-    $label_value = $data['label'];
+    $data = array_merge([
+      'default_value' => null,
+      'min_length' => null,
+      'max_length' => null,
+      'regex' => null,
+      'readonly' => false,
+      'required' => false,
+      'sortable' => false,
+    ], $data);
 
     $dropdown_list = null;
-    if (isset($data['dropdown_list']) && $data['type'] === "select") {
+    if (!empty($data['dropdown_list']) && $data['type'] === "select") {
       $dropdown_list = $data['dropdown_list'];
     }
 
-    Field::updateOrCreate([
-      'name'  => $field_name,
-      'module_id' => $module->id,
-      'label' =>  $label_value, // handel at deploy
-      'key'  => $data['key'],
-      'type'  => $data['type'],
-      'readonly'  => $data['readonly'],
-      'required'  => $data['required'],
-      'sortable'  => $data['sortable'],
-      'default_value'  => $data['default_value'],
-      'min_length'  => $data['min_length'],
-      'max_length'  => $data['max_length'],
-      'regex'  => $data['regex'],
-      'dropdown_list_id' => $dropdown_list,
-      'is_custom' => 1,
-      'is_draft' => 1
-    ]);
+    $field = $module->fields()->find($data['id'] ?? null);
+
+    if ($field) {
+      // UPDATE
+      $field->update([
+        ...$data,
+        'dropdown_list_id' => $dropdown_list,
+      ]);
+    } else {
+      // CREATE
+      $module->fields()->create([
+        ...$data,
+        'dropdown_list_id' => $dropdown_list,
+        'is_custom' => 1,
+        'is_draft' => 1,
+      ]);
+    }
 
     return back()->with('success');
   }
