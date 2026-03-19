@@ -85,6 +85,26 @@ const highlightMatch = (text) => {
       </span>
     </span>
   </div>
+  <div v-if="mode === 'settings'">
+    <span
+      class="text-field text-field--edit text-field--settings"
+      :class="{
+        'text-field--error': showError,
+        'text-field--readonly': readOnly,
+      }"
+    >
+      <textarea
+        v-model="localValue"
+        type="text"
+        @input="clearErrors()"
+        :rows="getRows()"
+      ></textarea>
+
+      <span v-if="showError" class="error-icon-container">
+        <i class="error-icon fa-solid fa-circle-exclamation"></i>
+      </span>
+    </span>
+  </div>
 
   <div v-else-if="mode === 'detail'">
     <span :class="['text-field', { 'view-uneditable-field': readOnly }]">

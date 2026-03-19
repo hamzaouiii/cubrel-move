@@ -172,6 +172,7 @@ class Module extends Model
         'searchable',
         'label',
         'required',
+        'is_draft'
       ])
       ->with('dropdown_list');
   }
@@ -242,5 +243,29 @@ class Module extends Model
   public function getInstance(): BaseModule
   {
     return new ($this->class_name);
+  }
+
+  public function getDefaultFields(): array
+  {
+    return config("default_fields");
+  }
+
+  /**
+   * Get fields for builder (DB + default fields, unique by key)
+   *
+   * @return \Illuminate\Support\Collection
+   */
+  public function builderFields(): Collection
+  {
+    $dbFields = $this->fields()->get();
+
+    $defaultFields = collect($this->getDefaultFields())->map(function ($field) {
+      return new Field($field);
+    });
+
+    return $defaultFields
+      ->merge($dbFields)
+      ->unique('name')
+      ->values();
   }
 }

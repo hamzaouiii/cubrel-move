@@ -37,7 +37,6 @@ return new class extends Migration
       $table->uuid('dropdown_list_id')->nullable();
       $table->foreign('dropdown_list_id')->references('id')->on('dropdown_lists')->cascadeOnDelete();
       $table->foreign(['module_id'])->references(['id'])->on('modules')->onUpdate('no action')->onDelete('cascade');
-      $table->softDeletes();
       $table->timestamps();
 
 

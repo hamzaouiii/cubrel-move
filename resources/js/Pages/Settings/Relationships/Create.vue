@@ -140,7 +140,10 @@ const getList = (field) => {
         </Link>
       </div>
       <div class="settings__module__edit">
-        <form @submit.prevent="saveRelationship">
+        <form
+          class="settings__module__edit__form"
+          @submit.prevent="saveRelationship"
+        >
           <div
             class="settings__module__edit__element"
             v-for="fieldName in metadata"

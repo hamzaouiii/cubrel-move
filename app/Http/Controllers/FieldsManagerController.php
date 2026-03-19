@@ -128,7 +128,7 @@ class FieldsManagerController extends Controller
       'name' => ['required', 'string'],
       'key' => ['required', 'string', 'unique:fields,key,except,id'],
       'type' => ['required'],
-      'dropdown_list' => ['nullable'],
+      'dropdown_list' => ['nullable', 'required_if:type,select', 'exists:dropdown_lists,id'],
       'readonly' => ['boolean'],
       'required' => ['boolean'],
       'sortable' => ['boolean'],

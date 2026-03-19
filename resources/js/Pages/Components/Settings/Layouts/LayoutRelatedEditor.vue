@@ -3,15 +3,7 @@
  * This is the editor for the layout of the table shown in the panel Body
  */
 
-import {
-  ref,
-  watch,
-  computed,
-  getCurrentInstance,
-  onBeforeUnmount,
-  unref,
-  toRaw,
-} from "vue";
+import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
 import LayoutRelatedFields from "./LayoutRelatedFields.vue";
 
 const props = defineProps({
@@ -35,7 +27,6 @@ const props = defineProps({
 const emit = defineEmits(["update:columns"]);
 
 const internalColumns = ref([...props.columns]);
-// vLog(internalColumns?.value[1]?.layout[0]);
 const internalAvailable = ref([...props.availableRelationships]);
 const confirmSectionIndex = ref(null);
 const showSubpanels = ref([]);

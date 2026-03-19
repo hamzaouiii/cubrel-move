@@ -8,6 +8,7 @@ return [
   'create_new_module' => 'Create a new module',
   'next' => 'Next',
   'add_fields' => 'Add Fields',
+  'add_field_success' => 'Field was added successfuly',
   'deploy' => 'Deploy Module',
   'back' => 'Back',
   'previous' => 'Previous',
@@ -22,6 +23,7 @@ return [
   'dropdown_no_results' => 'No results',
   'setting_update_success' => 'The settings have been successfully updated',
   'setting_update_error' => 'An error occurred while updating the settings',
+  'dropdown_list_fetch_failed' => "Failed to fetch dropdown lists:",
   'tabs' => [
     'module_settings' => 'Module Settings',
     'layouts' => 'Layouts',

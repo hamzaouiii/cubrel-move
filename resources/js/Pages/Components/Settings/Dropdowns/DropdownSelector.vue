@@ -11,6 +11,7 @@ import {
 const props = defineProps({
   modelValue: [String, Number, Boolean, Object, null],
   options: Array,
+  isDraft: Boolean,
 });
 const emit = defineEmits([
   "update:modelValue",
@@ -156,6 +157,7 @@ const editClicked = () => {
   </div>
   <div class="dropdown-selector__actions">
     <button
+      v-if="!isDraft"
       :disabled="selectedOption === null"
       @click.prevent="editClicked(selectedOption)"
     >

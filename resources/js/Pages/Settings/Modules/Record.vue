@@ -146,7 +146,7 @@ useUnsavedChangesGuard({
         active-key="edit"
       ></ModuleSettingTabs>
       <div class="settings__module__edit">
-        <form @submit.prevent="saveRecord">
+        <form class="settings__module__edit__form" @submit.prevent="saveRecord">
           <div
             v-for="[key, value] in editableFields"
             :key="key"

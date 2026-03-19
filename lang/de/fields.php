@@ -13,6 +13,7 @@ return [
   'field_update_error' => 'Fehler beim Speichern des Feldes.',
   'field_reset_success' => 'Feld auf Datenbank-Werte zurückgesetzt.',
   'key_is_taken_error'    => 'Ein Feld mit demselben Systemnamen existiert bereits.',
+  'label_hint'        => 'Min. 4 Zeichen',
   'types' => [
     'longtext' => 'Langer Text',
     'text' => 'Text',

@@ -19,6 +19,7 @@ class DropdownList extends Model
     'key',
     'field_key',
     'values',
+    'is_draft'
   ];
 
   protected $casts = [

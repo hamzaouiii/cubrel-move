@@ -8,6 +8,7 @@ return array(
   'create_new_module' => 'Neues Modul erstellen',
   'next' => 'Weiter',
   'previous' => 'Zurück',
+  'back' => 'Zurück',
   'saving' => 'Wird gespeichert...',
   'loading' => 'Wird geladen...',
   'module_save_success' => 'Modul wurde erfolgreich gespeichert',
@@ -18,6 +19,11 @@ return array(
   'dropdown_no_results' => 'Keine Ergibnisse',
   'setting_update_success' => 'Die Einstellungen wurden erfolgreich aktualisiert',
   'setting_update_error' => 'Beim Aktualisieren der Einstellungen ist ein Fehler aufgetreten',
+  'add_fields' => 'Felder hinzufügen',
+  'add_field_success' => 'Feld wurde erfolgreich hinzufügt',
+  'deploy' => 'Modul bereitstellen',
+  'dropdown_list_fetch_failed' => "Dropdown-Listen konnten nicht abgerufen werden:",
+
   'tabs' =>
   array(
     'module_settings' => 'Module-Einstellungen',
@@ -27,7 +33,9 @@ return array(
   'modules' =>
   array(
     'label' => 'Module',
-    'display_label' => 'Anzeigebezeichnung',
+    'display_label' => 'Anzeige Bezeichnung',
+    'single_label' => 'Einzelanzeige Bezeichnung',
+    'category' => 'Kategorie',
     'name' => 'Name',
     'name_placeholder' => 'Modul Name',
     'slug' => 'Systembezeichnung',

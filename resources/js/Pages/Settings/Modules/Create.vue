@@ -1,12 +1,21 @@
 <script setup>
-import { ref, computed } from "vue";
-import ModuleBuilderTabs from "@/Pages/Components/Settings/ModuleBuilderTabs.vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  watch,
+  onBeforeUnmount,
+  getCurrentInstance,
+} from "vue";
 import EditModule from "@/Pages/Components/Settings/Builder/EditModule.vue";
 import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue";
-
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
+import { useAlerts } from "@/Composables/useAlerts";
 import Layout from "@/Layouts/Layout.vue";
 
-import { Head, usePage, useForm } from "@inertiajs/vue3";
+import { Head, usePage, useForm, router } from "@inertiajs/vue3";
+
+const { error, success, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
@@ -14,7 +23,14 @@ defineOptions({
 const props = defineProps({
   settingModule: Object,
   categoryList: Object,
+  fields: Array,
+  field_types: Array,
+  metadata: Object,
 });
+
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+
 const childFormData = ref({});
 const hasMissingFields = ref(false);
 const isFormDirty = ref(false);
@@ -31,21 +47,21 @@ const handleIsFormDirty = (payload) => {
   isFormDirty.value = payload;
 };
 
-// Default tab
-const currentTab = ref("edit");
+const currentStep = ref("edit");
 const tabs = ["edit", "fields"];
 const appSettings = usePage().props.appSettings;
 const moduleColor = computed(() =>
-  appSettings.use_individual_module_colors === 0
+  appSettings.use_individual_module_colors === "1"
     ? props.settingModule.color
     : appSettings.primary_color,
 );
+
 const isProcessing = ref(false);
 
 const proceedToNextTab = () => {
-  const currentIndex = tabs.indexOf(currentTab.value);
+  const currentIndex = tabs.indexOf(currentStep.value);
   if (currentIndex < tabs.length - 1) {
-    currentTab.value = tabs[currentIndex + 1];
+    currentStep.value = tabs[currentIndex + 1];
   } else {
     publishModule();
   }
@@ -53,17 +69,22 @@ const proceedToNextTab = () => {
 const saveModuleAndProceed = () => {
   isProcessing.value = true;
   const url = "/settings/modulebuilder/" + props.settingModule.id;
-
+  info(t("settings.saving"));
   form
     .transform(() => childFormData.value)
     .put(url, {
       onSuccess: () => {
+        clearAllAlerts();
+        success(t("settings.module_save_success"));
         isProcessing.value = false;
-        // Reset dirty state locally since it's now saved
         isFormDirty.value = false;
         proceedToNextTab(); // Move to next tab only after successful save
       },
-      onError: () => {
+      onError: (r) => {
+        clearAllAlerts();
+        Object.values(r).forEach((message) => {
+          error(message);
+        });
         isProcessing.value = false;
       },
     });
@@ -72,7 +93,7 @@ const nextTab = () => {
   if (hasMissingFields.value) return; // Safety guard
 
   // If on the edit tab AND they made changes, save it first
-  if (currentTab.value === "edit" && isFormDirty.value) {
+  if (currentStep.value === "edit" && isFormDirty.value) {
     saveModuleAndProceed();
   } else {
     // Nothing changed OR we are on a different tab, just skip saving and move instantly
@@ -80,8 +101,12 @@ const nextTab = () => {
   }
 };
 
+const back = () => {
+  currentStep.value = tabs[tabs.indexOf(currentStep.value) - 1];
+};
+
 const isLastTab = computed(() => {
-  return tabs.indexOf(currentTab.value) === tabs.length - 1;
+  return tabs.indexOf(currentStep.value) === tabs.length - 1;
 });
 
 const publishModule = () => {
@@ -100,7 +125,7 @@ const updateDirty = (tab, value) => {
 };
 
 const isCurrentDirty = computed(() => {
-  return tabDirty.value[currentTab.value];
+  return tabDirty.value[currentStep.value];
 });
 const isAnythingDirty = computed(() =>
   Object.values(tabDirty.value).some(Boolean),
@@ -110,6 +135,43 @@ const saveStep = (step) => {
   if (step === "edit") {
     saveModule();
   } else return;
+};
+
+watch(currentStep, (step) => {
+  localStorage.setItem("module-create-step", step);
+});
+
+onMounted(() => {
+  const savedStep = localStorage.getItem("module-create-step");
+  if (savedStep && !hasMissingFields.value) {
+    currentStep.value = savedStep;
+  }
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
+
+const handleKeydown = (e) => {
+  if (e.ctrlKey && e.key === "Enter") {
+    e.preventDefault();
+    nextTab();
+  }
+  if (e.ctrlKey && e.key === "b") {
+    e.preventDefault();
+    back();
+  }
+};
+
+const handleUpdateList = () => {
+  router.reload({
+    only: ["fields"],
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("settings.add_field_success"));
+    },
+  });
 };
 </script>
 
@@ -140,7 +202,7 @@ const saveStep = (step) => {
           </div>
         </div>
         <EditModule
-          v-if="currentTab === 'edit'"
+          v-if="currentStep === 'edit'"
           :setting-module="settingModule"
           :category-list="categoryList"
           @dirty="updateDirty('edit', $event)"
@@ -148,19 +210,22 @@ const saveStep = (step) => {
           @missing-fields="handleMissingFields"
           @is-form-dirty="handleIsFormDirty"
           :color="moduleColor"
+          :errors="form.errors"
         />
 
         <FieldSettings
-          v-if="currentTab === 'fields'"
+          v-if="currentStep === 'fields'"
           :module="settingModule"
+          :fields="fields"
+          :field_types="field_types"
+          :metadata="metadata"
+          :color="moduleColor"
           @dirty="updateDirty('fields', $event)"
+          @update-field-list="handleUpdateList"
         />
 
         <div class="settings__actions">
-          <button
-            v-if="tabs.indexOf(currentTab) > 0"
-            @click="currentTab = tabs[tabs.indexOf(currentTab) - 1]"
-          >
+          <button v-if="tabs.indexOf(currentStep) > 0" @click="back()">
             {{ $t("settings.back") }}
           </button>
           <button

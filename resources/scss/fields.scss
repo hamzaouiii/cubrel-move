@@ -781,10 +781,13 @@ $error-color: #ef4444;
     color: var(--module-color);
   }
 }
+
 .color-picker {
   position: relative;
   width: 100%;
   max-width: 450px;
+  font-family: sans-serif;
+
   &__control {
     display: flex;
     align-items: center;
@@ -796,12 +799,13 @@ $error-color: #ef4444;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     min-height: 42px;
+
     &:hover {
       border-color: #cbd5e1;
     }
 
     &.is-open {
-      border-color: var(--primary-color);
+      border-color: #4f46e5;
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
   }
@@ -847,12 +851,40 @@ $error-color: #ef4444;
       0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
+  &__search-wrapper {
+    margin-bottom: 12px;
+  }
+
+  &__search {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: #4f46e5;
+    }
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    font-size: 14px;
+  }
+
   &__grid {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 8px;
     max-height: 300px;
-    overflow-y: auto;
+    overflow-y: scroll;
+    overflow-x: hidden; /* Prevents stray horizontal scrolls */
     padding: 2px;
 
     /* Custom Scrollbar */
@@ -882,8 +914,19 @@ $error-color: #ef4444;
     }
 
     &.is-active {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid #4f46e5;
       outline-offset: 2px;
+    }
+
+    /* FIX FOR HORIZONTAL SCROLL: Adjust transform origin based on column */
+    /* Leftmost column expands to the right */
+    &:nth-child(8n + 1):hover {
+      transform-origin: left center;
+    }
+
+    /* Rightmost column expands to the left */
+    &:nth-child(8n):hover {
+      transform-origin: right center;
     }
   }
 }
@@ -892,15 +935,15 @@ $error-color: #ef4444;
 .picker-fade-enter-active,
 .picker-fade-leave-active {
   transition:
-    opacity 0.2s,
-    transform 0.2s;
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
+
 .picker-fade-enter-from,
 .picker-fade-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-10px);
 }
-
 // module Fields
 // text field
 .text-field {

@@ -72,8 +72,15 @@ Route::middleware(['auth'])->group(function () {
       ->name('modules.builder.create');
     Route::put('modulebuilder/{module}', [ModuleBuilderController::class, 'update'])
       ->name('modules.builder.update');
-    Route::post('modulebuilder/{module}/publish', [ModuleBuilderController::class, 'publish'])
+    Route::post('modulebuilder/{module}/field', [ModuleBuilderController::class, 'saveDraftField'])
+      ->name('modules.builder.saveDraftField');
+
+    Route::delete('modulebuilder/{module}/field/{field}', [ModuleBuilderController::class, 'deleteDraftField'])
+      ->name('modules.builder.deleteDraftField');
+
+    Route::post('modulebuilder/{module}/deploy', [ModuleBuilderController::class, 'deploy'])
       ->name('modules.builder.publish');
+
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);
     Route::post('dropdowns', [DropdownListController::class, 'store']);

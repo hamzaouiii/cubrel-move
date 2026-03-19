@@ -5,14 +5,15 @@ import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
 import { reactive, computed, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import Select from "@/Pages/Components/FiledTypes/Select.vue";
+import Text from "@/Pages/Components/FiledTypes/Text.vue";
+import LongText from "../../FiledTypes/LongText.vue";
 
 const props = defineProps({
   settingModule: Object,
   categoryList: Object,
   color: String,
+  errors: Object,
 });
-const appSettings = usePage().props.appSettings;
-
 const editableModule = reactive({
   display_label: props.settingModule?.label || "",
   single_label: props.settingModule?.single_label || "",
@@ -47,7 +48,8 @@ const editableFields = computed(() => {
 });
 
 const slug = computed(() => {
-  const label = editableModule.display_label || "";
+  const label = editableModule?.display_label || "";
+  if (label === "") return;
   return label
     .toLowerCase()
     .normalize("NFD")
@@ -158,17 +160,20 @@ watch(
             :color="color"
           />
 
-          <input
+          <Text
             v-else-if="inputTypeFor(key, value) === 'slug'"
             type="text"
-            disabled=""
-            :value="slug"
+            :read-only="true"
+            :model-value="slug"
+            mode="settings"
+            :has-error="errors[key]"
           />
 
-          <textarea
+          <LongText
             v-else-if="inputTypeFor(key, value) === 'textarea'"
             v-model="editableModule[key]"
-          ></textarea>
+            mode="settings"
+          ></LongText>
 
           <ColorPicker
             v-else-if="inputTypeFor(key, value) === 'color'"
@@ -182,7 +187,13 @@ watch(
             mode="module-builder"
           />
 
-          <input v-else type="text" v-model="editableModule[key]" />
+          <Text
+            v-else
+            type="text"
+            v-model="editableModule[key]"
+            mode="settings"
+            :has-error="errors[key]"
+          />
         </div>
       </div>
     </form>

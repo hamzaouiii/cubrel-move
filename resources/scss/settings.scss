@@ -866,7 +866,7 @@
       &.is-loading {
         pointer-events: none;
       }
-      form {
+      &__form {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1.25rem;
@@ -878,6 +878,14 @@
         align-items: center;
         gap: 1rem;
         padding-bottom: 0.5rem;
+        &__hint {
+          color: rgb(159, 159, 159);
+          font-size: 0.75rem;
+          margin: 0 20px;
+          i {
+            margin: 0 5px;
+          }
+        }
         @media (max-width: 768px) {
           grid-template-columns: 1fr;
           gap: 0.25rem;
@@ -933,8 +941,8 @@
 
         &--error-field {
           border-color: var(--danger-color) !important;
-          background-color: rgba(var(--danger-color), 0.02) !important;
-
+          background-color: rgba(var(--danger-color), 0.2) !important;
+          color: var(--danger-color) !important;
           &:focus {
             box-shadow: 0 0 0 3px rgba(var(--danger-color), 0.1) !important;
           }
@@ -2041,22 +2049,20 @@
     margin-bottom: 16px;
 
     &__create {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 16px;
-      background: #ffffff;
-      border: 1.5px solid var(--module-color);
-      color: var(--module-color);
-      border-radius: 9px;
-      font-size: 0.875rem;
+      background: var(--module-color);
+      color: white;
+      border: none;
+      padding: 0.625rem 1.25rem;
       font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: var(--module-color);
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(79, 110, 247, 0.2);
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      border: 1px solid transparent;
+      &:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--module-color) 90%, transparent);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
       }
     }
   }
@@ -2093,7 +2099,7 @@
 
     tbody tr {
       transition: background 0.12s ease;
-
+      min-height: 45px;
       &:last-child td {
         border-bottom: none;
       }
@@ -2107,10 +2113,11 @@
       }
 
       td {
-        padding: 13px 20px;
+        padding: 5px 20px;
         font-size: 0.875rem;
         color: #1a1d2e;
         border-bottom: 1px solid #f2f4f9;
+        height: 52px !important;
 
         // Apply Mono font to the System Name column
         &:first-child {
@@ -2141,7 +2148,6 @@
         align-items: center;
         justify-content: flex-end;
         gap: 6px;
-        padding: 10px 16px !important;
         white-space: nowrap;
 
         button {
@@ -2160,17 +2166,22 @@
 
         &__delete {
           background: #f2f4f9;
-          color: #b0b7cc;
-          transition:
-            opacity 0.15s ease,
-            background 0.15s ease,
-            color 0.15s ease,
-            transform 0.15s ease;
+          color: color-mix(in srgb, var(--danger-color) 70%, white);
+          transition: all 0.15s ease;
 
           &:hover {
             background: rgba(245, 97, 106, 0.1);
             color: var(--danger-color);
             transform: scale(1.08);
+          }
+          &--confirm {
+            color: color-mix(in srgb, seagreen 70%, white);
+            transition: all 0.15s ease;
+            &:hover {
+              background: rgba(46, 139, 86, 0.378);
+              color: seagreen;
+              transform: scale(1.08);
+            }
           }
 
           &:disabled {
@@ -2182,15 +2193,17 @@
 
         &__edit {
           background: rgba(79, 110, 247, 0.08);
-          color: var(--primary-color);
+          color: var(--module-color);
 
           &:hover {
-            background: var(--primary-color);
-            color: #ffffff;
+            background: color-mix(in srgb, var(--module-color) 20%, white);
+            color: var(--module-color);
             transform: scale(1.08);
-            box-shadow: 0 3px 10px rgba(79, 110, 247, 0.3);
           }
         }
+      }
+      &--builder {
+        cursor: default;
       }
     }
   }

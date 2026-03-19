@@ -159,10 +159,11 @@
     gap: 14px;
     padding: 16px 18px;
     border-radius: 15px 5px 15px 5px;
-    backdrop-filter: blur(8px);
     box-shadow:
-      0 10px 25px rgba(0, 0, 0, 0.08),
-      0 2px 6px rgba(0, 0, 0, 0.05);
+      0 10px 25px rgba(0, 0, 0, 0.15),
+      0 2px 6px rgba(0, 0, 0, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3); // Inner "shine" border
+
     font-size: 0.95rem;
     line-height: 1.4;
     animation: alert-slide-in 0.25s ease-out;
@@ -170,6 +171,7 @@
     overflow: hidden;
     border-left: 5px solid;
     border-right: 5px solid;
+    backdrop-filter: blur(12px);
     &::before {
       font-family: "Font Awesome 6 Free";
       font-weight: 900;
@@ -221,11 +223,11 @@
     &--error {
       background: linear-gradient(
         135deg,
-        rgba(255, 99, 71, 0.12),
-        rgba(220, 53, 69, 0.08)
+        rgba(248, 215, 218, 0.95),
+        // Soft red base
+        rgba(245, 202, 207, 0.9)
       );
-      border-color: rgba(220, 53, 69, 0.25);
-
+      border-color: rgba(220, 53, 69, 0.4); // Stronger border
       color: #842029;
 
       &::before {
@@ -238,10 +240,10 @@
     &--success {
       background: linear-gradient(
         135deg,
-        rgba(25, 135, 84, 0.12),
-        rgba(40, 167, 69, 0.08)
+        rgba(235, 251, 242, 0.95),
+        rgba(209, 244, 227, 0.9)
       );
-      border-color: rgba(25, 135, 84, 0.25);
+      border-color: rgba(25, 135, 84, 0.4);
       color: #0f5132;
 
       &::before {
@@ -254,15 +256,16 @@
     &--warning {
       background: linear-gradient(
         135deg,
-        rgba(255, 193, 7, 0.18),
-        rgba(255, 193, 7, 0.1)
+        rgba(255, 243, 205, 0.95),
+        // Creamy yellow base
+        rgba(255, 235, 186, 0.9)
       );
-      border-color: rgba(255, 193, 7, 0.35);
+      border-color: rgba(255, 193, 7, 0.45); // Darker border for definition
       color: #664d03;
 
       &::before {
         content: "\f071";
-        color: #ffc107;
+        color: #d39e00; // Slightly deeper gold for better contrast
       }
     }
 
@@ -270,10 +273,10 @@
     &--info {
       background: linear-gradient(
         135deg,
-        rgba(13, 110, 253, 0.12),
-        rgba(13, 202, 240, 0.08)
+        rgba(231, 241, 255, 0.95),
+        rgba(207, 226, 255, 0.9)
       );
-      border-color: rgba(13, 110, 253, 0.25);
+      border-color: rgba(13, 110, 253, 0.4);
       color: #084298;
 
       &::before {
@@ -544,10 +547,6 @@
 }
 
 /// saving loader
-///
-///
-///
-
 .saving-loader {
   height: 100%;
   display: flex;

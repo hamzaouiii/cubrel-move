@@ -13,12 +13,15 @@ return [
   'field_update_error' => 'An error occurred while updating field.',
   'field_reset_success' => 'Field reset to Database values.',
   'key_is_taken_error'    => 'A field with the same system name already exists',
+  'label_hint'        => 'Min. 4 characters',
+  'regex_hint'        => 'Use for custom validation rules',
+
   'types' => [
     'longtext' => 'Long text',
     'text' => 'Text',
     'datetime' => 'Date & time',
     'email' => 'Email',
-    'select' => 'Select',
+    'select' => 'Dropdown Field ',
     'date' => 'Date',
     'number' => 'Number',
     'relationship' => 'Relationship',

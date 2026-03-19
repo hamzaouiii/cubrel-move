@@ -28,6 +28,13 @@ const generatedSystemKey = computed(() => {
   return name + "_list";
 });
 
+const props = defineProps({
+  isDraft: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const generatedSystemvalue = (label) => {
   if (!label) return "";
   const value = label
@@ -51,6 +58,7 @@ const appSettings = usePage().props.appSettings;
 const form = useForm({
   key: "",
   values: {},
+  is_draft: props.isDraft,
 });
 let listItems = ref([]);
 let newItem = ref({ label: "", value: "" });

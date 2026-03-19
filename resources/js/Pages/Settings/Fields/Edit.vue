@@ -133,7 +133,7 @@ const moduleColor = computed(() =>
     </div>
 
     <div class="settings__module__edit">
-      <form @submit.prevent="saveField">
+      <form class="settings__module__edit__form" @submit.prevent="saveField">
         <div
           v-for="fieldName in visibleMetadata"
           :key="fieldName"
