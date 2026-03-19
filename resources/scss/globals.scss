@@ -28,13 +28,22 @@
 
 .confirm-overlay {
   position: fixed;
-  inset: 0;
-  z-index: 1000; // Increased to ensure it's above everything
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  background: radial-gradient(
+    circle at 20% 30%,
+    rgba(99, 102, 241, 0.12),
+    rgba(15, 23, 42, 0.7)
+  );
+  backdrop-filter: blur(8px);
+  animation: modalFadeIn 0.25s ease-out;
 
   &__dialog {
     width: min(440px, 100%); // Slightly narrower for a more "alert" feel

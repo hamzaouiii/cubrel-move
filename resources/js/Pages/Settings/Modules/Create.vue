@@ -12,7 +12,7 @@ import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 import Layout from "@/Layouts/Layout.vue";
-
+import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
@@ -34,7 +34,7 @@ const t = proxy.$t;
 const childFormData = ref({});
 const hasMissingFields = ref(false);
 const isFormDirty = ref(false);
-
+const showModuleDeplyProgress = ref(false);
 const form = useForm({});
 
 const handleUpdate = (payload) => {
@@ -63,9 +63,10 @@ const proceedToNextTab = () => {
   if (currentIndex < tabs.length - 1) {
     currentStep.value = tabs[currentIndex + 1];
   } else {
-    publishModule();
+    deployModule();
   }
 };
+
 const saveModuleAndProceed = () => {
   isProcessing.value = true;
   const url = "/settings/modulebuilder/" + props.settingModule.id;
@@ -89,8 +90,9 @@ const saveModuleAndProceed = () => {
       },
     });
 };
+
 const nextTab = () => {
-  if (hasMissingFields.value) return; // Safety guard
+  if (hasMissingFields.value) return;
 
   // If on the edit tab AND they made changes, save it first
   if (currentStep.value === "edit" && isFormDirty.value) {
@@ -109,10 +111,15 @@ const isLastTab = computed(() => {
   return tabs.indexOf(currentStep.value) === tabs.length - 1;
 });
 
-const publishModule = () => {
-  console.log("Publish module");
+const deployModule = () => {
+  // show modal of progress and deploy
+  showModuleDeplyProgress.value = true;
 };
-
+const onDeployComplete = () => {
+  // In the future, this is where you'd redirect using Inertia
+  // e.g., router.visit(`/settings/modules/${props.settingModule.id}`);
+  console.log("Mock deployment complete!");
+};
 const tabDirty = ref({
   edit: false,
   layouts: false,
@@ -122,19 +129,6 @@ const tabDirty = ref({
 
 const updateDirty = (tab, value) => {
   tabDirty.value[tab] = value;
-};
-
-const isCurrentDirty = computed(() => {
-  return tabDirty.value[currentStep.value];
-});
-const isAnythingDirty = computed(() =>
-  Object.values(tabDirty.value).some(Boolean),
-);
-
-const saveStep = (step) => {
-  if (step === "edit") {
-    saveModule();
-  } else return;
 };
 
 watch(currentStep, (step) => {
@@ -245,4 +239,9 @@ const handleUpdateList = () => {
       </div>
     </div>
   </div>
+  <DeployProgressModal
+    v-if="showModuleDeplyProgress"
+    @close="showModuleDeplyProgress = false"
+    @complete="onDeployComplete"
+  />
 </template>

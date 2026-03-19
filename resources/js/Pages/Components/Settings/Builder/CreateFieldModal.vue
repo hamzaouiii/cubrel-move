@@ -226,9 +226,6 @@ const handleKeydown = (e) => {
 
 <template>
   <div class="dropdown-list-modal">
-    <div class="dropdown-list-modal__close" @click="closeModalClicked">
-      <i class="fa-solid fa-xmark"></i>
-    </div>
     <div class="dropdown-list-modal__container">
       <div
         class="settings"
@@ -377,6 +374,13 @@ const handleKeydown = (e) => {
               </div>
 
               <div class="settings__actions">
+                <button
+                  type="submit"
+                  class="settings__actions__reset"
+                  @click="closeModalClicked"
+                >
+                  {{ $t("settings.cancel") }}
+                </button>
                 <button
                   type="submit"
                   class="settings__actions__save"
