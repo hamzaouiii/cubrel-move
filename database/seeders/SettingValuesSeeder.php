@@ -174,6 +174,18 @@ class SettingValuesSeeder extends Seeder
       [
         'id' => Str::uuid(),
         'setting_item' => 'style',
+        'key' => 'success_color',
+        'value' => '#10b981',
+        'label' => 'settings.fields.success_color',
+        'type' => 'color',
+        'sort_order' => 5,
+        'autoload' => 1,
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
+      ],
+      [
+        'id' => Str::uuid(),
+        'setting_item' => 'style',
         'key' => 'danger_color',
         'value' => '#fa8072',
         'label' => 'settings.fields.danger_color',

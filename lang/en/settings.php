@@ -45,7 +45,6 @@ return [
     'save_draft'  => 'Save Draft',
     'publish_module'  => 'Publish Module',
     'next'  => 'Next',
-
   ],
   // perhaps I need to change this to system_fields not to conflict with settings.modules.fields
   'fields' => [
@@ -67,6 +66,7 @@ return [
     'first_day_of_week'         => 'First Day of Week',
     'danger_color'              => "Danger Color",
     'danger_color_hint'              => "Used for dangerous actions such delete warnings and delete buttons",
+    'success_color'              => "Success Color",
     'related_panel_limit' => 'Related Panel Limit',
     'list_view_limit' => 'List View Limit',
     'linking_panel_limit' => 'Linking Panel Limit',
@@ -123,4 +123,29 @@ return [
     'next'               => 'Next',
     'loading'            => 'Searching...',
   ],
+  // English translations
+  'modulebuilder' => [
+    'close' => 'Close',
+    'title' => [
+      'complete' => 'Deployment Complete!',
+      'deploying' => 'Deploying Module',
+    ],
+    'subtitle' => [
+      'wait' => 'Please wait while we set everything up for you',
+      'success' => 'Your module has been successfully deployed and is ready to use',
+    ],
+    'steps_completed' => 'steps completed',
+    'status' => [
+      'pending' => 'Pending',
+      'in_progress' => 'In Progress',
+      'completed' => 'Completed',
+    ],
+    'preparing' => 'Preparing deployment...',
+    'success' => [
+      'message' => 'Module deployed successfully',
+    ],
+    'button' => [
+      'go_to_module' => 'Go to Module',
+    ],
+  ]
 ];

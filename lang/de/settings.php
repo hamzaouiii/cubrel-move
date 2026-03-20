@@ -125,4 +125,28 @@ return array(
     'next'               => 'Weiter',
     'loading'            => 'Suche...',
   ],
+  'modulebuilder' => [
+    'close' => 'Schließen',
+    'title' => [
+      'complete' => 'Bereitstellung abgeschlossen!',
+      'deploying' => 'Modul wird bereitgestellt',
+    ],
+    'subtitle' => [
+      'wait' => 'Bitte warten Sie, während wir alles für Sie einrichten',
+      'success' => 'Ihr Modul wurde erfolgreich bereitgestellt und kann verwendet werden',
+    ],
+    'steps_completed' => 'Schritte abgeschlossen',
+    'status' => [
+      'pending' => 'Ausstehend',
+      'in_progress' => 'In Bearbeitung',
+      'completed' => 'Abgeschlossen',
+    ],
+    'preparing' => 'Bereitstellung wird vorbereitet...',
+    'success' => [
+      'message' => 'Modul erfolgreich bereitgestellt',
+    ],
+    'button' => [
+      'go_to_module' => 'Zum Modul',
+    ],
+  ]
 );

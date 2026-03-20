@@ -243,5 +243,11 @@ const handleUpdateList = () => {
     v-if="showModuleDeplyProgress"
     @close="showModuleDeplyProgress = false"
     @complete="onDeployComplete"
+    :style="[
+      { '--module-color': moduleColor },
+      { '--related-color': moduleColor },
+      { '--success-color': appSettings.success_color },
+      { '--danger-color': appSettings.danger_color },
+    ]"
   />
 </template>
