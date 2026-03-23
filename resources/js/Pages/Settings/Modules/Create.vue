@@ -37,9 +37,6 @@ const isFormDirty = ref(false);
 const showModuleDeplyProgress = ref(false);
 const form = useForm({});
 
-const handleUpdate = (payload) => {
-  childFormData.value = payload;
-};
 const handleMissingFields = (payload) => {
   hasMissingFields.value = payload;
 };
@@ -55,8 +52,15 @@ const moduleColor = computed(() =>
     ? props.settingModule.color
     : appSettings.primary_color,
 );
+const currentColor = ref(moduleColor.value);
 
 const isProcessing = ref(false);
+const handleUpdate = (payload) => {
+  childFormData.value = payload;
+  if (payload.color) {
+    currentColor.value = payload.color;
+  }
+};
 
 const proceedToNextTab = () => {
   const currentIndex = tabs.indexOf(currentStep.value);
@@ -92,7 +96,10 @@ const saveModuleAndProceed = () => {
 };
 
 const nextTab = () => {
-  if (hasMissingFields.value) return;
+  if (hasMissingFields.value) {
+    error(t("settings.modulebuilder.has_missing_fields"));
+    return;
+  }
 
   // If on the edit tab AND they made changes, save it first
   if (currentStep.value === "edit" && isFormDirty.value) {
@@ -114,13 +121,14 @@ const isLastTab = computed(() => {
 const deployModule = () => {
   isProcessing.value = true;
   const url = "/settings/modulebuilder/" + props.settingModule.id + "/deploy";
-  info(t("settings.deploying"));
+  clearAllAlerts();
+  info(t("settings.modulebuilder.deploying"));
   form
     .transform(() => childFormData.value)
     .post(url, {
       onSuccess: () => {
         clearAllAlerts();
-        success(t("settings.module_save_success"));
+        success(t("settings.modulebuilder.deploy_success"));
         isProcessing.value = false;
         isFormDirty.value = false;
       },
@@ -197,8 +205,8 @@ const handleUpdateList = () => {
   <div
     class="settings"
     :style="[
-      { '--module-color': moduleColor },
-      { '--related-color': moduleColor },
+      { '--module-color': currentColor },
+      { '--related-color': currentColor },
     ]"
   >
     <div class="settings__module">
@@ -228,7 +236,7 @@ const handleUpdateList = () => {
           @update="handleUpdate"
           @missing-fields="handleMissingFields"
           @is-form-dirty="handleIsFormDirty"
-          :color="moduleColor"
+          :color="currentColor"
           :errors="form.errors"
         />
 
@@ -238,7 +246,7 @@ const handleUpdateList = () => {
           :fields="fields"
           :field_types="field_types"
           :metadata="metadata"
-          :color="moduleColor"
+          :color="currentColor"
           @dirty="updateDirty('fields', $event)"
           @update-field-list="handleUpdateList"
         />
@@ -250,7 +258,6 @@ const handleUpdateList = () => {
           <button
             class="settings__actions__save"
             type="button"
-            :disabled="hasMissingFields"
             @click="nextTab"
           >
             <span v-if="!isProcessing">

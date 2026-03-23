@@ -34,7 +34,9 @@ const buildInitialForm = () => {
   if (props.recordLayout && props.recordLayout.sections) {
     props.recordLayout.sections.forEach((section) => {
       section.layout.forEach((field) => {
-        data[field.name] = "";
+        if (!(field.name === "created_at" || field.name === "updated_at")) {
+          data[field.name] = "";
+        }
       });
     });
   }

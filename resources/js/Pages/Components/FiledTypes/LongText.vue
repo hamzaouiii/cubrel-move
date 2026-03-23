@@ -109,19 +109,21 @@ const highlightMatch = (text) => {
 
   <div v-else-if="mode === 'detail'">
     <span :class="['text-field', { 'view-uneditable-field': readOnly }]">
-      {{ modelValue }}
+      {{ modelValue ?? "—" }}
     </span>
   </div>
 
   <div v-else-if="mode === 'table'">
     <span>
-      <span v-html="highlightMatch(modelValue.substring(0, 64) ?? '—')"></span>
+      <span
+        v-html="highlightMatch((modelValue ?? '').substring(0, 64) ?? '—')"
+      ></span>
     </span>
   </div>
 
   <div v-else-if="mode === 'related-panel'">
     <span>
-      {{ modelValue.substring(0, 32) || "—" }}
+      {{ (modelValue ?? "").substring(0, 32) || "—" }}
     </span>
   </div>
 </template>
