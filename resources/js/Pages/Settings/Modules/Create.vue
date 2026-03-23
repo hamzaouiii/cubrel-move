@@ -12,7 +12,7 @@ import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 import Layout from "@/Layouts/Layout.vue";
-import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
+import DeployModal from "@/Pages/Components/Settings/Builder/DeployModal.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
@@ -112,14 +112,33 @@ const isLastTab = computed(() => {
 });
 
 const deployModule = () => {
-  // show modal of progress and deploy
-  showModuleDeplyProgress.value = true;
+  isProcessing.value = true;
+  const url = "/settings/modulebuilder/" + props.settingModule.id + "/deploy";
+  info(t("settings.deploying"));
+  form
+    .transform(() => childFormData.value)
+    .post(url, {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("settings.module_save_success"));
+        isProcessing.value = false;
+        isFormDirty.value = false;
+      },
+      onError: (r) => {
+        clearAllAlerts();
+        Object.values(r).forEach((message) => {
+          error(message);
+        });
+        isProcessing.value = false;
+      },
+    });
 };
+
 const onDeployComplete = () => {
   // In the future, this is where you'd redirect using Inertia
   // e.g., router.visit(`/settings/modules/${props.settingModule.id}`);
-  console.log("Mock deployment complete!");
 };
+
 const tabDirty = ref({
   edit: false,
   layouts: false,
@@ -239,7 +258,7 @@ const handleUpdateList = () => {
       </div>
     </div>
   </div>
-  <DeployProgressModal
+  <DeployModal
     v-if="showModuleDeplyProgress"
     @close="showModuleDeplyProgress = false"
     @complete="onDeployComplete"

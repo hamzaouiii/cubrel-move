@@ -21,7 +21,8 @@ return     [
     'type' => 'Relationship type',
     'key' => 'System Name',
     'dropdown' => 'Dropdown List',
-    'dropdown_list' => 'Dropdown List'
+    'dropdown_list' => 'Dropdown List',
+    'slug' => 'System Key',
 
   ],
 ];

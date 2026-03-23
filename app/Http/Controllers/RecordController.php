@@ -70,13 +70,13 @@ class RecordController extends Controller
 
     $recordLayout = $moduleModel->recordLayout();
     $recorddropdownLists = $moduleModel->dropdownLists;
-    $fields = $moduleModel->fields;
+    $fields = $moduleModel->allFields();
     return Inertia::render('Modules/Create', array_merge([
       'module'       => $moduleModel,
       'title'        => $moduleModel->name,
       'recordLayout' => $recordLayout,
       'dropdownLists' => $recorddropdownLists,
-      'fields' => $fields(),
+      'fields' => $fields,
     ], $props));
   }
 

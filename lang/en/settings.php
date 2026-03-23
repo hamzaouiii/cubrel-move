@@ -120,6 +120,7 @@ return [
     'none'               => 'No icon selected',
     'no_results'         => 'No icons found!',
     'prev'               => 'Prev',
+    'previous'           => 'prev.',
     'next'               => 'Next',
     'loading'            => 'Searching...',
   ],
@@ -129,6 +130,7 @@ return [
     'title' => [
       'complete' => 'Deployment Complete!',
       'deploying' => 'Deploying Module',
+      'failed' => 'Deploying Module Failed',
     ],
     'subtitle' => [
       'wait' => 'Please wait while we set everything up for you',
@@ -139,6 +141,7 @@ return [
       'pending' => 'Pending',
       'in_progress' => 'In Progress',
       'completed' => 'Completed',
+      'failed'    => 'Failed'
     ],
     'preparing' => 'Preparing deployment...',
     'success' => [
@@ -146,6 +149,8 @@ return [
     ],
     'button' => [
       'go_to_module' => 'Go to Module',
+      'retry' => 'Retry',
+      'close' => 'Close',
     ],
   ]
 ];

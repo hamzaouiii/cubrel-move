@@ -67,11 +67,9 @@ const deleteDraftField = async (f) => {
     confirmFieldKey.value = null;
   } catch (err) {
     clearAllAlerts();
-
     const msg = err.response?.data?.message || "An unexpected error occurred";
-
     error(msg);
-
+    lug;
     console.error(err.response?.data || err);
   }
 };
@@ -103,6 +101,9 @@ const setFieldToEdit = (f) => {
     <div class="fields">
       <div class="list-mode">
         <div class="fields__header">
+          <span class="fields__header__name">
+            {{ module?.display_label || module?.name }}</span
+          >
           <button
             class="fields__header__create"
             @click="openCreateFieldDialog()"

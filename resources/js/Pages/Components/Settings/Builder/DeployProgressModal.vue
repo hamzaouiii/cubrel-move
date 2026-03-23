@@ -6,12 +6,6 @@ const emit = defineEmits(["close", "complete"]);
 // Define the steps based on your backend context
 const steps = ref([
   {
-    id: "validate",
-    label: "Validating module configuration...",
-    description: "Checking dependencies and requirements",
-    status: "pending",
-  },
-  {
     id: "database",
     label: "Scaffolding database tables...",
     description: "Creating database structure",
@@ -33,12 +27,21 @@ const steps = ref([
 
 const isDeploying = ref(false);
 const isComplete = ref(false);
+const hasFailed = ref(false);
+const failedStepIndex = ref(-1);
 const currentStepIndex = ref(-1);
+const errorMessage = ref("");
 
-// The mock function
+// The mock function with random failures
 const startMockDeploy = async () => {
   isDeploying.value = true;
-
+  hasFailed.value = false;
+  failedStepIndex.value = -1;
+  errorMessage.value = "";
+  const failAtStep = ref(-1); // Store which step will fail
+  const randomIndex = Math.floor(Math.random() * steps.value.length);
+  const failingChance = Math.random() > 0.5;
+  failAtStep.value = randomIndex;
   for (let i = 0; i < steps.value.length; i++) {
     currentStepIndex.value = i;
     const step = steps.value[i];
@@ -48,13 +51,41 @@ const startMockDeploy = async () => {
     const delay = Math.floor(Math.random() * 1500) + 1000;
     await new Promise((resolve) => setTimeout(resolve, delay));
 
+    if (i === failAtStep.value && failingChance) {
+      // Step failed
+      step.status = "failed";
+      hasFailed.value = true;
+      failedStepIndex.value = i;
+      errorMessage.value = `Failed at step: ${step.label.toLowerCase().replace("...", "")}. Please check your configuration and try again.`;
+      currentStepIndex.value = -1;
+      isDeploying.value = false;
+      emit("complete", { success: false, error: errorMessage.value });
+      return; // Stop the process
+    }
+
     step.status = "success";
   }
 
   currentStepIndex.value = -1;
   isDeploying.value = false;
   isComplete.value = true;
-  emit("complete");
+  emit("complete", { success: true });
+};
+
+const retryDeployment = () => {
+  // Reset all steps
+  steps.value.forEach((step) => {
+    step.status = "pending";
+  });
+  isComplete.value = false;
+  hasFailed.value = false;
+  failedStepIndex.value = -1;
+  errorMessage.value = "";
+  startMockDeploy();
+};
+
+const closeModal = () => {
+  emit("close");
 };
 
 onMounted(() => {
@@ -70,8 +101,8 @@ onMounted(() => {
     <!-- Close button -->
     <button
       class="deployment-modal__close"
-      v-if="isComplete"
-      @click="emit('close')"
+      v-if="isComplete || hasFailed"
+      @click="closeModal"
       :aria-label="$t('settings.modulebuilder.close')"
     >
       <i class="fa-solid fa-xmark"></i>
@@ -85,25 +116,44 @@ onMounted(() => {
         <div class="deployment-card__header">
           <div class="deployment-card__title-group">
             <h3 class="deployment-card__title">
-              {{
-                isComplete
-                  ? $t("settings.modulebuilder.title.complete")
-                  : $t("settings.modulebuilder.title.deploying")
-              }}
+              <template v-if="hasFailed">
+                {{
+                  $t("settings.modulebuilder.title.failed") ||
+                  "Deployment Failed"
+                }}
+              </template>
+              <template v-else-if="isComplete">
+                {{ $t("settings.modulebuilder.title.complete") }}
+              </template>
+              <template v-else>
+                {{ $t("settings.modulebuilder.title.deploying") }}
+              </template>
             </h3>
-            <p class="deployment-card__subtitle" v-if="!isComplete">
+            <p
+              class="deployment-card__subtitle"
+              v-if="!isComplete && !hasFailed"
+            >
               {{ $t("settings.modulebuilder.subtitle.wait") }}
             </p>
             <p
               class="deployment-card__subtitle deployment-card__subtitle--success"
-              v-else
+              v-else-if="isComplete"
             >
               {{ $t("settings.modulebuilder.subtitle.success") }}
+            </p>
+            <p
+              class="deployment-card__subtitle deployment-card__subtitle--danger"
+              v-else-if="hasFailed"
+            >
+              {{ errorMessage }}
             </p>
           </div>
 
           <!-- Overall progress indicator -->
-          <div class="deployment-card__progress" v-if="!isComplete">
+          <div
+            class="deployment-card__progress"
+            v-if="!isComplete && !hasFailed"
+          >
             <div class="progress-bar">
               <div
                 class="progress-bar__fill"
@@ -128,13 +178,22 @@ onMounted(() => {
             v-for="(step, index) in steps"
             :key="step.id"
             class="deployment-step"
-            :class="[step.status, { current: index === currentStepIndex }]"
+            :class="[
+              step.status,
+              {
+                current: index === currentStepIndex,
+                failed: step.status === 'failed',
+              },
+            ]"
           >
             <!-- Step connector line (except for last step) -->
             <div
               v-if="index < steps.length - 1"
               class="deployment-step__connector"
-              :class="{ active: index < currentStepIndex }"
+              :class="{
+                active: index < currentStepIndex,
+                failed: hasFailed && index < failedStepIndex,
+              }"
             ></div>
 
             <div class="deployment-step__content">
@@ -186,6 +245,22 @@ onMounted(() => {
                       />
                     </svg>
                   </template>
+                  <template v-else-if="step.status === 'failed'">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        d="M18 6L6 18M6 6L18 18"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </template>
                 </div>
               </div>
 
@@ -199,13 +274,18 @@ onMounted(() => {
 
               <!-- Status badge -->
               <div class="deployment-step__badge" :class="step.status">
-                {{
-                  step.status === "pending"
-                    ? $t("settings.modulebuilder.status.pending")
-                    : step.status === "running"
-                      ? $t("settings.modulebuilder.status.in_progress")
-                      : $t("settings.modulebuilder.status.completed")
-                }}
+                <template v-if="step.status === 'pending'">
+                  {{ $t("settings.modulebuilder.status.pending") }}
+                </template>
+                <template v-else-if="step.status === 'running'">
+                  {{ $t("settings.modulebuilder.status.in_progress") }}
+                </template>
+                <template v-else-if="step.status === 'success'">
+                  {{ $t("settings.modulebuilder.status.completed") }}
+                </template>
+                <template v-else-if="step.status === 'failed'">
+                  {{ $t("settings.modulebuilder.status.failed") || "Failed" }}
+                </template>
               </div>
             </div>
           </div>
@@ -214,7 +294,7 @@ onMounted(() => {
         <!-- Actions Footer -->
         <div class="deployment-card__footer">
           <div class="deployment-card__footer-content">
-            <div v-if="!isComplete" class="deployment-message">
+            <div v-if="!isComplete && !hasFailed" class="deployment-message">
               <div class="deployment-message__dot"></div>
               <span class="deployment-message__text">
                 {{
@@ -222,6 +302,24 @@ onMounted(() => {
                   $t("settings.modulebuilder.preparing")
                 }}
               </span>
+            </div>
+
+            <div v-else-if="hasFailed" class="deployment-failed">
+              <div class="deployment-failed__actions">
+                <button
+                  class="deployment-card__button deployment-card__button--retry"
+                  @click="retryDeployment"
+                >
+                  <i class="fa-solid fa-rotate-right"></i>
+                  {{ $t("settings.modulebuilder.button.retry") || "Retry" }}
+                </button>
+                <button
+                  class="deployment-card__button deployment-card__button--secondary"
+                  @click="closeModal"
+                >
+                  {{ $t("settings.modulebuilder.button.close") || "Close" }}
+                </button>
+              </div>
             </div>
 
             <div v-else class="deployment-success">
@@ -242,7 +340,7 @@ onMounted(() => {
                 </svg>
                 <span>{{ $t("settings.modulebuilder.success.message") }}</span>
               </div>
-              <button class="deployment-card__button" @click="emit('close')">
+              <button class="deployment-card__button" @click="closeModal">
                 {{ $t("settings.modulebuilder.button.go_to_module") }}
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
@@ -255,8 +353,6 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-// Variables
-
 .deployment-modal {
   position: fixed;
   top: 0;
@@ -268,6 +364,7 @@ onMounted(() => {
   justify-content: center;
   z-index: 1000;
   font-family: "Fira Sans", "Heebo", sans-serif;
+
   &__backdrop {
     position: absolute;
     top: 0;
@@ -349,7 +446,12 @@ onMounted(() => {
     line-height: 1.5;
 
     &--success {
-      color: var(--success-color);
+      color: #10b981;
+      font-weight: 500;
+    }
+
+    &--danger {
+      color: var(--danger-color);
       font-weight: 500;
     }
   }
@@ -386,6 +488,7 @@ onMounted(() => {
       text-align: right;
     }
   }
+
   &__footer {
     padding: 20px 32px;
     background: #f9fafb;
@@ -397,6 +500,7 @@ onMounted(() => {
       justify-content: space-between;
     }
   }
+
   &__button {
     padding: 0.625rem 1.25rem;
     font-weight: 600;
@@ -423,6 +527,30 @@ onMounted(() => {
 
     &:hover i {
       transform: translateX(4px);
+    }
+
+    &--retry {
+      background: var(--danger-color);
+
+      &:hover {
+        background: color-mix(in srgb, var(--danger-color) 80%, black);
+      }
+
+      i {
+        margin-right: 8px;
+      }
+
+      &:hover i {
+        transform: rotate(180deg);
+      }
+    }
+
+    &--secondary {
+      background: #6b7280;
+
+      &:hover {
+        background: #4b5563;
+      }
     }
   }
 }
@@ -456,6 +584,10 @@ onMounted(() => {
     &.active {
       background: var(--module-color);
     }
+
+    &.failed {
+      background: var(--danger-color);
+    }
   }
 
   &__content {
@@ -476,6 +608,11 @@ onMounted(() => {
   &.running &__content {
     background: linear-gradient(90deg, rgba(99, 102, 241, 0.05), transparent);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  }
+
+  &.failed &__content {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
   }
 
   &.success &__content {
@@ -504,9 +641,14 @@ onMounted(() => {
       color: var(--module-color);
     }
 
+    .failed & {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
     .success & {
-      background: color-mix(in srgb, var(--success-color) 10%, white);
-      color: var(--success-color);
+      background: color-mix(in srgb, #10b981 10%, white);
+      color: #10b981;
     }
   }
 
@@ -525,6 +667,10 @@ onMounted(() => {
     color: #4b5563;
     margin-bottom: 4px;
     transition: color 0.3s ease;
+
+    .failed & {
+      color: var(--danger-color);
+    }
   }
 
   &__description {
@@ -546,9 +692,14 @@ onMounted(() => {
       color: var(--module-color);
     }
 
+    &.failed {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
     &.success {
-      background: color-mix(in srgb, var(--success-color) 10%, white);
-      color: var(--success-color);
+      background: color-mix(in srgb, #10b981 10%, white);
+      color: #10b981;
     }
   }
 }
@@ -572,6 +723,25 @@ onMounted(() => {
   }
 }
 
+.deployment-failed {
+  flex: 1;
+
+  &__message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--danger-color);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+  }
+}
+
 .deployment-success {
   flex: 1;
   display: flex;
@@ -582,7 +752,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--success-color);
+    color: #10b981;
     font-size: 14px;
     font-weight: 500;
   }
@@ -667,6 +837,15 @@ onMounted(() => {
     gap: 16px;
     align-items: flex-start;
     width: 100%;
+  }
+
+  .deployment-failed {
+    width: 100%;
+
+    &__actions {
+      flex-direction: column;
+      width: 100%;
+    }
   }
 
   .deployment-card__button {

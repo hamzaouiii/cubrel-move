@@ -66,6 +66,8 @@ class Field extends Model
   protected $casts = [
     'is_custom'   => 'boolean',
     'is_active'   => 'boolean',
+    'is_draft'   => 'boolean',
+    'is_global'   => 'boolean',
     'readonly'    => 'boolean',
     'hidden'      => 'boolean',
     'required'    => 'boolean',

@@ -90,7 +90,7 @@ const generatedName = computed(() => {
 });
 
 const generatedKey = computed(() => {
-  return props.module.slug + "_" + generatedName.value;
+  return "draft" + "_" + generatedName.value;
 });
 
 // Watchers

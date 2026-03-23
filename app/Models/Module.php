@@ -67,6 +67,7 @@ class Module extends Model
   {
     return self::active()
       ->where('is_draft', 0)
+      ->where('show_in_sidebar', 1)
       ->orderBy('category')
       ->get()
       ->map(function (Module $module) {
@@ -187,6 +188,28 @@ class Module extends Model
         $query->where('module_id', $this->id)
           ->orWhere('is_global', true);
       })
+      ->select([
+        'id',
+        'module_id',
+        'dropdown_list_id',
+        'name',
+        'type',
+        'key',
+        'readonly',
+        'sortable',
+        'searchable',
+        'label',
+        'required',
+        'is_draft'
+      ])
+      ->with('dropdown_list')
+      ->get();
+  }
+  public function draftFields(): Collection
+  {
+    return Field::query()
+      ->where('module_id', $this->id)
+      ->where('is_draft', true)
       ->select([
         'id',
         'module_id',

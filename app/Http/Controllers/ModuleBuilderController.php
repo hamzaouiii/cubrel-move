@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Module;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-// use App\Services\ModuleScaffolder;
+use App\Services\ModuleScaffolder;
 use Illuminate\Support\Str;
 use App\Support\RandomColorGenerator;
 use App\Support\RandomIconGenerator;
@@ -78,47 +78,63 @@ class ModuleBuilderController extends Controller
   /**
    * Validates final user input, converts the draft to active, and scaffolds the table.
    */
-  // public function publish(Request $request, Module $module)
-  // {
-  //   $validated = $request->validate([
-  //     'display_label'   => ['required', 'string', 'max:255'],
-  //     'slug'            => ['required', 'string', 'max:255', 'alpha_dash', 'unique:modules,slug,' . $module->id],
-  //     'icon'            => ['nullable', 'string', 'max:255'],
-  //     'color'           => ['nullable', 'string', 'max:255'],
-  //     'description'     => ['nullable', 'string'],
-  //     'show_in_sidebar' => ['boolean'],
-  //   ]);
+  public function deploy(Request $request, Module $module)
+  {
+    $validated = $request->validate([
+      'display_label'   => ['required', 'string', 'max:255'],
+      'single_label'   => ['required', 'string', 'max:255'],
+      'slug' => [
+        'required',
+        'string',
+        'max:255',
+        'alpha_dash',
+        Rule::notIn(config('reserved_keywords.slugs')),
+        'unique:modules,slug,' . $module->id,
+      ],
+      'icon'            => ['nullable', 'string', 'max:255'],
+      'color'           => ['nullable', 'string', 'max:255'],
+      'description'     => ['nullable', 'string'],
+      'category'     => ['required', 'string'],
+      'show_in_sidebar' => ['boolean'],
+    ]);
 
-  //   $baseName = Str::studly($validated['slug']);
+    $baseName = Str::studly($validated['slug']);
+    $DEFAULT_ICON          = 'fa-solid fa-bahai';
+    $DEFAULT_SORT_ORDER    = (Module::max('sort_order') ?? 0) + 1;
+    $DEFAULT_PERMISSION    = true;
 
-  //   // Finalize the module properties
-  //   $module->update([
-  //     'name'            => $validated['display_label'],
-  //     'slug'            => $validated['slug'],
-  //     'icon'            => $validated['icon'] ?? 'fa-solid fa-cube',
-  //     'color'           => $validated['color'] ?? '#000000',
-  //     'description'     => $validated['description'] ?? '',
-  //     'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
-  //     'is_draft'        => false,
-  //     'is_active'       => true,
-  //     'label'           => 'custom/modules/' . $validated['slug'] . '.label',
-  //     'handler_class'   => "App\\Handlers\\Modules\\Custom\\" . $baseName . "ModuleHandler",
-  //     'model_class'     => "App\\Models\\Modules\\Custom\\" . $baseName,
-  //     'table_name'      => Str::snake($validated['slug']) . "_cstm",
-  //     'path'            => '/' . $validated['slug'],
-  //   ]);
+    $module->update([
+      'name'        => $validated['display_label'],
+      'slug'            => $validated['slug'],
+      'icon'            => $validated['icon'] ??  $DEFAULT_ICON,
+      'color'           => $validated['color'] ?? '#000000',
+      'description'     => $validated['description'] ?? '',
+      'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
+      'category'        => $validated['category'],
+      'sort_order'      => $DEFAULT_SORT_ORDER,
+      'can_view'        => $DEFAULT_PERMISSION,
+      'can_create'      => $DEFAULT_PERMISSION,
+      'can_edit'        => $DEFAULT_PERMISSION,
+      'can_delete'      => $DEFAULT_PERMISSION,
+      'is_draft'        => false,
+      'is_active'       => true,
+      'handler_class'   => "App\\Handlers\\Modules\\Custom\\" . $baseName . "ModuleHandler",
+      'model_class'     => "App\\Models\\Modules\\Custom\\" . $baseName,
+      'table_name'      =>  "cstm_" . Str::snake($validated['slug']),
+      'path'            => '/' . $validated['slug'],
+    ]);
+    $fields = $module->builderFields();
 
-  //   // NOW scaffold the tables/files since the user has had time to define Fields and Layouts
-  //   app(ModuleScaffolder::class)->scaffold($module, $validated['display_label']);
+    // NOW scaffold the tables/files since the user has had time to define Fields and Layouts
+    app(ModuleScaffolder::class)->scaffold($module, $validated['display_label'], $validated['single_label'], $fields);
 
-  //   return redirect()
-  //     ->route('modules.show', $module->id)
-  //     ->with('success', __('settings.module_publish_success'));
-  // }
+    return redirect()
+      ->route('settings.modules.show', $module->id)
+      ->with('success', __('settings.module_publish_success'));
+  }
 
   public function saveDraftField(Request $request, Module $module)
   {
-
     $data = $request->validate([
       'id' => ['nullable', 'exists:fields,id'],
       'label' => ['required', 'string', 'min:4'],
@@ -174,6 +190,7 @@ class ModuleBuilderController extends Controller
 
     return back()->with('success');
   }
+
   public function getOrCreateDraftModule(string $userId): Module
   {
     return DB::transaction(function () use ($userId) {

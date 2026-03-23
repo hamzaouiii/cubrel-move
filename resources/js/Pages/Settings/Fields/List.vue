@@ -68,6 +68,10 @@ const color = () =>
 
     <div class="fields">
       <div class="fields__header">
+        <span class="fields__header__name">
+          {{ module?.display_label || module?.name }}</span
+        >
+
         <Link class="fields__header__create" :href="createUrl">
           {{ $t("fields.create_new_field") }}</Link
         >

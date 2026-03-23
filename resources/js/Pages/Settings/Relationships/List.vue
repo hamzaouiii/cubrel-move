@@ -118,6 +118,10 @@ const deleteRelationship = async (rel) => {
     </div>
     <div class="fields">
       <div class="fields__header">
+        <span class="fields__header__name">
+          {{ module?.display_label || module?.name }}</span
+        >
+
         <Link class="fields__header__create" :href="createUrl">
           {{ $t("relationships.create_new") }}</Link
         >

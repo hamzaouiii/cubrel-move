@@ -24,7 +24,6 @@ const props = defineProps({
   settingModule: Object,
   categoryList: Object,
 });
-console.log(props.settingModule);
 const form = useForm({ ...props.settingModule });
 const editableModule = reactive({
   display_label: "",

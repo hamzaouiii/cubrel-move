@@ -29,6 +29,7 @@ return array(
     'module_settings' => 'Module-Einstellungen',
     'layouts' => 'Layouts',
     'fields' => 'Felder',
+    'relationships' => 'Beziehungen',
   ),
   'modules' =>
   array(
@@ -43,6 +44,9 @@ return array(
     'color' => 'Farbe',
     'show_in_sidebar' => 'Im Sidebar anzeigen',
     'description' => 'Beschreibung',
+    'save_draft'  => 'Entwurf speichern',
+    'publish_module'  => 'Modul veröffentlichen',
+    'next'  => 'Weiter',
   ),
   'fields' =>
   array(
@@ -63,6 +67,7 @@ return array(
     'timezone' => 'Zeitzone',
     'first_day_of_week' => 'Erster Wochentag',
     'danger_color' => 'Gefahrfarbe',
+    'success_color' => 'Erfolgfarbe',
     'danger_color_hint' => 'Wird für gefährliche Aktionen wie Löschwarnungen und Löschbuttons verwendet',
     'related_panel_limit' => 'Limit verknüpfte Panels',
     'list_view_limit'    => 'Limit Listenansicht',
@@ -121,6 +126,7 @@ return array(
     'search_placeholder' => 'Icon suchen...',
     'none'               => 'Kein Icon',
     'no_results'         => 'Keine Icons gefunden!',
+    'prev'           => 'Zurück',
     'previous'           => 'Zurück',
     'next'               => 'Weiter',
     'loading'            => 'Suche...',
@@ -130,6 +136,8 @@ return array(
     'title' => [
       'complete' => 'Bereitstellung abgeschlossen!',
       'deploying' => 'Modul wird bereitgestellt',
+      'failed' => 'Modulbereitstellung fehlgeschlagen',
+
     ],
     'subtitle' => [
       'wait' => 'Bitte warten Sie, während wir alles für Sie einrichten',
@@ -140,6 +148,8 @@ return array(
       'pending' => 'Ausstehend',
       'in_progress' => 'In Bearbeitung',
       'completed' => 'Abgeschlossen',
+      'failed'    => 'Fehlgeschlagen'
+
     ],
     'preparing' => 'Bereitstellung wird vorbereitet...',
     'success' => [
@@ -147,6 +157,8 @@ return array(
     ],
     'button' => [
       'go_to_module' => 'Zum Modul',
+      'retry' => 'Wiederholen',
+      'close' => 'Schließen',
     ],
   ]
 );
