@@ -112,7 +112,7 @@ abstract class BaseModuleHandler implements ModuleHandler
       return $columns;
     }
 
-    $dbFields = $module->fields()
+    $dbFields = $module->allFields()
       ->where('searchable', true)
       ->pluck('name')
       ->toArray();

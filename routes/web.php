@@ -16,6 +16,12 @@ use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
 
 
+Route::middleware(['guest'])->group(function () {
+  Route::get('/login', [AuthController::class, 'index'])->name('login');
+  Route::post('/login', [AuthController::class, 'login']);
+});
+
+
 Route::middleware(['auth'])->group(function () {
 
   // Independent routes
@@ -79,7 +85,7 @@ Route::middleware(['auth'])->group(function () {
       ->name('modules.builder.deleteDraftField');
 
     Route::post('modulebuilder/{module}/deploy', [ModuleBuilderController::class, 'deploy'])
-      ->name('modules.builder.publish');
+      ->name('modules.builder.deploy');
 
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);

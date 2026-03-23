@@ -143,7 +143,7 @@ class Module extends Model
   {
     return [
       'linkingPanel' => $this->linkingPanelLayout(),
-      'fields' => $this->fields
+      'fields' => $this->allFields()
     ];
   }
 
@@ -153,6 +153,7 @@ class Module extends Model
       ->where('type', $type)
       ->first();
   }
+
 
   /**
    * @return HasMany<Field, $this>
@@ -176,10 +177,44 @@ class Module extends Model
       ])
       ->with('dropdown_list');
   }
+  /**
+   * @return Collection<Field>
+   */
+  public function allFields(): Collection
+  {
+    return Field::query()
+      ->where(function ($query) {
+        $query->where('module_id', $this->id)
+          ->orWhere('is_global', true);
+      })
+      ->select([
+        'id',
+        'module_id',
+        'dropdown_list_id',
+        'name',
+        'type',
+        'key',
+        'readonly',
+        'sortable',
+        'searchable',
+        'label',
+        'required',
+        'is_draft'
+      ])
+      ->with('dropdown_list')
+      ->get();
+  }
 
+  /**
+   * @return Collection<Field>
+   */
   public function relatedfields()
   {
-    return $this->hasMany(Field::class, 'module_id', 'id')
+    return Field::query()
+      ->where(function ($query) {
+        $query->where('module_id', $this->id)
+          ->orWhere('is_global', true);
+      })
       ->select([
         'id',
         'module_id',
@@ -191,11 +226,33 @@ class Module extends Model
         'sortable',
         'label',
         'required',
-      ])->with('dropdown_list');
+      ])
+      ->with('dropdown_list')
+      ->get();
   }
+
+  /**
+   * Get fields for builder (DB + default fields, unique by key)
+   *
+   * @return \Illuminate\Support\Collection
+   */
+  public function builderFields(): Collection
+  {
+    $dbFields = $this->allFields();
+
+    $defaultFields = collect($this->getDefaultFields())->map(function ($field) {
+      return new Field($field);
+    });
+
+    return $defaultFields
+      ->merge($dbFields)
+      ->unique('name')
+      ->values();
+  }
+
   public function getFieldMetadata(string $field): array
   {
-    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
+    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_global-', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
     $field = $this->hasMany(Field::class, 'module_id', 'id')
       ->firstWhere('name', $field);
     return array_diff_key(
@@ -248,24 +305,5 @@ class Module extends Model
   public function getDefaultFields(): array
   {
     return config("default_fields");
-  }
-
-  /**
-   * Get fields for builder (DB + default fields, unique by key)
-   *
-   * @return \Illuminate\Support\Collection
-   */
-  public function builderFields(): Collection
-  {
-    $dbFields = $this->fields()->get();
-
-    $defaultFields = collect($this->getDefaultFields())->map(function ($field) {
-      return new Field($field);
-    });
-
-    return $defaultFields
-      ->merge($dbFields)
-      ->unique('name')
-      ->values();
   }
 }

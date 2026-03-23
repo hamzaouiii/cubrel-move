@@ -5,7 +5,6 @@ import { useForm, usePage, Head } from "@inertiajs/vue3";
 const showPassword = ref(false);
 const pageProps = usePage().props;
 
-console.log(pageProps);
 const form = useForm({
   username: "",
   password: "",
@@ -13,12 +12,7 @@ const form = useForm({
 });
 
 const submit = () => {
-  form.post("/login", {
-    onStart: () => console.log("START"),
-    onSuccess: () => console.log("SUCCESS"),
-    onError: (errors) => console.log("ERRORS:", errors),
-    onFinish: () => console.log("FINISH"),
-  });
+  form.post("/login", {});
 };
 </script>
 

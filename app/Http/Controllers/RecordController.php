@@ -41,7 +41,7 @@ class RecordController extends Controller
     }
     $recordLayout = $moduleModel->recordLayout();
     $relatedLayout = $moduleModel->relatedLayout();
-    $fields = $moduleModel->fields;
+    $fields = $moduleModel->allFields();
     return Inertia::render('Modules/Record', array_merge([
       'module'   => $moduleModel,
       'title'    => $moduleModel->name,
@@ -76,7 +76,7 @@ class RecordController extends Controller
       'title'        => $moduleModel->name,
       'recordLayout' => $recordLayout,
       'dropdownLists' => $recorddropdownLists,
-      'fields' => $fields,
+      'fields' => $fields(),
     ], $props));
   }
 

@@ -17,7 +17,9 @@ return new class extends Migration
       $table->string('key')->unique();
       $table->string('type')->nullable();
       $table->string('label')->nullable();
-      $table->char('module_id', 36);
+      $table->char('module_id', 36)->nullable();
+      $table->boolean('is_global')->default(false);
+      $table->boolean('is_default')->default(false);
       $table->boolean('is_draft')->default(false);
       $table->boolean('is_custom')->default(false);
       $table->boolean('is_active')->default(false);
@@ -28,7 +30,7 @@ return new class extends Migration
       $table->boolean('filterable')->default(false);
       $table->boolean('sortable')->default(false);
 
-      $table->string('database_type')->nullable();
+      // $table->string('database_type')->nullable();
       $table->string('default_value')->nullable();
       $table->json('options')->nullable();
       $table->integer('min_length')->nullable();
@@ -36,11 +38,11 @@ return new class extends Migration
       $table->string('regex')->nullable();
       $table->uuid('dropdown_list_id')->nullable();
       $table->foreign('dropdown_list_id')->references('id')->on('dropdown_lists')->cascadeOnDelete();
-      $table->foreign(['module_id'])->references(['id'])->on('modules')->onUpdate('no action')->onDelete('cascade');
+      $table->foreign(['module_id'])->references(['id'])->on('modules')->onDelete('cascade');
       $table->timestamps();
 
 
-      $table->index(['module_id', 'is_custom', 'is_active']);
+      $table->index(['module_id', 'is_custom', 'is_active', 'is_global']);
       $table->index(['key', 'type']);
     });
   }

@@ -253,7 +253,7 @@ class RelationshipService
       $module = $modules->get($relationship->related_slug);
 
       $relationship->related_fields = $module
-        ? $module->fields
+        ? $module->allFields()
         : collect();
 
       return $relationship;
