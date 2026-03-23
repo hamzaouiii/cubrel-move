@@ -144,6 +144,12 @@ useUnsavedChangesGuard({
         :setting-module="settingModule"
         active-key="edit"
       ></ModuleSettingTabs>
+      <div class="settings__module__header">
+        <Link href="/settings/modules">
+          <i class="fa-solid fa-arrow-left"></i>
+          {{ $t("settings.back_to_modules") }}
+        </Link>
+      </div>
       <div class="settings__module__edit">
         <form class="settings__module__edit__form" @submit.prevent="saveRecord">
           <div

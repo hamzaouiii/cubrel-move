@@ -24,6 +24,8 @@ return [
   'setting_update_success' => 'The settings have been successfully updated',
   'setting_update_error' => 'An error occurred while updating the settings',
   'dropdown_list_fetch_failed' => "Failed to fetch dropdown lists:",
+  'back_to_modules' => "Back to Module List",
+  'back_to_settings' => "Back to Settings",
   'tabs' => [
     'module_settings' => 'Module Settings',
     'layouts' => 'Layouts',

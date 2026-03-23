@@ -80,6 +80,12 @@ const isDirty = () => form.isDirty;
     class="settings"
     :style="{ '--primary-color': appSettings.primary_color }"
   >
+    <div class="settings__module__header">
+      <Link href="/settings">
+        <i class="fa-solid fa-arrow-left"></i>
+        {{ $t("settings.back_to_settings") }}
+      </Link>
+    </div>
     <div class="settings__system">
       <form @submit.prevent="saveSetting" class="settings__system__form">
         <div

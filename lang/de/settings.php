@@ -23,6 +23,8 @@ return array(
   'add_field_success' => 'Feld wurde erfolgreich hinzufügt',
   'deploy' => 'Modul bereitstellen',
   'dropdown_list_fetch_failed' => "Dropdown-Listen konnten nicht abgerufen werden:",
+  'back_to_modules' => "Zurück zur Modul-Liste",
+  'back_to_settings' => "Zurück zu Einstellungen",
 
   'tabs' =>
   array(

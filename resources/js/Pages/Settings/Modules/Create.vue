@@ -13,7 +13,7 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 import Layout from "@/Layouts/Layout.vue";
 import DeployModal from "@/Pages/Components/Settings/Builder/DeployModal.vue";
-import { Head, usePage, useForm, router } from "@inertiajs/vue3";
+import { Head, usePage, useForm, router, Link } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
 
@@ -202,6 +202,12 @@ const handleUpdateList = () => {
     ]"
   >
     <div class="settings__module">
+      <div class="settings__module__header">
+        <Link href="/settings">
+          <i class="fa-solid fa-arrow-left"></i>
+          {{ $t("settings.back_to_settings") }}
+        </Link>
+      </div>
       <div
         class="settings__module__edit"
         :class="{ 'is-loading': isProcessing }"

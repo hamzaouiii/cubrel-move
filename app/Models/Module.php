@@ -65,8 +65,7 @@ class Module extends Model
   public $timestamps = true;
   public static function forSidebar(): Collection
   {
-    return self::active()
-      ->where('is_draft', 0)
+    return self::where('is_draft', 0)
       ->where('show_in_sidebar', 1)
       ->orderBy('category')
       ->get()

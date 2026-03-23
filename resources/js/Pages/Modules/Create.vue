@@ -181,9 +181,9 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-// useUnsavedChangesGuard({
-//   getIsDirty: () => form.isDirty,
-// });
+useUnsavedChangesGuard({
+  getIsDirty: () => form.isDirty,
+});
 
 const module_color = computed(() => {
   return appSettings.use_individual_module_colors == "0"

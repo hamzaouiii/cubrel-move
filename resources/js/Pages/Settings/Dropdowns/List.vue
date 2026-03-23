@@ -49,6 +49,12 @@ const editUrl = (f) => {
       '--danger-color': appSettings.danger_color,
     }"
   >
+    <div class="settings__module__header">
+      <Link href="/settings">
+        <i class="fa-solid fa-arrow-left"></i>
+        {{ $t("settings.back_to_settings") }}
+      </Link>
+    </div>
     <div class="dropdowns__toolbar">
       <div class="dropdowns__search">
         <input
