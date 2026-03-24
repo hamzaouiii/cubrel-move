@@ -27,6 +27,8 @@ return [
   'back_to_modules' => 'Back to Module List',
   'back_to_settings' => 'Back to Settings',
   'search_placeholder' => 'Search settings...',
+  'no_results' => 'No settings found',
+
   'tabs' => [
     'module_settings' => 'Module Settings',
     'layouts' => 'Layouts',

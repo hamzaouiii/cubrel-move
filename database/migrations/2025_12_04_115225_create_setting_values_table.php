@@ -22,8 +22,6 @@ return new class extends Migration
       $table->boolean('autoload')->default(true);
 
       $table->timestamps();
-
-      $table->unique(['setting_item', 'key']);
     });
   }
 

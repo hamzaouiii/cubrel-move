@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Module;
 use App\Services\ModuleScaffolder;
 use App\Services\Translations\TranslationService;
+use App\Services\Settings\SettingService;
 use App\Models\Label;
 use App\Observers\LabelObserver;
 use App\Models\Settings\SettingValue;
@@ -35,11 +36,12 @@ class AppServiceProvider extends ServiceProvider
     SettingValue::observe(SettingValueObserver::class);
 
     Vite::prefetch(concurrency: 3);
-    Inertia::share('locale', fn() => app()->getLocale());
 
-    Inertia::share('modules', function () {
-      return Module::forSidebar();
-    });
-    Inertia::share('translations', fn() => TranslationService::all());
+    Inertia::share([
+      'locale'       => fn() => app()->getLocale(),
+      'translations' => fn() => TranslationService::all(),
+      'appSettings'  => fn() => SettingService::all(),
+      'modules'      => fn() => Module::forSidebar(),
+    ]);
   }
 }

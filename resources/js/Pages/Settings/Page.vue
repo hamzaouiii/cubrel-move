@@ -1,7 +1,7 @@
 <script setup>
 import { computed, getCurrentInstance } from "vue";
 import Layout from "@/Layouts/Layout.vue";
-import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
+import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
 import DropdownField from "../Components/FiledTypes/SettingDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -53,7 +53,10 @@ const saveSetting = () => {
   clearAllAlerts();
   info(t("settings.saving"));
   form.put(`/settings/${props.item.slug}`, {
+    preserveScroll: true,
     onSuccess: () => {
+      window.location.reload();
+
       clearAllAlerts();
       success(t("settings.setting_update_success"));
     },

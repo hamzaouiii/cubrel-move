@@ -88,15 +88,24 @@
 
     &__search {
       padding: 0;
-
-      .setting-search {
+      background-color: white;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background: #ffffff;
+      border: 1.5px solid #e2e5ef;
+      border-radius: 9px;
+      padding: 5px 15px 5px 0px;
+      &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.12);
+      }
+      &__field {
+        padding: 8px 14px 8px 36px;
+        border: none;
         font-family: "Fira Sans", "Heebo", sans-serif;
         font-size: 0.875rem;
         color: #1a1d2e;
-        background: #ffffff;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 9px;
-        padding: 8px 14px 8px 36px;
         width: 240px;
         outline: none;
         transition:
@@ -109,10 +118,13 @@
         &::placeholder {
           color: #b8bdd1;
         }
-
-        &:focus {
-          border-color: var(--primary-color);
-          box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.12);
+      }
+      &__clear {
+        cursor: pointer;
+        padding: 0 5px;
+        transition: all 0.1s ease;
+        &:hover {
+          transform: scale(1.1);
         }
       }
     }
@@ -238,6 +250,25 @@
             }
           }
         }
+      }
+    }
+    &__empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      flex: 1;
+      min-width: 100%;
+      padding: 48px 24px;
+      text-align: center;
+      i {
+        font-size: 2rem;
+      }
+      p {
+        color: #9ba3bc;
+        font-size: 1.075rem;
+        font-weight: 400;
+        margin: 0;
       }
     }
   }
