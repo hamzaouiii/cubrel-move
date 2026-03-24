@@ -332,7 +332,7 @@ const saveLayout = () => {
     if (empty.size) {
       emptyColumns.value = empty;
       clearAllAlerts();
-      error("Has empty Panel cannot save");
+      error(t("layouts.has_empty_layouts_error"));
       return;
     }
     emptyColumns.value = new Set();

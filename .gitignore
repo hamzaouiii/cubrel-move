@@ -31,3 +31,4 @@ Thumbs.db
 package-lock.json
 .prettierrc
 /screenshots/*
+app/**/custom

@@ -47,5 +47,5 @@ return [
   'required_field' => 'Required Field',
   'fields_header_hint' => 'Click on a field to add it to the subpanel header',
   'linkingPanel' => 'linking Panel',
-
+  'has_empty_layouts_error' => 'Please remove empty sections'
 ];
