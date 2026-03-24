@@ -34,7 +34,9 @@ const buildInitialForm = () => {
   if (props.recordLayout && props.recordLayout.sections) {
     props.recordLayout.sections.forEach((section) => {
       section.layout.forEach((field) => {
-        data[field.name] = "";
+        if (!(field.name === "created_at" || field.name === "updated_at")) {
+          data[field.name] = "";
+        }
       });
     });
   }
@@ -181,9 +183,9 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-// useUnsavedChangesGuard({
-//   getIsDirty: () => form.isDirty,
-// });
+useUnsavedChangesGuard({
+  getIsDirty: () => form.isDirty,
+});
 
 const module_color = computed(() => {
   return appSettings.use_individual_module_colors == "0"

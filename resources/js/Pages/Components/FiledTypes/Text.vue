@@ -101,7 +101,12 @@ const highlightMatch = (text) => {
         'text-field--readonly': readOnly,
       }"
     >
-      <input v-model="localValue" type="text" @input="clearErrors()" />
+      <input
+        v-model="localValue"
+        type="text"
+        @input="clearErrors()"
+        :disabled="readOnly"
+      />
       <span v-if="showError" class="error-icon-container">
         <i class="error-icon fa-solid fa-circle-exclamation"></i>
       </span>

@@ -43,6 +43,7 @@ class DropDownListController extends Controller
     $data = $request->validate([
       'key' => 'required|string',
       'values' => 'required',
+      'is_draft' => 'required',
     ]);
     $dd = DropdownList::create($data);
     return redirect()
@@ -117,6 +118,7 @@ class DropDownListController extends Controller
     $data = $request->validate([
       'key' => 'required|string',
       'values' => 'required',
+      'is_draft' => 'required',
     ]);
     $dropdown = DropdownList::create($data);
     return response()->json($dropdown);

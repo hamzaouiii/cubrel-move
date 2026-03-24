@@ -1,5 +1,7 @@
 <?php
-return [
+
+return     [
+
 
   'required' => 'The :attribute field is required.',
   'string' => 'The :attribute must be a string.',
@@ -9,11 +11,18 @@ return [
   'unique' => 'The :attribute has already been taken.',
   'exists' => 'The selected :attribute is invalid.',
   'in' => 'The selected :attribute is invalid.',
+  'not_in' => 'The value for :attribute is a reserved keyword cannot be used',
+  'required_if' => 'The :attribute field is required.',
 
   'attributes' => [
-    'name' => 'name',
-    'label' => 'label',
-    'right_module' => 'module',
-    'type' => 'relationship type',
+    'name' => 'Name',
+    'label' => 'Label',
+    'right_module' => 'Module',
+    'type' => 'Relationship type',
+    'key' => 'System Name',
+    'dropdown' => 'Dropdown List',
+    'dropdown_list' => 'Dropdown List',
+    'slug' => 'System Key',
+
   ],
 ];

@@ -6,9 +6,10 @@ import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
+import Select from "@/Pages/Components/FiledTypes/Select.vue";
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -21,10 +22,14 @@ defineOptions({
 
 const props = defineProps({
   settingModule: Object,
+  categoryList: Object,
 });
-const page = usePage();
 const form = useForm({ ...props.settingModule });
-const editableModule = reactive({ display_label: "", ...props.settingModule });
+const editableModule = reactive({
+  display_label: "",
+  single_label: "",
+  ...props.settingModule,
+});
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
 const editableFields = computed(() => {
   const ignore = [
@@ -45,6 +50,9 @@ const editableFields = computed(() => {
     "slug",
     "handler_class",
     "label",
+    "is_draft",
+    "locked_by",
+    "locked_until",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),
@@ -54,6 +62,8 @@ const editableFields = computed(() => {
 const inputTypeFor = (key, value) => {
   if (key === "show_in_sidebar") return "checkbox";
   if (key === "display_label") return "display_label";
+  if (key === "single_label") return "single_label";
+  if (key === "category") return "select";
   if (key === "icon") return "icon";
   if (typeof value === "number") return "number";
   if (key === "color") return "color";
@@ -62,7 +72,7 @@ const inputTypeFor = (key, value) => {
 };
 
 const disableThis = (key) => {
-  if (key === "display_label") return true;
+  if (key === "display_label" || key === "single_label") return true;
   return false;
 };
 const isDirty = computed(() => {
@@ -129,20 +139,19 @@ useUnsavedChangesGuard({
       { '--primary-color': appSettings.primary_color },
     ]"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="settingModule"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="settingModule"
         active-key="edit"
       ></ModuleSettingTabs>
+      <div class="settings__module__header">
+        <Link href="/settings/modules">
+          <i class="fa-solid fa-arrow-left"></i>
+          {{ $t("settings.back_to_modules") }}
+        </Link>
+      </div>
       <div class="settings__module__edit">
-        <form @submit.prevent="saveRecord">
+        <form class="settings__module__edit__form" @submit.prevent="saveRecord">
           <div
             v-for="[key, value] in editableFields"
             :key="key"
@@ -168,6 +177,19 @@ useUnsavedChangesGuard({
                 type="text"
                 :disabled="disableThis(key)"
                 v-model="settingModule.label"
+              />
+              <input
+                v-else-if="inputTypeFor(key, value) === 'single_label'"
+                :class="{ disabled: disableThis(key) }"
+                type="text"
+                :disabled="disableThis(key)"
+                v-model="settingModule.single_label"
+              />
+              <Select
+                v-else-if="inputTypeFor(key, value) === 'select'"
+                :dropdown_list="categoryList"
+                v-model="editableModule[key]"
+                mode="module-builder"
               />
               <textarea
                 v-else-if="inputTypeFor(key, value) === 'textarea'"

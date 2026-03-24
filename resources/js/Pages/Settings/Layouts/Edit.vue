@@ -11,7 +11,6 @@ import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubp
 import LayoutLinkingPanelEditor from "@/Pages/Components/Settings/Layouts/LayoutLinkingPanelEditor.vue";
 
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
@@ -333,7 +332,7 @@ const saveLayout = () => {
     if (empty.size) {
       emptyColumns.value = empty;
       clearAllAlerts();
-      error("Has empty Panel cannot save");
+      error(t("layouts.has_empty_layouts_error"));
       return;
     }
     emptyColumns.value = new Set();
@@ -400,13 +399,6 @@ const moduleColor = computed(() =>
       '--module-color': moduleColor,
     }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="module"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"

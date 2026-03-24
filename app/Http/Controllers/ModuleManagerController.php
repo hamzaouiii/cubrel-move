@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Filesystem\Filesystem;
 use App\Models\Settings\Settings;
+use App\Models\DropdownList;
 
 
 class ModuleManagerController extends Controller
@@ -21,6 +22,7 @@ class ModuleManagerController extends Controller
 
     $modules = Module::query()
       ->where('is_active', 1)
+      ->where('is_draft', 0)
       ->with([
         'layouts' => function ($q) {
           $q->orderBy('type')->orderBy('name');
@@ -39,9 +41,13 @@ class ModuleManagerController extends Controller
   public function show(Request $request)
   {
     $id = last($request->segments());
+    $category_list = DropdownList::get('module_category_list');
+
     $module = Module::where('id', $id)->firstOrFail();
     return Inertia::render('Settings/Modules/Record', [
-      'settingModule' => $module
+      'settingModule' => $module,
+      'categoryList'  => $category_list
+
     ]);
   }
 
@@ -50,8 +56,18 @@ class ModuleManagerController extends Controller
   {
     $module = Module::where('id', $id)->firstOrFail();
 
-    // this wont run if validation fails
-    $data = $request->except('_token', '_method', 'label');
+    $data = $request->except([
+      '_token',
+      '_method',
+      'label',
+      'single_label',
+      'locked_until',
+      'locked_by',
+      'is_draft',
+      'created_at',
+      'updated_at',
+      'id'
+    ]);
     $module->fill($data)->save();
 
     return redirect()->to('/settings/modules');

@@ -16,12 +16,12 @@ return new class extends Migration
       $table->string('setting_item');
       $table->string('key');
       $table->text('value')->nullable();
+      $table->integer('sort_order')->nullable();
       $table->string('label')->nullable();
       $table->string('type', 50)->default('string');
       $table->boolean('autoload')->default(true);
-      $table->timestamps();
 
-      $table->unique(['setting_item', 'key']);
+      $table->timestamps();
     });
   }
 

@@ -9,4 +9,15 @@ return [
   'unsaved_changes_leave' => 'Discard Changes',
   'unsaved_changes_stay' => 'Stay',
   'changes_discarded' => 'Your changes have been discarded.',
+  'topbar' => [
+    'global_search' => "Globale Search",
+    'settings' => "Settings",
+    'profile' => "Profile",
+    'logout' => "Logout"
+  ],
+  'sidebar' => [
+    'expand' => 'Open Sidebar',
+    'close'  => 'Close Sidebar',
+    'home'    => "Dashboard",
+  ],
 ];

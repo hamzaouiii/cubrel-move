@@ -14,36 +14,6 @@ const appSettings = usePage().props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-const flattenedSettings = computed(() => {
-  const settings = pageProps.settings;
-  if (!settings || typeof settings !== "object") return [];
-
-  const flat = [];
-
-  Object.entries(group.items).forEach(([itemKey, item]) => {
-    if (item && typeof item === "object") {
-      flat.push({
-        id: `${groupKey}.${itemKey}`,
-        groupKey,
-        itemKey,
-        name: item.name || item.label || itemKey,
-        category: group.label || groupKey,
-        path: item.path || `${groupKey}.${itemKey}`,
-        type: item.type,
-        label: item.label,
-        description: item.description,
-        groupLabel: group.label,
-        groupDescription: group.description,
-        items: item.items || [],
-        value: item.value,
-        options: item.options,
-        ...item,
-      });
-    }
-  });
-
-  return flat;
-});
 const search = ref("");
 const filteredSettings = computed(() => {
   if (!search.value) {
@@ -85,6 +55,10 @@ const filteredSettings = computed(() => {
 
   return filteredGroups;
 });
+
+const clearSearch = () => {
+  search.value = "";
+};
 </script>
 
 <template>
@@ -107,10 +81,13 @@ const filteredSettings = computed(() => {
       <div class="settings__header__search">
         <input
           v-model="search"
-          type="search"
-          class="setting-search"
-          placeholder="Search settings..."
+          class="settings__header__search__field"
+          :placeholder="t('settings.search_placeholder')"
         />
+        <i
+          class="fa-solid fa-xmark settings__header__search__clear"
+          @click="clearSearch"
+        ></i>
       </div>
     </div>
     <div class="settings__list">
@@ -129,6 +106,13 @@ const filteredSettings = computed(() => {
             <span class="label">{{ $t(i.label) }}</span>
           </Link>
         </div>
+      </div>
+      <div
+        v-if="Object.keys(filteredSettings).length === 0"
+        class="settings__list__empty"
+      >
+        <i class="fa-solid fa-exclamation"></i>
+        <p>{{ $t("settings.no_results") }}</p>
       </div>
     </div>
   </div>

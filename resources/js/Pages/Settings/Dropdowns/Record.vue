@@ -8,7 +8,6 @@ import {
   onMounted,
 } from "vue";
 import Layout from "@/Layouts/Layout.vue";
-import DropdownBreadcrumbs from "@/Pages/Components/Settings/Dropdowns/DropdownBreadcrumbs.vue";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 
@@ -139,15 +138,6 @@ useUnsavedChangesGuard({
       '--module-color': appSettings.primary_color,
     }"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <DropdownBreadcrumbs
-          :setting-module="item"
-          :current="t('settings.dropdown.edit')"
-        ></DropdownBreadcrumbs>
-      </div>
-    </div>
-
     <div class="settings__dropdown">
       <div class="settings__dropdown__edit">
         <div class="settings__dropdown__edit__header">

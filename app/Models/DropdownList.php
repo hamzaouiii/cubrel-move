@@ -19,14 +19,17 @@ class DropdownList extends Model
     'key',
     'field_key',
     'values',
+    'is_draft'
   ];
 
   protected $casts = [
     'values' => 'array',
   ];
 
-  public function get($key): DropdownList
+  public static function get($key): DropdownList
   {
-    return DropdownList::query()->where('key', $key);
+    return DropdownList::query()
+      ->where('key', $key)
+      ->first();
   }
 }

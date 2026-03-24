@@ -63,6 +63,19 @@
     padding-right: 25px;
   }
 
+  // Styles for the new category labels
+  &__category-label {
+    padding: 12px 10px 4px 20px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0.8;
+    cursor: default;
+  }
+
   &__module-list {
     flex: 1;
     overflow-y: auto;
@@ -71,7 +84,8 @@
     flex-direction: column;
     padding: 0 10px; // Padding keeps hover backgrounds off the edges
     gap: 4px; // Modern, consistent spacing between items
-    margin-bottom: 50px;
+    padding-bottom: 10px; // Reduced to account for the footer
+
     // Refined Scrollbar
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 transparent;
@@ -93,12 +107,12 @@
       text-decoration: none;
       display: flex;
       align-items: center;
-      height: var(--item-height);
+      min-height: var(--item-height);
       border-radius: var(--radius-md);
       transition: background 0.2s ease;
       color: var(--text-main);
       width: 100%;
-      position: relative; // For the active pill indicator
+      position: relative;
       &.active {
         color: var(--module-color);
         background: rgba(0, 0, 0, 0.03);
@@ -168,8 +182,6 @@
             visibility: hidden; // Ensure it's not focusable when hidden
           }
         }
-
-        // Active State Styling
       }
 
       // Hover logic for the nested icon
@@ -181,8 +193,15 @@
     &__divider {
       border: 0;
       border-top: 1px solid rgba(0, 0, 0, 0.06);
-      margin: 10px 15px;
+      margin: 10px 0px;
     }
+  }
+
+  // Position footer naturally at the bottom of the flex column container
+  &__footer {
+    margin-top: auto;
+    padding: 0 10px 15px 10px;
+    width: 100%;
   }
 
   &__overlay {

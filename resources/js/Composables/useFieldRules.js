@@ -83,10 +83,9 @@ export function useFieldRules(form, metadata) {
     ].includes(field);
   };
 
-  /**
-   * Shared Helper: Identify dropdown types for the UI
-   */
   const isDropDown = (field) => field === "type";
+  const isDisplayLabel = (field) => field === "label";
+  const isRegex = (field) => field === "regex";
 
   /**
    * Shared Helper: Determine if a field should be disabled (Read Only)
@@ -104,6 +103,8 @@ export function useFieldRules(form, metadata) {
     isCheckbox,
     isDropDown,
     isReadonly,
+    isDisplayLabel,
+    isRegex,
     fieldTypeRules,
   };
 }

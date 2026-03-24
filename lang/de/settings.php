@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
   'label' => 'Einstellungen',
   'reset' => 'Zurücksetzen',
   'cancel' => 'Abbrechen',
@@ -8,6 +8,7 @@ return array(
   'create_new_module' => 'Neues Modul erstellen',
   'next' => 'Weiter',
   'previous' => 'Zurück',
+  'back' => 'Zurück',
   'saving' => 'Wird gespeichert...',
   'loading' => 'Wird geladen...',
   'module_save_success' => 'Modul wurde erfolgreich gespeichert',
@@ -18,16 +19,27 @@ return array(
   'dropdown_no_results' => 'Keine Ergibnisse',
   'setting_update_success' => 'Die Einstellungen wurden erfolgreich aktualisiert',
   'setting_update_error' => 'Beim Aktualisieren der Einstellungen ist ein Fehler aufgetreten',
+  'add_fields' => 'Felder hinzufügen',
+  'add_field_success' => 'Feld wurde erfolgreich hinzufügt',
+  'deploy' => 'Modul bereitstellen',
+  'dropdown_list_fetch_failed' => "Dropdown-Listen konnten nicht abgerufen werden:",
+  'back_to_modules' => "Zurück zur Modul-Liste",
+  'back_to_settings' => "Zurück zu Einstellungen",
+  'search_placeholder' => 'In dieser Liste suchen...',
+  'no_results' => 'Keine Einstellungen gefunden',
   'tabs' =>
-  array(
+  [
     'module_settings' => 'Module-Einstellungen',
     'layouts' => 'Layouts',
     'fields' => 'Felder',
-  ),
+    'relationships' => 'Beziehungen',
+  ],
   'modules' =>
-  array(
+  [
     'label' => 'Module',
-    'display_label' => 'Anzeigebezeichnung',
+    'display_label' => 'Anzeige Bezeichnung',
+    'single_label' => 'Einzelanzeige Bezeichnung',
+    'category' => 'Kategorie',
     'name' => 'Name',
     'name_placeholder' => 'Modul Name',
     'slug' => 'Systembezeichnung',
@@ -35,9 +47,12 @@ return array(
     'color' => 'Farbe',
     'show_in_sidebar' => 'Im Sidebar anzeigen',
     'description' => 'Beschreibung',
-  ),
+    'save_draft'  => 'Entwurf speichern',
+    'publish_module'  => 'Modul veröffentlichen',
+    'next'  => 'Weiter',
+  ],
   'fields' =>
-  array(
+  [
     'app_locale' => 'Anwendungssprache',
     'show_language_switcher' => 'Sprachumschalter anzeigen',
     'border_radius' => 'Randradius',
@@ -55,28 +70,29 @@ return array(
     'timezone' => 'Zeitzone',
     'first_day_of_week' => 'Erster Wochentag',
     'danger_color' => 'Gefahrfarbe',
+    'success_color' => 'Erfolgfarbe',
     'danger_color_hint' => 'Wird für gefährliche Aktionen wie Löschwarnungen und Löschbuttons verwendet',
     'related_panel_limit' => 'Limit verknüpfte Panels',
     'list_view_limit'    => 'Limit Listenansicht',
     'linking_panel_limit' => 'Limit Verknüpfte Listenansicht',
 
-  ),
+  ],
   'groups' =>
-  array(
+  [
     'email' => 'E-Mail Einstellungen',
     'system' => 'Systemeinstellungen',
     'users' => 'Benutzerverwaltung',
     'customisations' => 'Anpassungen',
     'description' =>
-    array(
+    [
       'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
       'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation. Benutzer können einige der Standard Locale Einstellungen in ihren Benutzereinstellungen überschreiben.',
       'users' => 'Erstelle, bearbeite, aktiviere und deaktiviere Benutzer. Erstelle und verwalte Teams und Rollen, einschließlich Modul und Feldebene Zugriffsrechte.',
       'customisations' => 'Erstelle und verwalte Module, Layouts, Felder und Beziehungen.',
-    ),
-  ),
+    ],
+  ],
   'items' =>
-  array(
+  [
     'role_management' => 'Rollenverwaltung',
     'inbound_email' => 'Eingehende E-Mails',
     'currencies' => 'Währungen',
@@ -94,9 +110,9 @@ return array(
     'system_email_settings' => 'System-E-Mail-Einstellungen',
     'dropdowns' => 'Dropdown Editor',
     'preferences'         => 'Präferenzen'
-  ),
+  ],
   'dropdown' =>
-  array(
+  [
     'create' => 'Neue Dropdown Liste erstellen',
     'edit' => 'Dropdown Liste bearbeiten',
     'display_label' => 'Anzeigebezeichnung',
@@ -107,6 +123,48 @@ return array(
     'update_success' => 'Dropdown Liste erfolgreich gespeichert',
     'save_error' => 'Beim Speichern der Dropdown Liste ist ein Fehler aufgetreten',
     'search' => 'In dieser Liste suchen',
-  ),
+  ],
   'select_dropdown_list' => 'Dropdown Liste auswählen...',
-);
+  'iconpicker' => [
+    'search_placeholder' => 'Icon suchen...',
+    'none'               => 'Kein Icon',
+    'no_results'         => 'Keine Icons gefunden!',
+    'prev'           => 'Zurück',
+    'previous'           => 'Zurück',
+    'next'               => 'Weiter',
+    'loading'            => 'Suche...',
+  ],
+  'modulebuilder' => [
+    'close' => 'Schließen',
+    'title' => [
+      'complete' => 'Bereitstellung abgeschlossen!',
+      'deploying' => 'Modul wird bereitgestellt',
+      'failed' => 'Modulbereitstellung fehlgeschlagen',
+
+    ],
+    'subtitle' => [
+      'wait' => 'Bitte warten Sie, während wir alles für Sie einrichten',
+      'success' => 'Ihr Modul wurde erfolgreich bereitgestellt und kann verwendet werden',
+    ],
+    'steps_completed' => 'Schritte abgeschlossen',
+    'status' => [
+      'pending' => 'Ausstehend',
+      'in_progress' => 'In Bearbeitung',
+      'completed' => 'Abgeschlossen',
+      'failed'    => 'Fehlgeschlagen'
+
+    ],
+    'preparing' => 'Bereitstellung wird vorbereitet...',
+    'success' => [
+      'message' => 'Modul erfolgreich bereitgestellt',
+    ],
+    'button' => [
+      'go_to_module' => 'Zum Modul',
+      'retry' => 'Wiederholen',
+      'close' => 'Schließen',
+    ],
+    'has_missing_fields' => 'Some required fields are still empty',
+    'deploying' => 'Deploying',
+    'deploy_success' => 'Module was deployed successfully',
+  ]
+];

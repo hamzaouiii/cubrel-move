@@ -21,7 +21,7 @@ class IconController extends Controller
 
     $icons = $query
       ->inRandomOrder()
-      ->paginate(16);
+      ->paginate(54);
 
     return response()->json($icons);
   }

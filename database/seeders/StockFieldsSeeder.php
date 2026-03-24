@@ -12,6 +12,25 @@ class StockFieldsSeeder extends Seeder
 {
   public function run(): void
   {
+    // seed default fields
+    $defaults = config("default_fields", []);
+    foreach ($defaults as $fieldKey => $default) {
+      Field::updateOrCreate(
+        [
+          'name'      => $fieldKey,
+          'is_global' => true
+        ],
+        array_merge($default, [
+          'module_id' => null,
+          'key'               => "defaults_{$fieldKey}",
+          'label'             => "modules.defaults.{$fieldKey}",
+          'id'                =>  Str::uuid(),
+          'is_custom'         => false,
+          'is_active'         => true,
+          'sortable'         => true,
+        ])
+      );
+    }
     foreach (Module::all() as $module) {
 
       $definitions = config("stock_fields.{$module->slug}", []);
@@ -23,6 +42,7 @@ class StockFieldsSeeder extends Seeder
         if (($definition['type'] ?? null) === 'select') {
 
           // Convention: module_field_list unless it is currency which is global
+          // maybe not a good idea ??
           $dropdownKey = $fieldKey === 'currency' ? "{$fieldKey}_list" : "{$module->slug}_{$fieldKey}_list";
 
           $dropdown = DropDownList::where('key', $dropdownKey)->first();

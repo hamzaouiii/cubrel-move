@@ -369,4 +369,32 @@ return array(
       'value' => 'BRL',
     ),
   ),
+  'module_category_list' =>
+  array(
+    0 =>
+    array(
+      'label' => 'modules.categories.sales',
+      'value' => 'sales',
+    ),
+    1 =>
+    array(
+      'label' => 'modules.categories.communication',
+      'value' => 'communication',
+    ),
+    2 =>
+    array(
+      'label' => 'modules.categories.revenue',
+      'value' => 'revenue',
+    ),
+    3 =>
+    array(
+      'label' => 'modules.categories.support',
+      'value' => 'support',
+    ),
+    4 =>
+    array(
+      'label' => 'modules.categories.system',
+      'value' => 'system',
+    ),
+  ),
 );

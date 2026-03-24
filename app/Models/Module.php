@@ -10,6 +10,7 @@ use App\Models\Layout;
 use App\Models\Field;
 use Illuminate\Support\Collection;
 use App\Services\Relationships\RelationshipService;
+use App\Models\BaseModule;
 
 /**
  * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
@@ -31,6 +32,8 @@ class Module extends Model
     'name',
     'icon',
     'label',
+    'is_draft',
+    'category',
     'single_label',
     'color',
     'path',
@@ -45,7 +48,10 @@ class Module extends Model
     'handler_class',
     'table_name',
     'show_in_sidebar',
-    'is_custom'
+    'is_custom',
+    'is_draft',
+    'locked_by',
+    'locked_until'
   ];
 
   protected $casts = [
@@ -59,9 +65,9 @@ class Module extends Model
   public $timestamps = true;
   public static function forSidebar(): Collection
   {
-    return self::active()
+    return self::where('is_draft', 0)
       ->where('show_in_sidebar', 1)
-      ->orderBy('id')
+      ->orderBy('category')
       ->get()
       ->map(function (Module $module) {
 
@@ -72,7 +78,8 @@ class Module extends Model
           'color' => $module->color,
           'path'  => $module->path,
           'label' => $module->label,
-          'single_label' => $module->single_label
+          'single_label' => $module->single_label,
+          'category' => $module->category
         ];
       })
       ->values();
@@ -136,7 +143,7 @@ class Module extends Model
   {
     return [
       'linkingPanel' => $this->linkingPanelLayout(),
-      'fields' => $this->fields
+      'fields' => $this->allFields()
     ];
   }
 
@@ -146,6 +153,7 @@ class Module extends Model
       ->where('type', $type)
       ->first();
   }
+
 
   /**
    * @return HasMany<Field, $this>
@@ -165,13 +173,70 @@ class Module extends Model
         'searchable',
         'label',
         'required',
+        'is_draft'
       ])
       ->with('dropdown_list');
   }
+  /**
+   * @return Collection<Field>
+   */
+  public function allFields(): Collection
+  {
+    return Field::query()
+      ->where(function ($query) {
+        $query->where('module_id', $this->id)
+          ->orWhere('is_global', true);
+      })
+      ->select([
+        'id',
+        'module_id',
+        'dropdown_list_id',
+        'name',
+        'type',
+        'key',
+        'readonly',
+        'sortable',
+        'searchable',
+        'label',
+        'required',
+        'is_draft'
+      ])
+      ->with('dropdown_list')
+      ->get();
+  }
+  public function draftFields(): Collection
+  {
+    return Field::query()
+      ->where('module_id', $this->id)
+      ->where('is_draft', true)
+      ->select([
+        'id',
+        'module_id',
+        'dropdown_list_id',
+        'name',
+        'type',
+        'key',
+        'readonly',
+        'sortable',
+        'searchable',
+        'label',
+        'required',
+        'is_draft'
+      ])
+      ->with('dropdown_list')
+      ->get();
+  }
 
+  /**
+   * @return Collection<Field>
+   */
   public function relatedfields()
   {
-    return $this->hasMany(Field::class, 'module_id', 'id')
+    return Field::query()
+      ->where(function ($query) {
+        $query->where('module_id', $this->id)
+          ->orWhere('is_global', true);
+      })
       ->select([
         'id',
         'module_id',
@@ -183,11 +248,33 @@ class Module extends Model
         'sortable',
         'label',
         'required',
-      ])->with('dropdown_list');
+      ])
+      ->with('dropdown_list')
+      ->get();
   }
+
+  /**
+   * Get fields for builder (DB + default fields, unique by key)
+   *
+   * @return \Illuminate\Support\Collection
+   */
+  public function builderFields(): Collection
+  {
+    $dbFields = $this->allFields();
+
+    $defaultFields = collect($this->getDefaultFields())->map(function ($field) {
+      return new Field($field);
+    });
+
+    return $defaultFields
+      ->merge($dbFields)
+      ->unique('name')
+      ->values();
+  }
+
   public function getFieldMetadata(string $field): array
   {
-    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
+    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_global-', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
     $field = $this->hasMany(Field::class, 'module_id', 'id')
       ->firstWhere('name', $field);
     return array_diff_key(
@@ -226,6 +313,19 @@ class Module extends Model
 
   public function relationships(): Collection
   {
-    return RelationshipService::getRelationshipForModule($this->model_class);
+    return RelationshipService::getRelationshipForModule($this->slug);
+  }
+
+  /**
+   * Instantiate the actual business model this registry entry describes.
+   */
+  public function getInstance(): BaseModule
+  {
+    return new ($this->class_name);
+  }
+
+  public function getDefaultFields(): array
+  {
+    return config("default_fields");
   }
 }

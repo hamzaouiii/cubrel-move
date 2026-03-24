@@ -2,7 +2,7 @@
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import { ref, computed, getCurrentInstance, watch } from "vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -128,13 +128,6 @@ const getList = (field) => {
       { '--danger-color': appSettings.danger_color },
     ]"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="module"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"
@@ -147,7 +140,10 @@ const getList = (field) => {
         </Link>
       </div>
       <div class="settings__module__edit">
-        <form @submit.prevent="saveRelationship">
+        <form
+          class="settings__module__edit__form"
+          @submit.prevent="saveRelationship"
+        >
           <div
             class="settings__module__edit__element"
             v-for="fieldName in metadata"

@@ -13,12 +13,15 @@ return [
   'field_update_error' => 'An error occurred while updating field.',
   'field_reset_success' => 'Field reset to Database values.',
   'key_is_taken_error'    => 'A field with the same system name already exists',
+  'label_hint'        => 'Min. 4 characters',
+  'regex_hint'        => 'Use for custom validation rules',
+
   'types' => [
     'longtext' => 'Long text',
     'text' => 'Text',
     'datetime' => 'Date & time',
     'email' => 'Email',
-    'select' => 'Select',
+    'select' => 'Dropdown Field ',
     'date' => 'Date',
     'number' => 'Number',
     'relationship' => 'Relationship',
@@ -49,4 +52,63 @@ return [
   ],
   'checkbox_yes' => "Yes",
   'checkbox_no' => "No",
+  'calendar' =>
+  [
+    'months' => [
+      'january' => 'January',
+      'february' => 'February',
+      'march' => 'March',
+      'april' => 'April',
+      'may' => 'May',
+      'june' => 'June',
+      'july' => 'July',
+      'august' => 'August',
+      'september' => 'September',
+      'october' => 'October',
+      'november' => 'November',
+      'december' => 'December'
+    ],
+
+    'weekdays_short' => [
+      'sunday' => 'Su',
+      'monday' => 'Mo',
+      'tuesday' => 'Tu',
+      'wednesday' => 'We',
+      'thursday' => 'Th',
+      'friday' => 'Fr',
+      'saturday' => 'Sa'
+    ],
+
+    'today' => 'Today',
+    'clear' => 'Clear',
+    'select_date' => 'Select Date',
+    'time_format' => 'HH:MM'
+  ],
+  'colorpicker' => [
+    'select_color'       => 'Select Color',
+    'search_placeholder' => "Search shades (e.g., 'Blue', 'Warm')",
+    'no_shades_found'    => "No shades found.",
+    'hex_input_error'    => "Invalid hex color (e.g., #RRGGBB or #RGB)",
+    'apply'              => 'Apply',
+    'shades' => [
+      'blues'   => 'Blues Indigos',
+      'teals'   => 'Teals Cyans',
+      'greens'  => 'Greens',
+      'yellows' => 'Yellows Oranges',
+      'reds'    => 'Reds Pinks',
+      'purples' => 'Purples Violets',
+      'slates'  => 'Slates Grays',
+      'earth'   => 'Earth Warm Browns',
+    ],
+    'keywords' => [
+      'blues'   => 'blue, indigo, navy, sky, ocean, cyan',
+      'teals'   => 'teal, cyan, mint, aqua, turquoise',
+      'greens'  => 'green, emerald, forest, lime, olive',
+      'yellows' => 'yellow, orange, gold, amber, mustard, peach',
+      'reds'    => 'red, pink, rose, ruby, crimson, magenta',
+      'purples' => 'purple, violet, lavender, plum, lilac',
+      'slates'  => 'slate, gray, grey, silver, ash, charcoal, black',
+      'earth'   => 'earth, warm, brown, tan, sand, chocolate, coffee, wood',
+    ],
+  ]
 ];

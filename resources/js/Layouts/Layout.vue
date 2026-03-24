@@ -30,7 +30,14 @@ provide("useModuleColors", useModuleColors);
 </script>
 
 <template>
-  <div class="root">
+  <div
+    class="root"
+    :style="{
+      '--primary-color': appSettings.primary_color,
+      '--danger-color': appSettings.danger_color,
+      '--secondary-color': appSettings.secondary_color,
+    }"
+  >
     <!-- <MainOverlay></MainOverlay> -->
     <ConfirmOverlay />
     <Sidebar></Sidebar>

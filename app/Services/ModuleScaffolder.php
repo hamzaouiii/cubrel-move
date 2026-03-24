@@ -2,28 +2,31 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use App\Models\Module;
+use App\Models\Label;
 
 class ModuleScaffolder
 {
   public function __construct(protected Filesystem $files) {}
 
-  public function scaffold(Module $module, string $label): void
+  public function scaffold(Module $module, string $label, string $single_label = ''): void
   {
+
     $slug = $module->slug;
     $modelClass = $module->model_class;
     $table = $module->table_name;
 
-    $baseName   = class_basename($modelClass);
+    $baseName = class_basename($modelClass);
 
     $this->createModelFile($baseName, $table);
     $this->createHandlerFile($baseName, $modelClass);
-    $this->createLangFiles($baseName, $label);
-    $this->createTable($table);
+    $this->createModuleLabels($module);
+    $this->activateFields($module);
+    $this->createTable($table, $module);
   }
 
   protected function createModelFile(string $baseName, string $table): void
@@ -102,53 +105,121 @@ class ModuleScaffolder
     $this->files->put($path, $contents);
   }
 
-  protected function createTable(string $table): void
+  protected function createTable(string $table, Module $module): void
   {
     if (Schema::hasTable($table)) {
       return;
     }
 
-    Schema::create($table, function (Blueprint $tableBlueprint) {
+
+    $typeMapper = config('default_field_types_mapper');
+    $fields = $module->draftFields();
+
+    Schema::create($table, function (Blueprint $tableBlueprint) use ($fields, $typeMapper) {
       $tableBlueprint->uuid('id')->primary();
       $tableBlueprint->string('name')->nullable();
       $tableBlueprint->text('description')->nullable();
+
+      foreach ($fields as $field) {
+        $key = $field['key'] ?? null;
+
+        if (!$key || str_starts_with($key, 'default.')) {
+          continue;
+        }
+
+        $fieldType = $field['type'] ?? 'text';
+
+        $blueprintMethod = $typeMapper[$fieldType] ?? 'string';
+
+        $column = $tableBlueprint->{$blueprintMethod}($key);
+        $column->nullable();
+      }
+      //for custom fields
+      $tableBlueprint->json('custom_fields')->nullable();
+
       $tableBlueprint->timestamps();
       $tableBlueprint->softDeletes();
     });
   }
 
-  protected function createLangFiles(string $baseName, string $label): void
+  protected function createModuleLabels(Module $module): void
   {
-    $langPath   = base_path('lang');
-    $locales    = array_filter(scandir($langPath), function ($item) use ($langPath) {
-      return $item !== '.'
-        && $item !== '..'
-        && is_dir($langPath . '/' . $item);
-    });
+    $label_key = "modules." . $module->slug . ".label";
+    $single_label_key = "modules." . $module->slug . ".single_label";
 
-    foreach ($locales as $locale) {
 
-      $directory = $langPath . "/{$locale}/custom/modules";
+    // updateOrCreate takes two arrays: [Search attributes], [Values to update/insert]
+    Label::updateOrCreate(
+      [
+        'key' => $label_key,
+        'module_id' => $module->id,
+      ],
+      [
+        'value' => $module->label,
+        'is_custom' => true
+      ]
+    );
 
-      if (! $this->files->exists($directory)) {
-        $this->files->makeDirectory($directory, 0755, true);
+    Label::updateOrCreate(
+      [
+        'key' => $single_label_key,
+        'module_id' => $module->id,
+      ],
+      [
+        'value' => $module->single_label,
+        'is_custom' => true
+      ]
+    );
+  }
+
+
+  protected function activateFields(Module $module): void
+  {
+    // 1. Get fields for module. 
+    // (Note: Add ->get() if draftFields() returns a query builder/relation)
+    $fields = $module->draftFields();
+
+    foreach ($fields as $field) {
+      // 1. Update status flags
+      $field->is_draft = false;
+      $field->is_active = true;
+
+      // 2. Rename field key 
+      // Replaces the "draft" concept with the module slug and field name
+      $field->key = $module->slug . '_' . $field->name;
+
+      // 3. Handle 'select' type and related dropdown
+      if ($field->type === 'select' && $field->dropdown_list_id) {
+        $dropdown = $field->dropdown_list;
+
+        // Assuming you want to un-draft the dropdown to activate it alongside the field
+        if ($dropdown && $dropdown->is_draft) {
+          $dropdown->is_draft = false;
+          $dropdown->save();
+        }
       }
 
-      $path = $directory . "/{$baseName}.php";
+      // 4. Handle Labels
+      $label_key = "modules." . $module->slug . ".fields." . $field->name;
+      $label_value = $field->label;
 
-      if ($this->files->exists($path)) {
-        continue;
-      }
+      // updateOrCreate takes two arrays: [Search attributes], [Values to update/insert]
+      Label::updateOrCreate(
+        [
+          'key' => $label_key,
+          'module_id' => $module->id,
+        ],
+        [
+          'value' => $label_value,
+          'is_custom' => true
+        ]
+      );
 
-      $contents = <<<'PHP'
-<?php
-return [
-    'label' => 'LABEL_VALUE',
-];
-PHP;
+      // 5. Assign the new label key back to the field
+      $field->label = $label_key;
 
-      $contents = str_replace('LABEL_VALUE', $label, $contents);
-      $this->files->put($path, $contents);
+      // 6. Save the updated field to the database
+      $field->save();
     }
   }
 }

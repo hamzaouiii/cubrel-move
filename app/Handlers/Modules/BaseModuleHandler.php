@@ -82,7 +82,7 @@ abstract class BaseModuleHandler implements ModuleHandler
   }
 
 
-  public function getRecordData(string $recordId, array $params = []): array
+  public function getRecordData(string $module_slug, string $recordId, array $params = []): array
   {
     if (! isset($this->model)) {
       throw new \Exception("Model class not defined in handler.");
@@ -95,7 +95,7 @@ abstract class BaseModuleHandler implements ModuleHandler
       $customFields = $record->custom_fields ?? [];
       $recordData = $record->toArray();
       $mergedData = array_merge($recordData, $customFields);
-      $related = RelationshipService::getAllRelatedRecords($model, $recordId)->toArray();
+      $related = RelationshipService::getAllRelatedRecords($module_slug, $recordId)->toArray();
       $mergedData['related'] = $related;
       return [
         'record' => $mergedData
@@ -112,7 +112,7 @@ abstract class BaseModuleHandler implements ModuleHandler
       return $columns;
     }
 
-    $dbFields = $module->fields()
+    $dbFields = $module->allFields()
       ->where('searchable', true)
       ->pluck('name')
       ->toArray();

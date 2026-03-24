@@ -1,82 +1,198 @@
 <script setup>
-import { computed, getCurrentInstance } from "vue";
-import Layout from "@/Layouts/Layout.vue";
-import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
-import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
-import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  watch,
+  onBeforeUnmount,
+  getCurrentInstance,
+} from "vue";
+import EditModule from "@/Pages/Components/Settings/Builder/EditModule.vue";
+import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue";
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+import Layout from "@/Layouts/Layout.vue";
+import DeployModal from "@/Pages/Components/Settings/Builder/DeployModal.vue";
+import { Head, usePage, useForm, router, Link } from "@inertiajs/vue3";
 
-const appSettings = usePage().props.appSettings;
-
-const { proxy } = getCurrentInstance();
-const t = proxy.$t;
-
-const { success, error, info, clearAllAlerts } = useAlerts();
+const { error, success, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
   layout: Layout,
 });
-
-const defaultValues = {
-  display_label: "",
-  label: "",
-  icon: "",
-  color: "#0d6efd",
-  show_in_sidebar: true,
-  description: "",
-  slug: "",
-};
-
-const form = useForm({ ...defaultValues });
-
-const isDirty = computed(() => {
-  return form.display_label.length >= 4;
+const props = defineProps({
+  settingModule: Object,
+  categoryList: Object,
+  fields: Array,
+  field_types: Array,
+  metadata: Object,
 });
 
-const slug = computed(() => {
-  return form.display_label
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-});
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
-const resetModule = () => {
-  Object.keys(defaultValues).forEach((key) => {
-    form[key] = defaultValues[key];
-  });
-  form.clearErrors();
+const childFormData = ref({});
+const hasMissingFields = ref(false);
+const isFormDirty = ref(false);
+const showModuleDeplyProgress = ref(false);
+const form = useForm({});
+
+const handleMissingFields = (payload) => {
+  hasMissingFields.value = payload;
+};
+const handleIsFormDirty = (payload) => {
+  isFormDirty.value = payload;
 };
 
-const saveModule = () => {
+const currentStep = ref("edit");
+const tabs = ["edit", "fields"];
+const appSettings = usePage().props.appSettings;
+const moduleColor = computed(() =>
+  appSettings.use_individual_module_colors === "1"
+    ? props.settingModule.color
+    : appSettings.primary_color,
+);
+const currentColor = ref(moduleColor.value);
+
+const isProcessing = ref(false);
+const handleUpdate = (payload) => {
+  childFormData.value = payload;
+  if (payload.color) {
+    currentColor.value = payload.color;
+  }
+};
+
+const proceedToNextTab = () => {
+  const currentIndex = tabs.indexOf(currentStep.value);
+  if (currentIndex < tabs.length - 1) {
+    currentStep.value = tabs[currentIndex + 1];
+  } else {
+    deployModule();
+  }
+};
+
+const saveModuleAndProceed = () => {
+  isProcessing.value = true;
+  const url = "/settings/modulebuilder/" + props.settingModule.id;
   info(t("settings.saving"));
-
   form
-    .transform((data) => ({ ...data, slug: slug.value }))
-    .post("/settings/modules", {
-      preserveScroll: true,
+    .transform(() => childFormData.value)
+    .put(url, {
       onSuccess: () => {
-        form.clearErrors();
         clearAllAlerts();
-        const flash = usePage().props.flash;
-        if (flash?.success) {
-          success(flash.success);
-        } else {
-          success(t("settings.module_save_success"));
-        }
+        success(t("settings.module_save_success"));
+        isProcessing.value = false;
+        isFormDirty.value = false;
+        proceedToNextTab(); // Move to next tab only after successful save
       },
-      onError: (errors) => {
-        const serverError = Object.values(errors)[0];
+      onError: (r) => {
         clearAllAlerts();
-        error(t("settings.module_save_error") + ": " + serverError);
+        Object.values(r).forEach((message) => {
+          error(message);
+        });
+        isProcessing.value = false;
       },
     });
+};
+
+const nextTab = () => {
+  if (hasMissingFields.value) {
+    error(t("settings.modulebuilder.has_missing_fields"));
+    return;
+  }
+
+  // If on the edit tab AND they made changes, save it first
+  if (currentStep.value === "edit" && isFormDirty.value) {
+    saveModuleAndProceed();
+  } else {
+    // Nothing changed OR we are on a different tab, just skip saving and move instantly
+    proceedToNextTab();
+  }
+};
+
+const back = () => {
+  currentStep.value = tabs[tabs.indexOf(currentStep.value) - 1];
+};
+
+const isLastTab = computed(() => {
+  return tabs.indexOf(currentStep.value) === tabs.length - 1;
+});
+
+const deployModule = () => {
+  isProcessing.value = true;
+  const url = "/settings/modulebuilder/" + props.settingModule.id + "/deploy";
+  clearAllAlerts();
+  info(t("settings.modulebuilder.deploying"));
+  form
+    .transform(() => childFormData.value)
+    .post(url, {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("settings.modulebuilder.deploy_success"));
+        isProcessing.value = false;
+        isFormDirty.value = false;
+      },
+      onError: (r) => {
+        clearAllAlerts();
+        Object.values(r).forEach((message) => {
+          error(message);
+        });
+        isProcessing.value = false;
+      },
+    });
+};
+
+const onDeployComplete = () => {
+  // In the future, this is where you'd redirect using Inertia
+  // e.g., router.visit(`/settings/modules/${props.settingModule.id}`);
+};
+
+const tabDirty = ref({
+  edit: false,
+  layouts: false,
+  fields: false,
+  relationships: false,
+});
+
+const updateDirty = (tab, value) => {
+  tabDirty.value[tab] = value;
+};
+
+watch(currentStep, (step) => {
+  localStorage.setItem("module-create-step", step);
+});
+
+onMounted(() => {
+  const savedStep = localStorage.getItem("module-create-step");
+  if (savedStep && !hasMissingFields.value) {
+    currentStep.value = savedStep;
+  }
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
+
+const handleKeydown = (e) => {
+  if (e.ctrlKey && e.key === "Enter") {
+    e.preventDefault();
+    nextTab();
+  }
+  if (e.ctrlKey && e.key === "b") {
+    e.preventDefault();
+    back();
+  }
+};
+
+const handleUpdateList = () => {
+  router.reload({
+    only: ["fields"],
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("settings.add_field_success"));
+    },
+  });
 };
 </script>
 
@@ -86,90 +202,85 @@ const saveModule = () => {
       {{ $t("settings.create_new_module") }} - {{ $t("settings.label") }}
     </title>
   </Head>
-
   <div
     class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
+    :style="[
+      { '--module-color': currentColor },
+      { '--related-color': currentColor },
+    ]"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs></ModuleSettingBreadcrumbs>
+    <div class="settings__module">
+      <div class="settings__module__header">
+        <Link href="/settings">
+          <i class="fa-solid fa-arrow-left"></i>
+          {{ $t("settings.back_to_settings") }}
+        </Link>
+      </div>
+      <div
+        class="settings__module__edit"
+        :class="{ 'is-loading': isProcessing }"
+      >
+        <div v-if="isProcessing" class="settings__module__edit__overlay">
+          <div class="saving-loader">
+            <div class="lds-ripple">
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+        <EditModule
+          v-if="currentStep === 'edit'"
+          :setting-module="settingModule"
+          :category-list="categoryList"
+          @dirty="updateDirty('edit', $event)"
+          @update="handleUpdate"
+          @missing-fields="handleMissingFields"
+          @is-form-dirty="handleIsFormDirty"
+          :color="currentColor"
+          :errors="form.errors"
+        />
+
+        <FieldSettings
+          v-if="currentStep === 'fields'"
+          :module="settingModule"
+          :fields="fields"
+          :field_types="field_types"
+          :metadata="metadata"
+          :color="currentColor"
+          @dirty="updateDirty('fields', $event)"
+          @update-field-list="handleUpdateList"
+        />
+
+        <div class="settings__actions">
+          <button v-if="tabs.indexOf(currentStep) > 0" @click="back()">
+            {{ $t("settings.back") }}
+          </button>
+          <button
+            class="settings__actions__save"
+            type="button"
+            :disabled="hasMissingFields"
+            @click="nextTab"
+          >
+            <span v-if="!isProcessing">
+              {{
+                isLastTab ? $t("settings.deploy") : $t("settings.add_fields")
+              }}
+            </span>
+            <span v-else class="button-spinner"></span>
+          </button>
+        </div>
       </div>
     </div>
-
-    <form class="settings__create" @submit.prevent="saveModule">
-      <div>
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.display_label") }}
-          </label>
-          <input
-            class=""
-            type="text"
-            name="display_label"
-            v-model="form.display_label"
-            :placeholder="$t('settings.modules.name_placeholder')"
-          />
-        </div>
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.slug") }}
-          </label>
-          <input class="slug" type="text" name="slug" :value="slug" disabled />
-        </div>
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.icon") }}
-          </label>
-          <IconPicker v-model="form.icon" :color="form.color" />
-        </div>
-
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.color") }}
-          </label>
-          <input class="" type="color" name="color" v-model="form.color" />
-        </div>
-
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.show_in_sidebar") }}
-          </label>
-          <Checkbox
-            v-model="form.show_in_sidebar"
-            :module-color="form.color"
-          ></Checkbox>
-        </div>
-
-        <div class="settings__create__element">
-          <label>
-            {{ $t("settings.modules.description") }}
-          </label>
-          <textarea class="" v-model="form.description"></textarea>
-        </div>
-      </div>
-
-      <div
-        class="settings__create__actions"
-        :style="{ '--module-color': form.color }"
-      >
-        <button
-          class="settings__create__actions__reset btn"
-          type="button"
-          @click="resetModule"
-          v-if="isDirty"
-        >
-          {{ $t("settings.cancel") }}
-        </button>
-
-        <button
-          class="settings__create__actions__save btn"
-          type="submit"
-          :disabled="!isDirty"
-        >
-          {{ $t("settings.save") }}
-        </button>
-      </div>
-    </form>
   </div>
+  <DeployModal
+    v-if="showModuleDeplyProgress"
+    @close="showModuleDeplyProgress = false"
+    @complete="onDeployComplete"
+    :style="[
+      { '--module-color': moduleColor },
+      { '--related-color': moduleColor },
+      { '--success-color': appSettings.success_color },
+      { '--danger-color': appSettings.danger_color },
+    ]"
+  />
 </template>

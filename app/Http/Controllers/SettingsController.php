@@ -27,12 +27,19 @@ class SettingsController extends Controller
       ->where('autoload', 1)
       ->orderBy('sort_order')
       ->get();
+
+    $tz = SettingValue::query()
+      ->where('key', 'timezone')
+      ->value('value')
+      ?: config('app.timezone', 'UTC');
+
+
     return Inertia::render('Settings/Page', [
       'item' => $settingsItem,
       'values' => $values,
-      'dateFormatOptions' => $this->dateFormatOptions(),
-      'datetimeFormatOptions' => $this->datetimeFormatOptions(),
-      'timezoneOptions' => $this->timezoneOptions(),
+      'dateFormatOptions' => $this->dateFormatOptions($tz),
+      'datetimeFormatOptions' => $this->datetimeFormatOptions($tz),
+      'timezoneOptions' => $this->timezoneOptions($tz),
     ]);
   }
 
@@ -58,15 +65,10 @@ class SettingsController extends Controller
     return redirect()->back()->with('success', __('settings.setting_update_success'));
   }
 
-  private function datetimeFormatOptions(): array
+  private function datetimeFormatOptions(string $tz): array
   {
     $formatsMap = config('datetime_formats');
     $example = Carbon::create(2025, 12, 11, 14, 30, 0);
-
-    $tz = SettingValue::query()
-      ->where('key', 'timezone')
-      ->value('value')
-      ?: config('app.timezone', 'UTC');
 
     $example->locale(app()->getLocale())->setTimezone($tz);
 
@@ -82,21 +84,16 @@ class SettingsController extends Controller
   }
 
 
-  private function timezoneOptions(): array
+  private function timezoneOptions(string $currentTz): array
   {
-    $currentTz = SettingValue::query()
-      ->where('key', 'timezone')
-      ->value('value') ?: config('app.timezone', 'UTC');
-
     $options = [];
 
     foreach (CarbonTimeZone::listIdentifiers() as $tz) {
       $now = now()->setTimezone($tz);
 
-      $offset = $now->format('P'); // +01:00
-      $abbr   = $now->format('T'); // CET / CEST etc.
+      $offset = $now->format('P');
+      $abbr   = $now->format('T');
 
-      // Human name (last part) e.g. "Berlin" from "Europe/Berlin"
       $parts = explode('/', $tz);
       $city  = str_replace('_', ' ', end($parts));
 
@@ -108,21 +105,15 @@ class SettingsController extends Controller
       ];
     }
 
-    // OPTIONAL: sort nicely by label
     usort($options, fn($a, $b) => strcmp($a['label'], $b['label']));
 
     return $options;
   }
 
-  private function dateFormatOptions(): array
+  private function dateFormatOptions(String $tz): array
   {
     $formatsMap = config('date_formats');
     $example = Carbon::create(2025, 12, 11);
-
-    $tz = SettingValue::query()
-      ->where('key', 'timezone')
-      ->value('value')
-      ?: config('app.timezone', 'UTC');
 
     $example->locale(app()->getLocale())->setTimezone($tz);
 

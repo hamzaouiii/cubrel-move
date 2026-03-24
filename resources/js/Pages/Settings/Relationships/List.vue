@@ -2,7 +2,7 @@
 import Layout from "@/Layouts/Layout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed, getCurrentInstance } from "vue";
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
+
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import { useConfirm } from "@/Composables/useConfirm";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -110,13 +110,6 @@ const deleteRelationship = async (rel) => {
       { '--danger-color': appSettings.danger_color },
     ]"
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="module"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"
@@ -125,6 +118,10 @@ const deleteRelationship = async (rel) => {
     </div>
     <div class="fields">
       <div class="fields__header">
+        <span class="fields__header__name">
+          {{ module?.display_label || module?.name }}</span
+        >
+
         <Link class="fields__header__create" :href="createUrl">
           {{ $t("relationships.create_new") }}</Link
         >
@@ -184,7 +181,7 @@ const deleteRelationship = async (rel) => {
             <td>{{ $t("relationships.types." + r.type) }}</td>
             <td style="width: 70px" class="fields__table__row__actions">
               <button
-                class="fields__table__row__actions__delete btn"
+                class="fields__table__row__actions__delete"
                 :disabled="r.is_system"
                 @click="deleteRelationship(r)"
               >

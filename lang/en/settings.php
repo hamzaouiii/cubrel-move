@@ -7,35 +7,51 @@ return [
   'save' => 'Save',
   'create_new_module' => 'Create a new module',
   'next' => 'Next',
+  'add_fields' => 'Add Fields',
+  'add_field_success' => 'Field was added successfully',
+  'deploy' => 'Deploy Module',
+  'back' => 'Back',
   'previous' => 'Previous',
   'saving'  => 'Saving...',
   'loading' => 'Loading...',
-  'module_save_success' => 'Module saved successfuly',
-  'module_update_success' => 'Module updated successfuly',
-  'module_save_error' => 'An error occured while saving module',
+  'module_save_success' => 'Module saved successfully',
+  'module_update_success' => 'Module updated successfully',
+  'module_save_error' => 'An error occurred while saving the module',
   'select'  => 'Select...',
   'select_dropdown_list'  => 'Select Dropdown List...',
   'search_in_drop_down' => 'Search this list...',
   'dropdown_no_results' => 'No results',
   'setting_update_success' => 'The settings have been successfully updated',
   'setting_update_error' => 'An error occurred while updating the settings',
+  'dropdown_list_fetch_failed' => 'Failed to fetch dropdown lists:',
+  'back_to_modules' => 'Back to Module List',
+  'back_to_settings' => 'Back to Settings',
+  'search_placeholder' => 'Search settings...',
+  'no_results' => 'No settings found',
+
   'tabs' => [
     'module_settings' => 'Module Settings',
     'layouts' => 'Layouts',
     'fields' => 'Fields',
+    'relationships' => 'Relationships',
   ],
   'modules' => [
     'label' => 'Modules',
     'display_label' => 'Display Label',
     'name' => 'Name',
     'name_placeholder' => 'Module Name',
-    'slug' => 'Slug',
+    'slug' => 'System Name',
     'icon' => 'Icon',
     'color' => 'Color',
     'show_in_sidebar' => 'Show In Sidebar',
-    'description' => 'Descrption'
+    'description' => 'Description',
+    'single_label' => 'Single Label',
+    'category'  => 'Category',
+    'save_draft'  => 'Save Draft',
+    'publish_module'  => 'Publish Module',
+    'next'  => 'Next',
   ],
-  // perhaps I need to change this to system_fields not to conflict with settings.modules.fields
+  // Note: Changing this to 'system_fields' is a good idea to avoid conflicts with modules.fields
   'fields' => [
     'app_locale'                => 'Application Language',
     'show_language_switcher'    => 'Show Language Switcher',
@@ -53,12 +69,12 @@ return [
     'use_individual_module_colors' => 'Use Single Module Colors',
     'timezone'                  => 'Timezone',
     'first_day_of_week'         => 'First Day of Week',
-    'danger_color'              => "Danger Color",
-    'danger_color_hint'              => "Used for dangerous actions such delete warnings and delete buttons",
-    'related_panel_limit' => 'Related Panel Limit',
-    'list_view_limit' => 'List View Limit',
-    'linking_panel_limit' => 'Linking Panel Limit',
-
+    'danger_color'              => 'Danger Color',
+    'danger_color_hint'         => 'Used for dangerous actions such as delete warnings and delete buttons',
+    'success_color'             => 'Success Color',
+    'related_panel_limit'       => 'Related Panel Limit',
+    'list_view_limit'           => 'List View Limit',
+    'linking_panel_limit'       => 'Linking Panel Limit',
   ],
   'groups' => [
     'email'          => 'Email Settings',
@@ -68,8 +84,8 @@ return [
     'description' => [
       'email'          => 'Manage outbound and inbound emails. The email settings must be configured in order to enable users to send out email and newsletter campaigns.',
       'system'         => 'Configure the system-wide settings according to the specifications of your organization. Users can override some of the default locale settings within their user settings page.',
-      'users'          => 'Create, edit, activate and deactivate users in AR-CRM. Create and manage teams and roles, including module- and field-level access.',
-      'customisations' => 'Create and manage: Modules, Layouts, Fields and Relationships.'
+      'users'          => 'Create, edit, activate, and deactivate users in AR-CRM. Create and manage teams and roles, including module- and field-level access.',
+      'customisations' => 'Create and manage Modules, Layouts, Fields, and Relationships.'
     ]
   ],
   'items' => [
@@ -93,15 +109,54 @@ return [
   ],
   'dropdown' => [
     'create'  => 'Create new dropdown list',
-    'edit'  => 'Edit Dropdown list',
+    'edit'    => 'Edit Dropdown list',
     'display_label'   => 'Display Label',
     'value'   => 'Value',
     'list_name' => 'List Name',
     'related_field' => 'Related Field',
-    'save_success' => 'Dropdown list saved succefully',
-    'update_success' => 'Dropdown list saved succefully',
+    'save_success' => 'Dropdown list saved successfully',
+    'update_success' => 'Dropdown list updated successfully',
     'save_error' => 'An error occurred while saving the Dropdown list',
     'search'    => 'Search dropdown lists'
   ],
-
+  'iconpicker' => [
+    'search_placeholder' => 'Search icons...',
+    'none'               => 'No icon selected',
+    'no_results'         => 'No icons found!',
+    'prev'               => 'Prev',
+    'previous'           => 'Previous',
+    'next'               => 'Next',
+    'loading'            => 'Searching...',
+  ],
+  'modulebuilder' => [
+    'close' => 'Close',
+    'title' => [
+      'complete' => 'Deployment Complete!',
+      'deploying' => 'Deploying Module',
+      'failed' => 'Module Deployment Failed',
+    ],
+    'subtitle' => [
+      'wait' => 'Please wait while we set everything up for you',
+      'success' => 'Your module has been successfully deployed and is ready to use',
+    ],
+    'steps_completed' => 'steps completed',
+    'status' => [
+      'pending' => 'Pending',
+      'in_progress' => 'In Progress',
+      'completed' => 'Completed',
+      'failed'    => 'Failed'
+    ],
+    'preparing' => 'Preparing deployment...',
+    'success' => [
+      'message' => 'Module deployed successfully',
+    ],
+    'button' => [
+      'go_to_module' => 'Go to Module',
+      'retry' => 'Retry',
+      'close' => 'Close',
+    ],
+    'has_missing_fields' => 'Some required fields are still empty',
+    'deploying' => 'Deploying',
+    'deploy_success' => 'Module was deployed successfully',
+  ]
 ];

@@ -9,16 +9,17 @@ import {
   watch,
   ref,
   onMounted,
+  onBeforeUnmount,
   toRef,
 } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useFieldRules } from "@/Composables/useFieldRules";
 
-import ModuleSettingBreadcrumbs from "@/Pages/Components/Settings/ModuleSettingBreadcrumbs.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
+
 import DropdownSelector from "@/Pages/Components/Settings/Dropdowns/DropdownSelector.vue";
 import CreateNewDropdownListModal from "@/Pages/Components/Settings/Dropdowns/CreateNewDropdownListModal.vue";
 import EditDropdownListModal from "@/Pages/Components/Settings/Dropdowns/EditDropdownListModal.vue";
@@ -31,7 +32,6 @@ defineOptions({
 
 const props = defineProps({
   module: Object,
-  item: Object,
   field_types: Array,
   metadata: Object,
 });
@@ -77,6 +77,7 @@ const generatedName = computed(() => {
   if (!form.label) return "";
 
   const name = form.label
+    .trim()
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -85,7 +86,7 @@ const generatedName = computed(() => {
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
     .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^-+|-+$/g, "");
+    .replace(/^_+|_+$/g, "");
 
   return name;
 });
@@ -146,6 +147,7 @@ const saveField = () => {
   if (!form.key && form.name) {
     form.key = generatedKey.value;
     form.name = generatedName.value;
+    form.label = form?.label.trim();
   }
   if (form.type === "select") {
     form.dropdown_list = selected_dropdown_list.value;
@@ -164,7 +166,7 @@ const saveField = () => {
         error(Error.table_missing);
       } else {
         for (const [key, value] of Object.entries(Error)) {
-          error(key + " : " + value);
+          error(value);
         }
       }
     },
@@ -176,10 +178,15 @@ const resetForm = () => {
   router.visit(fieldsUrl());
   warning(t("fields.field_reset_success"));
 };
+const isDirty = ref(false);
 
-const isDirty = () => {
-  return form.label?.length >= 4 && form.type;
-};
+watch(
+  form,
+  () => {
+    isDirty.value = form.label?.length >= 4 && form.type;
+  },
+  { deep: true },
+);
 
 const displayKeyError = () => {
   return form.errors.key || form.errors.name;
@@ -214,7 +221,7 @@ onMounted(() => {
 });
 
 useUnsavedChangesGuard({
-  getIsDirty: () => isDirty(),
+  getIsDirty: () => isDirty,
 });
 const moduleColor = computed(() =>
   appSettings.use_individual_module_colors
@@ -239,13 +246,6 @@ const moduleColor = computed(() =>
       { '--module-color': moduleColor })
     "
   >
-    <div class="settings__header">
-      <div class="settings__header__title">
-        <ModuleSettingBreadcrumbs
-          :setting-module="module"
-        ></ModuleSettingBreadcrumbs>
-      </div>
-    </div>
     <div class="settings__module">
       <ModuleSettingTabs
         :setting-module="module"
@@ -260,7 +260,7 @@ const moduleColor = computed(() =>
       </div>
 
       <div class="settings__module__edit">
-        <form @submit.prevent="saveField">
+        <form class="settings__module__edit__form" @submit.prevent="saveField">
           <div
             class="settings__module__edit__element"
             v-for="fieldName in visibleMetadata"
@@ -303,6 +303,7 @@ const moduleColor = computed(() =>
                 <DropdownField
                   v-model="form[fieldName]"
                   :options="typesList()"
+                  :hasError="form.errors[fieldName]"
                 ></DropdownField>
 
                 <transition name="dropdown-fade">
@@ -352,7 +353,7 @@ const moduleColor = computed(() =>
               type="button"
               class="settings__actions__reset"
               @click="resetForm"
-              :disabled="!form.isDirty"
+              :disabled="!isDirty"
             >
               {{ $t("settings.reset") }}
             </button>
@@ -360,7 +361,7 @@ const moduleColor = computed(() =>
             <button
               type="submit"
               class="settings__actions__save"
-              :disabled="!form.isDirty"
+              :disabled="!isDirty"
             >
               {{ $t("settings.save") }}
             </button>

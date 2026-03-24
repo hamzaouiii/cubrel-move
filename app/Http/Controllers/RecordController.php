@@ -34,14 +34,14 @@ class RecordController extends Controller
       $handler = app($handler_class);
 
       if ($handler instanceof ModuleHandler || method_exists($handler, 'getRecordData')) {
-        $props = $handler->getRecordData($recordId, request()->all());
+        $props = $handler->getRecordData($module, $recordId, request()->all());
       } else {
         $props = ['recordId' => $recordId];
       }
     }
     $recordLayout = $moduleModel->recordLayout();
     $relatedLayout = $moduleModel->relatedLayout();
-    $fields = $moduleModel->fields;
+    $fields = $moduleModel->allFields();
     return Inertia::render('Modules/Record', array_merge([
       'module'   => $moduleModel,
       'title'    => $moduleModel->name,
@@ -70,7 +70,7 @@ class RecordController extends Controller
 
     $recordLayout = $moduleModel->recordLayout();
     $recorddropdownLists = $moduleModel->dropdownLists;
-    $fields = $moduleModel->fields;
+    $fields = $moduleModel->allFields();
     return Inertia::render('Modules/Create', array_merge([
       'module'       => $moduleModel,
       'title'        => $moduleModel->name,

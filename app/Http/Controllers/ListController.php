@@ -39,7 +39,7 @@ class ListController extends Controller
 
     $listLayout = $moduleModel->listLayout();
     $recorddropdownLists = $moduleModel->dropdownLists;
-    $fields = $moduleModel->fields;
+    $fields = $moduleModel->allFields();
 
     //TODO: make the fields list customizable
     // remove readonly fields and fields unsuited for mass update such as emails and so on.

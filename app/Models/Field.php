@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\DropdownList;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Field extends Model
 {
-  use HasFactory, SoftDeletes, HasUuids;
+  use HasFactory, HasUuids;
 
   protected $table = 'fields';
 
@@ -32,6 +32,7 @@ class Field extends Model
     'key',
     'is_custom',
     'is_active',
+    'is_draft',
     'readonly',
     'hidden',
     'required',
@@ -52,6 +53,8 @@ class Field extends Model
     'module_id',
     'key',
     'is_custom',
+    'is_draft',
+    'regex',
     'is_active',
     'database_type',
     'dropdown_list_id'
@@ -63,6 +66,8 @@ class Field extends Model
   protected $casts = [
     'is_custom'   => 'boolean',
     'is_active'   => 'boolean',
+    'is_draft'   => 'boolean',
+    'is_global'   => 'boolean',
     'readonly'    => 'boolean',
     'hidden'      => 'boolean',
     'required'    => 'boolean',
@@ -95,12 +100,12 @@ class Field extends Model
   {
     return ! empty($this->options);
   }
-  public function getEmptyMetadata()
+  public function getEmptyMetadata(): array
   {
     return array_diff($this->fillable, $this->excludedFromForms);
   }
 
-  public function dropdown_list()
+  public function dropdown_list(): HasOne
   {
     return $this->hasOne(DropdownList::class, 'id', 'dropdown_list_id');
   }

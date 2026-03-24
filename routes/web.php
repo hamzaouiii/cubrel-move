@@ -8,11 +8,18 @@ use App\Http\Controllers\ListController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ModuleManagerController;
+use App\Http\Controllers\ModuleBuilderController;
 use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\FieldsManagerController;
 use App\Http\Controllers\DropdownListController;
 use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
+
+
+Route::middleware(['guest'])->group(function () {
+  Route::get('/login', [AuthController::class, 'index'])->name('login');
+  Route::post('/login', [AuthController::class, 'login']);
+});
 
 
 Route::middleware(['auth'])->group(function () {
@@ -67,7 +74,18 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('relationships', RelationshipManagerController::class)->names('relationships');
       });
 
-    Route::get('modulebuilder', [ModuleManagerController::class, 'create']);
+    Route::get('modulebuilder', [ModuleBuilderController::class, 'create'])
+      ->name('modules.builder.create');
+    Route::put('modulebuilder/{module}', [ModuleBuilderController::class, 'update'])
+      ->name('modules.builder.update');
+    Route::post('modulebuilder/{module}/field', [ModuleBuilderController::class, 'saveDraftField'])
+      ->name('modules.builder.saveDraftField');
+
+    Route::delete('modulebuilder/{module}/field/{field}', [ModuleBuilderController::class, 'deleteDraftField'])
+      ->name('modules.builder.deleteDraftField');
+
+    Route::post('modulebuilder/{module}/deploy', [ModuleBuilderController::class, 'deploy'])
+      ->name('modules.builder.deploy');
 
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);

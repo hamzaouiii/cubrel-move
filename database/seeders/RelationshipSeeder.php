@@ -19,6 +19,7 @@ class RelationshipSeeder extends Seeder
           'id' => uuid_create(UUID_TYPE_RANDOM),
           'created_at' => $now,
           'updated_at' => $now,
+          'is_system' => 1,
         ])
       );
     }

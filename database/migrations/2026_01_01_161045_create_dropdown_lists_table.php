@@ -15,6 +15,7 @@ return new class extends Migration
       $table->uuid('id')->primary();
       $table->string('key')->unique();
       $table->boolean('is_global')->default(false);
+      $table->boolean('is_draft')->default(false);
       $table->json('values')->nullable();
       $table->timestamps();
     });

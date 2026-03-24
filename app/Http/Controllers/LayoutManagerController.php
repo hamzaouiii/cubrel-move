@@ -67,8 +67,8 @@ class LayoutManagerController extends Controller
         },
       ])->firstOrFail();
     $layout = $module->getDefaultLayout($type);
-    $fields = $module->fields;
-    $relationships = RelationshipService::getRelationshipForModule($module->model_class);
+    $fields = $module->allFields();
+    $relationships = RelationshipService::getRelationshipForModule($module->slug);
     return Inertia::render('Settings/Layouts/Edit', [
       'module' => $module,
       'type'  => $type,

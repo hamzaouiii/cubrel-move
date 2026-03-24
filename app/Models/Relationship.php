@@ -20,15 +20,10 @@ class Relationship extends Model
     'left_module',
     'is_system',
     'join_table',
-    'right_class',
-    'left_class',
-
   ];
   protected $excludedFromForms = [
     'is_system',
     'join_table',
-    'right_class',
-    'left_class',
     'left_module',
 
 

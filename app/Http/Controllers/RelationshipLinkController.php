@@ -11,15 +11,11 @@ class RelationshipLinkController extends Controller
 {
   public function getRecordsForLinking(Request $request, string $module, string $record_id, string $relationship)
   {
-    $moduleModel = Module::where('slug', $module)->firstOrFail();
-
-    $modelClass = $moduleModel->model_class;
-
     $relationshipObj = RelationshipService::get($relationship);
     $limit = Settings::get('linking_panel_limit');
     return RelationshipService::getRecordsForLinking(
       $relationshipObj,
-      $modelClass,
+      $module,
       $record_id,
       $limit,
       $request->get('search')
@@ -27,14 +23,10 @@ class RelationshipLinkController extends Controller
   }
   public function getRecordsForUpdateSingleLinking(Request $request, string $module, string $record_id, string $relationship)
   {
-    $moduleModel = Module::where('slug', $module)->firstOrFail();
-
-    $modelClass = $moduleModel->model_class;
-
     $relationshipObj = RelationshipService::get($relationship);
     $limit = Settings::get('linking_panel_limit');
 
-    return RelationshipService::getRecordsForUpdateSingleLinking($relationshipObj, $modelClass, $record_id, $limit, $request->get('search'));
+    return RelationshipService::getRecordsForUpdateSingleLinking($relationshipObj, $module, $record_id, $limit, $request->get('search'));
   }
 
   public function linkRecords(Request $request, string $module, string $record_id, string $relationship)
@@ -71,15 +63,13 @@ class RelationshipLinkController extends Controller
 
   public function loadRecords(Request $request, $module, $record_id, $relationshipName)
   {
-    $moduleModel = Module::where('slug', $module)->firstOrFail();
-
     $page = (int) $request->get('page', 1);
 
     $perPage = (int) Settings::get('related_panel_limit');
 
     $offset = ($page - 1) * $perPage;
 
-    $query = RelationshipService::loadRelatedRecords($moduleModel, $record_id, $relationshipName);
+    $query = RelationshipService::loadRelatedRecords($module, $record_id, $relationshipName);
 
     $total = $query->count();
 

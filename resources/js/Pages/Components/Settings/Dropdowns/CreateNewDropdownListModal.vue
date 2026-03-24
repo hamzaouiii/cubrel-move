@@ -28,6 +28,13 @@ const generatedSystemKey = computed(() => {
   return name + "_list";
 });
 
+const props = defineProps({
+  isDraft: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const generatedSystemvalue = (label) => {
   if (!label) return "";
   const value = label
@@ -51,6 +58,7 @@ const appSettings = usePage().props.appSettings;
 const form = useForm({
   key: "",
   values: {},
+  is_draft: props.isDraft,
 });
 let listItems = ref([]);
 let newItem = ref({ label: "", value: "" });
@@ -142,9 +150,6 @@ const closeModalClicked = () => {
 
 <template>
   <div class="dropdown-list-modal">
-    <div class="dropdown-list-modal__close" @click="closeModalClicked">
-      <i class="fa-solid fa-xmark"></i>
-    </div>
     <div class="dropdown-list-modal__container">
       <div
         class="settings"
@@ -234,10 +239,17 @@ const closeModalClicked = () => {
               </form>
             </ul>
 
-            <div class="settings__dropdown__edit__actions">
+            <div class="settings__actions">
               <button
                 type="submit"
-                class="settings__dropdown__edit__actions__save btn"
+                class="settings__actions__reset"
+                @click="closeModalClicked"
+              >
+                {{ $t("settings.cancel") }}
+              </button>
+              <button
+                type="submit"
+                class="settings__actions__save"
                 :disabled="!listIsDirty"
                 @click="saveList()"
               >

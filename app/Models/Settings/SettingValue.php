@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
 use App\Concerns\HasTranslatableLabel;
-use App\Services\Settings\SettingsService;
 
 
 class SettingValue extends Model
@@ -38,10 +37,5 @@ class SettingValue extends Model
         $model->id = (string) Str::uuid();
       }
     });
-  }
-
-  public function settingItem()
-  {
-    return $this->belongsTo(SettingItem::class);
   }
 }
