@@ -258,6 +258,7 @@ const handleUpdateList = () => {
           <button
             class="settings__actions__save"
             type="button"
+            :disabled="hasMissingFields"
             @click="nextTab"
           >
             <span v-if="!isProcessing">

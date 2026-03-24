@@ -82,5 +82,32 @@ return [
     'clear' => 'Abbrechen',
     'select_date' => 'Datum auswählen',
     'time_format' => 'HH:MM'
+  ],
+  'colorpicker' => [
+    'select_color'       => 'Farbe wählen',
+    'search_placeholder' => "Farbtöne suchen (z. B. 'Blau', 'Warm')",
+    'no_shades_found'    => 'Keine Farbtöne gefunden.',
+    'hex_input_error'    => 'Ungültiger Hex-Code (z. B. #RRGGBB oder #RGB)',
+    'apply'              => 'Anwenden',
+    'shades' => [
+      'blues'   => 'Blau & Indigo',
+      'teals'   => 'Blaugrün & Cyan',
+      'greens'  => 'Grün',
+      'yellows' => 'Gelb & Orange',
+      'reds'    => 'Rot & Pink',
+      'purples' => 'Lila & Violett',
+      'slates'  => 'Schiefer & Grau',
+      'earth'   => 'Erde & Warme Brauntöne',
+    ],
+    'keywords' => [
+      'blues'   => 'blau, indigo, navy, himmel, ozean, cyan',
+      'teals'   => 'blaugrün, cyan, minze, aqua, türkis',
+      'greens'  => 'grün, smaragd, wald, limette, olive',
+      'yellows' => 'gelb, orange, gold, bernstein, senf, pfirsich',
+      'reds'    => 'rot, pink, rosa, rubin, karmesinrot, magenta',
+      'purples' => 'lila, violett, lavendel, pflaume, flieder',
+      'slates'  => 'schiefer, grau, silber, asche, holzkohle, schwarz',
+      'earth'   => 'erde, warm, braun, beige, sand, schokolade, kaffee, holz',
+    ],
   ]
 ];

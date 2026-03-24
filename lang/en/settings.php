@@ -26,6 +26,7 @@ return [
   'dropdown_list_fetch_failed' => 'Failed to fetch dropdown lists:',
   'back_to_modules' => 'Back to Module List',
   'back_to_settings' => 'Back to Settings',
+  'search_placeholder' => 'Search settings...',
   'tabs' => [
     'module_settings' => 'Module Settings',
     'layouts' => 'Layouts',

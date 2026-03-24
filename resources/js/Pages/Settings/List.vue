@@ -109,7 +109,7 @@ const filteredSettings = computed(() => {
           v-model="search"
           type="search"
           class="setting-search"
-          placeholder="Search settings..."
+          :placeholder="t('settings.search_placeholder')"
         />
       </div>
     </div>

@@ -1,57 +1,5 @@
-<template>
-  <div class="color-picker" ref="root">
-    <div
-      class="color-picker__control"
-      @click="toggle"
-      :class="{ 'is-open': isOpen }"
-    >
-      <div class="color-picker__preview-wrapper">
-        <div
-          class="color-picker__preview-circle"
-          :style="{ backgroundColor: modelValue || '#4f46e5' }"
-        ></div>
-        <span class="color-picker__value">
-          {{ modelValue || "Select Color" }}
-        </span>
-      </div>
-      <i class="fa-solid fa-palette color-picker__icon"></i>
-    </div>
-
-    <transition name="picker-fade">
-      <div v-if="isOpen" class="color-picker__panel">
-        <div class="color-picker__search-wrapper">
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Search shades (e.g., 'Blue', 'Warm')"
-            class="color-picker__search"
-            @click.stop
-          />
-        </div>
-
-        <div class="color-picker__grid">
-          <button
-            v-for="(color, index) in filteredColors"
-            :key="`${color}-${index}`"
-            type="button"
-            class="color-picker__swatch"
-            :class="{ 'is-active': modelValue === color }"
-            :style="{ backgroundColor: color }"
-            @click="selectColor(color)"
-            :title="color"
-          ></button>
-
-          <div v-if="filteredColors.length === 0" class="color-picker__empty">
-            No shades found.
-          </div>
-        </div>
-      </div>
-    </transition>
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, getCurrentInstance } from "vue";
 
 const props = defineProps({
   modelValue: String,
@@ -62,13 +10,31 @@ const emit = defineEmits(["update:modelValue"]);
 const isOpen = ref(false);
 const root = ref(null);
 const searchQuery = ref("");
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
-// Grouped colors for shade-based searching
-// Upgraded Palette with Keywords for robust searching
+// Hex input state
+const hexInput = ref("");
+const hexInputError = ref("");
+
+// Color palette with white shades removed
+const excludedWhiteShades = new Set([
+  "#F9FAFB",
+  "#FAFAFA",
+  "#F3F4F6",
+  "#E5E7EB",
+  "#D1D5DB",
+  "#E4E4E7",
+  "#FFF7ED",
+  "#FFF3E0",
+  "#FFEDD5",
+]);
+
+// Map groups directly to their respective language keys
 const colorPalette = [
   {
-    shade: "Blues Indigos",
-    keywords: ["blue", "indigo", "navy", "sky", "ocean", "cyan"],
+    shadeKey: "fields.colorpicker.shades.blues",
+    keywordKey: "fields.colorpicker.keywords.blues",
     colors: [
       "#1E3A8A",
       "#1E40AF",
@@ -105,8 +71,8 @@ const colorPalette = [
     ],
   },
   {
-    shade: "Teals Cyans",
-    keywords: ["teal", "cyan", "mint", "aqua", "turquoise"],
+    shadeKey: "fields.colorpicker.shades.teals",
+    keywordKey: "fields.colorpicker.keywords.teals",
     colors: [
       "#0F766E",
       "#115E59",
@@ -137,8 +103,8 @@ const colorPalette = [
     ],
   },
   {
-    shade: "Greens",
-    keywords: ["green", "emerald", "forest", "lime", "olive"],
+    shadeKey: "fields.colorpicker.shades.greens",
+    keywordKey: "fields.colorpicker.keywords.greens",
     colors: [
       "#14532D",
       "#166534",
@@ -172,8 +138,8 @@ const colorPalette = [
     ],
   },
   {
-    shade: "Yellows Oranges",
-    keywords: ["yellow", "orange", "gold", "amber", "mustard", "peach"],
+    shadeKey: "fields.colorpicker.shades.yellows",
+    keywordKey: "fields.colorpicker.keywords.yellows",
     colors: [
       "#78350F",
       "#92400E",
@@ -194,8 +160,6 @@ const colorPalette = [
       "#FB923C",
       "#FDBA74",
       "#FED7AA",
-      "#FFEDD5",
-      "#FFF7ED",
       "#FFB020",
       "#FFA000",
       "#FF8F00",
@@ -203,15 +167,14 @@ const colorPalette = [
       "#FFB74D",
       "#FFCC80",
       "#FFE0B2",
-      "#FFF3E0",
       "#FFE082",
       "#FFD54F",
       "#FFCA28",
     ],
   },
   {
-    shade: "Reds Pinks",
-    keywords: ["red", "pink", "rose", "ruby", "crimson", "magenta"],
+    shadeKey: "fields.colorpicker.shades.reds",
+    keywordKey: "fields.colorpicker.keywords.reds",
     colors: [
       "#7F1D1D",
       "#991B1B",
@@ -247,8 +210,8 @@ const colorPalette = [
     ],
   },
   {
-    shade: "Purples Violets",
-    keywords: ["purple", "violet", "lavender", "plum", "lilac"],
+    shadeKey: "fields.colorpicker.shades.purples",
+    keywordKey: "fields.colorpicker.keywords.purples",
     colors: [
       "#4C1D95",
       "#5B21B6",
@@ -285,17 +248,8 @@ const colorPalette = [
     ],
   },
   {
-    shade: "Slates Grays",
-    keywords: [
-      "slate",
-      "gray",
-      "grey",
-      "silver",
-      "ash",
-      "charcoal",
-      "black",
-      "white",
-    ],
+    shadeKey: "fields.colorpicker.shades.slates",
+    keywordKey: "fields.colorpicker.keywords.slates",
     colors: [
       "#111827",
       "#1F2937",
@@ -303,18 +257,12 @@ const colorPalette = [
       "#4B5563",
       "#6B7280",
       "#9CA3AF",
-      "#D1D5DB",
-      "#E5E7EB",
-      "#F3F4F6",
-      "#F9FAFB",
       "#27272A",
       "#3F3F46",
       "#52525B",
       "#71717A",
       "#A1A1AA",
       "#D4D4D8",
-      "#E4E4E7",
-      "#FAFAFA",
       "#18181B",
       "#CFD8DC",
       "#B0BEC5",
@@ -327,17 +275,8 @@ const colorPalette = [
     ],
   },
   {
-    shade: "Earth Warm Browns",
-    keywords: [
-      "earth",
-      "warm",
-      "brown",
-      "tan",
-      "sand",
-      "chocolate",
-      "coffee",
-      "wood",
-    ],
+    shadeKey: "fields.colorpicker.shades.earth",
+    keywordKey: "fields.colorpicker.keywords.earth",
     colors: [
       "#3E2723",
       "#4E342E",
@@ -374,39 +313,91 @@ const colorPalette = [
   },
 ];
 
-// Computed property to handle robust search logic
+// Pre-compute the translated palette and generate a unified search string
+const translatedPalette = computed(() => {
+  return colorPalette
+    .map((group) => {
+      // Fetch translations dynamically. Fallback to empty string if key is missing.
+      const translatedShade = (t(group.shadeKey) || "").toLowerCase();
+      const translatedKeywords = (t(group.keywordKey) || "").toLowerCase();
+
+      return {
+        ...group,
+        // Combine them into a single blob of text to make searching super fast and robust
+        searchBlob: `${translatedShade} ${translatedKeywords}`,
+        colors: group.colors.filter((color) => !excludedWhiteShades.has(color)),
+      };
+    })
+    .filter((group) => group.colors.length > 0);
+});
+
+// Search filter using the translated, cleaned palette
 const filteredColors = computed(() => {
   let results = [];
+  const query = searchQuery.value.toLowerCase().trim();
 
-  if (!searchQuery.value.trim()) {
-    results = colorPalette.flatMap((group) => group.colors);
+  if (!query) {
+    results = translatedPalette.value.flatMap((group) => group.colors);
   } else {
-    const query = searchQuery.value.toLowerCase().trim();
-
-    results = colorPalette
-      .filter((group) => {
-        // Match against the main category name OR any of the keywords
-        return (
-          group.shade.toLowerCase().includes(query) ||
-          group.keywords.some((keyword) => keyword.includes(query))
-        );
-      })
+    results = translatedPalette.value
+      .filter((group) => group.searchBlob.includes(query))
       .flatMap((group) => group.colors);
   }
 
-  // Wrap in a Set to eliminate any duplicate hex codes before rendering
+  // Remove duplicates
   return [...new Set(results)];
 });
 
+// Hex input validation and preview
+const hexInputValid = computed(() => {
+  const hex = hexInput.value.trim();
+  if (!hex) return false;
+  const regex = /^#?([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/;
+  return regex.test(hex);
+});
+
+const previewHexColor = computed(() => {
+  if (!hexInputValid.value) return "transparent";
+  let hex = hexInput.value.trim();
+  if (!hex.startsWith("#")) hex = "#" + hex;
+  if (hex.length === 4) {
+    hex = `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+  }
+  return hex;
+});
+
+const applyHex = () => {
+  if (!hexInputValid.value) {
+    hexInputError.value = t("fields.colorpicker.hex_input_error");
+    return;
+  }
+  hexInputError.value = "";
+  let hex = hexInput.value.trim();
+  if (!hex.startsWith("#")) hex = "#" + hex;
+  if (hex.length === 4) {
+    hex = `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+  }
+  emit("update:modelValue", hex.toUpperCase());
+  isOpen.value = false;
+  searchQuery.value = "";
+  hexInput.value = "";
+};
+
 const toggle = () => {
   isOpen.value = !isOpen.value;
-  if (!isOpen.value) searchQuery.value = ""; // Reset search on close
+  if (!isOpen.value) {
+    searchQuery.value = "";
+    hexInput.value = "";
+    hexInputError.value = "";
+  }
 };
 
 const selectColor = (color) => {
   emit("update:modelValue", color);
   isOpen.value = false;
-  searchQuery.value = ""; // Reset search after selection
+  searchQuery.value = "";
+  hexInput.value = "";
+  hexInputError.value = "";
 };
 
 const handleClickOutside = (event) => {
@@ -419,4 +410,80 @@ onMounted(() => document.addEventListener("click", handleClickOutside));
 onUnmounted(() => document.removeEventListener("click", handleClickOutside));
 </script>
 
-<style scoped lang="scss"></style>
+<template>
+  <div class="color-picker" ref="root">
+    <div
+      class="color-picker__control"
+      @click="toggle"
+      :class="{ 'is-open': isOpen }"
+    >
+      <div class="color-picker__preview-wrapper">
+        <div
+          class="color-picker__preview-circle"
+          :style="{ backgroundColor: modelValue || '#000' }"
+        ></div>
+        <span class="color-picker__value">
+          {{ modelValue || $t("fields.colorpicker.select_color") }}
+        </span>
+      </div>
+      <i class="fa-solid fa-palette color-picker__icon"></i>
+    </div>
+
+    <transition name="picker-fade">
+      <div v-if="isOpen" class="color-picker__panel">
+        <div class="color-picker__search-wrapper">
+          <input
+            type="text"
+            v-model="searchQuery"
+            :placeholder="$t('fields.colorpicker.search_placeholder')"
+            class="color-picker__search"
+            @click.stop
+          />
+        </div>
+        <div class="color-picker__grid">
+          <button
+            v-for="(color, index) in filteredColors"
+            :key="`${color}-${index}`"
+            type="button"
+            class="color-picker__swatch"
+            :class="{ 'is-active': modelValue === color }"
+            :style="{ backgroundColor: color }"
+            @click="selectColor(color)"
+            :title="color"
+          ></button>
+
+          <div v-if="filteredColors.length === 0" class="color-picker__empty">
+            {{ $t("fields.colorpicker.no_shades_found") }}
+          </div>
+        </div>
+        <div class="color-picker__hex-section">
+          <div class="color-picker__hex-input-group">
+            <input
+              type="text"
+              v-model="hexInput"
+              placeholder="#RRGGBB"
+              class="color-picker__hex-input"
+              @keyup.enter="applyHex"
+              @click.stop
+            />
+            <button
+              type="button"
+              class="color-picker__hex-apply"
+              @click.stop="applyHex"
+            >
+              {{ $t("fields.colorpicker.apply") }}
+            </button>
+            <div
+              class="color-picker__hex-preview"
+              :style="{ backgroundColor: previewHexColor }"
+              :title="hexInputValid ? hexInput : 'Invalid hex'"
+            ></div>
+          </div>
+          <div v-if="hexInputError" class="color-picker__hex-error">
+            {{ hexInputError }}
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>

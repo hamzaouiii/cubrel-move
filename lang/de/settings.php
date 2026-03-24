@@ -25,6 +25,7 @@ return array(
   'dropdown_list_fetch_failed' => "Dropdown-Listen konnten nicht abgerufen werden:",
   'back_to_modules' => "Zurück zur Modul-Liste",
   'back_to_settings' => "Zurück zu Einstellungen",
+  'search_placeholder' => 'In dieser Liste suchen...',
 
   'tabs' =>
   array(
@@ -162,5 +163,8 @@ return array(
       'retry' => 'Wiederholen',
       'close' => 'Schließen',
     ],
+    'has_missing_fields' => 'Some required fields are still empty',
+    'deploying' => 'Deploying',
+    'deploy_success' => 'Module was deployed successfully',
   ]
 );

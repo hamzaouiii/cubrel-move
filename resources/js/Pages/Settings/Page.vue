@@ -7,7 +7,7 @@ import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
-
+import SettingsLink from "../Components/Settings/SettingsLink.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -24,8 +24,6 @@ const props = defineProps({
   datetimeFormatOptions: { type: Array, default: [] },
   timezoneOptions: { type: Array, default: [] },
 });
-const page = usePage();
-const module = computed(() => page.props.item || page.props);
 const appSettings = usePage().props.appSettings;
 
 const normalizedValues = props.values.map((v) => ({
@@ -50,6 +48,7 @@ const inputTypeFor = (type) => {
   if (type === "timezone") return "timezone";
   return "text";
 };
+
 const saveSetting = () => {
   clearAllAlerts();
   info(t("settings.saving"));
@@ -65,6 +64,11 @@ const saveSetting = () => {
   });
 };
 
+const getColorModel = computed(() => {
+  const item = form.values.find((e) => e.key === "primary_color");
+  return item?.value || appSettings.primary_color;
+});
+
 const resetForm = () => {
   form.reset();
 };
@@ -76,16 +80,8 @@ const isDirty = () => form.isDirty;
     <title>{{ $t(item.label) }} - {{ $t("settings.label") }}</title>
   </Head>
 
-  <div
-    class="settings"
-    :style="{ '--primary-color': appSettings.primary_color }"
-  >
-    <div class="settings__module__header">
-      <Link href="/settings">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("settings.back_to_settings") }}
-      </Link>
-    </div>
+  <div class="settings" :style="{ '--primary-color': getColorModel }">
+    <SettingsLink :color="getColorModel" />
     <div class="settings__system">
       <form @submit.prevent="saveSetting" class="settings__system__form">
         <div
@@ -96,7 +92,10 @@ const isDirty = () => form.isDirty;
           <label> {{ $t(i.label) }}</label>
           <div class="settings__system__form__field__content">
             <template v-if="i.type === 'bool'">
-              <Checkbox v-model="form.values[index].value"></Checkbox>
+              <Checkbox
+                v-model="form.values[index].value"
+                :module-color="getColorModel"
+              ></Checkbox>
             </template>
 
             <template v-else-if="inputTypeFor(i.type) === 'datetime'">
@@ -148,10 +147,16 @@ const isDirty = () => form.isDirty;
           </div>
         </div>
 
-        <div class="settings__system__actions">
+        <div
+          class="settings__actions"
+          :style="
+            ({ '--primary-color': getColorModel },
+            { '--module-color': getColorModel })
+          "
+        >
           <button
             type="button"
-            class="settings__system__actions__reset"
+            class="settings__actions__reset"
             @click="resetForm"
             :disabled="!isDirty()"
           >
@@ -159,7 +164,7 @@ const isDirty = () => form.isDirty;
           </button>
 
           <button
-            class="settings__system__actions__save"
+            class="settings__actions__save"
             type="submit"
             :disabled="!isDirty() || form.processing"
           >

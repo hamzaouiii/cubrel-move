@@ -83,6 +83,32 @@ return [
     'clear' => 'Clear',
     'select_date' => 'Select Date',
     'time_format' => 'HH:MM'
+  ],
+  'colorpicker' => [
+    'select_color'       => 'Select Color',
+    'search_placeholder' => "Search shades (e.g., 'Blue', 'Warm')",
+    'no_shades_found'    => "No shades found.",
+    'hex_input_error'    => "Invalid hex color (e.g., #RRGGBB or #RGB)",
+    'apply'              => 'Apply',
+    'shades' => [
+      'blues'   => 'Blues Indigos',
+      'teals'   => 'Teals Cyans',
+      'greens'  => 'Greens',
+      'yellows' => 'Yellows Oranges',
+      'reds'    => 'Reds Pinks',
+      'purples' => 'Purples Violets',
+      'slates'  => 'Slates Grays',
+      'earth'   => 'Earth Warm Browns',
+    ],
+    'keywords' => [
+      'blues'   => 'blue, indigo, navy, sky, ocean, cyan',
+      'teals'   => 'teal, cyan, mint, aqua, turquoise',
+      'greens'  => 'green, emerald, forest, lime, olive',
+      'yellows' => 'yellow, orange, gold, amber, mustard, peach',
+      'reds'    => 'red, pink, rose, ruby, crimson, magenta',
+      'purples' => 'purple, violet, lavender, plum, lilac',
+      'slates'  => 'slate, gray, grey, silver, ash, charcoal, black',
+      'earth'   => 'earth, warm, brown, tan, sand, chocolate, coffee, wood',
+    ],
   ]
-
 ];
