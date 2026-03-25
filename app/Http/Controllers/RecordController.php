@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Exceptions\ModuleHandlerNotFoundException;
 
 class RecordController extends Controller
 {
@@ -24,8 +25,11 @@ class RecordController extends Controller
     $handler_class = $moduleModel->handler_class ?? "App\Handlers\Modules\\" . ucwords($module) . "ModuleHandler";
 
 
-    if (empty($handler_class)) {
-      dd("No Handler Class found for module $module");
+
+    if (empty($handlerClass)) {
+      throw new ModuleHandlerNotFoundException(
+        "Handler class [{$handler_class}] not found for module [{$module}]. Please check if the file exists or re-deploy."
+      );
     }
 
     if (!class_exists($handler_class)) {
