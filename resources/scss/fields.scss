@@ -162,7 +162,7 @@ $error-color: #ef4444;
     transition: background-color 0.2s;
 
     &:hover {
-      background-color: #6366f1;
+      background-color: color-mix(in srgb, var(--primary-color) 80%, white);
     }
   }
 

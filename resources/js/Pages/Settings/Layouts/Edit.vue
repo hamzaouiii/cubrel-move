@@ -30,7 +30,6 @@ const props = defineProps({
   fields: Object,
   relationships: Object,
 });
-
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
@@ -281,8 +280,17 @@ const isDirty = computed(() => {
     const original = JSON.stringify(recordLayoutSectionConfigs.value);
     return current !== original;
   } else if (props.type === "related") {
+    const originalCleaned = relatedLayoutColumnConfigs.value.map((column) => ({
+      ...column,
+      layout: (column.layout || []).map((col) => {
+        const { rel, ...rest } = col || {}; // Remove any joined relation objects
+        return rest;
+      }),
+    }));
+
     const current = JSON.stringify(cleanedRelatedColumns.value);
-    const original = JSON.stringify(relatedLayoutColumnConfigs.value);
+    const original = JSON.stringify(originalCleaned);
+
     return current !== original;
   }
   return false;
@@ -432,6 +440,7 @@ const moduleColor = computed(() =>
           :available-relationships="availableRelationships"
           :rel-by-key="relatedByName"
           :empty-columns="emptyColumns"
+          :has-no-rels="!relationships?.length"
         />
       </div>
 
