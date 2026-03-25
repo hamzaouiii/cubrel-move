@@ -29,7 +29,7 @@ class ModuleScaffolder
     $this->createTable($table, $module);
   }
 
-  protected function createModelFile(string $baseName, string $table): void
+  public function createModelFile(string $baseName, string $table): void
   {
     $directory = app_path('Models/Modules/Custom');
 
@@ -60,9 +60,12 @@ class ModuleScaffolder
         PHP;
 
     $this->files->put($path, $contents);
+    if (function_exists('opcache_invalidate')) {
+      opcache_invalidate($path, true);
+    }
   }
 
-  protected function createHandlerFile(string $baseName, string $modelClass): void
+  public function createHandlerFile(string $baseName, string $modelClass): void
   {
     $directory = app_path('Handlers/Modules/Custom');
 
@@ -90,7 +93,7 @@ class ModuleScaffolder
         {
             protected string \$model = {$baseName}::class;
 
-            protected function query(array \$params = []): Builder
+            public function query(array \$params = []): Builder
             {
                 \$query = {$baseName}::query();
 
@@ -105,7 +108,7 @@ class ModuleScaffolder
     $this->files->put($path, $contents);
   }
 
-  protected function createTable(string $table, Module $module): void
+  public function createTable(string $table, Module $module): void
   {
     if (Schema::hasTable($table)) {
       return;
@@ -142,7 +145,7 @@ class ModuleScaffolder
     });
   }
 
-  protected function createModuleLabels(Module $module): void
+  public function createModuleLabels(Module $module): void
   {
     $label_key = "modules." . $module->slug . ".label";
     $single_label_key = "modules." . $module->slug . ".single_label";
@@ -173,22 +176,17 @@ class ModuleScaffolder
   }
 
 
-  protected function activateFields(Module $module): void
+  public function activateFields(Module $module): void
   {
     // 1. Get fields for module. 
-    // (Note: Add ->get() if draftFields() returns a query builder/relation)
     $fields = $module->draftFields();
 
     foreach ($fields as $field) {
-      // 1. Update status flags
       $field->is_draft = false;
       $field->is_active = true;
 
-      // 2. Rename field key 
-      // Replaces the "draft" concept with the module slug and field name
       $field->key = $module->slug . '_' . $field->name;
 
-      // 3. Handle 'select' type and related dropdown
       if ($field->type === 'select' && $field->dropdown_list_id) {
         $dropdown = $field->dropdown_list;
 
@@ -199,11 +197,9 @@ class ModuleScaffolder
         }
       }
 
-      // 4. Handle Labels
       $label_key = "modules." . $module->slug . ".fields." . $field->name;
       $label_value = $field->label;
 
-      // updateOrCreate takes two arrays: [Search attributes], [Values to update/insert]
       Label::updateOrCreate(
         [
           'key' => $label_key,
@@ -215,11 +211,28 @@ class ModuleScaffolder
         ]
       );
 
-      // 5. Assign the new label key back to the field
       $field->label = $label_key;
-
-      // 6. Save the updated field to the database
       $field->save();
     }
+  }
+
+  public function rollback(Module $module): void
+  {
+    $baseName = class_basename($module->model_class);
+    $table = $module->table_name;
+
+    $this->files->delete(app_path("Models/Modules/Custom/{$baseName}.php"));
+    $this->files->delete(app_path("Handlers/Modules/Custom/{$baseName}ModuleHandler.php"));
+
+    Schema::dropIfExists($table);
+
+    Label::where('module_id', $module->id)->delete();
+
+    // 4. Reset Module State
+    $module->update([
+      'is_active' => false,
+      'is_draft' => true,
+      'table_name' => null,
+    ]);
   }
 }

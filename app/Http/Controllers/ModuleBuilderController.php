@@ -128,9 +128,10 @@ class ModuleBuilderController extends Controller
     // NOW scaffold the tables/files since the user has had time to define Fields and Layouts
     app(ModuleScaffolder::class)->scaffold($module, $validated['display_label'], $validated['single_label'], $fields);
 
-    return redirect()
-      ->route('settings.modules.show', $module->id)
-      ->with('success', __('settings.module_publish_success'));
+    return back();
+    // return redirect()
+    //   ->route('settings.modules.show', $module->id)
+    //   ->with('success', __('settings.module_publish_success'));
   }
 
   public function saveDraftField(Request $request, Module $module)

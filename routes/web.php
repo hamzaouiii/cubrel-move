@@ -14,6 +14,7 @@ use App\Http\Controllers\FieldsManagerController;
 use App\Http\Controllers\DropdownListController;
 use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
+use App\Http\Controllers\ModuleDeploymentController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -70,23 +71,33 @@ Route::middleware(['auth'])->group(function () {
           ->name('modules.layouts.store');
 
         // Relationships
-
         Route::resource('relationships', RelationshipManagerController::class)->names('relationships');
       });
 
+    //moduleBuilder
     Route::get('modulebuilder', [ModuleBuilderController::class, 'create'])
       ->name('modules.builder.create');
+
     Route::put('modulebuilder/{module}', [ModuleBuilderController::class, 'update'])
       ->name('modules.builder.update');
+
     Route::post('modulebuilder/{module}/field', [ModuleBuilderController::class, 'saveDraftField'])
       ->name('modules.builder.saveDraftField');
 
     Route::delete('modulebuilder/{module}/field/{field}', [ModuleBuilderController::class, 'deleteDraftField'])
       ->name('modules.builder.deleteDraftField');
 
-    Route::post('modulebuilder/{module}/deploy', [ModuleBuilderController::class, 'deploy'])
-      ->name('modules.builder.deploy');
+    // Route::post('modulebuilder/{module}/deploy', [ModuleBuilderController::class, 'deploy'])->name('modules.builder.deploy');
+    Route::prefix('modulebuilder/{module}/deploy')->controller(ModuleDeploymentController::class)->group(function () {
+      Route::post('/initialize', 'initialize');
+      Route::post('/generate-files', 'generateFiles');
+      Route::post('/create-labels', 'createLabels');
+      Route::post('/activate-fields', 'activateFields');
+      Route::post('/create-table', 'createTable');
+      Route::post('/rollback', 'rollback');
+    });
 
+    // dropdowns
     Route::get('dropdowns', [DropdownListController::class, 'index']);
     Route::get('dropdowns/create', [DropdownListController::class, 'create']);
     Route::post('dropdowns', [DropdownListController::class, 'store']);

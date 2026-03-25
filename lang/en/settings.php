@@ -144,7 +144,7 @@ return [
       'pending' => 'Pending',
       'in_progress' => 'In Progress',
       'completed' => 'Completed',
-      'failed'    => 'Failed'
+      'failed' => 'Failed'
     ],
     'preparing' => 'Preparing deployment...',
     'success' => [
@@ -154,9 +154,23 @@ return [
       'go_to_module' => 'Go to Module',
       'retry' => 'Retry',
       'close' => 'Close',
+      'abort' => 'Abort & Cleanup',
     ],
     'has_missing_fields' => 'Some required fields are still empty',
     'deploying' => 'Deploying',
     'deploy_success' => 'Module was deployed successfully',
-  ]
+    'confirm_rollback' => 'Confirm Rollback',
+    'rollback_message' => 'This will delete all partially created files and database tables. Are you sure?',
+    'errors' => [
+      'unexpected' => 'An unexpected error occurred.',
+      'cleanup_failed' => 'Cleanup failed. You may need to delete files manually.',
+    ],
+    'steps' => [
+      'initialize' => ['label' => 'Validating & Initializing...', 'desc' => 'Saving module configurations'],
+      'files'      => ['label' => 'Generating models & handlers...', 'desc' => 'Setting up core PHP classes'],
+      'labels'     => ['label' => 'Creating language labels...', 'desc' => 'Generating translation keys'],
+      'fields'     => ['label' => 'Activating draft fields...', 'desc' => 'Finalizing schema layout'],
+      'table'      => ['label' => 'Scaffolding database tables...', 'desc' => 'Executing SQL migrations'],
+    ],
+  ],
 ];
