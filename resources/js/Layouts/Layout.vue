@@ -20,7 +20,10 @@ const csrf =
 
 const appSettings = computed(() => page.props.appSettings || {});
 const useModuleColors = computed(() => appSettings.value.useModuleColors);
-
+document.documentElement.style.setProperty(
+  "--primary-color",
+  appSettings.value?.primary_color || "#3498db",
+);
 provide("useModuleColors", useModuleColors);
 // test alerts
 // info("Operation completed successfully", { timeout: 0 });
