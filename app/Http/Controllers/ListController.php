@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use App\Contracts\ModuleHandler;
 use App\Support\Settings;
+use App\Exceptions\ModuleHandlerNotFoundException;
 
 class ListController extends Controller
 {
@@ -21,7 +22,9 @@ class ListController extends Controller
       ?? "App\\Handlers\\Modules\\" . Str::studly($moduleModel->slug) . "ModuleHandler";
 
     if (empty($handlerClass)) {
-      dd("No Handler Class found for module {$moduleModel->slug}");
+      throw new ModuleHandlerNotFoundException(
+        "Handler class [{$handlerClass}] not found for module [{$module}]. Please check if the file exists or re-deploy."
+      );
     }
 
     $props = [];
