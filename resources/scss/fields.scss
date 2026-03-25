@@ -61,7 +61,6 @@ $error-color: #ef4444;
 
     &.is-open {
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
     }
   }
 
@@ -245,8 +244,7 @@ $error-color: #ef4444;
       border-color: #c0c4cc;
     }
     &.is-active {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      border-color: var(--module-color);
     }
   }
 
