@@ -48,6 +48,8 @@ return array(
   'all_relationships_used' => 'Alle Beziehungen sind bereits im Layout vorhanden',
   'fields_header_hint' => 'Feld anklicken, um es zum Unterbereich Header hinzuzufügen',
   'linkingPanel' => 'Verbindungspanel',
-  'has_empty_layouts_error' => 'Bitte alle Leere Abschnitte entfernen'
+  'has_empty_layouts_error' => 'Bitte alle Leere Abschnitte entfernen',
+  'create_first_relationship' => 'Neue Beziehung erstellen',
+  'no_relationships_warning' => 'Dieses Modul hat keine Beziehungen. Sie müssen Beziehungen erstellen, bevor Sie Layouts für verknüpfte Panels konfigurieren können.',
 
 );

@@ -4,6 +4,7 @@
  */
 
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
+import { usePage, Link } from "@inertiajs/vue3";
 import LayoutRelatedFields from "./LayoutRelatedFields.vue";
 
 const props = defineProps({
@@ -23,6 +24,7 @@ const props = defineProps({
     type: Set,
     default: [],
   },
+  hasNoRels: Boolean,
 });
 const emit = defineEmits(["update:columns"]);
 
@@ -30,6 +32,8 @@ const internalColumns = ref([...props.columns]);
 const internalAvailable = ref([...props.availableRelationships]);
 const confirmSectionIndex = ref(null);
 const showSubpanels = ref([]);
+
+const page = usePage();
 
 const isConfirm = (index) => confirmSectionIndex.value === index;
 watch(
@@ -394,7 +398,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="editor" @dragover="onGlobalDragOver">
     <div class="editor__container">
-      <div class="editor__container__sidebar">
+      <div v-if="!hasNoRels" class="editor__container__sidebar">
         <div class="editor__container__sidebar__header">
           <span class="editor__container__sidebar__header__title">{{
             $t("layouts.available_relationships")
@@ -452,7 +456,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="editor__container__main">
+      <div v-if="!hasNoRels" class="editor__container__main">
         <div class="editor__container__main__header">
           <div class="editor__container__main__header__title">
             {{ $t("layouts.related") }}
@@ -655,6 +659,23 @@ onBeforeUnmount(() => {
           <i class="fa-solid fa-asterisk"></i>
           {{ $t("layouts.fields_header_hint") }}
         </span>
+      </div>
+      <div v-if="hasNoRels" class="editor__container__empty">
+        <div class="editor__container__empty__content">
+          <div class="editor__container__empty__icon">
+            <i class="fa-solid fa-diagram-project"></i>
+          </div>
+          <p class="editor__container__empty__text">
+            {{ $t("layouts.no_relationships_warning") }}
+          </p>
+          <Link
+            :href="`/settings/modules/${$page.props.module.id}/relationships/create`"
+            class="editor__container__empty__link"
+          >
+            <i class="fa-solid fa-plus-circle"></i>
+            {{ $t("layouts.create_first_relationship") }}
+          </Link>
+        </div>
       </div>
     </div>
 
