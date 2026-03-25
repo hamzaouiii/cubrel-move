@@ -85,6 +85,7 @@ const clearSearch = () => {
           :placeholder="t('settings.search_placeholder')"
         />
         <i
+          v-if="search"
           class="fa-solid fa-xmark settings__header__search__clear"
           @click="clearSearch"
         ></i>
