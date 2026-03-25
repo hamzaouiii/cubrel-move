@@ -37,7 +37,27 @@ body {
     padding-left: 95px;
   }
 }
+#nprogress .bar {
+  height: 6px !important;
+  background: linear-gradient(
+    to right,
+    var(--primary-color) 0%,
+    var(--primary-color) 100%
+  ) !important;
+}
 
+/* Add a shadow/glow to the tip of the bar */
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--primary-color),
+    0 0 5px var(--primary-color) !important;
+}
+
+/* Style the spinner if you kept it enabled */
+#nprogress .spinner-icon {
+  border-top-color: var(--primary-color) !important;
+  border-left-color: var(--primary-color) !important;
+}
 .unsupported-device {
   display: none;
 }
