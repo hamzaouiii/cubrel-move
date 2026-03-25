@@ -24,9 +24,7 @@ class RecordController extends Controller
     $props = [];
     $handler_class = $moduleModel->handler_class ?? "App\Handlers\Modules\\" . ucwords($module) . "ModuleHandler";
 
-
-
-    if (empty($handlerClass)) {
+    if (empty($handler_class)) {
       throw new ModuleHandlerNotFoundException(
         "Handler class [{$handler_class}] not found for module [{$module}]. Please check if the file exists or re-deploy."
       );
