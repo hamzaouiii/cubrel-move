@@ -198,6 +198,7 @@ const appSettings = usePage().props.appSettings;
 const resetSearchValue = () => {
   search.value = "";
   handleSearchInput();
+  toggleSearch();
 };
 
 function goToCreateView() {
@@ -357,6 +358,11 @@ const module_color = computed(() => {
     ? appSettings.primary_color
     : props.module.color;
 });
+
+const showListSearch = ref(false);
+const toggleSearch = () => {
+  showListSearch.value = !showListSearch.value;
+};
 </script>
 
 <template>
@@ -384,25 +390,28 @@ const module_color = computed(() => {
               : { '--module-color': module.color }
           "
         >
-          <input
-            type="text"
-            name="search"
-            class="list-layout__header__actions__list__search"
-            :placeholder="$t('modules.actions.search_placeholder')"
-            v-model="search"
-            @input="handleSearchInput"
-            @keydown.enter.prevent="performSearch(1)"
-          />
+          <Transition name="slide-search">
+            <div
+              class="list-layout__header__actions__list__search"
+              v-if="showListSearch"
+            >
+              <input
+                type="text"
+                name="search"
+                :placeholder="$t('modules.actions.search_placeholder')"
+                v-model="search"
+                @input="handleSearchInput"
+                @keydown.enter.prevent="performSearch(1)"
+              />
+            </div>
+          </Transition>
 
-          <span
-            @click="resetSearchValue()"
-            :class="[
-              'list-layout__header__actions__list__search-reseter',
-              { 'hide-reseter': !search },
-            ]"
-            ><i class="fa-regular fa-circle-xmark"></i>
-          </span>
-
+          <button @click="toggleSearch()">
+            <i
+              class="fa-solid"
+              :class="showListSearch ? 'fa-xmark' : ' fa-magnifying-glass'"
+            ></i>
+          </button>
           <button @click="goToCreateView()">
             {{ $t("modules.actions.create") }}
           </button>
