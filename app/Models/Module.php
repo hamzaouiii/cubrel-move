@@ -157,6 +157,7 @@ class Module extends Model
 
   /**
    * @return HasMany<Field, $this>
+   * excludes default fields
    */
   public function fields()
   {
@@ -272,11 +273,16 @@ class Module extends Model
       ->values();
   }
 
-  public function getFieldMetadata(string $field): array
+  public function getFieldMetadata(string $field_name): array
   {
     $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_global-', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
-    $field = $this->hasMany(Field::class, 'module_id', 'id')
-      ->firstWhere('name', $field);
+    $field = Field::query()
+      ->where(function ($query) {
+        $query->where('module_id', $this->id)
+          ->orWhere('is_global', true);
+      })
+      ->where('name', $field_name)
+      ->first();
     return array_diff_key(
       $field->getAttributes(),
       array_flip($excluded)
