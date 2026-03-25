@@ -6,7 +6,7 @@ import {
   onBeforeUnmount,
   getCurrentInstance,
   watch,
-  toRaw,
+  nextTick,
 } from "vue";
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -44,6 +44,7 @@ const selectedIds = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const allMatchingSelected = ref(false);
+const searchInput = ref(null);
 
 const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
@@ -198,7 +199,6 @@ const appSettings = usePage().props.appSettings;
 const resetSearchValue = () => {
   search.value = "";
   handleSearchInput();
-  toggleSearch();
 };
 
 function goToCreateView() {
@@ -362,6 +362,13 @@ const module_color = computed(() => {
 const showListSearch = ref(false);
 const toggleSearch = () => {
   showListSearch.value = !showListSearch.value;
+  if (showListSearch.value) {
+    nextTick(() => {
+      searchInput.value?.focus();
+    });
+  } else {
+    resetSearchValue();
+  }
 };
 </script>
 
@@ -396,6 +403,7 @@ const toggleSearch = () => {
               v-if="showListSearch"
             >
               <input
+                ref="searchInput"
                 type="text"
                 name="search"
                 :placeholder="$t('modules.actions.search_placeholder')"
