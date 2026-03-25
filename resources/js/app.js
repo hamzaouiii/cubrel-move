@@ -7,9 +7,6 @@ import "../scss/app.scss";
 import "../scss/lib.min.css";
 
 createInertiaApp({
-  progress: {
-    delay: 250,
-  },
   resolve: (name) => {
     const pages = import.meta.glob("./Pages/**/*.vue", { eager: true });
     return pages[`./Pages/${name}.vue`];
