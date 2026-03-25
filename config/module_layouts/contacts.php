@@ -67,34 +67,34 @@ return array(
             'type' => 'text',
             'label' => 'modules.defaults.name',
           ),
-          2 =>
+          1 =>
           array(
             'name' => 'position',
             'type' => 'text',
             'label' => 'modules.contacts.fields.position',
           ),
-          3 =>
+          2 =>
           array(
             'name' => 'phone',
             'type' => 'text',
             'label' => 'modules.contacts.fields.phone',
           ),
-          4 =>
+          3 =>
           array(
             'name' => 'email',
             'type' => 'email',
             'label' => 'modules.contacts.fields.email',
           ),
-          5 =>
+          4 =>
           array(
             'name' => 'notes',
-            'type' => 'longtext',
+            'type' => 'longText',  // Changed to capital T
             'label' => 'modules.contacts.fields.notes',
           ),
-          6 =>
+          5 =>
           array(
             'name' => 'description',
-            'type' => 'longText',
+            'type' => 'longText',  // Changed to capital T
             'label' => 'modules.defaults.description',
           ),
         ),
