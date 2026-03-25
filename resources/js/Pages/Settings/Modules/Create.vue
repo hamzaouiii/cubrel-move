@@ -12,7 +12,7 @@ import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 import Layout from "@/Layouts/Layout.vue";
-import DeployModal from "@/Pages/Components/Settings/Builder/DeployModal.vue";
+import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
 import { Head, usePage, useForm, router, Link } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
@@ -118,33 +118,48 @@ const isLastTab = computed(() => {
   return tabs.indexOf(currentStep.value) === tabs.length - 1;
 });
 
+// const deployModule = () => {
+//   showModuleDeplyProgress.value = true;
+//   const url = "/settings/modulebuilder/" + props.settingModule.id + "/deploy";
+//   clearAllAlerts();
+//   info(t("settings.modulebuilder.deploying"));
+//   form
+//     .transform(() => childFormData.value)
+//     .post(url, {
+//       onSuccess: () => {
+//         clearAllAlerts();
+//         success(t("settings.modulebuilder.deploy_success"));
+//         isProcessing.value = false;
+//         isFormDirty.value = false;
+//       },
+//       onError: (r) => {
+//         clearAllAlerts();
+//         Object.values(r).forEach((message) => {
+//           error(message);
+//         });
+//         isProcessing.value = false;
+//       },
+//     });
+// };
 const deployModule = () => {
-  isProcessing.value = true;
-  const url = "/settings/modulebuilder/" + props.settingModule.id + "/deploy";
   clearAllAlerts();
-  info(t("settings.modulebuilder.deploying"));
-  form
-    .transform(() => childFormData.value)
-    .post(url, {
-      onSuccess: () => {
-        clearAllAlerts();
-        success(t("settings.modulebuilder.deploy_success"));
-        isProcessing.value = false;
-        isFormDirty.value = false;
-      },
-      onError: (r) => {
-        clearAllAlerts();
-        Object.values(r).forEach((message) => {
-          error(message);
-        });
-        isProcessing.value = false;
-      },
-    });
+  showModuleDeplyProgress.value = true;
 };
 
-const onDeployComplete = () => {
-  // In the future, this is where you'd redirect using Inertia
-  // e.g., router.visit(`/settings/modules/${props.settingModule.id}`);
+const onDeployComplete = (payload) => {
+  if (payload && payload.success) {
+    success(t("settings.modulebuilder.deploy_success"));
+    isFormDirty.value = false;
+
+    // Optional: add a slight delay so the user can see the final green checkmark
+    setTimeout(() => {
+      // Redirect to the module's main settings page or list
+      router.visit(`/settings/modules/${props.settingModule.id}`);
+    }, 1000);
+  } else {
+    // The modal handles its own error UI, but you can also trigger a global alert here
+    error(payload?.error || "Deployment failed.");
+  }
 };
 
 const tabDirty = ref({
@@ -272,8 +287,10 @@ const handleUpdateList = () => {
       </div>
     </div>
   </div>
-  <DeployModal
+  <DeployProgressModal
     v-if="showModuleDeplyProgress"
+    :module-id="settingModule.id"
+    :form-data="childFormData"
     @close="showModuleDeplyProgress = false"
     @complete="onDeployComplete"
     :style="[

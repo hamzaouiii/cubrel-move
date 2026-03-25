@@ -139,20 +139,18 @@ return [
     'title' => [
       'complete' => 'Bereitstellung abgeschlossen!',
       'deploying' => 'Modul wird bereitgestellt',
-      'failed' => 'Modulbereitstellung fehlgeschlagen',
-
+      'failed' => 'Modul-Bereitstellung fehlgeschlagen',
     ],
     'subtitle' => [
       'wait' => 'Bitte warten Sie, während wir alles für Sie einrichten',
-      'success' => 'Ihr Modul wurde erfolgreich bereitgestellt und kann verwendet werden',
+      'success' => 'Ihr Modul wurde erfolgreich bereitgestellt und ist einsatzbereit',
     ],
     'steps_completed' => 'Schritte abgeschlossen',
     'status' => [
       'pending' => 'Ausstehend',
-      'in_progress' => 'In Bearbeitung',
+      'in_progress' => 'In Arbeit',
       'completed' => 'Abgeschlossen',
-      'failed'    => 'Fehlgeschlagen'
-
+      'failed' => 'Fehlgeschlagen'
     ],
     'preparing' => 'Bereitstellung wird vorbereitet...',
     'success' => [
@@ -162,9 +160,23 @@ return [
       'go_to_module' => 'Zum Modul',
       'retry' => 'Wiederholen',
       'close' => 'Schließen',
+      'abort' => 'Abbrechen & Bereinigen',
     ],
-    'has_missing_fields' => 'Some required fields are still empty',
-    'deploying' => 'Deploying',
-    'deploy_success' => 'Module was deployed successfully',
-  ]
+    'has_missing_fields' => 'Einige erforderliche Felder sind noch leer',
+    'deploying' => 'Wird bereitgestellt',
+    'deploy_success' => 'Modul wurde erfolgreich bereitgestellt',
+    'confirm_rollback' => 'Rollback bestätigen',
+    'rollback_message' => 'Dadurch werden alle teilweise erstellten Dateien und Datenbanktabellen gelöscht. Sind Sie sicher?',
+    'errors' => [
+      'unexpected' => 'Ein unerwarteter Fehler ist aufgetreten.',
+      'cleanup_failed' => 'Bereinigung fehlgeschlagen. Sie müssen Dateien möglicherweise manuell löschen.',
+    ],
+    'steps' => [
+      'initialize' => ['label' => 'Validierung & Initialisierung...', 'desc' => 'Modulkonfigurationen werden gespeichert'],
+      'files'      => ['label' => 'Modelle & Handler werden generiert...', 'desc' => 'PHP-Kernklassen werden erstellt'],
+      'labels'     => ['label' => 'Sprachbezeichnungen werden erstellt...', 'desc' => 'Übersetzungsschlüssel werden generiert'],
+      'fields'     => ['label' => 'Entwurfsfelder werden aktiviert...', 'desc' => 'Schema-Layout wird finalisiert'],
+      'table'      => ['label' => 'Datenbanktabellen werden erstellt...', 'desc' => 'SQL-Migrationen werden ausgeführt'],
+    ],
+  ],
 ];

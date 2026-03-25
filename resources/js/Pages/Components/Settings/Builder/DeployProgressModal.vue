@@ -1,26 +1,61 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, getCurrentInstance } from "vue";
+import { Link } from "@inertiajs/vue3";
+import axios from "axios";
+import { useConfirm } from "@/Composables/useConfirm";
+
+const { confirm } = useConfirm();
+
+const props = defineProps({
+  moduleId: {
+    type: [String, Number],
+    required: true,
+  },
+  formData: {
+    type: Object,
+    required: true,
+  },
+});
+
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 const emit = defineEmits(["close", "complete"]);
 
-// Define the steps based on your backend context
 const steps = ref([
   {
-    id: "database",
-    label: "Scaffolding database tables...",
-    description: "Creating database structure",
+    id: "initialize",
+    endpoint: "initialize",
+    label: t("settings.modulebuilder.steps.initialize.label"),
+    description: t("settings.modulebuilder.steps.initialize.desc"),
     status: "pending",
   },
   {
     id: "files",
-    label: "Generating models & language files...",
-    description: "Setting up core components",
+    endpoint: "generate-files",
+    label: t("settings.modulebuilder.steps.files.label"),
+    description: t("settings.modulebuilder.steps.files.desc"),
     status: "pending",
   },
   {
-    id: "finalize",
-    label: "Publishing and activating module...",
-    description: "Finalizing installation",
+    id: "labels",
+    endpoint: "create-labels",
+    label: t("settings.modulebuilder.steps.labels.label"),
+    description: t("settings.modulebuilder.steps.labels.desc"),
+    status: "pending",
+  },
+  {
+    id: "table",
+    endpoint: "create-table",
+    label: t("settings.modulebuilder.steps.table.label"),
+    description: t("settings.modulebuilder.steps.table.desc"),
+    status: "pending",
+  },
+  {
+    id: "fields",
+    endpoint: "activate-fields",
+    label: t("settings.modulebuilder.steps.fields.label"),
+    description: t("settings.modulebuilder.steps.fields.desc"),
     status: "pending",
   },
 ]);
@@ -31,49 +66,49 @@ const hasFailed = ref(false);
 const failedStepIndex = ref(-1);
 const currentStepIndex = ref(-1);
 const errorMessage = ref("");
+const isRollingBack = ref(false);
 
-// The mock function with random failures
-const startMockDeploy = async () => {
+const startDeploy = async () => {
   isDeploying.value = true;
   hasFailed.value = false;
   failedStepIndex.value = -1;
   errorMessage.value = "";
-  const failAtStep = ref(-1); // Store which step will fail
-  const randomIndex = Math.floor(Math.random() * steps.value.length);
-  const failingChance = Math.random() > 0.5;
-  failAtStep.value = randomIndex;
+
+  const baseUrl = `/settings/modulebuilder/${props.moduleId}/deploy`;
+
   for (let i = 0; i < steps.value.length; i++) {
     currentStepIndex.value = i;
     const step = steps.value[i];
     step.status = "running";
 
-    // Simulate network/processing delay (between 1 and 2.5 seconds)
-    const delay = Math.floor(Math.random() * 1500) + 1000;
-    await new Promise((resolve) => setTimeout(resolve, delay));
-
-    if (i === failAtStep.value && failingChance) {
-      // Step failed
+    try {
+      const payload = i === 0 ? props.formData : {};
+      await axios.post(`${baseUrl}/${step.endpoint}`, payload);
+      step.status = "success";
+    } catch (error) {
       step.status = "failed";
       hasFailed.value = true;
       failedStepIndex.value = i;
-      errorMessage.value = `Failed at step: ${step.label.toLowerCase().replace("...", "")}. Please check your configuration and try again.`;
+
+      const serverMessage =
+        error.response?.data?.message ||
+        t("settings.modulebuilder.errors.unexpected");
+      // Formats as "Step Label: Error Message"
+      errorMessage.value = `${step.label.replace("...", "")}: ${serverMessage}`;
+
       currentStepIndex.value = -1;
       isDeploying.value = false;
       emit("complete", { success: false, error: errorMessage.value });
-      return; // Stop the process
+      return;
     }
-
-    step.status = "success";
   }
 
   currentStepIndex.value = -1;
   isDeploying.value = false;
   isComplete.value = true;
-  emit("complete", { success: true });
 };
 
 const retryDeployment = () => {
-  // Reset all steps
   steps.value.forEach((step) => {
     step.status = "pending";
   });
@@ -81,32 +116,44 @@ const retryDeployment = () => {
   hasFailed.value = false;
   failedStepIndex.value = -1;
   errorMessage.value = "";
-  startMockDeploy();
+  startDeploy();
 };
 
-const closeModal = () => {
-  emit("close");
+const abortAndCleanup = async () => {
+  const ok = await confirm({
+    title: t("settings.modulebuilder.confirm_rollback"),
+    message: t("settings.modulebuilder.rollback_message"),
+    confirmText: t("modules.actions.delete_yes"),
+    cancelText: t("modules.actions.delete_no"),
+    danger: true,
+  });
+
+  if (!ok) return;
+
+  isRollingBack.value = true;
+  try {
+    await axios.post(
+      `/settings/modulebuilder/${props.moduleId}/deploy/rollback`,
+    );
+    emit("close");
+  } catch (error) {
+    errorMessage.value = t("settings.modulebuilder.errors.cleanup_failed");
+    console.error(error);
+  } finally {
+    isRollingBack.value = false;
+  }
 };
+
+const moduleUrl = computed(() => `/settings/modules/${props.moduleId}`);
 
 onMounted(() => {
-  startMockDeploy();
+  startDeploy();
 });
 </script>
-
 <template>
   <div class="deployment-modal">
     <!-- Backdrop with animated gradient -->
     <div class="deployment-modal__backdrop"></div>
-
-    <!-- Close button -->
-    <button
-      class="deployment-modal__close"
-      v-if="isComplete || hasFailed"
-      @click="closeModal"
-      :aria-label="$t('settings.modulebuilder.close')"
-    >
-      <i class="fa-solid fa-xmark"></i>
-    </button>
 
     <!-- Modal Container -->
     <div class="deployment-modal__container">
@@ -309,15 +356,31 @@ onMounted(() => {
                 <button
                   class="deployment-card__button deployment-card__button--retry"
                   @click="retryDeployment"
+                  :disabled="isRollingBack"
                 >
-                  <i class="fa-solid fa-rotate-right"></i>
+                  <i
+                    class="fa-solid fa-rotate-right"
+                    :class="{ 'fa-spin': isDeploying }"
+                  ></i>
                   {{ $t("settings.modulebuilder.button.retry") || "Retry" }}
                 </button>
+
                 <button
                   class="deployment-card__button deployment-card__button--secondary"
-                  @click="closeModal"
+                  @click="abortAndCleanup"
+                  :disabled="isRollingBack"
                 >
-                  {{ $t("settings.modulebuilder.button.close") || "Close" }}
+                  <i
+                    v-if="isRollingBack"
+                    class="fa-solid fa-spinner fa-spin"
+                  ></i>
+                  <i v-else class="fa-solid fa-trash-can"></i>
+                  {{
+                    isRollingBack
+                      ? "Cleaning..."
+                      : $t("settings.modulebuilder.button.abort") ||
+                        "Abort & Cleanup"
+                  }}
                 </button>
               </div>
             </div>
@@ -340,10 +403,10 @@ onMounted(() => {
                 </svg>
                 <span>{{ $t("settings.modulebuilder.success.message") }}</span>
               </div>
-              <button class="deployment-card__button" @click="closeModal">
+              <Link class="deployment-card__button" :href="moduleUrl">
                 {{ $t("settings.modulebuilder.button.go_to_module") }}
                 <i class="fa-solid fa-arrow-right"></i>
-              </button>
+              </Link>
             </div>
           </div>
         </div>
