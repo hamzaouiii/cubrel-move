@@ -273,7 +273,7 @@ const highlightMatch = (text) => {
   <div v-else-if="mode === 'detail'">
     <span
       :class="[
-        'record-layout__sections__item__layout__field__content',
+        'record-layout__sections__item__layout__field__content display-field',
         { 'view-uneditable-field': readOnly },
       ]"
     >

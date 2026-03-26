@@ -136,7 +136,6 @@ const highlightMatch = (text) => {
           type="text"
           @input="clearErrors()"
           :disabled="readOnly"
-          placeholder="Enter text..."
         />
       </div>
       <span v-if="showError" class="error-icon-container">

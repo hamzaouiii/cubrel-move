@@ -89,7 +89,6 @@ const getEmailLocalPart = (email) => {
         <input
           v-else
           v-model="localValue"
-          type="email"
           @input="clearErrors()"
           placeholder="email@example.com"
         />
