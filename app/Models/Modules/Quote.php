@@ -26,5 +26,7 @@ class Quote extends BaseModule
     'subtotal'    => 'decimal:2',
     'tax'         => 'decimal:2',
     'total'       => 'decimal:2',
+    'custom_fields' => 'array',
+
   ];
 }
