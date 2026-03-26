@@ -26,17 +26,10 @@ class SupportCase extends BaseModule
   protected $casts = [
     'opened_at' => 'datetime',
     'closed_at' => 'datetime',
+    'custom_fields' => 'array',
+
   ];
 
-  public function account(): BelongsTo
-  {
-    return $this->belongsTo(Account::class);
-  }
-
-  public function contact(): BelongsTo
-  {
-    return $this->belongsTo(Contact::class);
-  }
   protected static function booted()
   {
     static::saving(function ($case) {
