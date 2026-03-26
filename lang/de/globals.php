@@ -20,5 +20,8 @@ return [
     'expand' => 'Seitenleiste Öffnen',
     'close'  => 'Seitenleiste Schließen',
     'home'    => "Startseite",
-  ]
+  ],
+  'copied' => 'kopiert!',
+  'Copy_failed' => 'Kopieren fehlgeschlagen',
+
 ];

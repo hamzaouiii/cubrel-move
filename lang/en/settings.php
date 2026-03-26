@@ -83,7 +83,7 @@ return [
     'customisations' => 'Customisations',
     'description' => [
       'email'          => 'Manage outbound and inbound emails. The email settings must be configured in order to enable users to send out email and newsletter campaigns.',
-      'system'         => 'Configure the system-wide settings according to the specifications of your organization. Users can override some of the default locale settings within their user settings page.',
+      'system'         => 'Configure the system-wide settings according to the specifications of your organization.',
       'users'          => 'Create, edit, activate, and deactivate users in AR-CRM. Create and manage teams and roles, including module- and field-level access.',
       'customisations' => 'Create and manage Modules, Layouts, Fields, and Relationships.'
     ]

@@ -31,7 +31,10 @@ const props = defineProps({
 });
 
 const component = computed(() => {
-  return fieldRegistry[props.field?.type] || fieldRegistry["text"];
+  return (
+    fieldRegistry[props.field?.type]?.component ||
+    fieldRegistry["text"].component
+  );
 });
 const dropdown_list = computed(() => {
   return props?.related_field?.dropdown_list || null;

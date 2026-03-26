@@ -20,4 +20,6 @@ return [
     'close'  => 'Close Sidebar',
     'home'    => "Dashboard",
   ],
+  'copied' => 'Copied',
+  'Copy_failed' => 'Copy Failed',
 ];

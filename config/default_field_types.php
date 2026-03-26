@@ -10,6 +10,7 @@ return [
   'number',
   'relationship',
   'checkbox',
+  'currency',
   'url'
 ];
 
