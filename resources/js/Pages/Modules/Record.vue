@@ -15,6 +15,7 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
+import { useFieldValidation } from "@/Composables/useFieldValidation";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -34,6 +35,7 @@ const props = defineProps({
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const appSettings = usePage().props.appSettings;
+const { validateFieldTypes } = useFieldValidation(props);
 
 // State
 const form = useForm({ ...props.record });
@@ -185,6 +187,7 @@ const clearAllValidationErrors = () => {
   validationErrors.value = [];
 };
 
+// SAVE RECORD
 const saveRecord = () => {
   clearAllValidationErrors();
   info(t("modules.actions.updating"));
@@ -194,9 +197,26 @@ const saveRecord = () => {
     isEditing.value = false;
     return;
   }
-
   validateRequiredFields(payload);
   if (validationErrors.value.length > 0) {
+    return;
+  }
+
+  const typeErrors = validateFieldTypes(payload);
+
+  if (typeErrors.length > 0) {
+    validationErrors.value = [...validationErrors.value, ...typeErrors];
+
+    clearAllAlerts();
+
+    if (typeErrors.length > 1) {
+      error(t("fields.validation.invalid_several"));
+    } else {
+      error(
+        t(typeErrors[0].label) + " " + t("fields.validation.invalid_format"),
+      );
+    }
+
     return;
   }
 

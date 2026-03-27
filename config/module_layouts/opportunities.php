@@ -173,13 +173,13 @@ return array(
               1 =>
               array(
                 'name' => 'phone',
-                'type' => 'text',
+                'type' => 'phone',
                 'label' => 'modules.accounts.fields.phone',
               ),
               2 =>
               array(
                 'name' => 'website',
-                'type' => 'text',
+                'type' => 'url',
                 'label' => 'modules.accounts.fields.website',
               ),
               3 =>
@@ -212,7 +212,7 @@ return array(
               2 =>
               array(
                 'name' => 'phone',
-                'type' => 'text',
+                'type' => 'phone',
                 'label' => 'modules.contacts.fields.phone',
               ),
               3 =>

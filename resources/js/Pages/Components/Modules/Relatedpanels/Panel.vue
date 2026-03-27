@@ -13,6 +13,7 @@ const props = defineProps({
   relationship: Object,
   panel: Object,
   expandPanel: String,
+  color: String,
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -126,5 +127,6 @@ const unlinkParent = async (record) => {
     :fields="relatedFields"
     @update-panel="handleUpdatePanel"
     :pagination="relationship?.pagination ?? null"
+    :color="color"
   ></PanelBody>
 </template>

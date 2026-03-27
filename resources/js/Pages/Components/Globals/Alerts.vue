@@ -17,7 +17,7 @@ const normalizedAlerts = computed(() =>
     type: a.type ?? "info",
     dismissible: a.dismissible ?? false,
     progressable: a.progressable ?? false,
-    duration: a.duration ?? 5000,
+    timeout: a.timeout ?? 5000,
   })),
 );
 
@@ -37,10 +37,10 @@ watch(
   () => normalizedAlerts.value,
   (alerts) => {
     alerts.forEach((alert) => {
-      if (alert.progressable && alert.duration && !timers.value[alert.id]) {
+      if (alert.progressable && alert.timeout && !timers.value[alert.id]) {
         timers.value[alert.id] = setTimeout(() => {
           closeAlert(alert.id);
-        }, alert.duration);
+        }, alert.timeout);
       }
     });
   },
@@ -68,11 +68,10 @@ onUnmounted(() => {
           <i class="fa-solid fa-times"></i>
         </span>
       </div>
-
       <div
         v-if="alert.progressable"
         class="alerts__item__progress"
-        :style="{ animationDuration: alert.duration + 'ms' }"
+        :style="{ animationDuration: alert.timeout + 'ms' }"
       />
     </div>
   </div>

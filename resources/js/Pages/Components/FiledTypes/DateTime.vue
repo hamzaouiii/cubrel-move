@@ -564,7 +564,13 @@ const clearErrors = () => {
     </div>
   </div>
   <div v-else-if="mode === 'detail'">
-    <span :class="['text-field', { 'module-datetime--readonly': readOnly }]">
+    <span
+      :class="[
+        'text-field',
+        { 'module-datetime--readonly': readOnly },
+        { 'display-field': !readOnly },
+      ]"
+    >
       {{
         type === "date"
           ? formatDate(modelValue, appSettings)

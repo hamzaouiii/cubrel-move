@@ -14,10 +14,15 @@ class RelationshipPopulationSeeder extends Seeder
 
     foreach ($relationships as $relationship) {
 
-      $leftClass  = $relationship->left_class;
-      $rightClass = $relationship->right_class;
+      // Grab the module slugs as defined in the relationships table
+      $leftModuleSlug  = $relationship->left_module;
+      $rightModuleSlug = $relationship->right_module;
 
-      if (!class_exists($leftClass) || !class_exists($rightClass)) {
+      // Resolve the Eloquent model classes from the modules table to fetch IDs
+      $leftClass  = DB::table('modules')->where('slug', $leftModuleSlug)->value('model_class');
+      $rightClass = DB::table('modules')->where('slug', $rightModuleSlug)->value('model_class');
+
+      if (!$leftClass || !$rightClass || !class_exists($leftClass) || !class_exists($rightClass)) {
         continue;
       }
 
@@ -42,12 +47,12 @@ class RelationshipPopulationSeeder extends Seeder
           $rightId = $rightRecords->random();
 
           try {
-
+            // Updated to pass the module slug instead of the class name
             RelationshipService::link(
               $relationship->name,
-              $leftClass,
-              $leftId,
-              $rightId
+              $leftModuleSlug,
+              (string) $leftId,
+              (string) $rightId
             );
           } catch (\Throwable $e) {
             // ignore duplicates or cardinality conflicts

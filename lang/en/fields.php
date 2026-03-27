@@ -48,7 +48,9 @@ return [
   ],
   'validation' => [
     'is_required' => "field is required!",
-    'is_required_several' => "Multiple required fields are still empty!"
+    'is_required_several' => "Multiple required fields are still empty!",
+    'invalid_format'  => 'has an invalid format',
+    'invalid_several' => 'Some fields have invalid formats',
   ],
   'checkbox_yes' => "Yes",
   'checkbox_no' => "No",

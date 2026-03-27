@@ -1,390 +1,390 @@
 <?php
 
 return [
-  'accounts' => 
+  'accounts' =>
   [
-    'website' => 
+    'website' =>
     [
       'name' => 'website',
-      'type' => 'text',
+      'type' => 'url',
     ],
-    'email' => 
+    'email' =>
     [
       'name' => 'email',
       'type' => 'email',
     ],
-    'phone' => 
+    'phone' =>
     [
       'name' => 'phone',
-      'type' => 'text',
+      'type' => 'phone',
     ],
-    'billing_address' => 
+    'billing_address' =>
     [
       'name' => 'billing_address',
       'type' => 'longtext',
     ],
-    'shipping_address' => 
+    'shipping_address' =>
     [
       'name' => 'shipping_address',
       'type' => 'longtext',
     ],
-    'city' => 
+    'city' =>
     [
       'name' => 'city',
       'type' => 'text',
     ],
-    'country' => 
+    'country' =>
     [
       'name' => 'country',
       'type' => 'text',
     ],
   ],
-  'contacts' => 
+  'contacts' =>
   [
-    'first_name' => 
+    'first_name' =>
     [
       'name' => 'first_name',
       'type' => 'text',
     ],
-    'last_name' => 
+    'last_name' =>
     [
       'name' => 'last_name',
       'type' => 'text',
     ],
-    'email' => 
+    'email' =>
     [
       'name' => 'email',
       'type' => 'email',
     ],
-    'phone' => 
+    'phone' =>
     [
       'name' => 'phone',
-      'type' => 'text',
+      'type' => 'phone',
     ],
-    'position' => 
+    'position' =>
     [
       'name' => 'position',
       'type' => 'text',
     ],
-    'notes' => 
+    'notes' =>
     [
       'name' => 'notes',
       'type' => 'longtext',
     ],
   ],
-  'leads' => 
+  'leads' =>
   [
-    'first_name' => 
+    'first_name' =>
     [
       'name' => 'first_name',
       'type' => 'text',
     ],
-    'last_name' => 
+    'last_name' =>
     [
       'name' => 'last_name',
       'type' => 'text',
     ],
-    'email' => 
+    'email' =>
     [
       'name' => 'email',
       'type' => 'email',
     ],
-    'phone' => 
+    'phone' =>
     [
       'name' => 'phone',
-      'type' => 'text',
+      'type' => 'phone',
     ],
-    'company' => 
+    'company' =>
     [
       'name' => 'company',
       'type' => 'text',
     ],
-    'street' => 
+    'street' =>
     [
       'name' => 'street',
       'type' => 'longtext',
     ],
-    'city' => 
+    'city' =>
     [
       'name' => 'city',
       'type' => 'text',
     ],
-    'zip' => 
+    'zip' =>
     [
       'name' => 'zip',
       'type' => 'text',
     ],
   ],
-  'invoices' => 
+  'invoices' =>
   [
-    'number' => 
+    'number' =>
     [
       'name' => 'number',
       'type' => 'number',
     ],
-    'status' => 
+    'status' =>
     [
       'name' => 'status',
       'type' => 'select',
     ],
-    'issue_date' => 
+    'issue_date' =>
     [
       'name' => 'issue_date',
       'type' => 'date',
     ],
-    'due_date' => 
+    'due_date' =>
     [
       'name' => 'due_date',
       'type' => 'date',
     ],
-    'currency' => 
+    'currency' =>
     [
       'name' => 'currency',
       'type' => 'select',
     ],
-    'subtotal' => 
+    'subtotal' =>
     [
       'name' => 'subtotal',
       'type' => 'number',
     ],
-    'tax' => 
+    'tax' =>
     [
       'name' => 'tax',
       'type' => 'number',
     ],
-    'total' => 
+    'total' =>
     [
       'name' => 'total',
       'type' => 'number',
     ],
-    'notes' => 
+    'notes' =>
     [
       'name' => 'notes',
       'type' => 'longtext',
     ],
   ],
-  'quotes' => 
+  'quotes' =>
   [
-    'number' => 
+    'number' =>
     [
       'name' => 'number',
       'type' => 'number',
     ],
-    'status' => 
+    'status' =>
     [
       'name' => 'status',
       'type' => 'select',
     ],
-    'valid_until' => 
+    'valid_until' =>
     [
       'name' => 'valid_until',
       'type' => 'date',
     ],
-    'currency' => 
+    'currency' =>
     [
       'name' => 'currency',
       'type' => 'select',
     ],
-    'subtotal' => 
+    'subtotal' =>
     [
       'name' => 'subtotal',
       'type' => 'number',
     ],
-    'tax' => 
+    'tax' =>
     [
       'name' => 'tax',
       'type' => 'number',
     ],
-    'total' => 
+    'total' =>
     [
       'name' => 'total',
       'type' => 'number',
     ],
-    'notes' => 
+    'notes' =>
     [
       'name' => 'notes',
       'type' => 'longtext',
     ],
   ],
-  'cases' => 
+  'cases' =>
   [
-    'subject' => 
+    'subject' =>
     [
       'name' => 'subject',
       'type' => 'text',
     ],
-    'status' => 
+    'status' =>
     [
       'name' => 'status',
       'type' => 'select',
     ],
-    'priority' => 
+    'priority' =>
     [
       'name' => 'priority',
       'type' => 'select',
     ],
-    'opened_at' => 
+    'opened_at' =>
     [
       'name' => 'opened_at',
       'type' => 'datetime',
     ],
-    'closed_at' => 
+    'closed_at' =>
     [
       'name' => 'closed_at',
       'type' => 'datetime',
     ],
   ],
-  'emails' => 
+  'emails' =>
   [
-    'to' => 
+    'to' =>
     [
       'name' => 'to',
       'type' => 'email',
     ],
-    'subject' => 
+    'subject' =>
     [
       'name' => 'subject',
       'type' => 'text',
     ],
-    'mailable_class' => 
+    'mailable_class' =>
     [
       'name' => 'mailable_class',
       'type' => 'text',
     ],
-    'related_id' => 
+    'related_id' =>
     [
       'name' => 'related_id',
       'type' => 'text',
     ],
-    'status' => 
+    'status' =>
     [
       'name' => 'status',
       'type' => 'select',
     ],
   ],
-  'inquiries' => 
+  'inquiries' =>
   [
-    'message' => 
+    'message' =>
     [
       'name' => 'message',
       'type' => 'longtext',
     ],
-    'email' => 
+    'email' =>
     [
       'name' => 'email',
       'type' => 'email',
     ],
-    'phone' => 
+    'phone' =>
     [
       'name' => 'phone',
-      'type' => 'text',
+      'type' => 'phone',
     ],
-    'status' => 
+    'status' =>
     [
       'name' => 'status',
       'type' => 'select',
     ],
-    'ip' => 
+    'ip' =>
     [
       'name' => 'ip',
       'type' => 'text',
     ],
-    'user_agent' => 
+    'user_agent' =>
     [
       'name' => 'user_agent',
       'type' => 'longtext',
     ],
   ],
-  'opportunities' => 
+  'opportunities' =>
   [
-    'amount' => 
+    'amount' =>
     [
       'name' => 'amount',
       'type' => 'text',
     ],
-    'currency' => 
+    'currency' =>
     [
       'name' => 'currency',
       'type' => 'select',
     ],
-    'sales_stage' => 
+    'sales_stage' =>
     [
       'name' => 'sales_stage',
       'type' => 'select',
     ],
-    'probability' => 
+    'probability' =>
     [
       'name' => 'probability',
       'type' => 'number',
     ],
-    'expected_close_date' => 
+    'expected_close_date' =>
     [
       'name' => 'expected_close_date',
       'type' => 'date',
     ],
-    'type' => 
+    'type' =>
     [
       'name' => 'type',
       'type' => 'select',
     ],
   ],
-  'products' => 
+  'products' =>
   [
-    'sku' => 
+    'sku' =>
     [
       'name' => 'sku',
       'type' => 'text',
     ],
-    'category' => 
+    'category' =>
     [
       'name' => 'category',
       'type' => 'select',
     ],
-    'price' => 
+    'price' =>
     [
       'name' => 'price',
       'type' => 'number',
     ],
-    'currency' => 
+    'currency' =>
     [
       'name' => 'currency',
       'type' => 'select',
     ],
-    'is_active' => 
+    'is_active' =>
     [
       'name' => 'is_active',
       'type' => 'checkbox',
     ],
   ],
-  'orders' => 
+  'orders' =>
   [
-    'order_number' => 
+    'order_number' =>
     [
       'name' => 'order_number',
       'type' => 'text',
       'required' => true,
     ],
-    'total_amount' => 
+    'total_amount' =>
     [
       'name' => 'total_amount',
       'type' => 'number',
     ],
-    'currency' => 
+    'currency' =>
     [
       'name' => 'currency',
       'type' => 'select',
     ],
-    'status' => 
+    'status' =>
     [
       'name' => 'status',
       'type' => 'select',
     ],
-    'order_date' => 
+    'order_date' =>
     [
       'name' => 'order_date',
       'type' => 'date',
     ],
-    'due_date' => 
+    'due_date' =>
     [
       'name' => 'due_date',
       'type' => 'date',

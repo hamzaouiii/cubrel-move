@@ -13,6 +13,7 @@ const props = defineProps({
   panel: Object,
   fields: Object,
   pagination: Object,
+  color: String,
 });
 
 const records = ref([]);
@@ -122,6 +123,7 @@ const panel_limit = computed(() =>
                 :isUnlinking="unlinkingId === record.id"
                 :class="{ isUnlinking: unlinkingId === record.id }"
                 :fields="fields"
+                :color="color"
               ></PanelRecord>
             </template>
           </tbody>
@@ -136,6 +138,7 @@ const panel_limit = computed(() =>
             :header="panel.fields"
             :related_slug="relationship.related_slug"
             :key="parentRecord?.id"
+            :color="color"
           >
           </PanelParentRecord>
         </div>

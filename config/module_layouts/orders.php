@@ -201,7 +201,7 @@ return array(
               3 =>
               array(
                 'name' => 'website',
-                'type' => 'text',
+                'type' => 'url',
                 'label' => 'modules.accounts.fields.website',
                 'sortable' => false,
               ),

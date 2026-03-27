@@ -11,7 +11,8 @@ import {
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
-const { success, error, info, warning, clearAllAlerts } = useAlerts();
+
+import { useFieldValidation } from "@/Composables/useFieldValidation";
 
 defineOptions({
   layout: Layout,
@@ -24,6 +25,8 @@ const props = defineProps({
   dropdownLists: Object,
   fields: Object,
 });
+const { validateFieldTypes } = useFieldValidation(props);
+const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -127,32 +130,46 @@ const clearAllValidartionErrors = () => {
 const saveRecord = () => {
   if (!form.isDirty) {
     warning(t("modules.actions.no_data_entered"));
-  } else {
-    clearAllValidartionErrors();
+    return;
+  }
 
-    info(t("modules.actions.saving"));
-    const moduleSlug = props.module.slug ?? props.module;
-    const url = `/${moduleSlug}`;
-    validateRequiredFields();
-    if (validationErrors.value.length > 0) {
-      return;
+  clearAllValidartionErrors();
+  info(t("modules.actions.saving"));
+
+  const moduleSlug = props.module.slug ?? props.module;
+  const url = `/${moduleSlug}`;
+
+  validateRequiredFields();
+  if (validationErrors.value.length > 0) return;
+
+  const typeErrors = validateFieldTypes(form.data());
+  if (typeErrors.length > 0) {
+    validationErrors.value = [...validationErrors.value, ...typeErrors];
+    clearAllAlerts();
+
+    if (typeErrors.length > 1) {
+      error(t("fields.validation.invalid_several"));
+    } else {
+      error(
+        t(typeErrors[0].label) + " " + t("fields.validation.invalid_format"),
+      );
     }
 
-    form
-      .transform((data) => {
-        return { ...data };
-      })
-      .post(url, {
-        onSuccess: () => {
-          clearAllAlerts();
-          success(t("modules.actions.save_success"));
-        },
-        onError: () => {
-          clearAllAlerts();
-          error(t("modules.actions.save_error") + form.errors);
-        },
-      });
+    return;
   }
+
+  form
+    .transform((data) => ({ ...data }))
+    .post(url, {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("modules.actions.save_success"));
+      },
+      onError: () => {
+        clearAllAlerts();
+        error(t("modules.actions.save_error") + form.errors);
+      },
+    });
 };
 
 const cancelCreate = () => {

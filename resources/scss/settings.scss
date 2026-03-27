@@ -833,42 +833,6 @@
           text-transform: capitalize;
         }
 
-        // Input Styling
-        input[type="text"] {
-          width: 100%;
-          padding: 0.625rem 0.875rem;
-
-          font-size: 0.95rem;
-          border: 1px solid #dcdfe6;
-          border-radius: 6px;
-          transition: all 0.2s ease-in-out;
-          color: #2d3748;
-
-          &:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);
-          }
-
-          &:disabled {
-            background-color: #f8fafc;
-            color: #718096;
-            cursor: not-allowed;
-            border-style: dashed;
-          }
-        }
-        textarea {
-          width: 100%;
-          padding: 0.625rem 0.875rem;
-
-          font-size: 0.95rem;
-          border: 1px solid #dcdfe6;
-          border-radius: 6px;
-          transition: all 0.2s ease-in-out;
-          color: #2d3748;
-          resize: vertical;
-        }
-        // Checkbox wrapper alignment
         :deep(.Checkbox) {
           display: flex;
           align-items: center;
