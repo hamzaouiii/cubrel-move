@@ -6,7 +6,7 @@ return [
     'website' =>
     [
       'name' => 'website',
-      'type' => 'text',
+      'type' => 'url',
     ],
     'email' =>
     [

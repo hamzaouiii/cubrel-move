@@ -144,7 +144,7 @@ return array(
               1 =>
               array(
                 'name' => 'phone',
-                'type' => 'text',
+                'type' => 'phone',
                 'label' => 'modules.accounts.fields.phone',
               ),
               2 =>
@@ -156,7 +156,7 @@ return array(
               3 =>
               array(
                 'name' => 'website',
-                'type' => 'text',
+                'type' => 'url',
                 'label' => 'modules.accounts.fields.website',
               ),
             ),
@@ -267,7 +267,7 @@ return array(
               2 =>
               array(
                 'name' => 'phone',
-                'type' => 'text',
+                'type' => 'phone',
                 'label' => 'modules.leads.fields.phone',
               ),
             ),

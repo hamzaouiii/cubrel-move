@@ -168,7 +168,7 @@ return array(
               2 =>
               array(
                 'name' => 'phone',
-                'type' => 'text',
+                'type' => 'phone',
                 'label' => 'modules.contacts.fields.phone',
               ),
               3 =>
@@ -309,7 +309,7 @@ return array(
               2 =>
               array(
                 'name' => 'phone',
-                'type' => 'text',
+                'type' => 'phone',
                 'label' => 'modules.inquiries.fields.phone',
               ),
               3 =>
