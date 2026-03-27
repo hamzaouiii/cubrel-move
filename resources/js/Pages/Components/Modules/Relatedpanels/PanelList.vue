@@ -68,6 +68,7 @@ const triggerPanelUpdate = (panel) => {
             @update-panel-trigger="triggerPanelUpdate"
             :expand-panel="expandPanel"
             :collapse-panel="collapsePanel"
+            :color="getRelatedColor(getRelatedSlug(panel.name))"
           ></Panel>
         </li>
       </div>

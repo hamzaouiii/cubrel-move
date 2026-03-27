@@ -14,6 +14,7 @@ const props = defineProps({
   openMenuId: [String, Number],
   isUnlinking: Boolean,
   fields: Object,
+  color: String,
 });
 const emit = defineEmits(["toggleMenu", "quick-edit", "unlink"]);
 
@@ -42,6 +43,7 @@ const fieldResolver = (name) => {
           :field="fieldResolver(field.name)"
           v-model="record[field.name]"
           mode="related-panel"
+          :module-color="color"
         ></FieldRenderer>
       </template>
     </td>

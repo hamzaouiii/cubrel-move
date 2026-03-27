@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import { formatDateTime } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
+import FieldRenderer from "../../Globals/FieldRenderer.vue";
 const props = defineProps({
   record: {
     type: Object,
@@ -13,6 +14,7 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  color: String,
 });
 
 const parentRecord = props.record;
@@ -84,66 +86,14 @@ const detailFields = computed(() => nonTitleFields.value.slice(2));
             {{ $t(field.label) }}
           </div>
 
-          <div class="parent-card__value">
-            {{ formatField(field, parentRecord?.[field.name]) }}
-          </div>
+          <FieldRenderer
+            :field="field"
+            v-model="parentRecord[field.name]"
+            mode="related-panel"
+            :module-color="color"
+          ></FieldRenderer>
         </div>
       </div>
     </div>
   </div>
 </template>
-<style scoped lang="scss">
-.parent-card {
-  background-color: rgba(240, 240, 240, 0.276);
-  border-top: 1px solid rgba(211, 211, 211, 0.324);
-  padding: 20px 22px;
-
-  &__header {
-    margin-bottom: 18px;
-  }
-  &__new-tab {
-    all: unset;
-    margin-left: 10px;
-    cursor: pointer;
-    &:hover {
-      color: #2563eb;
-    }
-  }
-  &__title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #2563eb;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  &__fields {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  &__field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__label {
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #6b7280;
-  }
-
-  &__value {
-    font-size: 14px;
-    color: #1f2937;
-    word-break: break-word;
-  }
-}
-</style>

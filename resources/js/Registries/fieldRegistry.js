@@ -5,22 +5,12 @@ import LongText from "@/Pages/Components/FiledTypes/LongText.vue";
 import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
 import Select from "@/Pages/Components/FiledTypes/Select.vue";
 import PhoneField from "@/Pages/Components/FiledTypes/PhoneField.vue";
+import UrlField from "@/Pages/Components/FiledTypes/UrlField.vue";
 
-// for validation maybe this should be moved out of here to make it cleaner
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { fieldValidation } from "@/utils/fieldValidation";
 
-const defaultValidate = () => true;
-
-const emailValidate = (value) => {
-  if (!value) return true;
-
-  const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
-  return emailRegex.test(value.toString());
-};
-
-const phoneValidate = (value) => {
-  return isValidPhoneNumber(String(value), "DE");
-};
+const { defaultValidate, emailValidate, urlValidate, phoneValidate } =
+  fieldValidation();
 
 export const fieldRegistry = {
   text: {
@@ -62,5 +52,9 @@ export const fieldRegistry = {
   phone: {
     component: PhoneField,
     validate: phoneValidate,
+  },
+  url: {
+    component: UrlField,
+    validate: urlValidate,
   },
 };
