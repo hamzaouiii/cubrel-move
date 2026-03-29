@@ -12,7 +12,9 @@ return [
   'checkbox',
   'currency',
   'percentage',
-  'url'
+  'url',
+  'integer',
+  'decimal'
 ];
 
 // for reference

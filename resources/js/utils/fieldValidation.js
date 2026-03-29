@@ -51,6 +51,70 @@ const percentageValidate = (value) => {
   return true;
 };
 
+// Integer validation
+const integerValidate = (value) => {
+  if (value === null || value === "" || value === undefined) return true;
+
+  const num = parseInt(value);
+
+  // Check if it's a valid integer
+  if (isNaN(num)) return false;
+
+  // Check if it's an integer (no decimal places)
+  if (num !== parseFloat(value)) return false;
+
+  return true;
+};
+
+// Integer validation with min/max
+const integerValidateWithRange = (value, min = null, max = null) => {
+  if (value === null || value === "" || value === undefined) return true;
+
+  const num = parseInt(value);
+
+  if (isNaN(num)) return false;
+  if (num !== parseFloat(value)) return false;
+  if (min !== null && num < min) return false;
+  if (max !== null && num > max) return false;
+
+  return true;
+};
+
+// Decimal validation
+const decimalValidate = (value) => {
+  if (value === null || value === "" || value === undefined) return true;
+
+  const num = parseFloat(value);
+
+  // Check if it's a valid number
+  if (isNaN(num)) return false;
+
+  return true;
+};
+
+// Decimal validation with precision
+const decimalValidateWithPrecision = (
+  value,
+  precision = 2,
+  min = null,
+  max = null,
+) => {
+  if (value === null || value === "" || value === undefined) return true;
+
+  const num = parseFloat(value);
+
+  if (isNaN(num)) return false;
+
+  // Check precision (decimal places)
+  const decimalPlaces = (value.toString().split(".")[1] || "").length;
+  if (decimalPlaces > precision) return false;
+
+  if (min !== null && num < min) return false;
+  if (max !== null && num > max) return false;
+
+  return true;
+};
+
 export function fieldValidation() {
   return {
     emailValidate,
@@ -59,5 +123,7 @@ export function fieldValidation() {
     defaultValidate,
     urlValidateSimple,
     percentageValidate,
+    integerValidate,
+    decimalValidate,
   };
 }

@@ -7,6 +7,8 @@ import Select from "@/Pages/Components/FiledTypes/Select.vue";
 import PhoneField from "@/Pages/Components/FiledTypes/PhoneField.vue";
 import UrlField from "@/Pages/Components/FiledTypes/UrlField.vue";
 import PercentageField from "@/Pages/Components/FiledTypes/PercentageField.vue";
+import IntegerField from "@/Pages/Components/FiledTypes/IntegerField.vue";
+import DecimalField from "@/Pages/Components/FiledTypes/DecimalField.vue";
 
 import { fieldValidation } from "@/utils/fieldValidation";
 const {
@@ -15,6 +17,8 @@ const {
   urlValidate,
   phoneValidate,
   percentageValidate,
+  decimalValidate,
+  integerValidate,
 } = fieldValidation();
 
 export const fieldRegistry = {
@@ -65,5 +69,13 @@ export const fieldRegistry = {
   percentage: {
     component: PercentageField,
     validate: percentageValidate,
+  },
+  integer: {
+    component: IntegerField,
+    validate: integerValidate,
+  },
+  decimal: {
+    component: DecimalField,
+    validate: decimalValidate,
   },
 };
