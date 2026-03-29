@@ -773,7 +773,6 @@ $error-color: #ef4444;
         all: unset;
         width: 100%;
         padding: 0.625rem 0;
-        font-size: 0.9rem;
         letter-spacing: 0.3px;
         font-family: inherit;
 
@@ -841,8 +840,6 @@ $error-color: #ef4444;
       flex: 1;
 
       .text-value {
-        color: #1e293b;
-        font-size: 0.95rem;
         line-height: 1.5;
         word-break: break-word;
         white-space: pre-wrap;
@@ -864,21 +861,6 @@ $error-color: #ef4444;
       color: #9ca3af;
       font-size: 0.8rem;
       opacity: 0.7;
-    }
-
-    .text-table-text {
-      font-size: 0.875rem;
-      color: #1f2937;
-      word-break: break-word;
-    }
-
-    &:hover {
-      background: #f3f4f6;
-
-      .text-table-icon {
-        opacity: 1;
-        color: var(--module-color);
-      }
     }
   }
 
@@ -1783,7 +1765,6 @@ $error-color: #ef4444;
       min-width: 0;
 
       .long-text-value {
-        color: #1e293b;
         line-height: 1.6;
         word-break: break-word;
         white-space: pre-wrap;

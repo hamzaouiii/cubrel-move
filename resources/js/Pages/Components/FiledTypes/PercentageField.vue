@@ -98,7 +98,7 @@ const highlightMatch = (text) => {
 const formatPercentage = (value) => {
   if (value === null || value === "" || isNaN(parseFloat(value))) return "—";
   const num = parseFloat(value);
-  return `${num.toFixed(props.precision)}%`;
+  return `${num.toFixed(props.precision)}`;
 };
 
 // Handle input change with validation
