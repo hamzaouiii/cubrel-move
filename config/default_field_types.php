@@ -11,6 +11,7 @@ return [
   'relationship',
   'checkbox',
   'currency',
+  'percentage',
   'url'
 ];
 

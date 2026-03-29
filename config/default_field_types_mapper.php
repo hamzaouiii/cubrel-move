@@ -12,4 +12,5 @@ return [
   'relationship' => 'foreignId',
   'checkbox' => 'boolean',
   'url' => 'string',
+  'percentage' => 'decimal',
 ];

@@ -6,11 +6,16 @@ import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
 import Select from "@/Pages/Components/FiledTypes/Select.vue";
 import PhoneField from "@/Pages/Components/FiledTypes/PhoneField.vue";
 import UrlField from "@/Pages/Components/FiledTypes/UrlField.vue";
+import PercentageField from "@/Pages/Components/FiledTypes/PercentageField.vue";
 
 import { fieldValidation } from "@/utils/fieldValidation";
-
-const { defaultValidate, emailValidate, urlValidate, phoneValidate } =
-  fieldValidation();
+const {
+  defaultValidate,
+  emailValidate,
+  urlValidate,
+  phoneValidate,
+  percentageValidate,
+} = fieldValidation();
 
 export const fieldRegistry = {
   text: {
@@ -56,5 +61,9 @@ export const fieldRegistry = {
   url: {
     component: UrlField,
     validate: urlValidate,
+  },
+  percentage: {
+    component: PercentageField,
+    validate: percentageValidate,
   },
 };

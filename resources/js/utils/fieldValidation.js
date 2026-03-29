@@ -12,6 +12,7 @@ const emailValidate = (value) => {
 const phoneValidate = (value) => {
   return isValidPhoneNumber(String(value), "DE");
 };
+
 const urlValidate = (value) => {
   if (!value) return true;
 
@@ -38,6 +39,18 @@ const urlValidateSimple = (value) => {
   return urlRegex.test(value.toString());
 };
 
+const percentageValidate = (value) => {
+  if (value === null || value === "" || value === undefined) return true;
+
+  const num = parseFloat(value);
+
+  if (isNaN(num)) return false;
+
+  if (num < 0 || num > 100) return false;
+
+  return true;
+};
+
 export function fieldValidation() {
   return {
     emailValidate,
@@ -45,5 +58,6 @@ export function fieldValidation() {
     urlValidate,
     defaultValidate,
     urlValidateSimple,
+    percentageValidate,
   };
 }

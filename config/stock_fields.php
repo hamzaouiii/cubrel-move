@@ -315,7 +315,7 @@ return [
     'probability' =>
     [
       'name' => 'probability',
-      'type' => 'number',
+      'type' => 'percentage',
     ],
     'expected_close_date' =>
     [

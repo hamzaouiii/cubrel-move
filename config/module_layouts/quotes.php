@@ -211,7 +211,7 @@ return array(
               3 =>
               array(
                 'name' => 'probability',
-                'type' => 'number',
+                'type' => 'percentage',
                 'label' => 'modules.opportunities.fields.probability',
               ),
               4 =>

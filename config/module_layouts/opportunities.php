@@ -38,7 +38,7 @@ return array(
       5 =>
       array(
         'name' => 'probability',
-        'type' => 'number',
+        'type' => 'percentage',
         'label' => 'modules.opportunities.fields.probability',
       ),
       6 =>
@@ -104,7 +104,7 @@ return array(
           2 =>
           array(
             'name' => 'probability',
-            'type' => 'number',
+            'type' => 'percentage',
             'label' => 'modules.opportunities.fields.probability',
           ),
         ),
@@ -393,7 +393,7 @@ return array(
       3 =>
       array(
         'name' => 'probability',
-        'type' => 'number',
+        'type' => 'percentage',
         'label' => 'modules.opportunities.fields.probability',
       ),
       4 =>

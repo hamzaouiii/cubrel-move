@@ -26,9 +26,9 @@ return [
     'relationship' => 'Beziehung',
     'checkbox' => 'Checkbox',
     'url'  => 'URL',
-    'phone' => 'Telefonenummer'
-
-
+    'phone' => 'Telefonenummer',
+    'percentage' => 'Prozentsatz',
+    'currency' => 'Währung'
   ],
   'metadata' => [
     'name' => 'Name',

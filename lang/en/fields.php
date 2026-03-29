@@ -27,7 +27,9 @@ return [
     'relationship' => 'Relationship',
     'checkbox' => 'Checkbox',
     'url' => 'URL',
-    'phone' => 'Phone'
+    'phone' => 'Phone',
+    'percentage' => 'Percentage',
+    'currency' => 'Currency',
   ],
   'metadata' => [
     'name' => 'System Name',
