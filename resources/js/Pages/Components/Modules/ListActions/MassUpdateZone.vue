@@ -1,12 +1,12 @@
 <script setup>
 import { computed } from "vue";
 import { useForm } from "@inertiajs/vue3";
-import DropdownField from "@/Pages/Components/FiledTypes/Select.vue";
+import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
   meta: { type: Object, default: () => ({}) },
   allMatchingSelected: { type: Boolean, default: false },
-  fields: { type: Array, default: () => [] },
+  fields: { type: Object, default: () => [] },
   filters: { type: Object, default: () => ({}) },
 });
 const emit = defineEmits([
@@ -26,10 +26,17 @@ const form = useForm({
 });
 
 const fieldDropDownOptions = computed(() => {
-  return (props.fields ?? []).map((item) => ({
-    value: item.key,
-    label: item.label,
-  }));
+  return (props.fields ?? [])
+    .filter((e) => !e.readonly)
+    .map((item) => ({
+      value: item.key,
+      label: item.label,
+    }));
+});
+const related_field = computed(() => {
+  return {
+    values: fieldDropDownOptions.value,
+  };
 });
 
 const totalSelected = computed(() => {
@@ -54,59 +61,98 @@ const emitMassUpdate = () => {
     allMatchingSelected: props.allMatchingSelected,
     selectedIds: props.selectedIds,
     filters: props.filters ?? {},
-    field_key: form.field,
-    new_value: form.inputValue,
+    field: form.field,
+    value: form.inputValue,
   });
+};
+
+const moduleFieldsField = computed(() => {
+  return {
+    id: "1",
+    is_draft: false,
+    key: "defaults_fields_field",
+    label: "modules.defaults.fields_field",
+    module_id: null,
+    name: "fields_field",
+    readonly: true,
+    required: false,
+    searchable: true,
+    nullable: true,
+    sortable: true,
+    type: "select",
+    dropdown_list: related_field.value,
+  };
+});
+
+const getField = (item) => {
+  return props.fields?.find((field) => field.key === item);
 };
 </script>
 
 <template>
   <div class="mass-update-zone">
-    <div class="mass-update-zone__form">
-      <DropdownField v-model="form.field" :options="fieldDropDownOptions" />
-      <input v-model="form.inputValue" class="mass-update-zone__form__value" />
+    <div class="mass-update-zone__content">
+      <div class="mass-update-zone__text">
+        <div v-if="!totalSelected">
+          <span>{{ $t("modules.update.description") }}</span>
+        </div>
 
+        <div v-else :class="{ 'selected-count': !totalSelected }">
+          <span>
+            {{ $t("modules.update.selected_count", { count: totalSelected }) }}
+          </span>
+        </div>
+
+        <span
+          v-if="!allMatchingSelected"
+          :class="['select-all-in-scope', { 'selected-count': !showSelectAll }]"
+          @click="emitToggleAll"
+        >
+          {{ $t("modules.update.select_all", { total: meta.total }) }}
+        </span>
+        <span v-else> </span>
+      </div>
+    </div>
+
+    <div class="mass-update-zone__actions">
       <button
-        class="btn mass-update-zone__form__update"
         :disabled="!totalSelected"
+        class="mass-update-zone__actions__cancel"
         @click="emitClearSelection"
       >
         {{ $t("modules.update.clear_selection") }}
       </button>
       <button
-        class="btn mass-update-zone__form__update"
+        class="mass-update-zone__actions__cancel"
         @click="emitCancelClicked"
       >
         {{ $t("modules.update.cancel") }}
       </button>
-
       <button
-        class="btn mass-update-zone__form__update"
+        class="mass-update-zone__actions__update"
         :disabled="!canSubmit"
         @click="emitMassUpdate"
       >
         {{ $t("modules.update.update") }}
       </button>
     </div>
-
-    <div class="mass-update-zone__summary">
-      <div v-if="!totalSelected">
-        <span>{{ $t("modules.update.description") }}</span>
+    <div class="mass-update-zone__inputs">
+      <div class="definition">
+        <FieldRenderer
+          :field="moduleFieldsField"
+          v-model="form.field"
+          mode="edit"
+          placeholder="Select Field"
+        />
       </div>
-
-      <div v-else :class="{ 'hide-this': !totalSelected }">
-        <span>
-          {{ $t("modules.update.selected_count", { count: totalSelected }) }}
-        </span>
+      <div class="value">
+        <FieldRenderer
+          v-if="form.field"
+          :field="getField(form.field)"
+          v-model="form.inputValue"
+          mode="edit"
+        />
       </div>
-
-      <span
-        v-if="!allMatchingSelected"
-        :class="['select-all-in-scope', { 'hide-this': !showSelectAll }]"
-        @click="emitToggleAll"
-      >
-        {{ $t("modules.update.select_all", { total: meta.total }) }}
-      </span>
     </div>
   </div>
 </template>

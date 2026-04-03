@@ -73,7 +73,6 @@ const getEmailLocalPart = (email) => {
 </script>
 
 <template>
-  <!-- Edit Mode -->
   <div v-if="mode === 'edit'">
     <span
       class="email-field email-field--edit"
@@ -130,7 +129,6 @@ const getEmailLocalPart = (email) => {
     </div>
   </div>
 
-  <!-- Table/Related Panel/Linking Panel Mode -->
   <div
     v-else-if="
       mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
@@ -147,7 +145,6 @@ const getEmailLocalPart = (email) => {
     </div>
   </div>
 
-  <!-- Settings Mode -->
   <div v-if="mode === 'settings'">
     <span
       class="email-field email-field--edit email-field--settings"

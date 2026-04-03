@@ -15,8 +15,6 @@ abstract class BaseModuleHandler implements ModuleHandler
 
   protected string $model;
 
-  // updated to have dynamic searchable fields
-  //TODO: needs tests
   protected array $searchable = ['name', 'description'];
 
   protected function getPerPage(array $params): int
@@ -105,7 +103,7 @@ abstract class BaseModuleHandler implements ModuleHandler
     }
   }
 
-  protected function getSearchableColumns(Module $module): array
+  public function getSearchableColumns(Module $module): array
   {
     $columns = $this->searchable ?? [];
     if (!isset($module)) {

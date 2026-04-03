@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -27,7 +28,7 @@ return new class extends Migration
       $table->date('due_date')->nullable();
 
       $table->uuid('assigned_user_id')->nullable()->index();
-      $table->json('custom_fields')->nullable();
+      $table->json('custom_fields')->default(DB::raw("(JSON_OBJECT())"));
 
       $table->timestamps();
 

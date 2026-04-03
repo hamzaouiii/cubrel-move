@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -18,8 +19,7 @@ return new class extends Migration
       $table->unsignedTinyInteger('probability')->nullable(); // 0-100
       $table->date('expected_close_date')->nullable();
       $table->string('type')->nullable(); // new_business, existing_business
-      $table->json('custom_fields')->nullable();
-
+      $table->json('custom_fields')->default(DB::raw("(JSON_OBJECT())"));
       // $table->uuid('assigned_user_id')->nullable()->index();
 
       $table->timestamps();

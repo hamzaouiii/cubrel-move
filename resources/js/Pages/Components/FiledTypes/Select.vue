@@ -49,10 +49,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  nullable: {
+    type: Boolean,
+    default: false,
+  },
   highlight: String,
 });
-
 const emit = defineEmits(["update:modelValue", "change"]);
+
 const options = computed(() => {
   return props?.dropdown_list?.values || [];
 });
@@ -70,7 +74,9 @@ const normalizedOptions = computed(() => {
   } else if (options.value && typeof options.value === "object") {
     list = Object.values(options.value).flat();
   }
-
+  if (props.nullable) {
+    return [...list];
+  }
   return [
     {
       value: null,

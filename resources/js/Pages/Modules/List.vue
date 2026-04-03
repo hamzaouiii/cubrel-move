@@ -8,7 +8,7 @@ import {
   watch,
   nextTick,
 } from "vue";
-import { Head, usePage, Link, router } from "@inertiajs/vue3";
+import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
@@ -23,9 +23,8 @@ const { confirm } = useConfirm();
 defineOptions({
   layout: Layout,
 });
-const { props } = usePage();
 
-const pageProps = defineProps({
+const props = defineProps({
   module: Object,
   title: String,
   items: Array,
@@ -37,14 +36,28 @@ const pageProps = defineProps({
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-const bulkActionmode = ref(false);
+const appSettings = usePage().props.appSettings;
+
+const bulkActionmode = ref(true);
 const showDeleteZone = ref(false);
-const showMassUpdateZone = ref(false);
+const showMassUpdateZone = ref(true); //dev
 const selectedIds = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const allMatchingSelected = ref(false);
 const searchInput = ref(null);
+const search = ref(props.filters.search ?? "");
+const sortKey = ref(null);
+const sortDir = ref("asc");
+const showListSearch = ref(false);
+
+const updateForm = useForm({
+  allMatchingSelected: null,
+  selectedIds: {},
+  filters: {},
+  field: "",
+  value: "",
+});
 
 const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
@@ -52,9 +65,71 @@ const listLayoutColumns = computed(() => {
   );
 });
 
+const allSelected = computed(() => {
+  if (!props.items?.length) return false;
+
+  if (allMatchingSelected.value) return true;
+
+  return props.items.every((i) => selectedIds.value.includes(i.id));
+});
+
+const recordsNumber = computed(() => props.items?.length ?? 0);
+
+const recordsNumberPhrase = computed(() => {
+  if (!props.meta) return "(0)";
+  return `${recordsNumber.value} ${t("modules.of")} ${props.meta.total}`;
+});
+
+const totalSelected = computed(() => {
+  return allMatchingSelected.value
+    ? (props.meta?.total ?? 0)
+    : selectedIds.value.length;
+});
+
+const editModuleUrl = computed(() => {
+  const base = "settings/modules/";
+  return base + props.module.id;
+});
+
+const sortedItems = computed(() => {
+  if (!sortKey.value) return props.items;
+
+  return [...props.items].sort((a, b) => {
+    const valA = a[sortKey.value];
+    const valB = b[sortKey.value];
+
+    if (valA == null) return 1;
+    if (valB == null) return -1;
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      return sortDir.value === "asc" ? valA - valB : valB - valA;
+    }
+
+    return sortDir.value === "asc"
+      ? String(valA).localeCompare(String(valB))
+      : String(valB).localeCompare(String(valA));
+  });
+});
+
+const module_color = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : props.module.color;
+});
+
+watch(
+  () => props.items,
+  (newItems) => {
+    if (allMatchingSelected.value) {
+      selectedIds.value = (newItems ?? []).map((i) => i.id);
+    }
+  },
+);
+
 const getField = (item) => {
   return Object.values(props.fields)?.find((field) => field.name === item.name);
 };
+
 const isSelected = (id) => selectedIds.value.includes(id);
 
 const toggleRow = (id) => {
@@ -69,30 +144,36 @@ const toggleRow = (id) => {
 
 const toggleMassUpdateZone = () => {
   showMassUpdateZone.value = !showMassUpdateZone.value;
+
+  if (showMassUpdateZone.value === true || showDeleteZone.value === true) {
+    bulkActionmode.value = true;
+  } else {
+    bulkActionmode.value = false;
+  }
+  clearSelection();
+  showActionDropDown.value = false;
   if (showDeleteZone.value == true) {
     showDeleteZone.value = false;
   }
-  toggleBulkActionMode();
 };
 
 const toggleDeleteZone = () => {
   showDeleteZone.value = !showDeleteZone.value;
+
+  if (showMassUpdateZone.value === true || showDeleteZone.value === true) {
+    bulkActionmode.value = true;
+  } else {
+    bulkActionmode.value = false;
+  }
+  clearSelection();
+  showActionDropDown.value = false;
   if (showMassUpdateZone.value == true) {
     showMassUpdateZone.value = false;
   }
-  toggleBulkActionMode();
 };
 
-const allSelected = computed(() => {
-  if (!pageProps.items?.length) return false;
-
-  if (allMatchingSelected.value) return true;
-
-  return pageProps.items.every((i) => selectedIds.value.includes(i.id));
-});
-
 const toggleAll = () => {
-  if (!pageProps.meta || pageProps.meta.total === 0) return;
+  if (!props.meta || props.meta.total === 0) return;
 
   if (allMatchingSelected.value) {
     allMatchingSelected.value = false;
@@ -101,24 +182,22 @@ const toggleAll = () => {
   }
 
   allMatchingSelected.value = true;
-  selectedIds.value = pageProps.items?.map((i) => i.id) ?? [];
+  selectedIds.value = props.items?.map((i) => i.id) ?? [];
 };
 
 const toggleAllInView = () => {
-  if (!pageProps.items?.length) return;
+  if (!props.items?.length) return;
 
   allMatchingSelected.value = false;
 
-  const allInViewSelected = pageProps.items.every((i) =>
+  const allInViewSelected = props.items.every((i) =>
     selectedIds.value.includes(i.id),
   );
 
   selectedIds.value = allInViewSelected
-    ? selectedIds.value.filter(
-        (id) => !pageProps.items.some((i) => i.id === id),
-      )
+    ? selectedIds.value.filter((id) => !props.items.some((i) => i.id === id))
     : Array.from(
-        new Set([...selectedIds.value, ...pageProps.items.map((i) => i.id)]),
+        new Set([...selectedIds.value, ...props.items.map((i) => i.id)]),
       );
 };
 
@@ -127,30 +206,8 @@ const clearSelection = () => {
   selectedIds.value = [];
 };
 
-watch(
-  () => pageProps.items,
-  (newItems) => {
-    // keep current page ids when "all matching" is enabled (for checkbox rendering)
-    if (allMatchingSelected.value) {
-      selectedIds.value = (newItems ?? []).map((i) => i.id);
-    }
-  },
-);
-
-const recordsNumber = computed(() => pageProps.items?.length ?? 0);
-const recordsNumberPhrase = computed(() => {
-  if (!pageProps.meta) return "(0)";
-  return `${recordsNumber.value} ${t("modules.of")} ${pageProps.meta.total}`;
-});
-
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
-};
-
-const toggleBulkActionMode = () => {
-  bulkActionmode.value = !bulkActionmode.value;
-  clearSelection();
-  showActionDropDown.value = false;
 };
 
 const handleClickOutsideActionDropDown = (event) => {
@@ -161,8 +218,6 @@ const handleClickOutsideActionDropDown = (event) => {
     showActionDropDown.value = false;
   }
 };
-
-const search = ref(pageProps.filters.search ?? "");
 
 const performSearch = (page = 1) => {
   router.get(
@@ -186,29 +241,15 @@ const handleSearchInput = () => {
   }
 };
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutsideActionDropDown);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutsideActionDropDown);
-});
-
-const appSettings = usePage().props.appSettings;
-
 const resetSearchValue = () => {
   search.value = "";
   handleSearchInput();
 };
 
-function goToCreateView() {
+const goToCreateView = () => {
   const moduleName = usePage().props.module.slug;
   router.visit(`/${moduleName}/create`);
-}
-const editModuleUrl = computed(() => {
-  const base = "settings/modules/";
-  return base + props.module.id;
-});
+};
 
 const resetActionZone = () => {
   showDeleteZone.value = false;
@@ -217,12 +258,6 @@ const resetActionZone = () => {
   showActionDropDown.value = false;
   clearSelection();
 };
-
-const totalSelected = computed(() => {
-  return allMatchingSelected.value
-    ? (pageProps.meta?.total ?? 0)
-    : selectedIds.value.length;
-});
 
 const handleListDelete = async () => {
   const count = totalSelected.value;
@@ -239,11 +274,11 @@ const handleListDelete = async () => {
 
   info(t("modules.actions.deleting"));
 
-  router.delete(`/${pageProps.module.slug}`, {
+  router.delete(`/${props.module.slug}`, {
     data: {
       allMatchingSelected: allMatchingSelected.value,
       selectedIds: selectedIds.value,
-      filters: pageProps.filters ?? {},
+      filters: props.filters ?? {},
     },
     preserveScroll: true,
     onSuccess: () => {
@@ -260,7 +295,7 @@ const handleListDelete = async () => {
 
 const handleMassUpdate = async (payload) => {
   const count = payload.allMatchingSelected
-    ? meta.total
+    ? props.meta.total
     : payload.selectedIds.length;
 
   const ok = await confirm({
@@ -277,38 +312,28 @@ const handleMassUpdate = async (payload) => {
 
   if (!ok) return;
 
-  // info(t("modules.actions.updating"));
-  error(
-    "Mass update will not be sent to the backend until field types are introduced ",
-  );
+  info(t("modules.actions.updating"));
 
-  // router.put(`/${pageProps.module.slug}`, {
-  //   // or: router.patch(...) OR router.put(`/${pageProps.module.slug}/mass-update`, { ... })
-  //   data: {
-  //     allMatchingSelected: payload.allMatchingSelected,
-  //     selectedIds: payload.selectedIds,
-  //     filters: payload.filters ?? {},
+  updateForm.allMatchingSelected = payload.allMatchingSelected;
+  updateForm.selectedIds = payload.selectedIds;
+  updateForm.filters = payload.filters ?? {};
+  updateForm.field = payload.field;
+  updateForm.value = payload.value;
 
-  //     field_key: payload.field_key,
-  //     new_value: payload.new_value,
-  //   },
-  //   preserveScroll: true,
-  //   onSuccess: () => {
-  //     clearAllAlerts();
-  //     success(t("modules.actions.update_success"));
-  //     clearSelection();
-  //     // optional: reset your mass update UI
-  //     // resetMassUpdateZone();
-  //   },
-  //   onError: () => {
-  //     clearAllAlerts();
-  //     error(t("modules.actions.update_error"));
-  //   },
-  // });
+  updateForm.put(`/${props.module.slug}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("modules.actions.update_success"));
+      clearSelection();
+      resetActionZone();
+    },
+    onError: () => {
+      clearAllAlerts();
+      error(t("modules.actions.update_error"));
+    },
+  });
 };
-
-const sortKey = ref(null);
-const sortDir = ref("asc");
 
 const isSortable = (col) => {
   return col?.sortable === true;
@@ -334,32 +359,6 @@ const sortBy = (col) => {
   }
 };
 
-const sortedItems = computed(() => {
-  if (!sortKey.value) return pageProps.items;
-
-  return [...pageProps.items].sort((a, b) => {
-    const valA = a[sortKey.value];
-    const valB = b[sortKey.value];
-
-    if (valA == null) return 1;
-    if (valB == null) return -1;
-
-    if (typeof valA === "number" && typeof valB === "number") {
-      return sortDir.value === "asc" ? valA - valB : valB - valA;
-    }
-
-    return sortDir.value === "asc"
-      ? String(valA).localeCompare(String(valB))
-      : String(valB).localeCompare(String(valA));
-  });
-});
-const module_color = computed(() => {
-  return appSettings.use_individual_module_colors == "0"
-    ? appSettings.primary_color
-    : props.module.color;
-});
-
-const showListSearch = ref(false);
 const toggleSearch = () => {
   showListSearch.value = !showListSearch.value;
   if (showListSearch.value) {
@@ -370,6 +369,14 @@ const toggleSearch = () => {
     resetSearchValue();
   }
 };
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutsideActionDropDown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutsideActionDropDown);
+});
 </script>
 
 <template>
@@ -490,7 +497,7 @@ const toggleSearch = () => {
       :meta="meta"
       :all-matching-selected="allMatchingSelected"
       :fields="fields"
-      :filters="pageProps.filters ?? {}"
+      :filters="props.filters ?? {}"
       @massUpdate="handleMassUpdate"
       @toggleAll="toggleAll()"
       @clearSelection="clearSelection()"

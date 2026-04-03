@@ -123,6 +123,7 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
   Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
   Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');
+  Route::put('/{module}', [RecordController::class, 'updateMany'])->name('modules.records.updateMany');
   Route::delete('/{module}/{record}', [RecordController::class, 'destroy'])->name('modules.records.destroy');
 
   Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$).+')->name('modules.index');
