@@ -16,6 +16,7 @@ import Layout from "@/Layouts/Layout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 import ListDeleteZone from "@/Pages/Components/Modules/ListActions/ListDeleteZone.vue";
 import MassUpdateZone from "@/Pages/Components/Modules/ListActions/MassUpdateZone.vue";
+import Selectbox from "@/Pages//Components/FiledTypes/Selectbox.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -41,10 +42,15 @@ const appSettings = usePage().props.appSettings;
 const bulkActionmode = ref(true);
 const showDeleteZone = ref(false);
 const showMassUpdateZone = ref(true); //dev
+
+const allMatchingSelected = ref(false);
+const allInViewSelected = ref(false);
 const selectedIds = ref([]);
+const excludedIds = ref([]);
+
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
-const allMatchingSelected = ref(false);
+
 const searchInput = ref(null);
 const search = ref(props.filters.search ?? "");
 const sortKey = ref(null);
@@ -67,10 +73,7 @@ const listLayoutColumns = computed(() => {
 
 const allSelected = computed(() => {
   if (!props.items?.length) return false;
-
-  if (allMatchingSelected.value) return true;
-
-  return props.items.every((i) => selectedIds.value.includes(i.id));
+  return allMatchingSelected.value || allInViewSelected.value;
 });
 
 const recordsNumber = computed(() => props.items?.length ?? 0);
@@ -172,29 +175,23 @@ const toggleDeleteZone = () => {
   }
 };
 
-const toggleAll = () => {
+const selectAll = () => {
   if (!props.meta || props.meta.total === 0) return;
 
-  if (allMatchingSelected.value) {
-    allMatchingSelected.value = false;
-    selectedIds.value = [];
-    return;
-  }
-
   allMatchingSelected.value = true;
+  allInViewSelected.value = false;
+
   selectedIds.value = props.items?.map((i) => i.id) ?? [];
 };
 
 const toggleAllInView = () => {
   if (!props.items?.length) return;
 
-  allMatchingSelected.value = false;
+  allInViewSelected.value = !allInViewSelected.value;
 
-  const allInViewSelected = props.items.every((i) =>
-    selectedIds.value.includes(i.id),
-  );
+  const allIn = props.items.every((i) => selectedIds.value.includes(i.id));
 
-  selectedIds.value = allInViewSelected
+  selectedIds.value = allIn
     ? selectedIds.value.filter((id) => !props.items.some((i) => i.id === id))
     : Array.from(
         new Set([...selectedIds.value, ...props.items.map((i) => i.id)]),
@@ -202,7 +199,7 @@ const toggleAllInView = () => {
 };
 
 const clearSelection = () => {
-  allMatchingSelected.value = false;
+  allInViewSelected.value = false;
   selectedIds.value = [];
 };
 
@@ -377,6 +374,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutsideActionDropDown);
 });
+
+const handleRowClick = (id) => {
+  if (!bulkActionmode.value) {
+    router.visit(`/${props.module.slug}/${id}`);
+  } else {
+    toggleRow(id);
+  }
+};
 </script>
 
 <template>
@@ -485,7 +490,7 @@ onBeforeUnmount(() => {
       :selectedIds="selectedIds"
       :meta="meta"
       :allMatchingSelected="allMatchingSelected"
-      @toggleAll="toggleAll()"
+      @toggleAll="selectAll()"
       @cancelClicked="resetActionZone()"
       @clearSelection="clearSelection()"
       @deleteClicked="handleListDelete()"
@@ -499,7 +504,7 @@ onBeforeUnmount(() => {
       :fields="fields"
       :filters="props.filters ?? {}"
       @massUpdate="handleMassUpdate"
-      @toggleAll="toggleAll()"
+      @toggleAll="selectAll()"
       @clearSelection="clearSelection()"
       @cancelClicked="resetActionZone()"
     />
@@ -513,10 +518,12 @@ onBeforeUnmount(() => {
               class="list-layout__table__bulk-select"
               @click.stop
             >
-              <input
-                type="checkbox"
-                :checked="allSelected"
-                @change="toggleAllInView"
+              <Selectbox
+                :value="'all'"
+                :modelValue="allSelected ? ['all'] : []"
+                @update:modelValue="toggleAllInView"
+                :color="module_color"
+                :current-page-all="allInViewSelected"
               />
             </th>
 
@@ -541,23 +548,22 @@ onBeforeUnmount(() => {
 
         <tbody>
           <template v-if="meta && meta.total != 0">
-            <Link
+            <tr
               v-for="item in sortedItems"
               :key="item.id"
-              as="tr"
               class="clickable-row"
-              :href="`/${module.slug}/${item.id}`"
+              :class="{ 'selected-row': isSelected(item.id) }"
+              @click="handleRowClick(item.id)"
             >
               <td
                 v-if="bulkActionmode"
                 @click.stop
                 class="list-layout__table__bulk-select"
               >
-                <input
-                  type="checkbox"
-                  :checked="isSelected(item.id) || allMatchingSelected"
-                  @click.stop
-                  @change="toggleRow(item.id)"
+                <Selectbox
+                  :modelValue="isSelected(item.id) || allMatchingSelected"
+                  @update:modelValue="() => toggleRow(item.id)"
+                  :color="module_color"
                 />
               </td>
 
@@ -570,7 +576,7 @@ onBeforeUnmount(() => {
                   :highlight="search"
                 />
               </td>
-            </Link>
+            </tr>
           </template>
 
           <template v-else>

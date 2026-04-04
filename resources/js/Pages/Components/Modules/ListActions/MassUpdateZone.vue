@@ -4,6 +4,7 @@ import { useForm } from "@inertiajs/vue3";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
+  excludedIds: { type: Array, default: () => [] },
   meta: { type: Object, default: () => ({}) },
   allMatchingSelected: { type: Boolean, default: false },
   fields: { type: Object, default: () => [] },
@@ -40,10 +41,11 @@ const related_field = computed(() => {
 });
 
 const totalSelected = computed(() => {
-  if (props.allMatchingSelected) return props.meta?.total ?? 0;
+  if (props.allMatchingSelected) {
+    return (props.meta?.total ?? 0) - props.excludedIds.length;
+  }
   return props.selectedIds.length;
 });
-
 const showSelectAll = computed(() => totalSelected.value > 0);
 
 const canSubmit = computed(() => {
@@ -60,6 +62,7 @@ const emitMassUpdate = () => {
   emit("massUpdate", {
     allMatchingSelected: props.allMatchingSelected,
     selectedIds: props.selectedIds,
+    excludedIds: props.excludedIds,
     filters: props.filters ?? {},
     field: form.field,
     value: form.inputValue,
@@ -86,6 +89,10 @@ const moduleFieldsField = computed(() => {
 
 const getField = (item) => {
   return props.fields?.find((field) => field.key === item);
+};
+
+const resetInputValue = () => {
+  form.inputValue = null;
 };
 </script>
 
@@ -143,6 +150,7 @@ const getField = (item) => {
           v-model="form.field"
           mode="edit"
           placeholder="Select Field"
+          @change="resetInputValue()"
         />
       </div>
       <div class="value">

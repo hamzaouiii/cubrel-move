@@ -285,6 +285,8 @@ class RecordController extends Controller
     $moduleModel = Module::where('slug', $module)->firstOrFail();
     $modelClass  = $moduleModel->model_class;
     $modelHandler = $moduleModel->handler_class;
+
+
     if (class_exists($modelHandler)) {
       $handler = app($modelHandler);
     } else {
@@ -323,20 +325,21 @@ class RecordController extends Controller
     }
 
     $baseQuery = $modelClass::query();
-    // 3. Handle "Select All" with Filters
-    $search = trim((string) Arr::get($filters, 'search', ''));
 
-    if ($search !== '') {
-      $searchable = $handler->searchableColumns($moduleModel);
+    if ($allMatchingSelected) {
+      $search = trim((string) Arr::get($filters, 'search', ''));
 
-      if (!empty($searchable)) {
-        $baseQuery->where(function ($q) use ($searchable, $search) {
-          foreach ($searchable as $column) {
-            $q->orWhere($column, 'like', "%{$search}%");
-          }
-        });
+      if ($search !== '') {
+        $searchable = $handler->getSearchableColumns($moduleModel);
+
+        if (!empty($searchable)) {
+          $baseQuery->where(function ($q) use ($searchable, $search) {
+            foreach ($searchable as $column) {
+              $q->orWhere($column, 'like', "%{$search}%");
+            }
+          });
+        }
       }
-
 
       $count = 0;
       DB::transaction(function () use ($baseQuery, $field, $newValue, &$count, $modelClass) {
@@ -355,7 +358,6 @@ class RecordController extends Controller
       });
       return back();
     }
-
     // Handle Custom vs Standard Fields natively via the database
     if ($field->is_custom) {
       // Use Laravel's JSON arrow syntax to update a specific key inside the custom_fields column

@@ -502,14 +502,15 @@
 
       &:hover {
         background-color: color-mix(in srgb, var(--module-color) 4%, #f8fafc);
-
-        // Target the label specifically on hover if you want a subtle brand hint
-        .th-label {
-          color: var(--module-color);
-        }
       }
     }
-
+    .selected-row {
+      background-color: color-mix(
+        in srgb,
+        var(--module-color) 20%,
+        #f8fafc
+      ) !important;
+    }
     .search-highlight {
       padding: 2px 0;
       background-color: color-mix(
