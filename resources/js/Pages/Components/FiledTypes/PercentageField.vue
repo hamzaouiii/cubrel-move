@@ -110,7 +110,6 @@ const handleInputChange = (event) => {
 </script>
 
 <template>
-  <!-- Edit Mode -->
   <div v-if="mode === 'edit'">
     <span
       class="percentage-field percentage-field--edit"
@@ -140,7 +139,6 @@ const handleInputChange = (event) => {
     </span>
   </div>
 
-  <!-- Detail Mode -->
   <div v-else-if="mode === 'detail'">
     <div
       :class="[
@@ -167,7 +165,6 @@ const handleInputChange = (event) => {
     </div>
   </div>
 
-  <!-- Table/Related Panel/Linking Panel Mode -->
   <div
     v-else-if="
       mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
@@ -184,7 +181,6 @@ const handleInputChange = (event) => {
     </div>
   </div>
 
-  <!-- Settings Mode -->
   <div v-if="mode === 'settings'">
     <span
       class="percentage-field percentage-field--edit percentage-field--settings"

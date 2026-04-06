@@ -79,7 +79,6 @@ const highlightMatch = (text) => {
     </span>
   </div>
 
-  <!-- Detail Mode -->
   <div v-else-if="mode === 'detail'">
     <div
       :class="[
@@ -105,7 +104,6 @@ const highlightMatch = (text) => {
     </div>
   </div>
 
-  <!-- Table/Related Panel/Linking Panel Mode -->
   <div
     v-else-if="
       mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
@@ -121,7 +119,6 @@ const highlightMatch = (text) => {
     </div>
   </div>
 
-  <!-- Settings Mode -->
   <div v-if="mode === 'settings'">
     <span
       class="text-field text-field--edit text-field--settings"

@@ -330,18 +330,17 @@ return array(
       'updated_at' => 'Updated At',
     ),
   ),
-  'update' =>
-  array(
-    'description' => 'Wähle Datensätze zum Aktualisieren aus',
-    'update' => 'Aktualisieren',
-    'cancel' => 'Abbrechen',
-    'clear_selection' => 'Auswahl löschen',
-    'selected_count' => 'Du hast :count Datensätze ausgewählt.',
-    'select_all' => 'Alle :total Datensätze im Ergebnis auswählen',
-    'confirm_update' => 'Aktualisierungsbestätigung ',
-    'confirm_update_message' => 'Du bist dabei, :count Datensätze zu aktualisieren. Bist du sicher?',
-    'update_yes' => 'Ja',
-    'update_no' => 'Nein',
+  'update' => array(
+    'description' => 'Select records to update',
+    'update' => 'Update',
+    'cancel' => 'Cancel',
+    'clear_selection' => 'Clear selection',
+    'selected_count' => 'You have selected :count records.',
+    'select_all' => 'Select all :total records in result',
+    'confirm_update' => 'Confirm Update',
+    'confirm_update_message' => 'You are about to update :count records. Are you sure?',
+    'update_yes' => 'Yes',
+    'update_no' => 'No',
   ),
 
   'pagination' => [

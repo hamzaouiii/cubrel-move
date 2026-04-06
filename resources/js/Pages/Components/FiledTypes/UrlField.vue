@@ -90,7 +90,6 @@ const openUrl = (url) => {
 </script>
 
 <template>
-  <!-- Edit Mode -->
   <div v-if="mode === 'edit'">
     <span
       class="url-field url-field--edit"
@@ -116,7 +115,6 @@ const openUrl = (url) => {
     </span>
   </div>
 
-  <!-- Detail Mode -->
   <div v-else-if="mode === 'detail'">
     <div
       :class="[
@@ -166,7 +164,6 @@ const openUrl = (url) => {
     </div>
   </div>
 
-  <!-- Table/Related Panel/Linking Panel Mode -->
   <div
     v-else-if="
       mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
@@ -190,7 +187,6 @@ const openUrl = (url) => {
     </div>
   </div>
 
-  <!-- Settings Mode -->
   <div v-if="mode === 'settings'">
     <span
       class="url-field url-field--edit url-field--settings"

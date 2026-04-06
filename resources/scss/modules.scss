@@ -464,8 +464,6 @@
   }
 
   &__table {
-    font-size: 0.875rem;
-    font-family: "Inter", sans-serif; // Cleaner font
     width: max-content;
     min-width: 100%;
     border-collapse: separate;
@@ -504,14 +502,15 @@
 
       &:hover {
         background-color: color-mix(in srgb, var(--module-color) 4%, #f8fafc);
-
-        // Target the label specifically on hover if you want a subtle brand hint
-        .th-label {
-          color: var(--module-color);
-        }
       }
     }
-
+    .selected-row {
+      background-color: color-mix(
+        in srgb,
+        var(--module-color) 20%,
+        #f8fafc
+      ) !important;
+    }
     .search-highlight {
       padding: 2px 0;
       background-color: color-mix(
@@ -941,14 +940,13 @@
 
 /*  MASS DELETE */
 .delete-zone {
-  // Layout & Spacing
   display: flex;
-  align-items: center; // Vertical center
+  align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
   margin: 0 20px;
-  background-color: #f8f9fa; // Very light grey to distinguish from the table
-  border: 1px solid #e0e4e8;
+  background-color: #f1f5f9;
+  border: 1px solid #c6c9cc;
   border-radius: 8px;
 
   &__text {
@@ -978,7 +976,7 @@
   &__actions {
     display: flex;
     align-items: center;
-    gap: 10px; // Tight, modern spacing
+    gap: 10px;
 
     &__btn {
       padding: 8px 16px;
@@ -986,6 +984,7 @@
       border-radius: 6px;
       transition: all 0.2s ease;
       font-size: 0.875rem;
+      max-height: 30px;
 
       &:disabled {
         opacity: 0.5;
@@ -994,7 +993,6 @@
     }
 
     &__cancel {
-      // Using an "Outline" style for secondary actions
       background: white;
       border: 1px solid #cbd5e0;
       color: #4a5568;
@@ -1018,58 +1016,178 @@
       }
     }
   }
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch; // Allows children to take full width
+    gap: 16px;
+    margin: 0 10px; // Slightly smaller margins on mobile
+    padding: 1rem;
+
+    &__text {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    &__actions {
+      flex-wrap: wrap; // Allows buttons to flow to the next line if needed
+      width: 100%;
+
+      button {
+        flex: 1; // Makes the buttons stretch evenly
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  }
 }
 
 /*  MASS UPDATE */
 .mass-update-zone {
-  margin: 25px;
-  width: 95%;
-  &__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  margin: 0 20px;
+  background-color: #f1f5f9;
+  border: 1px solid #c6c9cc;
+  border-radius: 8px;
+  font-family: "Heebo", sans-serif;
+
+  &__content {
     display: flex;
-    padding: 20px;
-    justify-content: space-between;
-    flex-direction: row;
-    &__update {
-      --btn-color: var(--module-color);
-      --btn-bg-hover: var(--module-color);
-    }
-    &__value {
-      font-family: "Fira Sans", "Heebo", sans-serif;
-      border: 2px solid lightgray;
-      background: none;
-      padding-left: 10px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      border-radius: 5px;
-      width: 350px;
-      color: #585978;
-      &:disabled {
-        background-color: rgb(218, 218, 218);
-        color: white;
-        border-color: rgb(218, 218, 218);
-        cursor: not-allowed;
-      }
-    }
-    .dropdown-field_button {
-      padding-left: 10px;
-      padding-top: 10px;
-    }
-    .dropdown-field_selected {
-      padding-top: 2.5px;
-      padding-bottom: 2.5px;
-    }
+    align-items: center;
+    gap: 24px; // Separates the text summary from the input fields
   }
-  &__summary {
+
+  &__text {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: #4a5568;
+    flex-direction: column;
+
     .select-all-in-scope {
       cursor: pointer;
-      color: var(--module-color);
-      transition: all 0.1s ease;
+      font-weight: 600;
+      color: var(--module-color, #3182ce);
+      text-decoration: none;
+
       &:hover {
         text-decoration: underline;
       }
     }
-    .hide-this {
-      visibility: hidden;
+
+    .selected-count {
+      display: none;
+    }
+  }
+
+  &__inputs {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+    .definition {
+      width: 50%;
+    }
+    .value {
+      width: 50%;
+      justify-content: flex-end;
+      align-items: baseline;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    button {
+      padding: 8px 16px;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      cursor: pointer;
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    &__cancel {
+      // Secondary action style (Outline)
+      background: white;
+      border: 1px solid #cbd5e0;
+      color: #4a5568;
+
+      &:hover:not(:disabled) {
+        background: #edf2f7;
+        border-color: #a0aec0;
+        color: #4a5568;
+      }
+    }
+
+    &__update {
+      background-color: var(--module-color, #3182ce);
+      color: white;
+      border: none;
+
+      &:hover:not(:disabled) {
+        background-color: color-mix(
+          in srgb,
+          var(--module-color) 80%,
+          transparent
+        );
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin: 0 10px;
+    padding: 1rem;
+
+    &__content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    &__text {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    &__inputs {
+      flex-direction: column; // Stacks the dropdown and input
+      align-items: stretch;
+      width: 100%;
+
+      &__value {
+        width: 100%; // Ensures the input doesn't break out of the container
+        box-sizing: border-box;
+      }
+    }
+
+    &__actions {
+      flex-wrap: wrap;
+      width: 100%;
+
+      button {
+        flex: 1; // Stretches buttons evenly across the available width
+        text-align: center;
+        justify-content: center;
+        min-width: 120px; // Prevents buttons from getting too squished before wrapping
+      }
     }
   }
 }

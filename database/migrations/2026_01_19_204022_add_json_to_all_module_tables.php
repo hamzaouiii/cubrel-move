@@ -32,7 +32,7 @@ return new class extends Migration
     foreach ($this->getTables() as $tableName) {
       if (Schema::hasTable($tableName) && !Schema::hasColumn($tableName, 'custom_fields')) {
         Schema::table($tableName, function (Blueprint $table) {
-          $table->json('custom_fields')->nullable();
+          $table->json('custom_fields')->default(DB::raw("(JSON_OBJECT())"));
         });
       }
     }

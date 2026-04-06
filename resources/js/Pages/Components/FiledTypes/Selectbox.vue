@@ -18,6 +18,10 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  currentPageAll: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -70,6 +74,13 @@ const boxColor = props.color ?? "#3b82f6";
 
     <span class="custom-checkbox__box">
       <i
+        v-if="currentPageAll"
+        class="custom-checkbox__check fa-solid fa-minus"
+        :class="{ 'is-visible': isChecked }"
+      >
+      </i>
+      <i
+        v-else
         class="custom-checkbox__check fa-solid fa-check"
         :class="{ 'is-visible': isChecked }"
       ></i>

@@ -110,7 +110,6 @@ const handleInputChange = (event) => {
 </script>
 
 <template>
-  <!-- Edit Mode -->
   <div v-if="mode === 'edit'">
     <span
       class="integer-field integer-field--edit"
@@ -129,10 +128,7 @@ const handleInputChange = (event) => {
             handleInputChange($event);
           "
           :placeholder="placeholder"
-          type="number"
-          :min="min"
-          :max="max"
-          :step="step"
+          inputmode="numeric"
         />
       </div>
       <span v-if="showError" class="error-icon-container">
@@ -141,7 +137,6 @@ const handleInputChange = (event) => {
     </span>
   </div>
 
-  <!-- Detail Mode -->
   <div v-else-if="mode === 'detail'">
     <div
       :class="[
@@ -171,7 +166,6 @@ const handleInputChange = (event) => {
     </div>
   </div>
 
-  <!-- Table/Related Panel/Linking Panel Mode -->
   <div
     v-else-if="
       mode === 'table' || mode === 'related-panel' || mode === 'linkingPanel'
@@ -187,7 +181,6 @@ const handleInputChange = (event) => {
     </div>
   </div>
 
-  <!-- Settings Mode -->
   <div v-if="mode === 'settings'">
     <span
       class="integer-field integer-field--edit integer-field--settings"
@@ -199,13 +192,10 @@ const handleInputChange = (event) => {
       <div class="integer-input-wrapper">
         <input
           v-model="localValue"
-          type="number"
           @input="clearErrors()"
           :disabled="readOnly"
+          inputmode="numeric"
           :placeholder="placeholder"
-          :min="min"
-          :max="max"
-          :step="step"
         />
       </div>
       <span v-if="showError" class="error-icon-container">
