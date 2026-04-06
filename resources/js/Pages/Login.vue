@@ -18,7 +18,7 @@ const submit = () => {
 
 <template>
   <Head>
-    <title>Admin Section - Automatisierung Regensburg</title>
+    <title>Admin Section - Cubrel</title>
   </Head>
   <div class="login-page">
     <div class="admin-login">

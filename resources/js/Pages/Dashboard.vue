@@ -9,7 +9,7 @@ defineOptions({
 
 <template>
   <Head>
-    <title>Dashboard - Automatisierung Regensburg</title>
+    <title>Dashboard - Cubrel</title>
   </Head>
   <div class="dashboard__container">
     <!-- Top metrics -->
