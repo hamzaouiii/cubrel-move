@@ -39,14 +39,17 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const appSettings = usePage().props.appSettings;
 
-const bulkActionmode = ref(true);
+const bulkActionmode = ref(false);
 const showDeleteZone = ref(false);
-const showMassUpdateZone = ref(true); //dev
+const showMassUpdateZone = ref(false);
 
+// ─── Selection State ────────────────────────────────────────────────────────
+// allMatchingSelected = true means "every record in the result set is selected,
+// EXCEPT those in excludedIds".
 const allMatchingSelected = ref(false);
 const allInViewSelected = ref(false);
-const selectedIds = ref([]);
-const excludedIds = ref([]);
+const selectedIds = ref([]); // used when NOT in allMatching mode
+const excludedIds = ref([]); // used ONLY in allMatching mode
 
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
@@ -60,6 +63,7 @@ const showListSearch = ref(false);
 const updateForm = useForm({
   allMatchingSelected: null,
   selectedIds: {},
+  excludedIds: {},
   filters: {},
   field: "",
   value: "",
@@ -71,9 +75,57 @@ const listLayoutColumns = computed(() => {
   );
 });
 
+// ─── Derived selection helpers ───────────────────────────────────────────────
+
+/**
+ * True when every item on the current page is effectively selected.
+ * Derived purely from item arrays — never from the allInViewSelected flag.
+ */
 const allSelected = computed(() => {
   if (!props.items?.length) return false;
-  return allMatchingSelected.value || allInViewSelected.value;
+  if (allMatchingSelected.value) {
+    return props.items.every((i) => !excludedIds.value.includes(i.id));
+  }
+  return props.items.every((i) => selectedIds.value.includes(i.id));
+});
+
+/**
+ * True when SOME but not all page items are selected — drives the dash icon.
+ * Derived purely from item arrays — never from the allInViewSelected flag.
+ */
+const someInViewSelected = computed(() => {
+  if (!props.items?.length) return false;
+  if (allMatchingSelected.value) {
+    // at least one page item is in the excluded list
+    return excludedIds.value.some((id) => props.items.some((i) => i.id === id));
+  }
+  const someChecked = props.items.some((i) => selectedIds.value.includes(i.id));
+  const allChecked = props.items.every((i) => selectedIds.value.includes(i.id));
+  return someChecked && !allChecked;
+});
+
+/**
+ * How many records are effectively selected.
+ */
+const totalSelected = computed(() => {
+  if (allMatchingSelected.value) {
+    return (props.meta?.total ?? 0) - excludedIds.value.length;
+  }
+  return selectedIds.value.length;
+});
+
+/**
+ * Whether to show the "Select all N records in result set" prompt.
+ * Only shown when the user has selected all records on the page but has NOT
+ * yet escalated to allMatching mode.
+ */
+const showSelectAllPrompt = computed(() => {
+  return (
+    !allMatchingSelected.value &&
+    allInViewSelected.value &&
+    props.meta &&
+    props.meta.total > (props.items?.length ?? 0)
+  );
 });
 
 const recordsNumber = computed(() => props.items?.length ?? 0);
@@ -81,12 +133,6 @@ const recordsNumber = computed(() => props.items?.length ?? 0);
 const recordsNumberPhrase = computed(() => {
   if (!props.meta) return "(0)";
   return `${recordsNumber.value} ${t("modules.of")} ${props.meta.total}`;
-});
-
-const totalSelected = computed(() => {
-  return allMatchingSelected.value
-    ? (props.meta?.total ?? 0)
-    : selectedIds.value.length;
 });
 
 const editModuleUrl = computed(() => {
@@ -124,26 +170,111 @@ watch(
   () => props.items,
   (newItems) => {
     if (allMatchingSelected.value) {
-      selectedIds.value = (newItems ?? []).map((i) => i.id);
+      // Page changed — nothing to do for selectedIds in allMatching mode.
+      // excludedIds persist across pages intentionally.
     }
   },
 );
+
+// ─── Field helpers ───────────────────────────────────────────────────────────
 
 const getField = (item) => {
   return Object.values(props.fields)?.find((field) => field.name === item.name);
 };
 
-const isSelected = (id) => selectedIds.value.includes(id);
+// ─── Per-row selection ───────────────────────────────────────────────────────
+
+const isSelected = (id) => {
+  if (allMatchingSelected.value) {
+    return !excludedIds.value.includes(id);
+  }
+  return selectedIds.value.includes(id);
+};
 
 const toggleRow = (id) => {
-  if (allMatchingSelected.value) allMatchingSelected.value = false;
+  if (allMatchingSelected.value) {
+    // In allMatching mode: toggling a selected row adds it to excludedIds.
+    if (excludedIds.value.includes(id)) {
+      // Re-selecting an excluded row — remove from excluded.
+      excludedIds.value = excludedIds.value.filter((x) => x !== id);
+    } else {
+      // Deselecting a row — add to excluded.
+      excludedIds.value = [...excludedIds.value, id];
+    }
+    return;
+  }
 
-  if (isSelected(id)) {
+  // Normal mode
+  if (selectedIds.value.includes(id)) {
     selectedIds.value = selectedIds.value.filter((x) => x !== id);
   } else {
     selectedIds.value = [...selectedIds.value, id];
   }
+
+  // Keep allInViewSelected in sync
+  allInViewSelected.value =
+    props.items?.every((i) => selectedIds.value.includes(i.id)) ?? false;
 };
+
+// ─── Page-level "select all in view" (header checkbox) ───────────────────────
+
+const toggleAllInView = () => {
+  if (!props.items?.length) return;
+
+  if (allMatchingSelected.value) {
+    // In allMatching mode: toggle means either clear all exclusions on this
+    // page (re-select) or exclude all page items.
+    const pageIds = props.items.map((i) => i.id);
+    const allPageSelected = pageIds.every(
+      (id) => !excludedIds.value.includes(id),
+    );
+
+    if (allPageSelected) {
+      // Exclude all page items
+      excludedIds.value = Array.from(
+        new Set([...excludedIds.value, ...pageIds]),
+      );
+    } else {
+      // Remove page items from excluded (re-select them)
+      excludedIds.value = excludedIds.value.filter(
+        (id) => !pageIds.includes(id),
+      );
+    }
+    return;
+  }
+
+  // Normal mode
+  allInViewSelected.value = !allInViewSelected.value;
+  const allIn = props.items.every((i) => selectedIds.value.includes(i.id));
+
+  selectedIds.value = allIn
+    ? selectedIds.value.filter((id) => !props.items.some((i) => i.id === id))
+    : Array.from(
+        new Set([...selectedIds.value, ...props.items.map((i) => i.id)]),
+      );
+};
+
+// ─── "Select all N records in result set" ────────────────────────────────────
+
+const selectAllMatching = () => {
+  allMatchingSelected.value = true;
+  allInViewSelected.value = false;
+  excludedIds.value = [];
+  // selectedIds is no longer the source of truth in this mode but keep it
+  // populated with page items for any component that reads it as a hint.
+  selectedIds.value = props.items?.map((i) => i.id) ?? [];
+};
+
+// ─── Clear / cancel ──────────────────────────────────────────────────────────
+
+const clearSelection = () => {
+  allMatchingSelected.value = false;
+  allInViewSelected.value = false;
+  selectedIds.value = [];
+  excludedIds.value = [];
+};
+
+// ─── Bulk action zone toggles ─────────────────────────────────────────────────
 
 const toggleMassUpdateZone = () => {
   showMassUpdateZone.value = !showMassUpdateZone.value;
@@ -175,33 +306,7 @@ const toggleDeleteZone = () => {
   }
 };
 
-const selectAll = () => {
-  if (!props.meta || props.meta.total === 0) return;
-
-  allMatchingSelected.value = true;
-  allInViewSelected.value = false;
-
-  selectedIds.value = props.items?.map((i) => i.id) ?? [];
-};
-
-const toggleAllInView = () => {
-  if (!props.items?.length) return;
-
-  allInViewSelected.value = !allInViewSelected.value;
-
-  const allIn = props.items.every((i) => selectedIds.value.includes(i.id));
-
-  selectedIds.value = allIn
-    ? selectedIds.value.filter((id) => !props.items.some((i) => i.id === id))
-    : Array.from(
-        new Set([...selectedIds.value, ...props.items.map((i) => i.id)]),
-      );
-};
-
-const clearSelection = () => {
-  allInViewSelected.value = false;
-  selectedIds.value = [];
-};
+// ─── Action bar ──────────────────────────────────────────────────────────────
 
 const toggleActionDropDown = () => {
   showActionDropDown.value = !showActionDropDown.value;
@@ -215,6 +320,8 @@ const handleClickOutsideActionDropDown = (event) => {
     showActionDropDown.value = false;
   }
 };
+
+// ─── Search ──────────────────────────────────────────────────────────────────
 
 const performSearch = (page = 1) => {
   router.get(
@@ -243,6 +350,8 @@ const resetSearchValue = () => {
   handleSearchInput();
 };
 
+// ─── Navigation ──────────────────────────────────────────────────────────────
+
 const goToCreateView = () => {
   const moduleName = usePage().props.module.slug;
   router.visit(`/${moduleName}/create`);
@@ -255,6 +364,8 @@ const resetActionZone = () => {
   showActionDropDown.value = false;
   clearSelection();
 };
+
+// ─── Delete ──────────────────────────────────────────────────────────────────
 
 const handleListDelete = async () => {
   const count = totalSelected.value;
@@ -275,6 +386,7 @@ const handleListDelete = async () => {
     data: {
       allMatchingSelected: allMatchingSelected.value,
       selectedIds: selectedIds.value,
+      excludedIds: excludedIds.value,
       filters: props.filters ?? {},
     },
     preserveScroll: true,
@@ -282,6 +394,9 @@ const handleListDelete = async () => {
       clearAllAlerts();
       success(t("modules.actions.delete_success"));
       clearSelection();
+      resetActionZone();
+      // in case user is not on default page and there are not enough records to justify current page. Always redirect to default module list view. ( not needed in mass update)
+      router.visit(`/${props.module.slug}`);
     },
     onError: () => {
       clearAllAlerts();
@@ -290,9 +405,11 @@ const handleListDelete = async () => {
   });
 };
 
+// ─── Mass update ─────────────────────────────────────────────────────────────
+
 const handleMassUpdate = async (payload) => {
   const count = payload.allMatchingSelected
-    ? props.meta.total
+    ? props.meta.total - (payload.excludedIds?.length ?? 0)
     : payload.selectedIds.length;
 
   const ok = await confirm({
@@ -313,6 +430,7 @@ const handleMassUpdate = async (payload) => {
 
   updateForm.allMatchingSelected = payload.allMatchingSelected;
   updateForm.selectedIds = payload.selectedIds;
+  updateForm.excludedIds = payload.excludedIds ?? [];
   updateForm.filters = payload.filters ?? {};
   updateForm.field = payload.field;
   updateForm.value = payload.value;
@@ -332,9 +450,9 @@ const handleMassUpdate = async (payload) => {
   });
 };
 
-const isSortable = (col) => {
-  return col?.sortable === true;
-};
+// ─── Sort ────────────────────────────────────────────────────────────────────
+
+const isSortable = (col) => col?.sortable === true;
 const isSorted = (col) => sortKey.value === col.name;
 
 const sortIcon = (col) => {
@@ -356,6 +474,8 @@ const sortBy = (col) => {
   }
 };
 
+// ─── Search toggle ───────────────────────────────────────────────────────────
+
 const toggleSearch = () => {
   showListSearch.value = !showListSearch.value;
   if (showListSearch.value) {
@@ -367,6 +487,8 @@ const toggleSearch = () => {
   }
 };
 
+// ─── Lifecycle ───────────────────────────────────────────────────────────────
+
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
 });
@@ -374,6 +496,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutsideActionDropDown);
 });
+
+// ─── Row click ───────────────────────────────────────────────────────────────
 
 const handleRowClick = (id) => {
   if (!bulkActionmode.value) {
@@ -488,9 +612,10 @@ const handleRowClick = (id) => {
     <ListDeleteZone
       v-if="showDeleteZone"
       :selectedIds="selectedIds"
+      :excludedIds="excludedIds"
       :meta="meta"
       :allMatchingSelected="allMatchingSelected"
-      @toggleAll="selectAll()"
+      @selectAllMatching="selectAllMatching()"
       @cancelClicked="resetActionZone()"
       @clearSelection="clearSelection()"
       @deleteClicked="handleListDelete()"
@@ -499,15 +624,17 @@ const handleRowClick = (id) => {
     <MassUpdateZone
       v-else-if="showMassUpdateZone"
       :selected-ids="selectedIds"
+      :excluded-ids="excludedIds"
       :meta="meta"
       :all-matching-selected="allMatchingSelected"
       :fields="fields"
       :filters="props.filters ?? {}"
       @massUpdate="handleMassUpdate"
-      @toggleAll="selectAll()"
+      @selectAllMatching="selectAllMatching()"
       @clearSelection="clearSelection()"
       @cancelClicked="resetActionZone()"
     />
+
     <div class="list-layout__table-scroll">
       <table class="list-layout__table">
         <thead>
@@ -516,14 +643,13 @@ const handleRowClick = (id) => {
               v-if="bulkActionmode"
               scope="col"
               class="list-layout__table__bulk-select"
-              @click.stop
             >
               <Selectbox
                 :value="'all'"
-                :modelValue="allSelected ? ['all'] : []"
+                :modelValue="allSelected || someInViewSelected ? ['all'] : []"
                 @update:modelValue="toggleAllInView"
                 :color="module_color"
-                :current-page-all="allInViewSelected"
+                :current-page-all="someInViewSelected && !allSelected"
               />
             </th>
 
@@ -561,7 +687,7 @@ const handleRowClick = (id) => {
                 class="list-layout__table__bulk-select"
               >
                 <Selectbox
-                  :modelValue="isSelected(item.id) || allMatchingSelected"
+                  :modelValue="isSelected(item.id)"
                   @update:modelValue="() => toggleRow(item.id)"
                   :color="module_color"
                 />

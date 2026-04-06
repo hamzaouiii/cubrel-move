@@ -12,8 +12,6 @@ export function useFieldValidation(props) {
       const fieldType = getFieldType(key);
       const fieldDef = fieldRegistry[fieldType];
       if (!fieldDef || !fieldDef.validate) return;
-      console.log(key);
-      console.log(payload[key]);
       const isValid = fieldDef.validate(payload[key]);
 
       if (!isValid) {

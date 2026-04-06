@@ -1,73 +1,80 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed } from "vue";
+
 const props = defineProps({
-  selectedIds: Array,
-  meta: Object,
-  allMatchingSelected: Boolean,
+  selectedIds: { type: Array, default: () => [] },
+  excludedIds: { type: Array, default: () => [] },
+  meta: { type: Object, default: () => ({}) },
+  allMatchingSelected: { type: Boolean, default: false },
 });
 
 const emit = defineEmits([
-  "toggleAll",
+  "selectAllMatching", // replaces "toggleAll"
   "clearSelection",
   "cancelClicked",
   "deleteClicked",
 ]);
 
-const emitToggleAll = () => {
-  emit("toggleAll");
-};
-const emitClearSelection = () => {
-  emit("clearSelection");
-};
+const emitSelectAllMatching = () => emit("selectAllMatching");
+const emitClearSelection = () => emit("clearSelection");
+const emitCancelClicked = () => emit("cancelClicked");
+const emitDeleteClicked = () => emit("deleteClicked");
 
-const emitCancelClicked = () => {
-  emit("cancelClicked");
-};
-const emitDeleteClicked = () => {
-  emit("deleteClicked");
-};
+// ─── Selection counts ────────────────────────────────────────────────────────
 
-const showSelectAll = computed(() => {
-  if (totalSelected.value > 0) {
-    return true;
-  }
-  return false;
-});
 const totalSelected = computed(() => {
   if (props.allMatchingSelected) {
-    return props.meta?.total ?? 0;
+    return (props.meta?.total ?? 0) - props.excludedIds.length;
   }
-
   return props.selectedIds.length;
+});
+
+/**
+ * Show the "Select all N records" prompt when:
+ * - NOT in allMatching mode yet
+ * - At least one record is selected
+ * - Result set is larger than current page selection
+ */
+const showSelectAllPrompt = computed(() => {
+  return (
+    !props.allMatchingSelected &&
+    props.selectedIds.length > 0 &&
+    (props.meta?.total ?? 0) > props.selectedIds.length
+  );
 });
 </script>
 
 <template>
   <div class="delete-zone">
     <div class="delete-zone__text">
+      <!-- Zero selection state -->
       <div v-if="!totalSelected">
         <span>{{ $t("modules.delete.description") }}</span>
       </div>
 
-      <div v-else :class="{ 'selected-count': !totalSelected }">
+      <!-- Selected count -->
+      <div v-else>
         <span>
           {{ $t("modules.delete.selected_count", { count: totalSelected }) }}
         </span>
       </div>
+
+      <!-- "Select all N records in result set" prompt -->
       <span
-        v-if="!allMatchingSelected"
-        :class="['select-all-in-scope', { 'selected-count': !showSelectAll }]"
-        @click="emitToggleAll()"
+        v-if="showSelectAllPrompt"
+        class="select-all-in-scope"
+        @click="emitSelectAllMatching"
       >
         {{ $t("modules.delete.select_all", { total: meta.total }) }}
       </span>
       <span v-else> </span>
     </div>
+
     <div class="delete-zone__actions">
       <button
         :disabled="!totalSelected"
         class="btn delete-zone__actions__cancel"
-        @click="emitClearSelection()"
+        @click="emitClearSelection"
       >
         {{ $t("modules.delete.clear_selection") }}
       </button>
@@ -79,8 +86,8 @@ const totalSelected = computed(() => {
       </button>
       <button
         class="delete-zone__actions__delete btn"
-        @click="emitDeleteClicked"
         :disabled="!totalSelected"
+        @click="emitDeleteClicked"
       >
         {{ $t("modules.delete.delete") }}
       </button>

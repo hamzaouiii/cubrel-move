@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
+
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
   excludedIds: { type: Array, default: () => [] },
@@ -10,14 +11,15 @@ const props = defineProps({
   fields: { type: Object, default: () => [] },
   filters: { type: Object, default: () => ({}) },
 });
+
 const emit = defineEmits([
-  "toggleAll",
+  "selectAllMatching", // replaces "toggleAll" — fires when user clicks the prompt
   "clearSelection",
   "massUpdate",
   "cancelClicked",
 ]);
 
-const emitToggleAll = () => emit("toggleAll");
+const emitSelectAllMatching = () => emit("selectAllMatching");
 const emitClearSelection = () => emit("clearSelection");
 const emitCancelClicked = () => emit("cancelClicked");
 
@@ -25,6 +27,31 @@ const form = useForm({
   field: null,
   inputValue: null,
 });
+
+// ─── Selection counts ────────────────────────────────────────────────────────
+
+const totalSelected = computed(() => {
+  if (props.allMatchingSelected) {
+    return (props.meta?.total ?? 0) - props.excludedIds.length;
+  }
+  return props.selectedIds.length;
+});
+
+/**
+ * Show the "Select all N records" prompt when:
+ * - NOT already in allMatching mode
+ * - At least one record on the current page is selected
+ * - There are more records in the result set than are visible on this page
+ */
+const showSelectAllPrompt = computed(() => {
+  return (
+    !props.allMatchingSelected &&
+    props.selectedIds.length > 0 &&
+    props.meta?.total > props.selectedIds.length
+  );
+});
+
+// ─── Field dropdown ──────────────────────────────────────────────────────────
 
 const fieldDropDownOptions = computed(() => {
   return (props.fields ?? [])
@@ -34,19 +61,28 @@ const fieldDropDownOptions = computed(() => {
       label: item.label,
     }));
 });
-const related_field = computed(() => {
-  return {
-    values: fieldDropDownOptions.value,
-  };
-});
 
-const totalSelected = computed(() => {
-  if (props.allMatchingSelected) {
-    return (props.meta?.total ?? 0) - props.excludedIds.length;
-  }
-  return props.selectedIds.length;
-});
-const showSelectAll = computed(() => totalSelected.value > 0);
+const related_field = computed(() => ({ values: fieldDropDownOptions.value }));
+
+const moduleFieldsField = computed(() => ({
+  id: "1",
+  is_draft: false,
+  key: "defaults_fields_field",
+  label: "modules.defaults.fields_field",
+  module_id: null,
+  name: "fields_field",
+  readonly: true,
+  required: false,
+  searchable: true,
+  nullable: true,
+  sortable: true,
+  type: "select",
+  dropdown_list: related_field.value,
+}));
+
+const getField = (key) => props.fields?.find((field) => field.key === key);
+
+// ─── Submit guard ─────────────────────────────────────────────────────────────
 
 const canSubmit = computed(() => {
   return (
@@ -55,6 +91,8 @@ const canSubmit = computed(() => {
     String(form.inputValue ?? "").trim().length > 0
   );
 });
+
+// ─── Emit mass update ────────────────────────────────────────────────────────
 
 const emitMassUpdate = () => {
   if (!canSubmit.value) return;
@@ -69,28 +107,6 @@ const emitMassUpdate = () => {
   });
 };
 
-const moduleFieldsField = computed(() => {
-  return {
-    id: "1",
-    is_draft: false,
-    key: "defaults_fields_field",
-    label: "modules.defaults.fields_field",
-    module_id: null,
-    name: "fields_field",
-    readonly: true,
-    required: false,
-    searchable: true,
-    nullable: true,
-    sortable: true,
-    type: "select",
-    dropdown_list: related_field.value,
-  };
-});
-
-const getField = (item) => {
-  return props.fields?.find((field) => field.key === item);
-};
-
 const resetInputValue = () => {
   form.inputValue = null;
 };
@@ -100,20 +116,23 @@ const resetInputValue = () => {
   <div class="mass-update-zone">
     <div class="mass-update-zone__content">
       <div class="mass-update-zone__text">
+        <!-- Zero selection state -->
         <div v-if="!totalSelected">
           <span>{{ $t("modules.update.description") }}</span>
         </div>
 
-        <div v-else :class="{ 'selected-count': !totalSelected }">
+        <!-- Selected count -->
+        <div v-else>
           <span>
             {{ $t("modules.update.selected_count", { count: totalSelected }) }}
           </span>
         </div>
 
+        <!-- "Select all N records in result set" prompt -->
         <span
-          v-if="!allMatchingSelected"
-          :class="['select-all-in-scope', { 'selected-count': !showSelectAll }]"
-          @click="emitToggleAll"
+          v-if="showSelectAllPrompt"
+          class="select-all-in-scope"
+          @click="emitSelectAllMatching"
         >
           {{ $t("modules.update.select_all", { total: meta.total }) }}
         </span>
@@ -143,6 +162,7 @@ const resetInputValue = () => {
         {{ $t("modules.update.update") }}
       </button>
     </div>
+
     <div class="mass-update-zone__inputs">
       <div class="definition">
         <FieldRenderer
