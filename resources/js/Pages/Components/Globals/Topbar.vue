@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
           @click="toggleProfile"
         >
           <img
-            src="\img\profile\40.jpg"
+            src="\img\profile\20.png"
             class="rounded-circle"
             width="36"
             height="36"

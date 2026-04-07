@@ -80,7 +80,7 @@ const isDirty = () => form.isDirty;
 
 <template>
   <Head>
-    <title>{{ $t(item.label) }} - {{ $t("settings.label") }}</title>
+    <title>{{ $t(item.label) }} - {{ $t("settings.label") }} - Cubrel</title>
   </Head>
 
   <div class="settings" :style="{ '--primary-color': getColorModel }">

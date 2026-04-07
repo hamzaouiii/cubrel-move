@@ -360,7 +360,7 @@ const relationship = (name) => {
 </script>
 <template>
   <Head>
-    <title>{{ record.name }} - {{ title }}</title>
+    <title>{{ record.name }} - {{ title }} - Cubrel</title>
   </Head>
 
   <div class="record-layout" :style="{ '--module-color': module_color }">

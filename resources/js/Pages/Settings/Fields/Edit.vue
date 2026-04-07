@@ -112,7 +112,7 @@ const moduleColor = computed(() =>
   <Head>
     <title>
       {{ $t(metadata.label) }} - {{ module.label }} - {{ $t("fields.label") }} -
-      {{ $t("settings.label") }}
+      {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>
 

@@ -216,7 +216,7 @@ const getField = (f) => {
 
 <template>
   <Head>
-    <title>{{ module.label }}</title>
+    <title>{{ module.label }} - Cubrel</title>
   </Head>
 
   <div class="record-layout" :style="{ '--module-color': module_color }">

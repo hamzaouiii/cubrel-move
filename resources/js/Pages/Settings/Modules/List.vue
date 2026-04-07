@@ -22,7 +22,7 @@ const createUrl = computed(() => {
 </script>
 <template>
   <Head>
-    <title>{{ $t(item.label) }} - {{ $t("settings.label") }}</title>
+    <title>{{ $t(item.label) }} - {{ $t("settings.label") }} - Cubrel</title>
   </Head>
   <div
     class="settings"

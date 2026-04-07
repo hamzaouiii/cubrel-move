@@ -510,7 +510,7 @@ const handleRowClick = (id) => {
 
 <template>
   <Head>
-    <title>{{ title }}</title>
+    <title>{{ title }} - Cubrel</title>
   </Head>
 
   <div class="list-layout" :style="{ '--module-color': module_color }">
