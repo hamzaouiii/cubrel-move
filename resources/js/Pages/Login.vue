@@ -18,7 +18,7 @@ const submit = () => {
 
 <template>
   <Head>
-    <title>Admin Section - Cubrel</title>
+    <title>Cubrel</title>
   </Head>
   <div class="login-page">
     <div class="admin-login">
@@ -51,7 +51,7 @@ const submit = () => {
               type="text"
               class="form-input"
               :class="{ 'is-invalid': form.errors.username }"
-              placeholder="e.g. admin_user"
+              placeholder=""
               :disabled="form.processing"
             />
           </div>
@@ -105,8 +105,8 @@ const submit = () => {
 
 <style lang="scss">
 // Variables - Modernized Palette
-$primary-color: #4f46e5; // Deeper Indigo
-$primary-hover: #4338ca;
+$primary-color: #3498db;
+$primary-hover: #1d5687;
 $primary-light: #e0e7ff;
 $error-color: #ef4444;
 $text-color: #111827;

@@ -31,11 +31,11 @@ class AuthController extends Controller
       ]);
     }
 
-    // Ensure the user is an admin
-    if (! Auth::user()->is_admin) {
-      Auth::logout();
-      return back()->withErrors(['username' => 'You do not have admin access.']);
-    }
+    // // Ensure the user is an admin
+    // if (! Auth::user()->is_admin) {
+    //   Auth::logout();
+    //   return back()->withErrors(['username' => 'You do not have admin access.']);
+    // }
 
     $request->session()->regenerate();
     return redirect()->to('/');

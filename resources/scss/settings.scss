@@ -151,9 +151,8 @@
   }
 
   &__list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
     padding: 4px 12px;
     gap: 0;
 

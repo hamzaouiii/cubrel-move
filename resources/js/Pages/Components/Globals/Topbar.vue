@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useForm, Link } from "@inertiajs/vue3";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { useForm, Link, usePage } from "@inertiajs/vue3";
 
 const form = useForm({});
 const logout = () => {
@@ -30,11 +30,15 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+const page = usePage();
+const profilePath = computed(() => {
+  return `/users/${page.props?.auth?.user?.id}` || `/`;
+});
 </script>
 <template>
   <div class="topbar">
     <Link href="/" class="topbar__logo">
-      <!-- <img src="/img/logo/logo.svg" alt="logo" width="240" height="180" /> -->
+      <img src="/img/logo/default-monochrome.svg" alt="logo" width="240" />
     </Link>
     <div class="topbar__actions">
       <transition name="slide-search">
@@ -78,7 +82,7 @@ onBeforeUnmount(() => {
                 </Link>
               </li>
               <li>
-                <Link href="/profile">
+                <Link :href="profilePath">
                   <i class="fa-solid fa-id-card-clip"></i>
                   {{ $t("globals.topbar.profile") }}
                 </Link>

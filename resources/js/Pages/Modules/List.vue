@@ -506,6 +506,10 @@ const handleRowClick = (id) => {
     toggleRow(id);
   }
 };
+
+const hidePagination = computed(() => {
+  return props.meta?.total < props.meta?.perPage;
+});
 </script>
 
 <template>
@@ -720,7 +724,7 @@ const handleRowClick = (id) => {
         </tbody>
       </table>
     </div>
-    <div class="list-layout__pagination">
+    <div class="list-layout__pagination" v-if="!hidePagination">
       <Pagination v-if="meta && meta.total != 0" :meta="meta" />
     </div>
   </div>
