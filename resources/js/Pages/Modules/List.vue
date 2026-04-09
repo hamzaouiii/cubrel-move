@@ -37,7 +37,8 @@ const props = defineProps({
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-const appSettings = usePage().props.appSettings;
+const page = usePage();
+const appSettings = page.props.appSettings;
 
 const bulkActionmode = ref(false);
 const showDeleteZone = ref(false);
@@ -353,7 +354,7 @@ const resetSearchValue = () => {
 // ─── Navigation ──────────────────────────────────────────────────────────────
 
 const goToCreateView = () => {
-  const moduleName = usePage().props.module.slug;
+  const moduleName = page.props.module.slug;
   router.visit(`/${moduleName}/create`);
 };
 
@@ -510,6 +511,10 @@ const handleRowClick = (id) => {
 const hidePagination = computed(() => {
   return props.meta?.total < props.meta?.perPage;
 });
+
+const isAdmin = computed(() => {
+  return page.props?.auth?.user?.is_admin || false;
+});
 </script>
 
 <template>
@@ -579,7 +584,7 @@ const hidePagination = computed(() => {
               v-if="showActionDropDown"
               class="list-layout__header__actions__list__dropdown show"
             >
-              <li>
+              <li v-if="isAdmin">
                 <Link
                   class="list-layout__header__actions__list__dropdown__item"
                   :href="editModuleUrl"

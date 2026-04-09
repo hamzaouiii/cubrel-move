@@ -65,4 +65,8 @@ class User extends BaseModule implements
       'is_admin' => 'boolean'
     ];
   }
+  public function isAdmin(): bool
+  {
+    return (bool) $this->is_admin;
+  }
 }

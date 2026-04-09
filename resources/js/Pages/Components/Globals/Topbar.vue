@@ -31,9 +31,7 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 const page = usePage();
-const profilePath = computed(() => {
-  return `/users/${page.props?.auth?.user?.id}` || `/`;
-});
+const user = page.props?.auth?.user || {};
 </script>
 <template>
   <div class="topbar">
@@ -75,16 +73,18 @@ const profilePath = computed(() => {
           ></i>
           <transition name="fade">
             <ul v-if="showProfile" class="profile-dropdown card-shadow">
-              <li>
+              <li v-if="user.is_admin">
                 <Link href="/settings">
                   <i class="fa-solid fa-gears"></i>
                   {{ $t("globals.topbar.settings") }}
                 </Link>
               </li>
               <li>
-                <Link :href="profilePath">
+                <Link href="\profile">
                   <i class="fa-solid fa-id-card-clip"></i>
-                  {{ $t("globals.topbar.profile") }}
+                  {{
+                    user?.username || user.name || $t("globals.topbar.profile")
+                  }}
                 </Link>
               </li>
               <li @click="logout">

@@ -11,6 +11,7 @@ use App\Models\Field;
 use Illuminate\Support\Collection;
 use App\Services\Relationships\RelationshipService;
 use App\Models\BaseModule;
+use App\Scopes\AdminOnlyModuleScope;
 
 /**
  * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
@@ -226,6 +227,11 @@ class Module extends Model
       ])
       ->with('dropdown_list')
       ->get();
+  }
+
+  protected static function booted(): void
+  {
+    static::addGlobalScope(new AdminOnlyModuleScope());
   }
 
   /**
