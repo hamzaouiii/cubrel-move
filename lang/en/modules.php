@@ -346,5 +346,35 @@ return array(
   'pagination' => [
     'previous' => 'Previous',
     'next' => 'Next'
-  ]
+  ],
+  'users' => [
+    'label' => 'Users',
+    'single_label' => 'User',
+    'fields' => [
+      'username' => 'Username',
+      'first_name' => 'First Name',
+      'last_name' => 'Last Name',
+      'description' => 'Description',
+      'email' => 'Email',
+      'email_verified_at' => 'Email Verified At',
+      'last_login_at' => 'Last Login At',
+      'last_login_ip' => 'Last Login IP',
+      'status' => 'Status',
+      'is_admin' => 'Administrator',
+      'password_changed_at' => 'Password Changed At',
+      'failed_login_attempts' => 'Failed Login Attempts',
+      'locked_until' => 'Locked Until',
+      'title' => 'Title',
+      'phone' => 'Phone',
+      'mobile' => 'Mobile',
+      'avatar' => 'Avatar',
+      'locale' => 'Locale',
+      'timezone' => 'Timezone',
+      'date_format' => 'Date Format',
+      'time_format' => 'Time Format',
+      'theme' => 'Theme',
+      'type'  => 'Type',
+    ],
+  ],
+
 );

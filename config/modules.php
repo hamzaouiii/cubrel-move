@@ -307,5 +307,28 @@ return [
     'table_name' => 'settings',
     'is_custom' => 0,
   ],
+  [
+    'name' => 'Users',
+    'slug' => 'users',
+    'label' => 'modules.users.label',
+    'single_label' => 'modules.settings.user',
+    'icon' => 'fa-users-gear',
+    'color' => '#78909C',
+    'path' => '/users',
+    'sort_order' => 998,
+    'category' => 'system',
+    'is_active' => true,
+    'show_in_sidebar' => 1,
+    'handler_class' => 'App\\Handlers\\Modules\\UserModuleHandler',
+    'description' => 'Users',
+    'can_view' => true,
+    'can_create' => true,
+    'can_edit' => true,
+    'can_delete' => true,
+    'model_class' => 'App\\Models\\User',
+    'table_name' => 'users',
+    'is_custom' => 0,
+  ],
+
 
 ];

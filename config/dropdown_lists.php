@@ -397,4 +397,36 @@ return array(
       'value' => 'system',
     ),
   ),
+  'users_status_list' =>
+  array(
+    0 =>
+    array(
+      'label' => 'dropdowns.users_status_list.active',
+      'value' => 'active',
+    ),
+    1 =>
+    array(
+      'label' => 'dropdowns.users_status_list.inactive',
+      'value' => 'inactive',
+    ),
+    2 =>
+    array(
+      'label' => 'dropdowns.users_status_list.suspended',
+      'value' => 'suspended',
+    ),
+    3 =>
+    array(
+      'label' => 'dropdowns.users_status_list.invited',
+      'value' => 'invited',
+    ),
+  ),
+  'users_type_list' => array(
+    array('label' => 'dropdowns.users_type_list.admin', 'value' => 'admin'),
+    array('label' => 'dropdowns.users_type_list.executive', 'value' => 'executive'),
+    array('label' => 'dropdowns.users_type_list.sales_rep', 'value' => 'sales_rep'),
+    array('label' => 'dropdowns.users_type_list.sales_manager', 'value' => 'sales_manager'),
+    array('label' => 'dropdowns.users_type_list.support_agent', 'value' => 'support_agent'),
+    array('label' => 'dropdowns.users_type_list.marketing_user', 'value' => 'marketing_user'),
+    array('label' => 'dropdowns.users_type_list.read_only', 'value' => 'read_only'),
+  ),
 );

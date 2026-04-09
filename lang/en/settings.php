@@ -92,7 +92,7 @@ return [
     'role_management'     => 'Role Management',
     'inbound_email'       => 'Inbound Email',
     'currencies'          => 'Currencies',
-    'create_user'         => 'Create User',
+    'create_user'         => 'Create A User',
     'fields'              => 'Fields',
     'email_queue'         => 'Email Queue',
     'locale'              => 'Region & Language',

@@ -2,12 +2,12 @@
 
 namespace App\Models\Modules;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\BaseModule;
+use App\Concerns\HasFullName;
 
 class Contact extends BaseModule
 {
+  use HasFullName;
   protected $fillable = [
     'name',
     'first_name',

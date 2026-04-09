@@ -390,4 +390,87 @@ return [
       'type' => 'date',
     ],
   ],
+  'users' =>
+  [
+    'username' =>
+    [
+      'name' => 'username',
+      'type' => 'text',
+    ],
+    'first_name' =>
+    [
+      'name' => 'first_name',
+      'type' => 'text',
+    ],
+    'last_name' =>
+    [
+      'name' => 'last_name',
+      'type' => 'text',
+    ],
+    'description' =>
+    [
+      'name' => 'description',
+      'type' => 'longtext',
+    ],
+    'email' =>
+    [
+      'name' => 'email',
+      'type' => 'email',
+    ],
+    'status' =>
+    [
+      'name' => 'status',
+      'type' => 'select',
+    ],
+    'is_admin' =>
+    [
+      'name' => 'is_admin',
+      'type' => 'checkbox',
+    ],
+    'title' =>
+    [
+      'name' => 'title',
+      'type' => 'text',
+    ],
+    'phone' =>
+    [
+      'name' => 'phone',
+      'type' => 'phone',
+    ],
+    'mobile' =>
+    [
+      'name' => 'mobile',
+      'type' => 'phone',
+    ],
+    'avatar' =>
+    [
+      'name' => 'avatar',
+      'type' => 'url',
+    ],
+    'locale' =>
+    [
+      'name' => 'locale',
+      'type' => 'select',
+    ],
+    'timezone' =>
+    [
+      'name' => 'timezone',
+      'type' => 'select',
+    ],
+    'date_format' =>
+    [
+      'name' => 'date_format',
+      'type' => 'select',
+    ],
+    'time_format' =>
+    [
+      'name' => 'time_format',
+      'type' => 'select',
+    ],
+    'type' =>
+    [
+      'name' => 'type',
+      'type' => 'select',
+    ],
+  ],
 ];

@@ -89,4 +89,19 @@ return [
     'inr' => 'Indian Rupee (INR)',
     'brl' => 'Brazilian Real (BRL)',
   ],
+  'users_status_list' => [
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'suspended' => 'Suspended',
+    'invited' => 'Invited',
+  ],
+  'users_type_list' => [
+    'admin' => 'Admin',
+    'executive' => 'Executive',
+    'sales_rep' => 'Sales Representative',
+    'sales_manager' => 'Sales Manager',
+    'support_agent' => 'Support Agent',
+    'marketing_user' => 'Marketing User',
+    'read_only' => 'Read Only',
+  ],
 ];
