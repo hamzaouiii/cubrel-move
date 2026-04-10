@@ -28,7 +28,7 @@ class User extends BaseModule implements
   CanResetPasswordContract
 {
   /** @use HasFactory<\Database\Factories\UserFactory> */
-  use HasUuids, HasFactory, Notifiable, HasFullName;
+  use HasUuids, HasFactory, Notifiable;
 
   // 5. Use the Auth Traits inside the class
   use Authenticatable, Authorizable, CanResetPassword;

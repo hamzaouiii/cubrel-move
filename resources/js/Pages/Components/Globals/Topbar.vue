@@ -46,12 +46,12 @@ const user = page.props?.auth?.user || {};
       </transition>
 
       <div class="topbar__actions__icons">
-        <div class="topbar__actions__icons__item" @click="toggleSearch">
+        <!-- <div class="topbar__actions__icons__item" @click="toggleSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="topbar__actions__icons__item">
           <i class="fa-solid fa-bell"></i>
-        </div>
+        </div> -->
         <div
           class="topbar__actions__icons__item profile"
           ref="profileRef"
@@ -80,7 +80,7 @@ const user = page.props?.auth?.user || {};
                 </Link>
               </li>
               <li>
-                <Link href="\profile">
+                <Link href="/profile">
                   <i class="fa-solid fa-id-card-clip"></i>
                   {{
                     user?.username || user.name || $t("globals.topbar.profile")

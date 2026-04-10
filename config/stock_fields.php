@@ -430,7 +430,7 @@ return [
     'title' =>
     [
       'name' => 'title',
-      'type' => 'text',
+      'type' => 'select',
     ],
     'phone' =>
     [

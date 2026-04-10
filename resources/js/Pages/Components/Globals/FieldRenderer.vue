@@ -50,6 +50,7 @@ const componentProps = computed(() => ({
   readOnly: props.readOnly,
   highlight: props?.highlight || null,
   errorMsg: props?.errorMsg || null,
+  searchable: props?.searchable || null,
 }));
 </script>
 

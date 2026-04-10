@@ -7,7 +7,7 @@ const pageProps = usePage().props;
 
 const form = useForm({
   username: "",
-  password: "",
+  password: "password123", // for quick deving
   remember: false,
 });
 

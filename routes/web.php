@@ -29,16 +29,12 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/', fn() => Inertia::render('Dashboard'))->name('dashboard');
   Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
   Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+  Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
 
   // module Manager
+  Route::middleware(['admin'])->group(function () {
 
 
-  Route::middleware(['auth', 'admin'])->group(function () {
-
-    // System Settings
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
-    Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
 
     // user routes
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -118,6 +114,10 @@ Route::middleware(['auth'])->group(function () {
       Route::get('dropdowns/{dropdown_id}', [DropdownListController::class, 'show'])
         ->name('dropdowns.show');
     });
+    // System Settings
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
   });
 
   // Modules routes

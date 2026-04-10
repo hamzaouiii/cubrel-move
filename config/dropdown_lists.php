@@ -429,4 +429,54 @@ return array(
     array('label' => 'dropdowns.users_type_list.marketing_user', 'value' => 'marketing_user'),
     array('label' => 'dropdowns.users_type_list.read_only', 'value' => 'read_only'),
   ),
+  'users_title_list' => array(
+    // Standard titles
+    ['label' => 'dropdowns.users_title_list.mr', 'value' => 'mr'],
+    ['label' => 'dropdowns.users_title_list.mrs', 'value' => 'mrs'],
+    ['label' => 'dropdowns.users_title_list.ms', 'value' => 'ms'],
+    ['label' => 'dropdowns.users_title_list.mx', 'value' => 'mx'],
+    ['label' => 'dropdowns.users_title_list.dr', 'value' => 'dr'],
+    ['label' => 'dropdowns.users_title_list.prof', 'value' => 'prof'],
+
+    // Gender-neutral / professional
+    ['label' => 'dropdowns.users_title_list.misc', 'value' => 'misc'],
+    ['label' => 'dropdowns.users_title_list.rev', 'value' => 'rev'],
+    ['label' => 'dropdowns.users_title_list.fr', 'value' => 'fr'],        // Father (religious)
+    ['label' => 'dropdowns.users_title_list.sr', 'value' => 'sr'],        // Sister (religious)
+    ['label' => 'dropdowns.users_title_list.rabbi', 'value' => 'rabbi'],
+    ['label' => 'dropdowns.users_title_list.imam', 'value' => 'imam'],
+
+    // Academic / professional (besides Dr/Prof)
+    ['label' => 'dropdowns.users_title_list.atty', 'value' => 'atty'],     // Attorney
+    ['label' => 'dropdowns.users_title_list.cpa', 'value' => 'cpa'],
+    ['label' => 'dropdowns.users_title_list.eng', 'value' => 'eng'],
+    ['label' => 'dropdowns.users_title_list.phd', 'value' => 'phd'],
+    ['label' => 'dropdowns.users_title_list.md', 'value' => 'md'],
+    ['label' => 'dropdowns.users_title_list.rn', 'value' => 'rn'],
+    ['label' => 'dropdowns.users_title_list.jd', 'value' => 'jd'],
+    ['label' => 'dropdowns.users_title_list.dds', 'value' => 'dds'],       // Dentist
+
+    // Nobility / honorary (still common in some contexts)
+    ['label' => 'dropdowns.users_title_list.sir', 'value' => 'sir'],
+    ['label' => 'dropdowns.users_title_list.dame', 'value' => 'dame'],
+    ['label' => 'dropdowns.users_title_list.lord', 'value' => 'lord'],
+    ['label' => 'dropdowns.users_title_list.lady', 'value' => 'lady'],
+
+    // Military ranks (generic, can be expanded)
+    ['label' => 'dropdowns.users_title_list.cpt', 'value' => 'cpt'],
+    ['label' => 'dropdowns.users_title_list.maj', 'value' => 'maj'],
+    ['label' => 'dropdowns.users_title_list.col', 'value' => 'col'],
+    ['label' => 'dropdowns.users_title_list.gen', 'value' => 'gen'],
+
+    // Additional inclusive / informal / cultural
+    ['label' => 'dropdowns.users_title_list.coach', 'value' => 'coach'],
+    ['label' => 'dropdowns.users_title_list.judge', 'value' => 'judge'],
+    ['label' => 'dropdowns.users_title_list.rep', 'value' => 'rep'],       // Representative
+    ['label' => 'dropdowns.users_title_list.sen', 'value' => 'sen'],       // Senator
+    ['label' => 'dropdowns.users_title_list.gov', 'value' => 'gov'],
+    ['label' => 'dropdowns.users_title_list.amb', 'value' => 'amb'],       // Ambassador
+    ['label' => 'dropdowns.users_title_list.principal', 'value' => 'principal'],
+    ['label' => 'dropdowns.users_title_list.pastor', 'value' => 'pastor'],
+    ['label' => 'dropdowns.users_title_list.elder', 'value' => 'elder'],
+  ),
 );
