@@ -41,17 +41,27 @@ class UserController extends Controller
   /**
    * Show the form for creating a new resource.
    */
+
   public function create()
   {
-    //
-  }
+    $module = 'users';
+    $moduleModel = Module::query()
+      ->where('slug', $module)
+      ->where('is_active', true)
+      ->firstOrFail();
 
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(Request $request)
-  {
-    //
+    $recordLayout = config("module_layouts.users.record");
+
+    $fields        = $moduleModel->allFields();
+    $recorddropdownLists = $moduleModel->dropdownLists;
+
+    return Inertia::render('Modules/Create', array_merge([
+      'module'        => $moduleModel,
+      'title'         => $moduleModel->name,
+      'recordLayout'  => $recordLayout,
+      'dropdownLists' => $recorddropdownLists,
+      'fields'        => $fields,
+    ]));
   }
 
   /**
@@ -69,12 +79,11 @@ class UserController extends Controller
 
     $handler = new UserModuleHandler();
 
-
     $props = $handler->getRecordData($module, $user, request()->all());
 
+    // $recordLayout  = $moduleModel->recordLayout();
+    $recordLayout = config("module_layouts.users.record");
 
-
-    $recordLayout  = $moduleModel->recordLayout();
     $relatedLayout = $moduleModel->relatedLayout();
     $fields        = $moduleModel->allFields();
 

@@ -17,10 +17,16 @@ use App\Http\Controllers\RelationshipManagerController;
 use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\InviteController;
 
 Route::middleware(['guest'])->group(function () {
   Route::get('/login', [AuthController::class, 'index'])->name('login');
   Route::post('/login', [AuthController::class, 'login']);
+  Route::post('/forgot-password', [AuthController::class, 'forgot'])->name('password.email');
+  Route::get('/reset-password/{token}', [AuthController::class, 'resetForm'])->name('password.reset');
+  Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
+  Route::get('/invites/{token}', [InviteController::class, 'show'])->name('invites.show');
+  Route::post('/invites/{token}/accept', [InviteController::class, 'accept'])->name('invites.accept');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -33,12 +39,15 @@ Route::middleware(['auth'])->group(function () {
 
   // module Manager
   Route::middleware(['admin'])->group(function () {
-
-
-
     // user routes
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::get('/users/{user_id}', [UserController::class, 'show'])->name('users.show');
+    Route::put('/users/{user_id}', [UserController::class, 'update'])->name('users.update');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    // routes/web.php
+    Route::post('/invites', [InviteController::class, 'store']);
+    Route::post('/invites/bulk', [InviteController::class, 'bulkStore'])->name('invites.bulk');
 
     Route::prefix('settings')->name('settings.')->group(function () {
 
@@ -114,6 +123,7 @@ Route::middleware(['auth'])->group(function () {
       Route::get('dropdowns/{dropdown_id}', [DropdownListController::class, 'show'])
         ->name('dropdowns.show');
     });
+
     // System Settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');

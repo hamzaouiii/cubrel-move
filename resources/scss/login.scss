@@ -1,0 +1,280 @@
+$primary-light: #e0e7ff;
+$text-light: #6b7280;
+$border-color: #e5e7eb;
+$background: #ffffff;
+$input-bg: #f9fafb;
+
+.login {
+  display: flex;
+  flex-direction: row;
+
+  background-color: whitesmoke;
+  height: 100vh;
+  &__mural {
+    width: 50vw;
+    height: 100%;
+    border: 8px solid whitesmoke;
+    border-radius: 45px;
+    background: url("img/login-bg.jpg");
+    background-size: 100% 100%;
+    &__logo {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      top: 15px;
+      left: 15px;
+      img {
+        width: 250px;
+        height: 100px;
+      }
+    }
+  }
+  &__card {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    &__form {
+      width: 80%;
+      padding: 0 20%;
+      margin: 0 auto; // and this
+    }
+    &__header {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #323450;
+      margin-bottom: 0;
+      font-family: "Fira Sans", sans-serif;
+    }
+    &__links {
+      display: flex;
+      justify-content: space-between;
+      margin: 2.5rem 0;
+      &__link {
+        color: var(--primary-color);
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+        &:visited {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+.remember-me {
+  display: flex;
+  align-items: center;
+  &__text {
+    margin-left: 0.8rem;
+  }
+}
+.form-group {
+  margin-bottom: 1.5rem;
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.999rem;
+    font-weight: 600;
+    color: #374151;
+  }
+}
+
+// Input Field
+.input-wrapper {
+  position: relative;
+  border: 2px solid;
+  display: flex;
+  background-color: $input-bg;
+  align-items: center;
+  width: 100%;
+  font-size: 0.95rem;
+  border: 1.5px solid transparent;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  padding: 0rem 1rem;
+
+  box-sizing: border-box;
+
+  &:focus-within {
+    outline: none;
+    background-color: $background;
+    border-color: var(--primary-color);
+    .input-icon {
+      color: var(--primary-color);
+    }
+  }
+  .input-icon {
+    margin-right: 12px;
+  }
+  .form-input {
+    all: unset;
+    padding: 0.875rem 1rem;
+    width: 100%;
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    &:disabled {
+      background-color: #f3f4f6;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    &.is-invalid {
+      border-color: var(--danger-color);
+      background-color: #fef2f2;
+
+      &:focus {
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+      }
+    }
+  }
+
+  // Password Toggle Button
+  .password-toggle {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: $text-light;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--primary-color);
+      background-color: $primary-light;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Error Message
+.error-message {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--danger-color);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+  &::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    background: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: bold;
+  }
+}
+
+// Submit Button
+.submit-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--primary-color) 80%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px -1px rgba(79, 70, 229, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+.global-error {
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  backdrop-filter: blur(6px);
+  min-width: 350px;
+  animation: shake 0.25s ease;
+
+  &::before {
+    content: "⚠ ";
+    margin-right: 0.25rem;
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

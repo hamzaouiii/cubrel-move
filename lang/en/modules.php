@@ -65,6 +65,8 @@ return array(
     'load_more' => 'Load More',
     'view_all' => 'View All',
     'loading' => 'Loading...',
+    'user_create' => 'Create a new user',
+    'user_invite' => 'Invite User'
   ),
   'linking' => array(
     'link_existing_records'  => 'Link Existing Records',
@@ -350,6 +352,16 @@ return array(
   'users' => [
     'label' => 'Users',
     'single_label' => 'User',
+    'modal' => [
+      'title' => 'Invite New Users',
+      'subtitle' => 'Send invitations and configure their access levels.',
+      'progress_text' => 'Sending...',
+      'admin_label_text' => 'Grant admin rights',
+      'invite_empty' => 'No emails added yet.',
+      'total_to_invite' => ':total users ready to invite',
+      'send_invites'  => 'Send Invites',
+      'cancel'  => 'Cancel'
+    ],
     'fields' => [
       'username' => 'Username',
       'first_name' => 'First Name',

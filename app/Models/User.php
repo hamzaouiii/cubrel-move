@@ -37,8 +37,10 @@ class User extends BaseModule implements
   protected $keyType = 'string';
 
   protected $fillable = [
+    'name',
     'email',
     'password',
+    'is_admin',
     'username'
   ];
 

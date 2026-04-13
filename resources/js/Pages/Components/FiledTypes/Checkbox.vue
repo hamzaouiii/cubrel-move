@@ -63,7 +63,16 @@ const value = computed({
     <input type="checkbox" class="checkbox__input" v-model="value" />
     <span class="checkbox__slider"></span>
   </label>
-
+  <label
+    v-else-if="mode === 'users-modal'"
+    class="checkbox user-modal-checbox"
+    :style="{
+      '--module-color': moduleColor ? moduleColor : appSettings.primary_color,
+    }"
+  >
+    <input type="checkbox" class="checkbox__input" v-model="value" />
+    <span class="checkbox__slider"></span>
+  </label>
   <div
     v-else-if="
       mode === 'detail' ||

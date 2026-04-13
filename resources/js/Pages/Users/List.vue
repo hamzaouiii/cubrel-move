@@ -13,7 +13,7 @@ import { useConfirm } from "@/Composables/useConfirm";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import Layout from "@/Layouts/Layout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
-
+import InviteModal from "@/Pages/Components/Users/InviteModal.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
@@ -40,6 +40,10 @@ const search = ref(props.filters.search ?? "");
 const searchInput = ref(null);
 const sortKey = ref(null);
 const sortDir = ref("asc");
+
+const showActionDropDown = ref(false);
+const actionDropDownref = ref(null);
+const showInviteModal = ref(false);
 
 const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
@@ -113,6 +117,15 @@ const goToCreateView = () => {
   router.visit(`/${moduleName}/create`);
 };
 
+const openInviteModal = () => {
+  showInviteModal.value = true;
+  toggleActionDropDown();
+};
+
+const closeInviteModal = () => {
+  showInviteModal.value = false;
+};
+
 const isSortable = (col) => col?.sortable === true;
 const isSorted = (col) => sortKey.value === col.name;
 
@@ -145,6 +158,26 @@ const toggleSearch = () => {
     resetSearchValue();
   }
 };
+const toggleActionDropDown = () => {
+  showActionDropDown.value = !showActionDropDown.value;
+};
+
+const handleClickOutsideActionDropDown = (event) => {
+  if (
+    actionDropDownref.value &&
+    !actionDropDownref.value.contains(event.target)
+  ) {
+    showActionDropDown.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutsideActionDropDown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutsideActionDropDown);
+});
 
 const handleRowClick = (id) => {
   router.visit(`/${props.module.slug}/${id}`);
@@ -203,9 +236,45 @@ const hidePagination = computed(() => {
               :class="showListSearch ? 'fa-xmark' : ' fa-magnifying-glass'"
             ></i>
           </button>
-          <button @click="goToCreateView()">
-            {{ $t("modules.actions.create") }}
+          <button @click="toggleActionDropDown">
+            <i class="fa-solid fa-plus"></i>
           </button>
+
+          <transition name="fade">
+            <ul
+              v-if="showActionDropDown"
+              class="list-layout__header__actions__list__dropdown show"
+            >
+              <li v-if="isAdmin">
+                <Link
+                  class="list-layout__header__actions__list__dropdown__item"
+                  :href="editModuleUrl"
+                >
+                  <i class="fa-solid fa-wrench"></i>
+                  {{ $t("modules.actions.edit_module") }}
+                </Link>
+              </li>
+              <li>
+                <span
+                  class="list-layout__header__actions__list__dropdown__item"
+                  @click="goToCreateView()"
+                >
+                  <i class="fa-solid fa-user-plus"></i>
+                  {{ $t("modules.actions.user_create") }}
+                </span>
+              </li>
+
+              <li>
+                <span
+                  class="list-layout__header__actions__list__dropdown__item"
+                  @click.prevent="openInviteModal()"
+                >
+                  <i class="fa-solid fa-person-dots-from-line"></i>
+                  {{ $t("modules.actions.user_invite") }}
+                </span>
+              </li>
+            </ul>
+          </transition>
         </div>
       </div>
     </div>
@@ -270,4 +339,9 @@ const hidePagination = computed(() => {
       <Pagination v-if="meta && meta.total != 0" :meta="meta" />
     </div>
   </div>
+  <InviteModal
+    v-if="showInviteModal"
+    @close="closeInviteModal()"
+    :module="module"
+  ></InviteModal>
 </template>

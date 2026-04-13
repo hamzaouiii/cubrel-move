@@ -23,5 +23,14 @@ return [
   ],
   'copied' => 'kopiert!',
   'Copy_failed' => 'Kopieren fehlgeschlagen',
-
+  'login' => [
+    'welcome_back' => 'Willkommen zurück',
+    'subtitle' => 'Melden Sie sich an, um fortzufahren',
+    'username' => 'Benutzername',
+    'password' => 'Passwort',
+    'username_placeholder' => 'Benutzernamen eingeben',
+    'password_placeholder' => 'Passwort eingeben',
+    'login_button' => 'Sicher anmelden',
+    'toggle_password' => 'Passwortsichtbarkeit umschalten',
+  ],
 ];
