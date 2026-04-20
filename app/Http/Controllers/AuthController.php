@@ -6,11 +6,13 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
+
 class AuthController extends Controller
 {
   public function index()
@@ -29,7 +31,7 @@ class AuthController extends Controller
 
     if (! Auth::attempt(['username' => $data['username'], 'password' => $data['password']], $data['remember'] ?? false)) {
       return back()->withErrors([
-        'general' => 'Invalid credentials.'
+        'general' => __('globals.login.invalid_credentials')
       ]);
     }
 
@@ -49,19 +51,14 @@ class AuthController extends Controller
   {
     $request->validate([
       'email' => ['required', 'email'],
+      [
+        'email.required' => __('globals.login.invalid_email'),
+        'email.email'    => __('globals.login.invalid_email'),
+      ]
     ]);
+    Password::sendResetLink($request->only('email'));
 
-    $status = Password::sendResetLink(
-      $request->only('email')
-    );
-
-    if ($status === Password::RESET_LINK_SENT) {
-      return back()->with('status', __($status));
-    }
-
-    return back()->withErrors([
-      'email' => __($status),
-    ]);
+    return back()->with('status', __('passwords.sent'));
   }
 
   public function resetForm(Request $request, string $token)

@@ -33,13 +33,10 @@ class InviteController extends Controller
   public function show(string $token): InertiaResponse
   {
     $invite = UserInvite::where('token', $token)->firstOrFail();
-
-    abort_if($invite->isExpired(), 410);
-    abort_if(!$invite->isPending(), 409);
-
     return Inertia::render('Users/AcceptInvite', [
       'email' => $invite->email,
       'token' => $token,
+      'notValid' =>  !$invite->isPending()
     ]);
   }
 
@@ -56,7 +53,7 @@ class InviteController extends Controller
 
     Auth::login($user);
 
-    return redirect('/');
+    return redirect('/users/' . $user->id);
   }
 
 

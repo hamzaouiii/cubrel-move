@@ -30,20 +30,14 @@ const submit = () => {
   <Head><title>Cubrel – Reset Password</title></Head>
 
   <div
-    class="login"
+    class="reset"
     :style="[
       { '--primary-color': appSettings.primary_color },
       { '--danger-color': appSettings.danger_color },
     ]"
   >
-    <div class="login__mural">
-      <div class="login__mural__logo">
-        <img src="img/logo/default-monochrome-white.svg" />
-      </div>
-    </div>
-
-    <div class="login__card">
-      <div class="login__card__header">
+    <div class="reset__card">
+      <div class="reset__card__header">
         {{ $t("globals.login.new_password") }}
       </div>
 
@@ -51,22 +45,14 @@ const submit = () => {
         {{ form.errors.email }}
       </div>
 
-      <form @submit.prevent="submit" novalidate class="login__card__form">
+      <form @submit.prevent="submit" novalidate class="reset__card__form">
         <div class="form-group">
           <label for="email" class="form-label">
             {{ $t("globals.login.email") }}
           </label>
-          <div class="input-wrapper">
+          <div class="input-wrapper input-wrapper--email">
             <i class="fa-solid fa-envelope input-icon"></i>
-            <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              class="form-input"
-              :class="{ 'is-invalid': form.errors.email }"
-              autocomplete="email"
-              :disabled="form.processing"
-            />
+            <span>{{ form.email }}</span>
           </div>
         </div>
 

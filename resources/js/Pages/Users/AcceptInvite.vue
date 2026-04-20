@@ -1,21 +1,21 @@
 <script setup>
-import { useForm } from "@inertiajs/vue3";
-import { usePage } from "@inertiajs/vue3";
+import { usePage, Head, useForm } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 const props = defineProps({
   email: String,
   token: String,
+  notValid: Boolean,
 });
 
 const page = usePage();
 const appSettings = page.props.appSettings;
 
 const form = useForm({
-  name: "joe",
-  username: "joe",
-  password: "12345678",
-  password_confirmation: "12345678",
+  name: "",
+  username: "",
+  password: "",
+  password_confirmation: "",
 });
 
 const submit = () => {
@@ -26,11 +26,20 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="accept-invite">
-    <div class="accept-invite__backdrop"></div>
-
+  <Head>
+    <title>Cubrel - {{ $t("globals.login.create_account") }}</title>
+  </Head>
+  <div
+    class="accept-invite"
+    :style="{ '--primary-color': appSettings.primary_color }"
+  >
     <div class="accept-invite__container">
-      <div class="accept-card">
+      <div class="accept-card" v-if="notValid">
+        <div class="accept-card__header">
+          {{ $t("globals.login.expired_invite") }}
+        </div>
+      </div>
+      <div class="accept-card" v-else>
         <div class="accept-card__header">
           <div class="accept-card__logo">
             <svg
@@ -47,9 +56,11 @@ const submit = () => {
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </div>
-          <h1 class="accept-card__title">Create your account</h1>
+          <h1 class="accept-card__title">
+            {{ $t("globals.login.create_account") }}
+          </h1>
           <p class="accept-card__subtitle">
-            You've been invited to join. Complete your profile to get started.
+            {{ $t("globals.login.invited_to_join") }}
           </p>
           <div class="accept-card__email-badge">
             <i class="fa-solid fa-envelope"></i>
@@ -59,12 +70,14 @@ const submit = () => {
 
         <div class="accept-card__body">
           <div class="field" :class="{ 'field--error': form.errors.name }">
-            <label class="field__label">Full Name</label>
+            <label class="field__label">{{
+              $t("globals.login.full_name")
+            }}</label>
             <input
               v-model="form.name"
               type="text"
               class="field__input"
-              placeholder="John Doe"
+              :placeholder="$t('globals.login.full_name_placeholder')"
               autocomplete="name"
             />
             <span v-if="form.errors.name" class="field__error">
@@ -73,12 +86,14 @@ const submit = () => {
           </div>
 
           <div class="field" :class="{ 'field--error': form.errors.username }">
-            <label class="field__label">Username</label>
+            <label class="field__label">{{
+              $t("globals.login.username")
+            }}</label>
             <input
               v-model="form.username"
               type="text"
               class="field__input"
-              placeholder="John_Doe_123"
+              :placeholder="$t('globals.login.username_placeholder')"
               autocomplete="username"
             />
             <span v-if="form.errors.username" class="field__error">
@@ -87,12 +102,14 @@ const submit = () => {
           </div>
 
           <div class="field" :class="{ 'field--error': form.errors.password }">
-            <label class="field__label">Password</label>
+            <label class="field__label">{{
+              $t("globals.login.password")
+            }}</label>
             <input
               v-model="form.password"
               type="password"
               class="field__input"
-              placeholder="Min. 8 characters"
+              :placeholder="$t('globals.login.password_placeholder')"
               autocomplete="new-password"
             />
             <span v-if="form.errors.password" class="field__error">
@@ -104,12 +121,14 @@ const submit = () => {
             class="field"
             :class="{ 'field--error': form.errors.password_confirmation }"
           >
-            <label class="field__label">Confirm Password</label>
+            <label class="field__label">{{
+              $t("globals.login.confirm_password")
+            }}</label>
             <input
               v-model="form.password_confirmation"
               type="password"
               class="field__input"
-              placeholder="Repeat your password"
+              :placeholder="$t('globals.login.confirm_password_placeholder')"
               autocomplete="new-password"
             />
             <span v-if="form.errors.password_confirmation" class="field__error">
@@ -123,10 +142,12 @@ const submit = () => {
             class="accept-card__submit"
             :class="{ 'accept-card__submit--loading': form.processing }"
           >
-            <span v-if="!form.processing">Create Account</span>
+            <span v-if="!form.processing">{{
+              $t("globals.login.create_account_button")
+            }}</span>
             <span v-else class="submit-spinner">
               <i class="fa-solid fa-circle-notch fa-spin"></i>
-              Setting up your account...
+              {{ $t("globals.login.setting_up_account") }}
             </span>
           </button>
         </div>
@@ -137,8 +158,8 @@ const submit = () => {
 
 <style lang="scss" scoped>
 .accept-invite {
-  --primary-color: #3b8bff;
-  --primary-dark: color-mix(in srgb, #3b8bff 80%, black);
+  --primary-color: var(--primary-color);
+  --primary-dark: color-mix(in srgb, var(--primary-color) 80%, black);
   --text-main: #111827;
   --text-muted: #6b7280;
   --border-color: #e5e7eb;
@@ -151,17 +172,7 @@ const submit = () => {
   align-items: center;
   justify-content: center;
   font-family: "Fira Sans", "Heebo", sans-serif;
-
-  &__backdrop {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 20% 50%,
-      rgba(59, 139, 255, 0.1),
-      rgba(15, 23, 42, 0.6)
-    );
-    backdrop-filter: blur(8px);
-  }
+  background-color: whitesmoke;
 
   &__container {
     position: relative;
@@ -298,8 +309,6 @@ const submit = () => {
 
     &:focus {
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px
-        color-mix(in srgb, var(--primary-color) 15%, transparent);
     }
 
     &::placeholder {

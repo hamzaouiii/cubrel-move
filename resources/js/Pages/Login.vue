@@ -2,6 +2,10 @@
 import { ref } from "vue";
 import { useForm, usePage, Head } from "@inertiajs/vue3";
 import Selectbox from "./Components/FiledTypes/Selectbox.vue";
+import Alerts from "./Components/Globals/Alerts.vue";
+import { useAlerts } from "@/Composables/useAlerts";
+
+const { alerts, success, error, info } = useAlerts();
 
 const showPassword = ref(false);
 const pageProps = usePage().props;
@@ -11,7 +15,7 @@ const forgotSuccess = ref(false);
 
 const form = useForm({
   username: "",
-  password: "password123",
+  password: "",
   remember: false,
 });
 
@@ -20,11 +24,25 @@ const forgotForm = useForm({
 });
 
 const submit = () => {
-  form.post("/login");
+  form.post("/login", {
+    onError: (e) => {
+      console.log(e);
+      error(e.general);
+    },
+  });
 };
 
 const submitForgot = () => {
-  forgotForm.post("/forgot-password");
+  forgotForm.post("/forgot-password", {
+    onSuccess: () => {
+      forgotSuccess.value = true;
+      forgotForm.reset("email");
+    },
+    onError: (e) => {
+      console.log(e);
+      error(e.email);
+    },
+  });
 };
 
 const openForgot = () => {
@@ -36,12 +54,17 @@ const openLogin = () => {
 const isDirty = () => {
   return form.isDirty && form.username;
 };
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isForgotFormDirty = () => {
+  return forgotForm.isDirty && isValidEmail(forgotForm.email);
+};
 </script>
 
 <template>
   <Head>
     <title>Cubrel</title>
   </Head>
+  <Alerts :alerts="alerts"></Alerts>
   <div
     class="login"
     :style="[
@@ -59,15 +82,6 @@ const isDirty = () => {
         {{ $t("globals.login.welcome_back") }}
       </div>
 
-      <div
-        v-if="
-          form.errors.general || (form.errors.username && !form.errors.password)
-        "
-        class="global-error"
-      >
-        {{ form.errors.general || form.errors.username }}
-      </div>
-
       <form @submit.prevent="submit" novalidate class="login__card__form">
         <div class="form-group">
           <label for="username" class="form-label">
@@ -83,7 +97,6 @@ const isDirty = () => {
               type="text"
               class="form-input"
               :class="{ 'is-invalid': form.errors.username }"
-              :placeholder="$t('globals.login.username_placeholder')"
               autocomplete="username"
               :disabled="form.processing"
             />
@@ -111,7 +124,6 @@ const isDirty = () => {
               :type="showPassword ? 'text' : 'password'"
               class="form-input"
               :class="{ 'is-invalid': form.errors.password }"
-              :placeholder="$t('globals.login.password_placeholder')"
               autocomplete="current-password"
               :disabled="form.processing"
             />
@@ -172,54 +184,64 @@ const isDirty = () => {
     </div>
 
     <div class="login__card" v-else-if="!showLogin">
-  <div class="login__card__header">
-    {{ $t("globals.login.reset_password") }}
-  </div>
+      <div class="login__card__header" v-if="!forgotSuccess">
+        {{ $t("globals.login.reset_password") }}
+      </div>
 
-  <div v-if="forgotSuccess" class="global-success">
-    {{ $t("globals.login.reset_email_sent") }}
-  </div>
-
-  <template v-else>
-    <div v-if="forgotForm.errors.general || forgotForm.errors.email" class="global-error">
-      {{ forgotForm.errors.general || forgotForm.errors.email }}
-    </div>
-
-    <form @submit.prevent="submitForgot" novalidate class="login__card__form">
-   <div class="form-group">
-          <div class="input-wrapper">
-            <i class="fa-solid fa-envelope input-icon"></i>
-
-            <input
-              id="email"
-              v-model="forgotForm.email"
-              type="text"
-              class="form-input"
-              :class="{ 'is-invalid': forgotForm.errors.email }"
-              :placeholder="$t('globals.login.email_placeholder')"
-              autocomplete="username"
-              :disabled="forgotForm.processing"
-            />
-          </div>
-        </div>
-        <button
-          type="submit"
-          class="submit-btn"
-          :disabled="!forgotForm.isDirty || forgotForm.processing"
-        >
-          <span v-if="!forgotForm.processing">
-            {{ $t("globals.login.reset_btn") }}
-          </span>
-
-          <div v-else class="spinner"></div>
-        </button>
+      <div v-if="forgotSuccess" class="global-success">
+        {{ $t("globals.login.reset_email_sent") }}
         <div class="login__card__links">
-          <span class="login__card__links__link" @click="openLogin">{{
-            $t("globals.login.back_to_login")
-          }}</span>
+          <span class="login__card__links__link" @click="openLogin">
+            <i class="fa-solid fa-chevron-left"></i>
+            {{ $t("globals.login.back_to_login") }}</span
+          >
         </div>
-    </form>
-  </template>
-</div>
+      </div>
+
+      <template v-else>
+        <form
+          @submit.prevent="submitForgot"
+          novalidate
+          class="login__card__form"
+        >
+          <div class="form-group">
+            <label for="email" class="form-label">
+              {{ $t("globals.login.email") }}
+            </label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+
+              <input
+                id="email"
+                v-model="forgotForm.email"
+                type="text"
+                class="form-input"
+                autocomplete="username"
+                :disabled="forgotForm.processing"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="submit-btn"
+            :disabled="!isForgotFormDirty() || forgotForm.processing"
+          >
+            <span v-if="!forgotForm.processing">
+              {{ $t("globals.login.reset_btn") }}
+            </span>
+
+            <div v-else class="spinner"></div>
+          </button>
+          <div class="login__card__links">
+            <span class="login__card__links__link" @click="openLogin">
+              <i class="fa-solid fa-chevron-left"></i>
+
+              {{ $t("globals.login.back_to_login") }}</span
+            >
+          </div>
+        </form>
+      </template>
+    </div>
   </div>
 </template>

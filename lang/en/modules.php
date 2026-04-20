@@ -65,8 +65,8 @@ return array(
     'load_more' => 'Load More',
     'view_all' => 'View All',
     'loading' => 'Loading...',
-    'user_create' => 'Create a new user',
-    'user_invite' => 'Invite User'
+    'user_create' => 'Create a New User',
+    'user_invite' => 'Invite User',
   ),
   'linking' => array(
     'link_existing_records'  => 'Link Existing Records',
