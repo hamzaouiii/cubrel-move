@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use App\Http\Controllers\Controller;
+use App\Rules\NoPendingInvite;
 
 class InviteController extends Controller
 {
@@ -18,10 +19,18 @@ class InviteController extends Controller
 
   public function store(Request $request): JsonResponse
   {
-    $data = $request->validate([
-      'email' => 'required|email|unique:users,email',
-      'role'  => 'sometimes|in:admin,user',
-    ]);
+    $data = $request->validate(
+      [
+        'email' => ['required', 'email', 'unique:users,email', new NoPendingInvite()],
+        'is_Admin'  => 'sometimes|boolean',
+      ],
+      [
+        'email.required' => __('modules.users.modal.email_required'),
+        'email.email' => __('modules.users.modal.email_invalid'),
+        'email.unique' => __('modules.users.modal.email_exists'),
+        'is_Admin.boolean' => __('modules.users.modal.is_admin_bool'),
+      ]
+    );
 
     $invite = $this->invites->create($data['email'], $request->user()->id, $data['role'] ?? 'user');
 

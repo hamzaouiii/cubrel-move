@@ -26,7 +26,6 @@ const forgotForm = useForm({
 const submit = () => {
   form.post("/login", {
     onError: (e) => {
-      console.log(e);
       error(e.general);
     },
   });
@@ -39,7 +38,6 @@ const submitForgot = () => {
       forgotForm.reset("email");
     },
     onError: (e) => {
-      console.log(e);
       error(e.email);
     },
   });
