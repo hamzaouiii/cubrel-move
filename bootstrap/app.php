@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
       \App\Http\Middleware\HandleInertiaRequests::class,
       \App\Http\Middleware\SetLocaleFromSettings::class,
       \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-      //  LocalAutoLogin::class,
+      LocalAutoLogin::class,
     ]);
     $middleware->alias([
       'admin' => \App\Http\Middleware\AdminMiddleware::class,

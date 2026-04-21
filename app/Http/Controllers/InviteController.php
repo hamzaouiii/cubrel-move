@@ -12,6 +12,8 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use App\Http\Controllers\Controller;
 use App\Rules\NoPendingInvite;
+use App\Models\Module;
+use App\Handlers\Modules\UserInviteModuleHandler;
 
 class InviteController extends Controller
 {
@@ -90,5 +92,31 @@ class InviteController extends Controller
     }
 
     return response()->json(['invites' => $results]);
+  }
+
+  public function list(Request $request): InertiaResponse
+  {
+
+    $moduleModel = Module::query()
+      ->where('slug', 'user-invites')
+      ->where('is_active', true)
+      ->firstOrFail();
+
+    $handler = new UserInviteModuleHandler();
+    $props = $handler->getListData($moduleModel);
+
+    $listLayout = config("module_layouts.userinvites.list");
+    $recorddropdownLists = $moduleModel->dropdownLists;
+    $fields = $moduleModel->allFields();
+
+    return Inertia::render('Invites/List', array_merge([
+      'module'     => $moduleModel,
+      'title'      => $moduleModel->name,
+      'listLayout' => $listLayout,
+      'fields'     => $fields,
+      'filters'    => request()->only(['search', 'perPage']),
+      'dropdownLists' => $recorddropdownLists,
+
+    ], $props));
   }
 }

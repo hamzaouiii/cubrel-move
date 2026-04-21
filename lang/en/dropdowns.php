@@ -142,5 +142,10 @@ return [
     'principal' => 'Principal',
     'pastor'   => 'Pastor',
     'elder'    => 'Elder',
+  ],
+  'user-invites_status_list' => [
+    'expired' => 'Expired',
+    'accpeted' => 'Accpeted',
+    'pending' => 'Pending',
   ]
 ];

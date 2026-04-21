@@ -289,6 +289,24 @@ return [
     'table_name' => 'users',
     'is_custom' => 0,
   ],
+  [
+    'name' => 'User Invites',
+    'slug' => 'user-invites',
+    'label' => 'modules.userinvites.label',
+    'single_label' => 'modules.userinvites.single_label',
+    'icon' => 'fa-paper-plane',
+    'color' => '#032b3f',
+    'path' => '/users/invites',
+    'sort_order' => 998,
+    'category' => 'system',
+    'is_active' => true,
+    'show_in_sidebar' => 0,
+    'handler_class' => 'App\\Handlers\\Modules\\UserInviteModuleHandler',
+    'description' => 'Users Invites',
+    'model_class' => 'App\\Models\\UserInvite',
+    'table_name' => 'user_invites',
+    'is_custom' => 0,
+  ],
 
 
 ];

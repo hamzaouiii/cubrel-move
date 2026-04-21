@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModule;
 
-// UserInvite.php
-class UserInvite extends Model
+class UserInvite extends BaseModule
 {
+  protected $table = 'user_invites';
+
   protected $fillable = [
     'email',
     'invited_by',

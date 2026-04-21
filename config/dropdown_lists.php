@@ -479,4 +479,18 @@ return array(
     ['label' => 'dropdowns.users_title_list.pastor', 'value' => 'pastor'],
     ['label' => 'dropdowns.users_title_list.elder', 'value' => 'elder'],
   ),
+  'user-invites_status_list' => [
+    [
+      'label' => 'dropdowns.user-invites_status_list.pending',
+      'value' => 'pending',
+    ],
+    [
+      'label' => 'dropdowns.user-invites_status_list.accpeted',
+      'value' => 'accpeted',
+    ],
+    [
+      'label' => 'dropdowns.user-invites_status_list.expired',
+      'value' => 'expired',
+    ],
+  ]
 );

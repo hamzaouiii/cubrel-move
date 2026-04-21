@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     // user routes
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::get('/users/invites', [InviteController::class, 'list'])->name('invites.list');
     Route::get('/users/{user_id}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user_id}', [UserController::class, 'update'])->name('users.update');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');

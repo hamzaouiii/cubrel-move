@@ -100,6 +100,7 @@ return [
     'modules'             => 'Modules',
     'modulebuilder'       => 'Module Builder',
     'list_users'          => 'List Users',
+    'manage_invites'          => 'Manage User Invites',
     'system_settings'     => 'System Settings',
     'languages'           => 'Languages',
     'layouts'             => 'Layouts',

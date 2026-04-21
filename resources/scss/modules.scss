@@ -243,19 +243,20 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end; // Aligns search bar with title baseline
-    padding: 20px; // Matching table margins
+    align-items: center;
+    padding: 20px;
     margin: 0;
 
     &__details {
       display: flex;
-      flex-direction: column; // Stacked looks cleaner than baseline for large titles
-
+      flex-direction: column;
+      width: 100%;
       &__title {
-        font-size: 1.75rem; // Scaled down for professionalism
+        font-size: 1.75rem;
         font-weight: 800;
         color: #1e293b;
         line-height: 1;
+        font-family: "Fira Sans", sans-serif;
       }
 
       &__meta {

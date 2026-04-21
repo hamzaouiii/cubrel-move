@@ -30,7 +30,7 @@ return new class extends Migration
       $table->boolean('filterable')->default(false);
       $table->boolean('sortable')->default(false);
 
-      // $table->string('database_type')->nullable();
+      $table->string('related_module')->nullable();
       $table->string('default_value')->nullable();
       $table->json('options')->nullable();
       $table->integer('min_length')->nullable();

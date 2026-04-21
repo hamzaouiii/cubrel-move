@@ -473,4 +473,30 @@ return [
       'type' => 'select',
     ],
   ],
+  'user-invites' => [
+    'invited_by' => [
+      'name' => 'invited_by',
+      'type' => 'record',
+      'related_module' => 'users',
+    ],
+    'is_admin' =>
+    [
+      'name' => 'is_admin',
+      'type' => 'checkbox'
+    ],
+    'email' =>
+    [
+      'name' => 'email',
+      'type' => 'email',
+    ],
+    'status' =>
+    [
+      'name' => 'status',
+      'type' => 'select',
+    ],
+    'expires_at' =>     [
+      'name' => 'expires_at',
+      'type' => 'date',
+    ],
+  ]
 ];

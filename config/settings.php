@@ -111,6 +111,14 @@ return [
         'path' => '/users',
         'isActive' => 1,
         'icon' => 'fa-solid fa-users'
+      ],
+      'manage-invites' => [
+        'name' => 'Manage Invites',
+        'slug' => 'manage-invites',
+        'label' => 'settings.items.manage_invites',
+        'path' => '/users/invites',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-paper-plane'
       ]
     ]
   ],

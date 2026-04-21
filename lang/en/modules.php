@@ -405,5 +405,17 @@ return array(
       'type'  => 'Type',
     ],
   ],
+  'userinvites' => [
+    'label' => ' User Invites',
+    'single_label' => ' User Invite',
+    'fields' => [
+      'email'   => 'Email',
+      'is_admin' => 'Admin',
+      'status' => 'Status',
+      'expires_at' => 'Expites At',
+      'invited_by' => 'Invited By',
+    ]
+
+  ]
 
 );

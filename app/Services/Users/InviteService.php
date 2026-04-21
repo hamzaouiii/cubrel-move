@@ -44,7 +44,12 @@ class InviteService
       'is_admin'     => $invite->is_admin,
     ]);
 
-    $invite->update(['accepted_at' => now()]);
+    $invite->update(
+      [
+        'accepted_at' => now(),
+        'status' => 'accepted'
+      ]
+    );
 
     return $user;
   }

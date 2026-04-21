@@ -12,8 +12,9 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('user_invites', function (Blueprint $table) {
-      $table->id();
+      $table->uuid('id');
       $table->string('email')->unique();
+      $table->string('status')->default("pending");
       $table->string('token', 64)->unique();
       $table->uuid('invited_by');
       $table->foreign('invited_by')->references('id')->on('users');
