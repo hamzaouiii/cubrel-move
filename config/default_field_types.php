@@ -14,7 +14,9 @@ return [
   'percentage',
   'url',
   'integer',
-  'decimal'
+  'decimal',
+  'record',
+  'status'
 ];
 
 // for reference

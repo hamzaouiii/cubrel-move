@@ -175,7 +175,9 @@ class Module extends Model
         'searchable',
         'label',
         'required',
-        'is_draft'
+        'is_draft',
+        'related_module'
+
       ])
       ->with('dropdown_list');
   }
@@ -201,7 +203,9 @@ class Module extends Model
         'searchable',
         'label',
         'required',
-        'is_draft'
+        'is_draft',
+        'related_module'
+
       ])
       ->with('dropdown_list')
       ->get();

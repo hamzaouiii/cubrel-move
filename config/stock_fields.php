@@ -125,7 +125,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'issue_date' =>
     [
@@ -173,7 +173,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'valid_until' =>
     [
@@ -216,12 +216,12 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'priority' =>
     [
       'name' => 'priority',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'opened_at' =>
     [
@@ -259,7 +259,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
   ],
   'inquiries' =>
@@ -282,7 +282,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'ip' =>
     [
@@ -306,11 +306,13 @@ return [
     [
       'name' => 'currency',
       'type' => 'select',
+      'required' => true,
+
     ],
     'sales_stage' =>
     [
       'name' => 'sales_stage',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'probability' =>
     [
@@ -377,7 +379,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'order_date' =>
     [
@@ -420,7 +422,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'is_admin' =>
     [
@@ -492,7 +494,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'expires_at' =>     [
       'name' => 'expires_at',

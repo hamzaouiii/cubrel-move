@@ -30,6 +30,10 @@ return [
     'phone' => 'Phone',
     'percentage' => 'Percentage',
     'currency' => 'Currency',
+    'integer' => 'Integer',
+    'decimal' => 'Decimal',
+    'record' => 'Record',
+    'status' => 'Status',
   ],
   'metadata' => [
     'name' => 'System Name',

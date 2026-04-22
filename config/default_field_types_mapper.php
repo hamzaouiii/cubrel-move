@@ -15,4 +15,5 @@ return [
   'checkbox' => 'boolean',
   'url' => 'string',
   'percentage' => 'decimal',
+  'record'  => 'string',
 ];

@@ -115,6 +115,16 @@ const decimalValidateWithPrecision = (
   return true;
 };
 
+const relatedValidate = (value) => {
+  if (!value) return true;
+
+  // Validate that the value is a valid ID (positive integer)
+  const id = parseInt(value);
+  if (isNaN(id)) return false;
+  if (id <= 0) return false;
+
+  return true;
+};
 export function fieldValidation() {
   return {
     emailValidate,
@@ -125,5 +135,6 @@ export function fieldValidation() {
     percentageValidate,
     integerValidate,
     decimalValidate,
+    relatedValidate,
   };
 }

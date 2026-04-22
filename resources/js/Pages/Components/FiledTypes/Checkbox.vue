@@ -86,7 +86,7 @@ const value = computed({
       '--module-color': moduleColor ? moduleColor : appSettings.primary_color,
     }"
   >
-    <i class="fa-solid" :class="value ? 'fa-check' : 'fa-xmark'"></i>
+    <i class="fa-solid" :class="value ? 'fa-check-circle ' : 'fa-xmark'"></i>
     <span>
       {{ value ? $t("fields.checkbox_yes") : $t("fields.checkbox_no") }}
     </span>

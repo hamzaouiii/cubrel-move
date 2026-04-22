@@ -145,7 +145,7 @@ return [
   ],
   'user-invites_status_list' => [
     'expired' => 'Expired',
-    'accpeted' => 'Accpeted',
+    'accepted' => 'Accepted',
     'pending' => 'Pending',
   ]
 ];
