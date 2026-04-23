@@ -43,7 +43,9 @@ const dangerColor = appSettings.danger_color;
       ]"
     >
       <div class="confirm-overlay__dialog">
-        <div class="confirm-overlay__title">{{ confirmState.title }}</div>
+        <div class="confirm-overlay__title">
+          {{ confirmState.title ?? $t("globals.confirm.title") }}
+        </div>
         <div class="confirm-overlay__message">
           <template v-if="confirmState.highlight !== null">
             {{ confirmState.message.split(confirmState.highlight)[0] }}
@@ -63,13 +65,13 @@ const dangerColor = appSettings.danger_color;
           </template>
 
           <template v-else>
-            {{ confirmState.message }}
+            {{ confirmState.message ?? $t("globals.confirm.message") }}
           </template>
         </div>
 
         <div class="confirm-overlay__actions">
           <button class="confirm-overlay__actions--cancel" @click="cancel">
-            {{ confirmState.cancelText }}
+            {{ confirmState.cancelText ?? $t("globals.confirm.cancel_text") }}
           </button>
 
           <button
@@ -80,7 +82,7 @@ const dangerColor = appSettings.danger_color;
             ]"
             @click="accept"
           >
-            {{ confirmState.confirmText }}
+            {{ confirmState.confirmText ?? $t("globals.confirm.confirm_text") }}
           </button>
         </div>
       </div>

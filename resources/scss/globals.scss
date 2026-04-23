@@ -46,7 +46,7 @@
   animation: modalFadeIn 0.25s ease-out;
 
   &__dialog {
-    width: min(440px, 100%); // Slightly narrower for a more "alert" feel
+    width: min(640px, 100%);
     background: white;
     border-radius: 16px; // Match your modern rounded UI
     padding: 24px;

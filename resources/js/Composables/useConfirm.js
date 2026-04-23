@@ -1,4 +1,4 @@
-import { reactive, readonly } from "vue";
+import { reactive, readonly, getCurrentInstance } from "vue";
 
 const state = reactive({
   isOpen: false,
@@ -13,10 +13,10 @@ const state = reactive({
 
 export function useConfirm() {
   const confirm = (options = {}) => {
-    state.title = options.title ?? "Please confirm";
-    state.message = options.message ?? "Are you sure?";
-    state.confirmText = options.confirmText ?? "Confirm";
-    state.cancelText = options.cancelText ?? "Cancel";
+    state.title = options.title;
+    state.message = options.message;
+    state.confirmText = options.confirmText;
+    state.cancelText = options.cancelText;
     state.danger = options.danger ?? false;
     state.highlight = options.highlight ?? null;
     state.isOpen = true;

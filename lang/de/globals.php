@@ -44,8 +44,10 @@ return [
     'save_password' => 'Neues Passwort speichern',
     'create_account' => 'Konto erstellen',
     'invited_to_join' => 'Sie wurden eingeladen, beizutreten. Vervollständigen Sie Ihr Profil, um zu beginnen.',
-    'full_name' => 'Vollständiger Name',
-    'full_name_placeholder' => 'Max Mustermann',
+    'first_name' => 'Vorname',
+    'last_name' => 'Nachname',
+    'first_name_placeholder' => 'Dein Vorname',
+    'last_name_placeholder' => 'Dein Nachname',
     'username' => 'Benutzername',
     'username_placeholder' => 'Max_Mustermann_123',
     'password' => 'Passwort',
@@ -57,7 +59,11 @@ return [
     'expired_invite' => 'Diese Einladung wurde bereits akzeptiert oder ist abgelaufen. Bitte kontaktieren Sie Ihren Administrator.',
     'invalid_credentials' => 'Benutzername oder Passwort falsch.',
     'invalid_email'    => "E-Mail-Adresse ist falsch."
-
-
+  ],
+  'confirm' => [
+    'confirm_text' => 'Bestätigen',
+    'cancel_text' => 'Abbrechen',
+    'message' => 'Sind Sie sicher?',
+    'title' => 'Bitte bestätigen',
   ],
 ];

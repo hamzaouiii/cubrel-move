@@ -44,10 +44,12 @@ return [
     "save_password" => "Save New Password",
     'create_account' => 'Create your account',
     'invited_to_join' => 'You\'ve been invited to join. Complete your profile to get started.',
-    'full_name' => 'Full Name',
-    'full_name_placeholder' => 'Your Name...',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'first_name_placeholder' => 'Your First Name',
+    'last_name_placeholder' => 'Your Last Name',
     'username' => 'Username',
-    'username_placeholder' => 'username...',
+    'username_placeholder' => 'username',
     'password' => 'Password',
     'password_placeholder' => 'Min. 8 characters',
     'confirm_password' => 'Confirm Password',
@@ -58,4 +60,10 @@ return [
     'invalid_credentials' => "Invalid credentials.",
     'invalid_email'    => "The email address is invalid."
   ],
+  'confirm' => [
+    'confirm_text' => 'Confirm',
+    'cancel_text' => 'Cancel',
+    'message' => 'Are you sure?',
+    'title' => 'Please confirm',
+  ]
 ];
