@@ -214,7 +214,8 @@ const handleUpdateList = () => {
 <template>
   <Head>
     <title>
-      {{ $t("settings.create_new_module") }} - {{ $t("settings.label") }}
+      {{ $t("settings.create_new_module") }} - {{ $t("settings.label") }} -
+      Cubrel
     </title>
   </Head>
   <div

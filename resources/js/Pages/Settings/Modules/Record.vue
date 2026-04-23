@@ -127,7 +127,9 @@ useUnsavedChangesGuard({
 
 <template>
   <Head>
-    <title>{{ settingModule.label }} - {{ $t("settings.label") }}</title>
+    <title>
+      {{ settingModule.label }} - {{ $t("settings.label") }} - Cubrel
+    </title>
   </Head>
 
   <div

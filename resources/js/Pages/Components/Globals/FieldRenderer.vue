@@ -28,6 +28,14 @@ const props = defineProps({
   highlight: String,
   searchable: Boolean,
   sortable: Boolean,
+  related_label: {
+    type: String,
+    default: null,
+  },
+});
+
+const related_label = computed(() => {
+  return props.related_label ?? null;
 });
 
 const component = computed(() => {
@@ -39,10 +47,15 @@ const component = computed(() => {
 const dropdown_list = computed(() => {
   return props?.related_field?.dropdown_list || null;
 });
+
+const related_module = computed(() => {
+  return props.field?.related_module || null;
+});
 const componentProps = computed(() => ({
   ...props.field,
   ...(dropdown_list.value && { dropdown_list: dropdown_list.value }),
-
+  ...(related_module.value && { related_module: related_module.value }),
+  ...(related_label.value && { related_label: related_label.value }),
   modelValue: props.modelValue,
   mode: props.mode,
   moduleColor: props.moduleColor,
@@ -50,6 +63,7 @@ const componentProps = computed(() => ({
   readOnly: props.readOnly,
   highlight: props?.highlight || null,
   errorMsg: props?.errorMsg || null,
+  searchable: props?.searchable || null,
 }));
 </script>
 

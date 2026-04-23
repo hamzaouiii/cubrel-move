@@ -126,7 +126,7 @@ useUnsavedChangesGuard({
 <template>
   <Head>
     <title>
-      {{ $t("settings.items.dropdowns") }} - {{ $t("settings.label") }}
+      {{ $t("settings.items.dropdowns") }} - {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>
   <div

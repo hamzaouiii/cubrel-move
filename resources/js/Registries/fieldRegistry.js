@@ -9,6 +9,8 @@ import UrlField from "@/Pages/Components/FiledTypes/UrlField.vue";
 import PercentageField from "@/Pages/Components/FiledTypes/PercentageField.vue";
 import IntegerField from "@/Pages/Components/FiledTypes/IntegerField.vue";
 import DecimalField from "@/Pages/Components/FiledTypes/DecimalField.vue";
+import RelatedRecord from "@/Pages/Components/FiledTypes/RelatedRecord.vue";
+import StatusField from "@/Pages/Components/FiledTypes/StatusField.vue";
 
 import { fieldValidation } from "@/utils/fieldValidation";
 const {
@@ -19,6 +21,7 @@ const {
   percentageValidate,
   decimalValidate,
   integerValidate,
+  relatedValidate,
 } = fieldValidation();
 
 export const fieldRegistry = {
@@ -43,7 +46,7 @@ export const fieldRegistry = {
     validate: defaultValidate,
   },
   dropdown: {
-    component: Select,
+    component: StatusField,
     validate: defaultValidate,
   },
   date: {
@@ -77,5 +80,13 @@ export const fieldRegistry = {
   decimal: {
     component: DecimalField,
     validate: decimalValidate,
+  },
+  record: {
+    component: RelatedRecord,
+    validate: relatedValidate,
+  },
+  status: {
+    component: StatusField,
+    validate: defaultValidate,
   },
 };

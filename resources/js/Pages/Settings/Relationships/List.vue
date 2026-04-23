@@ -100,7 +100,7 @@ const deleteRelationship = async (rel) => {
   <Head>
     <title>
       {{ module.label }} - {{ $t("relationships.label") }} -
-      {{ $t("settings.label") }}
+      {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>
   <div

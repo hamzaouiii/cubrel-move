@@ -7,6 +7,7 @@ use App\Models\Field;
 use App\Models\Module;
 use App\Models\DropDownList;
 use Illuminate\Support\Str;
+use App\Scopes\AdminOnlyModuleScope;
 
 class StockFieldsSeeder extends Seeder
 {
@@ -31,15 +32,14 @@ class StockFieldsSeeder extends Seeder
         ])
       );
     }
-    foreach (Module::all() as $module) {
-
+    foreach (Module::withoutGlobalScope(AdminOnlyModuleScope::class)->get() as $module) {
       $definitions = config("stock_fields.{$module->slug}", []);
 
       foreach ($definitions as $fieldKey => $definition) {
 
         $dropdownListId = null;
 
-        if (($definition['type'] ?? null) === 'select') {
+        if (($definition['type'] ?? null) === 'select' || ($definition['type'] ?? null) === 'status') {
 
           // Convention: module_field_list unless it is currency which is global
           // maybe not a good idea ??

@@ -276,6 +276,9 @@ const highlightMatch = (text) => {
       </transition>
     </div>
   </div>
+  <span v-else-if="mode === 'profile-header'">
+    {{ $t(selectedOption?.label) }}
+  </span>
   <div v-else-if="mode === 'detail'">
     <span
       :class="[

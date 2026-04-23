@@ -63,7 +63,7 @@ const clearSearch = () => {
 
 <template>
   <Head>
-    <title>{{ $t("settings.label") }}</title>
+    <title>{{ $t("settings.label") }} - Cubrel</title>
   </Head>
   <div
     class="settings"

@@ -108,9 +108,17 @@ return [
         'name' => 'List Users',
         'slug' => 'list-users',
         'label' => 'settings.items.list_users',
-        'path' => '/settings/users',
-        'isActive' => 0,
+        'path' => '/users',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-users'
+      ],
+      'manage-invites' => [
+        'name' => 'Manage Invites',
+        'slug' => 'manage-invites',
+        'label' => 'settings.items.manage_invites',
+        'path' => '/users/invites',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-paper-plane'
       ]
     ]
   ],

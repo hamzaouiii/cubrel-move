@@ -234,8 +234,7 @@ const moduleColor = computed(() =>
   <Head>
     <title>
       {{ $t("fields.create_new_field") }} - {{ module.label }} -
-      {{ $t("fields.label") }} -
-      {{ $t("settings.label") }}
+      {{ $t("fields.label") }} - {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>
 

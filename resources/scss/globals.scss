@@ -46,9 +46,9 @@
   animation: modalFadeIn 0.25s ease-out;
 
   &__dialog {
-    width: min(440px, 100%); // Slightly narrower for a more "alert" feel
+    width: min(640px, 100%);
     background: white;
-    border-radius: 16px; // Match your modern rounded UI
+    border-radius: 16px;
     padding: 24px;
     box-shadow:
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
@@ -375,9 +375,10 @@
   &__logo {
     flex-shrink: 1;
     padding: 0 20px;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
     img {
-      height: 100px;
       width: 120px;
     }
   }

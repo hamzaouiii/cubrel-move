@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useForm, Link } from "@inertiajs/vue3";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { useForm, Link, usePage } from "@inertiajs/vue3";
 
 const form = useForm({});
 const logout = () => {
@@ -30,11 +30,13 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+const page = usePage();
+const user = page.props?.auth?.user || {};
 </script>
 <template>
   <div class="topbar">
     <Link href="/" class="topbar__logo">
-      <!-- <img src="/img/logo/logo.svg" alt="logo" width="240" height="180" /> -->
+      <img src="/img/logo/default-monochrome.svg" alt="logo" width="240" />
     </Link>
     <div class="topbar__actions">
       <transition name="slide-search">
@@ -44,19 +46,19 @@ onBeforeUnmount(() => {
       </transition>
 
       <div class="topbar__actions__icons">
-        <div class="topbar__actions__icons__item" @click="toggleSearch">
+        <!-- <div class="topbar__actions__icons__item" @click="toggleSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="topbar__actions__icons__item">
           <i class="fa-solid fa-bell"></i>
-        </div>
+        </div> -->
         <div
           class="topbar__actions__icons__item profile"
           ref="profileRef"
           @click="toggleProfile"
         >
           <img
-            src="\img\profile\40.jpg"
+            src="\img\profile\20.png"
             class="rounded-circle"
             width="36"
             height="36"
@@ -71,7 +73,7 @@ onBeforeUnmount(() => {
           ></i>
           <transition name="fade">
             <ul v-if="showProfile" class="profile-dropdown card-shadow">
-              <li>
+              <li v-if="user.is_admin">
                 <Link href="/settings">
                   <i class="fa-solid fa-gears"></i>
                   {{ $t("globals.topbar.settings") }}
@@ -80,7 +82,9 @@ onBeforeUnmount(() => {
               <li>
                 <Link href="/profile">
                   <i class="fa-solid fa-id-card-clip"></i>
-                  {{ $t("globals.topbar.profile") }}
+                  {{
+                    user?.username || user.name || $t("globals.topbar.profile")
+                  }}
                 </Link>
               </li>
               <li @click="logout">

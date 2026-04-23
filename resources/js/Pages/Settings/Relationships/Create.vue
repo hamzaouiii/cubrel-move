@@ -117,8 +117,7 @@ const getList = (field) => {
   <Head>
     <title>
       {{ $t("relationships.create_new") }} - {{ module.label }} -
-      {{ $t("relationships.label") }} -
-      {{ $t("settings.label") }}
+      {{ $t("relationships.label") }} - {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>
   <div

@@ -45,7 +45,8 @@ class Field extends Model
     'min_length',
     'max_length',
     'regex',
-    'dropdown_list_id'
+    'dropdown_list_id',
+    'related_module'
   ];
 
   protected $excludedFromForms = [
@@ -74,7 +75,6 @@ class Field extends Model
     'searchable'  => 'boolean',
     'filterable'  => 'boolean',
     'sortable'    => 'boolean',
-
     'options'     => 'array',
     'min_length'  => 'integer',
     'max_length'  => 'integer',

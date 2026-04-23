@@ -125,7 +125,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'issue_date' =>
     [
@@ -173,7 +173,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'valid_until' =>
     [
@@ -216,12 +216,12 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'priority' =>
     [
       'name' => 'priority',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'opened_at' =>
     [
@@ -259,7 +259,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
   ],
   'inquiries' =>
@@ -282,7 +282,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'ip' =>
     [
@@ -306,11 +306,13 @@ return [
     [
       'name' => 'currency',
       'type' => 'select',
+      'required' => true,
+
     ],
     'sales_stage' =>
     [
       'name' => 'sales_stage',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'probability' =>
     [
@@ -377,7 +379,7 @@ return [
     'status' =>
     [
       'name' => 'status',
-      'type' => 'select',
+      'type' => 'status',
     ],
     'order_date' =>
     [
@@ -390,4 +392,113 @@ return [
       'type' => 'date',
     ],
   ],
+  'users' =>
+  [
+    'username' =>
+    [
+      'name' => 'username',
+      'type' => 'text',
+    ],
+    'first_name' =>
+    [
+      'name' => 'first_name',
+      'type' => 'text',
+    ],
+    'last_name' =>
+    [
+      'name' => 'last_name',
+      'type' => 'text',
+    ],
+    'description' =>
+    [
+      'name' => 'description',
+      'type' => 'longtext',
+    ],
+    'email' =>
+    [
+      'name' => 'email',
+      'type' => 'email',
+    ],
+    'status' =>
+    [
+      'name' => 'status',
+      'type' => 'status',
+    ],
+    'is_admin' =>
+    [
+      'name' => 'is_admin',
+      'type' => 'checkbox',
+    ],
+    'title' =>
+    [
+      'name' => 'title',
+      'type' => 'select',
+    ],
+    'phone' =>
+    [
+      'name' => 'phone',
+      'type' => 'phone',
+    ],
+    'mobile' =>
+    [
+      'name' => 'mobile',
+      'type' => 'phone',
+    ],
+    'avatar' =>
+    [
+      'name' => 'avatar',
+      'type' => 'url',
+    ],
+    'locale' =>
+    [
+      'name' => 'locale',
+      'type' => 'select',
+    ],
+    'timezone' =>
+    [
+      'name' => 'timezone',
+      'type' => 'select',
+    ],
+    'date_format' =>
+    [
+      'name' => 'date_format',
+      'type' => 'select',
+    ],
+    'time_format' =>
+    [
+      'name' => 'time_format',
+      'type' => 'select',
+    ],
+    'type' =>
+    [
+      'name' => 'type',
+      'type' => 'select',
+    ],
+  ],
+  'user-invites' => [
+    'invited_by' => [
+      'name' => 'invited_by',
+      'type' => 'record',
+      'related_module' => 'users',
+    ],
+    'is_admin' =>
+    [
+      'name' => 'is_admin',
+      'type' => 'checkbox'
+    ],
+    'email' =>
+    [
+      'name' => 'email',
+      'type' => 'email',
+    ],
+    'status' =>
+    [
+      'name' => 'status',
+      'type' => 'status',
+    ],
+    'expires_at' =>     [
+      'name' => 'expires_at',
+      'type' => 'date',
+    ],
+  ]
 ];

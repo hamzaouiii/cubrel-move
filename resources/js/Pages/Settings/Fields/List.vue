@@ -55,7 +55,8 @@ const color = () =>
 <template>
   <Head>
     <title>
-      {{ module.label }} - {{ $t("fields.label") }} - {{ $t("settings.label") }}
+      {{ module.label }} - {{ $t("fields.label") }} -
+      {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>
   <div class="settings" :style="{ '--module-color': color() }">

@@ -36,9 +36,6 @@ const categoryOrder = {
 const groupedModules = computed(() => {
   const groups = {};
   modules.value.forEach((mod) => {
-    if (mod.slug === "settings") return;
-
-    // Fallback to 'General' if category is null/empty
     const category = mod.category || "General";
 
     if (!groups[category]) {
@@ -58,11 +55,6 @@ const groupedModules = computed(() => {
     }, {});
 });
 
-// Isolate Settings module and check if it is active (is_active == 1)
-const settingsModule = computed(() => {
-  const setting = modules.value.find((mod) => mod.slug === "settings");
-  return setting;
-});
 const tooltip = reactive({
   show: false,
   text: "",
@@ -215,7 +207,7 @@ const onCollapserMouseLeave = () => {
           </div>
         </Link>
       </template>
-      <div v-if="settingsModule && currentUrl.startsWith(settingsModule.path)">
+      <!-- <div v-if="settingsModule && currentUrl.startsWith(settingsModule.path)">
         <hr class="sidebar__module-list__divider" />
         <div v-if="!collapsedSidebar" class="sidebar__category-label">
           {{ settingsModule.category }}
@@ -248,7 +240,7 @@ const onCollapserMouseLeave = () => {
             </span>
           </div>
         </Link>
-      </div>
+      </div> -->
     </div>
   </aside>
 

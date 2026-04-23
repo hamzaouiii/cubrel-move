@@ -22,7 +22,7 @@ const t = proxy.$t;
 
 <template>
   <Head>
-    <title>{{ module.label }} - {{ $t("settings.label") }}</title>
+    <title>{{ module.label }} - {{ $t("settings.label") }} - Cubrel</title>
   </Head>
 
   <div

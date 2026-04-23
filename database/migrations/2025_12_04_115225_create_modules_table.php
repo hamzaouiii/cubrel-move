@@ -27,10 +27,7 @@ return new class extends Migration
       $table->boolean('show_in_sidebar')->default(true);
       $table->string('handler_class')->nullable();
       $table->text('description')->nullable();
-      $table->boolean('can_view')->default(true);
-      $table->boolean('can_create')->default(true);
-      $table->boolean('can_edit')->default(true);
-      $table->boolean('can_delete')->default(true);
+
       $table->string('model_class')->nullable();
       $table->string('table_name')->nullable();
       $table->timestamps();
@@ -40,11 +37,6 @@ return new class extends Migration
       $table->timestamp('locked_until')->nullable();
 
       $table->index('locked_until');
-
-      // $table->foreign('locked_by')
-      // ->references('id')
-      // ->on('users')
-      // ->nullOnDelete();
     });
   }
 
