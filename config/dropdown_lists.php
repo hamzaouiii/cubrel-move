@@ -576,5 +576,20 @@ return array(
       'value' => 'expired',
       'status' => 'warning',
     ],
+  ],
+  'relationship_type_list' => [
+    [
+      'label' => 'relationships.types.one-to-one',
+      'value' => 'one-to-one',
+    ],
+    [
+      'label' => 'relationships.types.one-to-many',
+      'value' => 'one-to-many',
+    ],
+    [
+      'label' => 'relationships.types.many-to-many',
+      'value' => 'many-to-many',
+    ],
   ]
+
 );
