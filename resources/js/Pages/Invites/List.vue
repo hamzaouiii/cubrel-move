@@ -41,8 +41,6 @@ const searchInput = ref(null);
 const sortKey = ref(null);
 const sortDir = ref("asc");
 
-const showActionDropDown = ref(false);
-const actionDropDownref = ref(null);
 const showInviteModal = ref(false);
 
 const listLayoutColumns = computed(() => {
@@ -81,10 +79,7 @@ const recordsNumberPhrase = computed(() => {
   if (!props.meta) return "(0)";
   return `${props.items?.length ?? 0} ${t("modules.of")} ${props.meta.total}`;
 });
-props.fields.forEach((element) => {
-  if (element.name === "status") {
-  }
-});
+
 const getField = (item) => {
   const field = Object.values(props.fields)?.find(
     (field) => field.name === item.name,
@@ -120,11 +115,13 @@ const resetSearchValue = () => {
 
 const openInviteModal = () => {
   showInviteModal.value = true;
-  toggleActionDropDown();
 };
 
 const closeInviteModal = () => {
   showInviteModal.value = false;
+  router.reload({
+    only: ["items", "meta"],
+  });
 };
 
 const isSortable = (col) => col?.sortable === true;
@@ -159,34 +156,68 @@ const toggleSearch = () => {
     resetSearchValue();
   }
 };
-const toggleActionDropDown = () => {
-  showActionDropDown.value = !showActionDropDown.value;
-};
-
-const handleClickOutsideActionDropDown = (event) => {
-  if (
-    actionDropDownref.value &&
-    !actionDropDownref.value.contains(event.target)
-  ) {
-    showActionDropDown.value = false;
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutsideActionDropDown);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutsideActionDropDown);
-});
-
-const handleRowClick = (id) => {
-  router.visit(`/${props.module.slug}/${id}`);
-};
 
 const hidePagination = computed(() => {
   return props.meta?.total < props.meta?.perPage;
 });
+
+const handleResend = async (item) => {
+  const confirmed = await confirm({
+    title: t("modules.userinvites.actions.resend"),
+    message: `${t("modules.userinvites.confirm.resend")} ${item.email}?`,
+    highlight: item.email,
+  });
+  if (!confirmed) return;
+
+  router.post(
+    `/invites/${item.id}/resend`,
+    {},
+    {
+      preserveScroll: true,
+      onSuccess: () => success(t("modules.userinvites.alerts.resent")),
+      onError: () => error(t("modules.userinvites.alerts.resend_failed")),
+    },
+  );
+};
+
+const handleRevoke = async (item) => {
+  const confirmed = await confirm({
+    title: t("modules.userinvites.actions.revoke"),
+    message: `${t("modules.userinvites.confirm.revoke")} ${item.email}?`,
+    danger: true,
+    highlight: item.email,
+  });
+  if (!confirmed) return;
+
+  router.patch(
+    `/invites/${item.id}/revoke`,
+    {},
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        router.reload({ only: ["items"] });
+        success(t("modules.userinvites.alerts.revoked"));
+      },
+      onError: () => error(t("modules.userinvites.alerts.revoke_failed")),
+    },
+  );
+};
+
+const handleDelete = async (item) => {
+  const confirmed = await confirm({
+    title: t("modules.userinvites.actions.delete"),
+    message: `${t("modules.userinvites.confirm.delete")} ${item.email}?`,
+    danger: true,
+    highlight: item.email,
+  });
+  if (!confirmed) return;
+
+  router.delete(`/invites/${item.id}`, {
+    preserveScroll: true,
+    onSuccess: () => success(t("modules.userinvites.alerts.deleted")),
+    onError: () => error(t("modules.userinvites.alerts.delete_failed")),
+  });
+};
 </script>
 
 <template>
@@ -223,7 +254,7 @@ const hidePagination = computed(() => {
                 ref="searchInput"
                 type="text"
                 name="search"
-                :placeholder="$t('modules.actions.search_placeholder')"
+                :placeholder="$t('modules.actions.search_placeholder_by_email')"
                 v-model="search"
                 @input="handleSearchInput"
                 @keydown.enter.prevent="performSearch(1)"
@@ -237,45 +268,9 @@ const hidePagination = computed(() => {
               :class="showListSearch ? 'fa-xmark' : ' fa-magnifying-glass'"
             ></i>
           </button>
-          <button @click="toggleActionDropDown">
+          <button @click="openInviteModal()">
             <i class="fa-solid fa-plus"></i>
           </button>
-
-          <transition name="fade">
-            <ul
-              v-if="showActionDropDown"
-              class="list-layout__header__actions__list__dropdown show"
-            >
-              <li v-if="isAdmin">
-                <Link
-                  class="list-layout__header__actions__list__dropdown__item"
-                  :href="editModuleUrl"
-                >
-                  <i class="fa-solid fa-wrench"></i>
-                  {{ $t("modules.actions.edit_module") }}
-                </Link>
-              </li>
-              <li>
-                <span
-                  class="list-layout__header__actions__list__dropdown__item"
-                  @click="goToCreateView()"
-                >
-                  <i class="fa-solid fa-user-plus"></i>
-                  {{ $t("modules.actions.user_create") }}
-                </span>
-              </li>
-
-              <li>
-                <span
-                  class="list-layout__header__actions__list__dropdown__item"
-                  @click.prevent="openInviteModal()"
-                >
-                  <i class="fa-solid fa-person-dots-from-line"></i>
-                  {{ $t("modules.actions.user_invite") }}
-                </span>
-              </li>
-            </ul>
-          </transition>
         </div>
       </div>
     </div>
@@ -300,6 +295,7 @@ const hidePagination = computed(() => {
                 ></i>
               </span>
             </th>
+            <th></th>
           </tr>
         </thead>
 
@@ -308,8 +304,7 @@ const hidePagination = computed(() => {
             <tr
               v-for="item in sortedItems"
               :key="item.id"
-              class="clickable-row"
-              @click="handleRowClick(item.id)"
+              style="cursor: default !important"
             >
               <td v-for="col in listLayoutColumns || []" :key="col.name">
                 <FieldRenderer
@@ -318,7 +313,48 @@ const hidePagination = computed(() => {
                   mode="table"
                   :module-color="module_color"
                   :highlight="search"
+                  :related_label="item[col.name + '__label'] ?? null"
                 />
+              </td>
+              <td class="row-actions" @click.stop>
+                <button
+                  class="row-action-btn row-action-btn--resend"
+                  @click="handleResend(item)"
+                  :class="{
+                    'row-action-btn--disabled':
+                      item.status === 'accepted' || item.status === 'revoked',
+                  }"
+                  :title="$t('modules.userinvites.actions.resend')"
+                >
+                  <i class="fa-solid fa-paper-plane"></i>
+
+                  {{ $t("modules.userinvites.actions.resend") }}
+                </button>
+
+                <button
+                  class="row-action-btn row-action-btn--revoke"
+                  @click="handleRevoke(item)"
+                  :title="$t('modules.userinvites.actions.revoke')"
+                  :class="{
+                    'row-action-btn--disabled':
+                      item.status === 'expired' ||
+                      item.status === 'accepted' ||
+                      item.status === 'revoked',
+                  }"
+                >
+                  <i class="fa-solid fa-ban"></i>
+                  {{ $t("modules.userinvites.actions.revoke") }}
+                </button>
+
+                <button
+                  class="row-action-btn row-action-btn--delete"
+                  @click="handleDelete(item)"
+                  :title="$t('modules.userinvites.actions.delete')"
+                >
+                  <i class="fa-solid fa-trash"></i>
+
+                  {{ $t("modules.userinvites.actions.delete") }}
+                </button>
               </td>
             </tr>
           </template>

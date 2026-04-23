@@ -142,5 +142,11 @@ return [
     'principal' => 'Direktor / Direktorin',
     'pastor'   => 'Pastor / Pastorin',
     'elder'    => 'Ältester / Älteste',
-  ]
+  ],
+  'user-invites_status_list' => [
+    'expired' => 'Abgelaufen',
+    'accepted' => 'Akzeptiert',
+    'pending' => 'Ausstehend',
+    'revoked' => 'Widerrufen',
+  ],
 ];

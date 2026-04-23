@@ -21,28 +21,28 @@ return array(
       2 =>
       array(
         'name' => 'status',
-        'type' => 'select',
+        'type' => 'status',
         'label' => 'modules.userinvites.fields.status',
       ),
       3 =>
       array(
         'name' => 'invited_by',
-        'type' => 'text',
+        'type' => 'record',
         'label' => 'modules.userinvites.fields.invited_by',
-
-        4 =>
-        array(
-          'name' => 'expires_at',
-          'type' => 'datetime',
-          'label' => 'modules.userinvites.expires_at',
-        ),
-        5 =>
-        array(
-          'name' => 'created_at',
-          'type' => 'datetime',
-          'label' => 'modules.defaults.created_at',
-        ),
+      ),
+      4 =>
+      array(
+        'name' => 'expires_at',
+        'type' => 'datetime',
+        'label' => 'modules.userinvites.fields.expires_at',
+      ),
+      5 =>
+      array(
+        'name' => 'created_at',
+        'type' => 'datetime',
+        'label' => 'modules.defaults.created_at',
       ),
     ),
-  )
+  ),
+
 );

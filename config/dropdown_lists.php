@@ -562,6 +562,11 @@ return array(
       'status' => 'info',
     ],
     [
+      'label' => 'dropdowns.user-invites_status_list.revoked',
+      'value' => 'revoked',
+      'status' => 'danger',
+    ],
+    [
       'label' => 'dropdowns.user-invites_status_list.accepted',
       'value' => 'accepted',
       'status' => 'success',

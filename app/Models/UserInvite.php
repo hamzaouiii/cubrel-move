@@ -14,7 +14,8 @@ class UserInvite extends BaseModule
     'token',
     'is_admin',
     'expires_at',
-    'accepted_at'
+    'accepted_at',
+    'status',
   ];
   protected $casts = ['accepted_at' => 'datetime', 'expires_at' => 'datetime'];
 
@@ -26,5 +27,18 @@ class UserInvite extends BaseModule
   public function isPending(): bool
   {
     return is_null($this->accepted_at) && !$this->isExpired();
+  }
+
+  public function getStatusAttribute(): string
+  {
+    $dbStatus = $this->attributes['status'] ?? 'pending';
+
+    if ($dbStatus === 'pending' && $this->isExpired()) {
+      $this->timestamps = false;
+      $this->forceFill(['status' => 'expired'])->save();
+      return 'expired';
+    }
+
+    return $dbStatus;
   }
 }

@@ -49,6 +49,9 @@ Route::middleware(['auth'])->group(function () {
     // routes/web.php
     Route::post('/invites', [InviteController::class, 'store']);
     Route::post('/invites/bulk', [InviteController::class, 'bulkStore'])->name('invites.bulk');
+    Route::post('/invites/{invite}/resend', [InviteController::class, 'resend'])->name('invites.resend');
+    Route::patch('/invites/{invite}/revoke', [InviteController::class, 'revoke'])->name('invites.revoke');
+    Route::delete('/invites/{invite}', [InviteController::class, 'destroy'])->name('invites.destroy');
 
     Route::prefix('settings')->name('settings.')->group(function () {
 

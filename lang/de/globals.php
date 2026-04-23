@@ -58,7 +58,8 @@ return [
     'setting_up_account' => 'Konto wird eingerichtet...',
     'expired_invite' => 'Diese Einladung wurde bereits akzeptiert oder ist abgelaufen. Bitte kontaktieren Sie Ihren Administrator.',
     'invalid_credentials' => 'Benutzername oder Passwort falsch.',
-    'invalid_email'    => "E-Mail-Adresse ist falsch."
+    'invalid_email'    => "E-Mail-Adresse ist falsch.",
+    'user_inactive'   => "Benutzer ist nicht aktiv. Bitte kontaktieren Sie Ihren Administrator"
   ],
   'confirm' => [
     'confirm_text' => 'Bestätigen',

@@ -147,5 +147,6 @@ return [
     'expired' => 'Expired',
     'accepted' => 'Accepted',
     'pending' => 'Pending',
+    'revoked' => 'Revoked',
   ]
 ];

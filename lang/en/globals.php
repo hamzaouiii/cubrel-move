@@ -58,7 +58,9 @@ return [
     'setting_up_account' => 'Setting up your account...',
     'expired_invite' => 'This invite has already been accepted or has expired. Please contact your administrator.',
     'invalid_credentials' => "Invalid credentials.",
-    'invalid_email'    => "The email address is invalid."
+    'invalid_email'    => "The email address is invalid.",
+    'user_inactive'   => "User is inactive. Please contact your administrator"
+
   ],
   'confirm' => [
     'confirm_text' => 'Confirm',

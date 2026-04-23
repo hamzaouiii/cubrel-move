@@ -12,7 +12,8 @@ const page = usePage();
 const appSettings = page.props.appSettings;
 
 const form = useForm({
-  name: "",
+  first_name: "",
+  last_name: "",
   username: "",
   password: "",
   password_confirmation: "",
@@ -69,19 +70,37 @@ const submit = () => {
         </div>
 
         <div class="accept-card__body">
-          <div class="field" :class="{ 'field--error': form.errors.name }">
+          <div
+            class="field"
+            :class="{ 'field--error': form.errors.first_name }"
+          >
             <label class="field__label">{{
-              $t("globals.login.full_name")
+              $t("globals.login.first_name")
             }}</label>
             <input
-              v-model="form.name"
+              v-model="form.first_name"
               type="text"
               class="field__input"
-              :placeholder="$t('globals.login.full_name_placeholder')"
+              :placeholder="$t('globals.login.first_name_placeholder')"
               autocomplete="name"
             />
-            <span v-if="form.errors.name" class="field__error">
-              {{ form.errors.name }}
+            <span v-if="form.errors.first_name" class="field__error">
+              {{ form.errors.first_name }}
+            </span>
+          </div>
+          <div class="field" :class="{ 'field--error': form.errors.last_name }">
+            <label class="field__label">{{
+              $t("globals.login.last_name")
+            }}</label>
+            <input
+              v-model="form.last_name"
+              type="text"
+              class="field__input"
+              :placeholder="$t('globals.login.last_name_placeholder')"
+              autocomplete="name"
+            />
+            <span v-if="form.errors.last_name" class="field__error">
+              {{ form.errors.last_name }}
             </span>
           </div>
 

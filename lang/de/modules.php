@@ -32,6 +32,7 @@ return array(
     'delete' => 'Löschen',
     'create' => 'Erstellen',
     'search_placeholder' => 'In dieser Liste suchen',
+    'search_placeholder_by_email' => 'Nach E-Mail suchen',
     'cancel' => 'Abbrechen',
     'edit' => 'Bearbeiten',
     'save' => 'Speichern',
@@ -355,7 +356,7 @@ return array(
       'invite_empty' => 'Noch keine E-Mail-Adressen hinzugefügt.',
       'total_to_invite' => ':total Einladung ist bereit versendet zu werden',
       'total_to_invite_plural' => ':total Einladungen sind bereit versendet zu werden',
-      'send_invites' => 'Einladungen senden',
+      'send_invites' => 'Senden',
       'cancel' => 'Abbrechen',
       'email_invalid_error' => "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       'email_duplicate_error' => "Diese E-Mail ist bereits in der Liste.",
@@ -400,4 +401,35 @@ return array(
       'type' => 'Typ',
     ],
   ],
+
+  'userinvites' => [
+    'label' => 'Benutzereinladungen',
+    'single_label' => 'Benutzereinladung',
+    'fields' => [
+      'email' => 'E-Mail',
+      'is_admin' => 'Administrator',
+      'status' => 'Status',
+      'expires_at' => 'Läuft ab am',
+      'invited_by' => 'Eingeladen von',
+    ],
+    'actions' => [
+      'revoke' => 'Widerrufen',
+      'resend' => 'Erneut senden',
+      'delete' => 'Löschen',
+    ],
+    'confirm' => [
+      'resend' => 'Möchten Sie die Einladung wirklich erneut senden an',
+      'revoke' => 'Möchten Sie die Einladung wirklich widerrufen für',
+      'delete' => 'Möchten Sie die Einladung wirklich löschen für',
+    ],
+    'alerts' => [
+      'resent' => 'Einladung erfolgreich erneut gesendet',
+      'resend_failed' => 'Erneutes Senden der Einladung fehlgeschlagen',
+      'revoked' => 'Einladung erfolgreich widerrufen',
+      'revoke_failed' => 'Widerruf der Einladung fehlgeschlagen',
+      'deleted' => 'Einladung erfolgreich gelöscht',
+      'delete_failed' => 'Löschen der Einladung fehlgeschlagen',
+    ],
+  ],
+
 );

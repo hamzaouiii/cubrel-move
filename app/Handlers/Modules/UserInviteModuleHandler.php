@@ -13,6 +13,10 @@ class UserInviteModuleHandler extends BaseModuleHandler
    * @var class-string
    */
   protected string $model = UserInvite::class;
+  protected array $searchable = [
+    'email',
+    'status',
+  ];
 
   protected function query(array $params = []): Builder
   {

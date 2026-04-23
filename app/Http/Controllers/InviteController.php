@@ -55,7 +55,8 @@ class InviteController extends Controller
   public function accept(string $token, Request $request): RedirectResponse
   {
     $data = $request->validate([
-      'name'                  => 'required|string|max:255',
+      'first_name'                  => 'required|string|max:255',
+      'last_name'                  => 'required|string|max:255',
       'username'                  => 'required|string|max:255|unique:users',
       'password'              => 'required|confirmed|min:8',
     ]);
@@ -104,7 +105,6 @@ class InviteController extends Controller
 
     $handler = new UserInviteModuleHandler();
     $props = $handler->getListData($moduleModel);
-
     $listLayout = config("module_layouts.userinvites.list");
     $recorddropdownLists = $moduleModel->dropdownLists;
     $fields = $moduleModel->allFields();
@@ -118,5 +118,48 @@ class InviteController extends Controller
       'dropdownLists' => $recorddropdownLists,
 
     ], $props));
+  }
+
+  public function resend(UserInvite $invite): RedirectResponse
+  {
+    abort_if(
+      !in_array($invite->status, ['pending', 'expired']),
+      422,
+      'Only pending or expired invites can be resent.'
+    );
+
+    $newInvite = $this->invites->create(
+      email: $invite->email,
+      invitedBy: Auth::id(),
+      is_admin: $invite->is_admin,
+    );
+
+    return back()->with(['success']);
+  }
+
+  public function revoke(UserInvite $invite): RedirectResponse
+  {
+    abort_if(
+      $invite->status !== 'pending',
+      422,
+      'Only pending invites can be revoked.'
+    );
+
+    $invite->update(['status' => 'revoked']);
+
+    return back();
+  }
+
+  public function destroy(UserInvite $invite): RedirectResponse
+  {
+    abort_if(
+      $invite->status === 'pending',
+      422,
+      'Revoke the invite before deleting it.'
+    );
+
+    $invite->delete();
+
+    return back();
   }
 }

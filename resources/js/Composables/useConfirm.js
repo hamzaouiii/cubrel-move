@@ -1,4 +1,4 @@
-import { reactive, readonly, getCurrentInstance } from "vue";
+import { reactive, readonly } from "vue";
 
 const state = reactive({
   isOpen: false,

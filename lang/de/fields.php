@@ -28,7 +28,11 @@ return [
     'url'  => 'URL',
     'phone' => 'Telefonenummer',
     'percentage' => 'Prozentsatz',
-    'currency' => 'Währung'
+    'currency' => 'Währung',
+    'integer' => 'Ganzzahl',
+    'decimal' => 'Dezimalzahl',
+    'record' => 'Datensatz',
+    'status' => 'Status',
   ],
   'metadata' => [
     'name' => 'Name',

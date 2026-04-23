@@ -23,7 +23,7 @@ class InviteService
       'is_admin'       => $is_admin,
       'expires_at' => now()->addDays(7),
     ]);
-    Mail::to($invite->email)->send(new InvitationMail($invite));
+    // Mail::to($invite->email)->send(new InvitationMail($invite));
 
     return $invite;
   }
@@ -38,7 +38,9 @@ class InviteService
 
     $user = User::create([
       'username' => $userData['username'],
-      'name'     => $userData['name'],
+      'name'     => $userData['first_name'] . " " . $userData['last_name'],
+      'first_name'     => $userData['first_name'],
+      'last_name'     => $userData['last_name'],
       'email'    => $invite->email,
       'password' => bcrypt($userData['password']),
       'is_admin'     => $invite->is_admin,

@@ -1,7 +1,14 @@
 <script setup>
-import { computed, ref, getCurrentInstance } from "vue";
+import {
+  computed,
+  ref,
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+} from "vue";
 import { usePage, useForm } from "@inertiajs/vue3";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
+
 const emit = defineEmits(["close", "complete"]);
 const props = defineProps({
   module: Object,
@@ -14,10 +21,8 @@ const emailInput = ref("");
 const emails = ref([]);
 const status = ref("idle");
 const errorMessage = ref("");
+const showStatusBar = ref(false);
 
-const closeModal = () => {
-  emit("close");
-};
 const page = usePage();
 const appSettings = page.props.appSettings;
 
@@ -32,14 +37,12 @@ const addEmail = () => {
     return;
   }
 
-  // Check if email already exists in the objects array
   if (emails.value.some((e) => e.email === email)) {
     errorMessage.value = t("modules.users.modal.email_duplicate_error");
     return;
   }
 
-  // Push as an object with default is_admin: false
-  emails.value.push({
+  emails.value.unshift({
     email: email,
     is_admin: false,
   });
@@ -48,6 +51,9 @@ const addEmail = () => {
   errorMessage.value = "";
 };
 
+const closeModal = () => {
+  emit("close");
+};
 const removeEmail = (emailToRemove) => {
   emails.value = emails.value.filter((e) => e.email !== emailToRemove);
 };
@@ -67,7 +73,11 @@ const sendInvites = async () => {
     });
 
     status.value = "success";
-    emit("complete", emails.value);
+    showStatusBar.value = true;
+    setTimeout(() => {
+      closeModal();
+      emit("complete", emails.value);
+    }, 3000);
   } catch (error) {
     status.value = "error";
     console.error(error);
@@ -77,6 +87,25 @@ const sendInvites = async () => {
 };
 
 const color = computed(() => props.module.color);
+
+const handleKeydown = (e) => {
+  if (e.ctrlKey && e.key === "s" && emails.value.length > 0) {
+    e.preventDefault();
+    sendInvites();
+  }
+
+  if (e.key === "Escape") {
+    closeModal();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
 </script>
 
 <template>
@@ -87,7 +116,7 @@ const color = computed(() => props.module.color);
       '--danger-color': appSettings.danger_color,
     }"
   >
-    <div class="invite-modal__backdrop" @click="closeModal"></div>
+    <div class="invite-modal__backdrop"></div>
     <button
       v-if="status !== 'sending'"
       class="invite-modal__close"
@@ -234,6 +263,7 @@ const color = computed(() => props.module.color);
               }}
             </p>
           </div>
+          <div class="invite-content-progress-bar"></div>
         </div>
 
         <div class="invite-card__footer" v-if="status !== 'success'">

@@ -27,7 +27,8 @@ return array(
     'bulk_action' => 'Bulk Actions',
     'delete' => 'Delete',
     'create' => 'Create',
-    'search_placeholder' => 'Search In This List',
+    'search_placeholder' => 'Search in this list',
+    'search_placeholder_by_email' => 'Search by Email',
     'cancel' => 'Cancel',
     'edit' => 'Edit',
     'save' => 'Save',
@@ -405,17 +406,35 @@ return array(
       'type'  => 'Type',
     ],
   ],
+
   'userinvites' => [
-    'label' => ' User Invites',
-    'single_label' => ' User Invite',
+    'label' => 'User Invites',
+    'single_label' => 'User Invite',
     'fields' => [
-      'email'   => 'Email',
+      'email' => 'Email',
       'is_admin' => 'Admin',
       'status' => 'Status',
-      'expires_at' => 'Expites At',
+      'expires_at' => 'Expires At',
       'invited_by' => 'Invited By',
-    ]
-
-  ]
+    ],
+    'actions' => [
+      'revoke' => 'Revoke',
+      'resend' => 'Resend',
+      'delete' => 'Delete',
+    ],
+    'confirm' => [
+      'resend' => 'Are you sure you want to resend the invitation to',
+      'revoke' => 'Are you sure you want to revoke the invitation for',
+      'delete' => 'Are you sure you want to delete the invitation for',
+    ],
+    'alerts' => [
+      'resent' => 'Invitation resent successfully',
+      'resend_failed' => 'Failed to resend invitation',
+      'revoked' => 'Invitation revoked successfully',
+      'revoke_failed' => 'Failed to revoke invitation',
+      'deleted' => 'Invitation deleted successfully',
+      'delete_failed' => 'Failed to delete invitation',
+    ],
+  ],
 
 );

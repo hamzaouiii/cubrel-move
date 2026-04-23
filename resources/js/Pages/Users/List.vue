@@ -124,6 +124,9 @@ const openInviteModal = () => {
 
 const closeInviteModal = () => {
   showInviteModal.value = false;
+  router.reload({
+    only: ["items"],
+  });
 };
 
 const isSortable = (col) => col?.sortable === true;
@@ -178,10 +181,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutsideActionDropDown);
 });
-
-const handleRowClick = (id) => {
-  router.visit(`/${props.module.slug}/${id}`);
-};
 
 const hidePagination = computed(() => {
   return props.meta?.total < props.meta?.perPage;
@@ -308,7 +307,6 @@ const hidePagination = computed(() => {
               v-for="item in sortedItems"
               :key="item.id"
               class="clickable-row"
-              @click="handleRowClick(item.id)"
             >
               <td v-for="col in listLayoutColumns || []" :key="col.name">
                 <FieldRenderer

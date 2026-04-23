@@ -29,12 +29,16 @@ class AuthController extends Controller
       'remember' => ['sometimes', 'boolean'],
     ]);
 
+
     if (! Auth::attempt(['username' => $data['username'], 'password' => $data['password']], $data['remember'] ?? false)) {
       return back()->withErrors([
         'general' => __('globals.login.invalid_credentials')
       ]);
     }
-
+    if (Auth::user()->status === 'inactive') {
+      Auth::logout();
+      return back()->withErrors(['general' =>  __('globals.login.user_inactive')]);
+    }
     $request->session()->regenerate();
     return redirect()->to('/');
   }

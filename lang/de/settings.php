@@ -109,7 +109,9 @@ return [
     'layouts' => 'Layouts',
     'system_email_settings' => 'System-E-Mail-Einstellungen',
     'dropdowns' => 'Dropdown Editor',
-    'preferences'         => 'Präferenzen'
+    'preferences'         => 'Präferenzen',
+    'manage_invites'          => 'Benutzereinladungen',
+
   ],
   'dropdown' =>
   [
