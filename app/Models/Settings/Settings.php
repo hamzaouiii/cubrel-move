@@ -37,6 +37,6 @@ class Settings extends Model
     if (isset($settings[$categorty]['items'][$slug])) {
       return $settings[$categorty]['items'][$slug];
     }
-    return  null;
+    abort(404);
   }
 }
