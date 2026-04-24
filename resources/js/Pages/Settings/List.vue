@@ -1,10 +1,10 @@
 <script setup>
 import { Head, Link, usePage } from "@inertiajs/vue3";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { ref, computed, getCurrentInstance } from "vue";
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const pageProps = defineProps({

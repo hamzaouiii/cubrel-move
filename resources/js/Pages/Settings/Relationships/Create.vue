@@ -1,5 +1,5 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import { ref, computed, getCurrentInstance, watch } from "vue";
 
@@ -8,7 +8,7 @@ import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

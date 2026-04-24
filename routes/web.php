@@ -150,9 +150,11 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$).+')->name('modules.index');
 });
 
-
-
 Route::middleware(['guest'])->group(function () {
   Route::get('/login', [AuthController::class, 'index'])->name('login');
   Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::get('/503', function () {
+  abort(503);
 });

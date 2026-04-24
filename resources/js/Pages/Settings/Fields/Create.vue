@@ -1,5 +1,5 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import axios from "axios";
 
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
@@ -27,7 +27,7 @@ import EditDropdownListModal from "@/Pages/Components/Settings/Dropdowns/EditDro
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

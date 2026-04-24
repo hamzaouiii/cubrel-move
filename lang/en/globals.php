@@ -67,5 +67,40 @@ return [
     'cancel_text' => 'Cancel',
     'message' => 'Are you sure?',
     'title' => 'Please confirm',
-  ]
+  ],
+  'errorpage' => [
+    'back_to_dashboard' => 'Back to dashboard',
+    'go_back' => 'Go back',
+    '404' => [
+      'title' => 'Page not found',
+      'heading' => 'Nothing here',
+      'description' => 'The requested route does not exist or has been moved:',
+    ],
+    '405' => [
+      'title' => 'Page not found',
+      'heading' => 'Nothing here',
+      'description' => 'The requested route does not exist or has been moved',
+    ],
+    '403' => [
+      'title' => 'Access denied',
+      'heading' => 'You cannot access this page',
+      'description' => 'You do not have permission to view this page:',
+
+    ],
+
+    '500' => [
+      'title' => 'Server error',
+      'heading' => 'Something went wrong',
+      'description' => 'An unexpected error occurred on the server',
+
+    ],
+
+    '503' => [
+      'title' => 'Service unavailable',
+      'heading' => 'We are temporarily offline',
+      'description' => 'The service is currently unavailable. Please try again later',
+
+    ],
+
+  ],
 ];

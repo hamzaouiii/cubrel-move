@@ -612,3 +612,127 @@
     opacity: 0;
   }
 }
+
+.error-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  &__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 520px;
+    width: 100%;
+  }
+
+  &__code {
+    font-size: 140px;
+    font-weight: 500;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px
+      color-mix(in srgb, var(--primary-color) 23%, transparent);
+    letter-spacing: -4px;
+    user-select: none;
+    position: relative;
+
+    &::after {
+      content: var(--error-code);
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      color: transparent;
+      -webkit-text-stroke: 2px
+        color-mix(in srgb, var(--primary-color) 30%, transparent);
+    }
+  }
+
+  &__title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a2540;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+
+  &__desc {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    font-family: "DM Mono", monospace;
+    max-width: 380px;
+
+    code {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 12px;
+      color: var(--primary-color);
+      text-wrap: nowrap;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: "Syne", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    border: none;
+    transition:
+      background 0.15s,
+      border-color 0.15s,
+      color 0.15s,
+      transform 0.1s;
+
+    &--primary {
+      background: var(--primary-color);
+      color: #fff;
+
+      &:hover {
+        background: color-mix(in srgb, var(--primary-color) 82%, black);
+        transform: translateY(-1px);
+      }
+    }
+
+    &--secondary {
+      background: #fff;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+
+      &:hover {
+        border-color: color-mix(in srgb, var(--primary-color) 82%, black);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+      }
+    }
+  }
+}

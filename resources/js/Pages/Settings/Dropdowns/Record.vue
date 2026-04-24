@@ -7,13 +7,13 @@ import {
   onBeforeUnmount,
   onMounted,
 } from "vue";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { error, warning, success, info, clearAllAlerts } = useAlerts();
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

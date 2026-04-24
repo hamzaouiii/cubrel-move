@@ -1,5 +1,5 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
   computed,
@@ -21,7 +21,7 @@ const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

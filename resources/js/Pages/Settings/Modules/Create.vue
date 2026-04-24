@@ -11,14 +11,14 @@ import EditModule from "@/Pages/Components/Settings/Builder/EditModule.vue";
 import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
 import { Head, usePage, useForm, router, Link } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 const props = defineProps({
   settingModule: Object,

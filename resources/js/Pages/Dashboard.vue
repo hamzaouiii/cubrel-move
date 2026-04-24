@@ -1,9 +1,9 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 </script>
 

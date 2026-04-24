@@ -7,13 +7,13 @@ import {
   onBeforeUnmount,
 } from "vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 const { error, info, success, clearAllAlerts } = useAlerts();
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const generatedSystemKey = computed(() => {
