@@ -1,5 +1,5 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
   ref,
@@ -15,7 +15,7 @@ import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import { useFieldValidation } from "@/Composables/useFieldValidation";
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

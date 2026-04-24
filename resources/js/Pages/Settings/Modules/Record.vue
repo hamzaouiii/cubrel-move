@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, computed, getCurrentInstance } from "vue";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -17,7 +17,7 @@ const t = proxy.$t;
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

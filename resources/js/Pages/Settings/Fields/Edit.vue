@@ -1,5 +1,5 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
 import { getCurrentInstance, toRef, watch, computed } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -12,7 +12,7 @@ import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vu
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

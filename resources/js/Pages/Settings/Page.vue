@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance } from "vue";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
 import DropdownField from "../Components/FiledTypes/SettingDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
@@ -11,7 +11,7 @@ import SettingsLink from "../Components/Settings/SettingsLink.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const { proxy } = getCurrentInstance();

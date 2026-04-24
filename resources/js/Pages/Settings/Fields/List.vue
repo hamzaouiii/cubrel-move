@@ -1,11 +1,11 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

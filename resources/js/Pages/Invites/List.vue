@@ -11,14 +11,14 @@ import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 import InviteModal from "@/Pages/Components/Users/InviteModal.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({

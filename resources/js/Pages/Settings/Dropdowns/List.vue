@@ -1,12 +1,12 @@
 <script setup>
 import { computed, ref } from "vue";
-import Layout from "@/Layouts/Layout.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 
 const appSettings = usePage().props.appSettings;
 
 defineOptions({
-  layout: Layout,
+  layout: AppLayout,
 });
 
 const props = defineProps({
