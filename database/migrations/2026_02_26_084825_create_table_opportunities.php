@@ -20,7 +20,8 @@ return new class extends Migration
       $table->date('expected_close_date')->nullable();
       $table->string('type')->nullable(); // new_business, existing_business
       $table->json('custom_fields')->default(DB::raw("(JSON_OBJECT())"));
-      // $table->uuid('assigned_user_id')->nullable()->index();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
 
       $table->timestamps();
 

@@ -20,6 +20,15 @@ return [
     'label'   => 'modules.defaults.description',
     'is_default' => true
   ],
+  'owner_id' =>
+  [
+    'name' => 'owner_id',
+    'searchable' => false,
+    'type' => 'user',
+    'key'     => 'default.owner_id',
+    'label'   => 'modules.defaults.owner_id',
+    'is_default' => true
+  ],
   'created_at' =>
   [
     'name' => 'created_at',
@@ -34,10 +43,8 @@ return [
     'name' => 'updated_at',
     'type' => 'datetime',
     'key'     => 'default.updated_at',
-
     'readonly' => true,
     'label'   => 'modules.defaults.updated_at',
-
     'is_default' => true
   ],
 ];

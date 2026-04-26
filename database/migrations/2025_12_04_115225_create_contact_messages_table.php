@@ -22,6 +22,8 @@ return new class extends Migration
       $table->string('status', 20)->default('new')->index();
       $table->string('ip', 45)->nullable();
       $table->string('user_agent')->nullable();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
 
       $table->index(['ip', 'created_at'], 'contact_messages_ip_created_at_idx');
