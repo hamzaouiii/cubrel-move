@@ -11,6 +11,7 @@ return array(
     'support' => 'Support',
     'system' => 'System',
   ),
+  'selectdrawer' => ['select' => 'Select'],
   'defaults' =>
   array(
     'name' => 'Name',

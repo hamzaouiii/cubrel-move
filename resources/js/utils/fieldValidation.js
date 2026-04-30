@@ -1,7 +1,8 @@
 import { isValidPhoneNumber } from "libphonenumber-js";
 
-const defaultValidate = () => true;
+const defaultValidate = () => true; // no validation all values are accepted
 
+// syntax email format validation
 const emailValidate = (value) => {
   if (!value) return true;
 
@@ -9,10 +10,14 @@ const emailValidate = (value) => {
   return emailRegex.test(value.toString());
 };
 
+// Uses libphonenumber to validate phone number
+// DE is the default localisation but that should be handed down dynamically in the future
 const phoneValidate = (value) => {
   return isValidPhoneNumber(String(value), "DE");
 };
 
+//url format validation
+//enforces https urls and matches protocol
 const urlValidate = (value) => {
   if (!value) return true;
 
@@ -31,6 +36,7 @@ const urlValidate = (value) => {
   }
 };
 
+// simpler version for format validation only
 const urlValidateSimple = (value) => {
   if (!value) return true;
 
@@ -39,6 +45,7 @@ const urlValidateSimple = (value) => {
   return urlRegex.test(value.toString());
 };
 
+// format validation for percentage fields
 const percentageValidate = (value) => {
   if (value === null || value === "" || value === undefined) return true;
 
@@ -118,13 +125,12 @@ const decimalValidateWithPrecision = (
 const relatedValidate = (value) => {
   if (!value) return true;
 
-  // Validate that the value is a valid ID (positive integer)
-  const id = parseInt(value);
-  if (isNaN(id)) return false;
-  if (id <= 0) return false;
-
-  return true;
+  // Validate that the value is a valid UUID (any version)
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(value);
 };
+
 export function fieldValidation() {
   return {
     emailValidate,

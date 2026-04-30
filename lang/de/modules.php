@@ -15,13 +15,15 @@ return array(
     'support'       => 'Kundenservice',
     'system'        => 'System',
   ),
+  'selectdrawer' => ['select' => 'Wähle'],
+
   'defaults' =>
   array(
     'name' => 'Name',
     'created_at' => 'Erstellt am',
     'updated_at' => 'Aktualisiert am',
     'no_data' => 'Keine Daten gefunden',
-    'owner' => 'Gehört zu',
+    'owner_id' => 'Gehört zu',
     'description' => 'Beschreibung',
   ),
   'actions' =>

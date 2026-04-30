@@ -7,6 +7,8 @@ use App\Handlers\Modules\UserModuleHandler;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use Inertia\Inertia;
+use App\Support\Settings;
+
 
 class UserController extends Controller
 {
@@ -79,7 +81,7 @@ class UserController extends Controller
 
     $handler = new UserModuleHandler();
 
-    $props = $handler->getRecordData($module, $user, request()->all());
+    $props = $handler->getRecordData($module, $user, $moduleModel, request()->all());
 
     // $recordLayout  = $moduleModel->recordLayout();
     $recordLayout = config("module_layouts.users.record");
@@ -96,27 +98,40 @@ class UserController extends Controller
     ], $props));
   }
 
-  /**
-   * Show the form for editing the specified resource.
-   */
-  public function edit(User $user)
+  public function getUsersForLinking()
   {
-    //
+    $limit = Settings::get('linking_panel_limit');
+
+    return User::getRecordsForLinking($limit);
   }
 
   /**
-   * Update the specified resource in storage.
+   * Search users for record selector (owner field).
+   * GET /users/search?q=&page=
    */
-  public function update(Request $request, User $user)
+  public function search(Request $request): \Illuminate\Http\JsonResponse
   {
-    //
-  }
+    $perPage    = Settings::get('linking_panel_limit');
+    $search     = $request->string('q')->trim()->toString();
+    $selectedId = $request->input('selected');
 
-  /**
-   * Remove the specified resource from storage.
-   */
-  public function destroy(User $user)
-  {
-    //
+    $paginator = User::query()
+      ->when($search, fn($q) => $q->where(function ($q) use ($search) {
+        $q->where('name',  'like', "%{$search}%")
+          ->orWhere('email', 'like', "%{$search}%");
+      }))
+      // If there is NO search query but we DO have a selected user, force them to the top
+      ->when(empty($search) && $selectedId, function ($q) use ($selectedId) {
+        $q->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END ASC', [$selectedId]);
+      })
+      ->orderBy('name')
+      ->paginate($perPage, ['id', 'name', 'email']);
+
+    return response()->json([
+      'data'         => $paginator->items(),
+      'current_page' => $paginator->currentPage(),
+      'last_page'    => $paginator->lastPage(),
+      'total'        => $paginator->total(),
+    ]);
   }
 }

@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { fieldRegistry } from "@/Registries/fieldRegistry";
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "open-link-overlay"]);
 
 const props = defineProps({
   field: {
@@ -65,6 +65,10 @@ const componentProps = computed(() => ({
   errorMsg: props?.errorMsg || null,
   searchable: props?.searchable || null,
 }));
+
+const emitOpenLinkOverlay = () => {
+  emit("open-link-overlay", props.field);
+};
 </script>
 
 <template>
@@ -72,5 +76,6 @@ const componentProps = computed(() => ({
     :is="component"
     v-bind="componentProps"
     @update:modelValue="emit('update:modelValue', $event)"
+    @open-overlay="emitOpenLinkOverlay()"
   />
 </template>

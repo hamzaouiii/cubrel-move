@@ -310,6 +310,7 @@ const clearSearch = () => {
                     count: records?.length ?? "0",
                   })
                 }}
+                {{ $t("modules.of") }} {{ total ?? "--" }}
               </span>
               <div class="related-links__modifiers__search">
                 <input

@@ -24,6 +24,8 @@ return [
   [
     'name' => 'owner_id',
     'searchable' => false,
+    'required' => true,
+    'related_module' => 'users',
     'type' => 'user',
     'key'     => 'default.owner_id',
     'label'   => 'modules.defaults.owner_id',
