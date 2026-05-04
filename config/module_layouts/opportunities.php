@@ -41,13 +41,19 @@ return array(
         'type' => 'percentage',
         'label' => 'modules.opportunities.fields.probability',
       ),
-      6 =>
+      6=>
+       array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+      7 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
         'label' => 'modules.opportunities.fields.updated_at',
       ),
-      7 =>
+      8 =>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
@@ -134,12 +140,18 @@ return array(
             'label' => 'modules.defaults.description',
           ),
           1 =>
+           array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          2=>
           array(
             'name' => 'updated_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.updated_at',
           ),
-          2 =>
+          3 =>
           array(
             'name' => 'created_at',
             'type' => 'datetime',

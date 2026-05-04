@@ -13,38 +13,38 @@ return array(
       ),
       2 =>
       array(
-        'id' => 'ab103add-6343-4bb5-904c-04ec3447b202',
         'name' => 'position',
         'type' => 'text',
         'label' => 'modules.contacts.fields.position',
-        'module_id' => '019c9a01-7d25-7136-a50d-5fa6fdc46656',
         'dropdown_list_id' => NULL,
       ),
       3 =>
       array(
-        'id' => '2e94cba5-b0dd-4959-b4a9-3a3863d4c915',
         'name' => 'phone',
         'type' => 'text',
         'label' => 'modules.contacts.fields.phone',
-        'module_id' => '019c9a01-7d25-7136-a50d-5fa6fdc46656',
         'dropdown_list_id' => NULL,
       ),
       4 =>
       array(
-        'id' => '36a49d40-b37f-4340-9d78-397ee7d9a64b',
         'name' => 'email',
         'type' => 'email',
         'label' => 'modules.contacts.fields.email',
-        'module_id' => '019c9a01-7d25-7136-a50d-5fa6fdc46656',
         'dropdown_list_id' => NULL,
       ),
-      5 =>
+      5 =>      
+       array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          6=>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
       ),
-      6 =>
+      7 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
@@ -88,13 +88,18 @@ return array(
           4 =>
           array(
             'name' => 'notes',
-            'type' => 'longText',  // Changed to capital T
+            'type' => 'longText',  
             'label' => 'modules.contacts.fields.notes',
           ),
-          5 =>
+          5 => array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          6=>
           array(
             'name' => 'description',
-            'type' => 'longText',  // Changed to capital T
+            'type' => 'longText',  
             'label' => 'modules.defaults.description',
           ),
         ),

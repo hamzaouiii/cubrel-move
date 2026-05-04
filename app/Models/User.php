@@ -16,7 +16,6 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Concerns\HasFullName;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\BaseModule;
@@ -92,8 +91,9 @@ class User extends BaseModule implements
 
     return $query->orderBy('name')->paginate($perPage);
   }
-  protected static function booted()
+  protected static function booted(): void
   {
+    parent::booted();
     static::saving(function ($user) {
       if ($user->isDirty('first_name') || $user->isDirty('last_name')) {
         $user->name = $user->first_name . " " . $user->last_name;

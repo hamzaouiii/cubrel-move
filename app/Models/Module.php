@@ -16,12 +16,8 @@ use App\Scopes\AdminOnlyModuleScope;
 /**
  * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
  * Not to be confused with BaseModule => app\Models\BaseModule.php which is a business module, all CRM modules are to extend it, unlike this one which probably needs to be an abstract class
- */
-/**
  * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Layout> $layouts
  * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Field> $fields
- * @method \Illuminate\Database\Eloquent\Relations\HasMany layouts()
- * @method \Illuminate\Database\Eloquent\Relations\HasMany fields()
  */
 class Module extends Model
 {
@@ -235,7 +231,7 @@ class Module extends Model
 
   protected static function booted(): void
   {
-    static::addGlobalScope(new AdminOnlyModuleScope());
+     static::addGlobalScope(new AdminOnlyModuleScope());
   }
 
   /**

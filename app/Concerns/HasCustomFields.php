@@ -97,7 +97,7 @@ trait HasCustomFields
   {
     $attributes = parent::toArray();
 
-    $customFields = $this->getCachedCustomFields(); //100
+    $customFields = $this->getCachedCustomFields();
     foreach ($customFields as $field) {
       $attributes[$field] = $this->getCustomFieldValue($field);
     }
@@ -107,7 +107,7 @@ trait HasCustomFields
 
   protected function isCustomField(string $key): bool
   {
-    return in_array($key, $this->getCachedCustomFields(), true); // line 110
+    return in_array($key, $this->getCachedCustomFields(), true);
   }
 
   protected function getCustomFieldValue(string $key): ?string

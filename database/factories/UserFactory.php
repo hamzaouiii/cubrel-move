@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
+
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
@@ -23,10 +24,14 @@ class UserFactory extends Factory
    */
   public function definition(): array
   {
+    $first_name = fake()->firstName();
+    $last_name = fake()->lastName();
+    $name = $first_name." ".$last_name;
     return [
       'id' => Str::uuid(), // Generate UUID since model uses HasUuids and $incrementing = false
-      'first_name' => fake()->firstName(),
-      'last_name' => fake()->lastName(),
+      'first_name' =>  $first_name,
+      'last_name' =>  $last_name,
+      'name' => $name,
       'title' => fake()->title(),
       'username' => fake()->unique()->userName(),
       'email' => fake()->unique()->safeEmail(),

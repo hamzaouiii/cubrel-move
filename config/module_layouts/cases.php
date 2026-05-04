@@ -41,6 +41,11 @@ return array(
         'type' => 'datetime',
         'label' => 'modules.cases.fields.closed_at',
       ),
+      6 =>        array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
     ),
   ),
   'related' =>
@@ -228,6 +233,11 @@ return array(
             'name' => 'description',
             'type' => 'longtext',
             'label' => 'modules.cases.fields.description',
+          ),
+          5=>       array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
           ),
         ),
       ),

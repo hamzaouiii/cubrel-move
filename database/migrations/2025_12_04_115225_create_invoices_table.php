@@ -24,6 +24,8 @@ return new class extends Migration
       $table->decimal('tax', 15)->default(0);
       $table->decimal('total', 15)->default(0);
       $table->text('notes')->nullable();
+            $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

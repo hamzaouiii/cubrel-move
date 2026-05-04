@@ -43,13 +43,19 @@ return array(
         'label' => 'modules.orders.fields.total_amount',
       ),
       6 =>
+       array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+      7 =>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
         'sortable' => true,
       ),
-      7 =>
+      8 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
@@ -116,6 +122,11 @@ return array(
             'readonly' => false,
             'required' => true,
             'sortable' => true,
+          ),
+          6=>  array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
           ),
         ),
       ),

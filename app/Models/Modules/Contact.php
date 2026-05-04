@@ -16,5 +16,6 @@ class Contact extends BaseModule
     'phone',
     'position',
     'notes',
+    'owner_id'
   ];
 }

@@ -26,7 +26,7 @@ return [
     'searchable' => false,
     'required' => true,
     'related_module' => 'users',
-    'type' => 'user',
+    'type' => 'record',
     'key'     => 'default.owner_id',
     'label'   => 'modules.defaults.owner_id',
     'is_default' => true

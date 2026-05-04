@@ -295,9 +295,6 @@ class RecordController extends Controller
     return back()->with('success', "{$updatedCount} records updated.");
   }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────────────
 
   /**
    * Strip null / empty-string values from an ID array coming from the frontend.

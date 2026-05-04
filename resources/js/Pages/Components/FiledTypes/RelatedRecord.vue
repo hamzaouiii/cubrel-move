@@ -69,20 +69,6 @@ const localValue = computed({
   set: (val) => emit("update:modelValue", val),
 });
 
-const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const highlightMatch = (text) => {
-  if (!text) return "-";
-  if (!props.highlight || !props.highlight.trim()) return text;
-
-  const term = escapeRegExp(props.highlight.trim());
-  const regex = new RegExp(`(${term})`, "gi");
-
-  return text
-    .toString()
-    .replace(regex, '<span class="search-highlight">$1</span>');
-};
-
 const getRecordUrl = () => {
   if (!props.modelValue) return "#";
   return `/${props.related_module}/${props.modelValue}`;
