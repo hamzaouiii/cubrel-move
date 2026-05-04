@@ -18,7 +18,7 @@ use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\InviteController;
-
+use App\Http\Controllers\DashboardController;
 Route::middleware(['guest'])->group(function () {
   Route::get('/login', [AuthController::class, 'index'])->name('login');
   Route::post('/login', [AuthController::class, 'login']);
@@ -32,7 +32,7 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
 
   // Independent routes
-  Route::get('/', fn() => Inertia::render('Dashboard'))->name('dashboard');
+  Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
   Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
   Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
   Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
