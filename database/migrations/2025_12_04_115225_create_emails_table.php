@@ -22,6 +22,8 @@ return new class extends Migration
       $table->unsignedBigInteger('related_id')->nullable();
       $table->string('status', 32)->default('queued');
       $table->text('error')->nullable();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

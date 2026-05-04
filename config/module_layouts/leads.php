@@ -30,12 +30,18 @@ return array(
         'label' => 'modules.leads.fields.company',
       ),
       4 =>
+       array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          5=>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
       ),
-      5 =>
+      6 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
@@ -83,12 +89,18 @@ return array(
             'label' => 'modules.defaults.description',
           ),
           5 =>
+           array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          6=>
           array(
             'name' => 'created_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.created_at',
           ),
-          6 =>
+          7 =>
           array(
             'name' => 'updated_at',
             'type' => 'datetime',

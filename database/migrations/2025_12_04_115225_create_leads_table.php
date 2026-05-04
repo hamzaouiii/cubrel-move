@@ -23,6 +23,8 @@ return new class extends Migration
       $table->string('city')->nullable();
       $table->string('zip', 20)->nullable();
       $table->text('description')->nullable();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

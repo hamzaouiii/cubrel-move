@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Faker\Factory as FakerFactory;
 
-class AccountFactory extends Factory
+class AccountFactory extends factory
 {
   public function definition()
   {

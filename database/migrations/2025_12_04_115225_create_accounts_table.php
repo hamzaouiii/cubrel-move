@@ -22,6 +22,8 @@ return new class extends Migration
       $table->string('shipping_address')->nullable();
       $table->string('city')->nullable();
       $table->string('country')->nullable();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

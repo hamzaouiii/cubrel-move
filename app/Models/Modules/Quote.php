@@ -19,14 +19,13 @@ class Quote extends BaseModule
     'tax',
     'total',
     'notes',
+    'owner_id'
   ];
 
-  protected $casts = [
+  protected $modelCasts = [
     'valid_until' => 'date',
     'subtotal'    => 'decimal:2',
     'tax'         => 'decimal:2',
     'total'       => 'decimal:2',
-    'custom_fields' => 'array',
-
   ];
 }

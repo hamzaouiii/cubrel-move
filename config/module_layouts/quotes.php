@@ -36,12 +36,18 @@ return array(
         'label' => 'modules.quotes.fields.total',
       ),
       5 =>
+           array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          6=>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
       ),
-      6 =>
+      7 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
@@ -65,22 +71,29 @@ return array(
             'label' => 'modules.defaults.name',
           ),
           1 =>
-          array(
-            'name' => 'description',
-            'type' => 'longtext',
-            'label' => 'modules.quotes.fields.description',
-          ),
-          2 =>
+
           array(
             'name' => 'status',
             'type' => 'select',
             'label' => 'modules.quotes.fields.status',
           ),
-          3 =>
+          2 =>
           array(
             'name' => 'number',
             'type' => 'number',
             'label' => 'modules.quotes.fields.number',
+          ),
+          
+          3 =>
+               array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          4=>           array(
+            'name' => 'description',
+            'type' => 'longtext',
+            'label' => 'modules.quotes.fields.description',
           ),
         ),
       ),

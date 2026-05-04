@@ -35,6 +35,23 @@ return array(
         'type' => 'select',
         'label' => 'modules.products.fields.category',
       ),
+      5=>      array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+       6=>    array(
+            'name' => 'created_at',
+            'type' => 'datetime',
+            'label' => 'modules.defaults.created_at',
+          ),
+          7 =>
+          array(
+            'name' => 'updated_at',
+            'type' => 'datetime',
+            'label' => 'modules.defaults.updated_at',
+          ),
+
     ),
   ),
   'record' =>
@@ -89,12 +106,18 @@ return array(
             'label' => 'modules.defaults.description',
           ),
           7 =>
+           array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          8=>
           array(
             'name' => 'created_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.created_at',
           ),
-          8 =>
+          9 =>
           array(
             'name' => 'updated_at',
             'type' => 'datetime',

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -126,5 +127,7 @@ class UsersTableSeeder extends Seeder
     ];
 
     DB::table('users')->insert($users);
+    User::factory(80)->create();
+
   }
 }

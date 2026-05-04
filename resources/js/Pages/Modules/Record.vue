@@ -16,7 +16,7 @@ import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
 import { useFieldValidation } from "@/Composables/useFieldValidation";
-
+import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
@@ -36,18 +36,20 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const appSettings = usePage().props.appSettings;
 const { validateFieldTypes } = useFieldValidation(props);
-
 // State
 const form = useForm({ ...props.record });
+
 const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const currentTab = ref("overview");
 const overlayOpen = ref(false);
+const fieldOverlayOpen = ref(false);
 const activePanel = ref(null);
 const activeParentRecord = ref(null);
 const expandPanel = ref(null);
+const activeField = ref(null);
 // Computed
 const avatar = computed(() => {
   const name = props.record?.name?.trim();
@@ -187,7 +189,6 @@ const clearAllValidationErrors = () => {
   validationErrors.value = [];
 };
 
-// SAVE RECORD
 const saveRecord = () => {
   clearAllValidationErrors();
   info(t("modules.actions.updating"));
@@ -289,6 +290,7 @@ const handleClickOutsideActionDropDown = (event) => {
 };
 
 const handleKeydown = (e) => {
+  if (overlayOpen.value || fieldOverlayOpen.value) return;
   if (e.ctrlKey && e.key === "s") {
     e.preventDefault();
     if (isEditing.value) {
@@ -325,6 +327,12 @@ const openOverlay = (panel, selected) => {
   overlayOpen.value = true;
   activeParentRecord.value = selected;
 };
+
+const openFieldOverlay = (field) => {
+  activeField.value = field;
+  fieldOverlayOpen.value = true;
+};
+
 const activeLayout = (panel) => {
   return props.record?.related[panel?.name]?.linkingPanel.columns || null;
 };
@@ -339,6 +347,13 @@ const handleSaved = (p) => {
   });
 };
 
+const showRelatedTab = computed(() => {
+  return (
+    !isEditing.value &&
+    Object.keys(props.record.related).length > 0 &&
+    props.record?.related.constructor === Object
+  );
+});
 // Lifecycle
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
@@ -356,6 +371,19 @@ useUnsavedChangesGuard({
 
 const relationship = (name) => {
   return props.record?.related?.[name] || null;
+};
+
+const onFieldRecordSelect = (record) => {
+  if (!activeField.value) return;
+
+  const fieldName = activeField.value.name;
+
+  form[fieldName] = record.id;
+
+  form[fieldName + "__label"] = record.name;
+
+  fieldOverlayOpen.value = false;
+  activeField.value = null;
 };
 </script>
 <template>
@@ -472,6 +500,7 @@ const relationship = (name) => {
             {{ $t("modules.overview") }}
           </li>
           <li
+            v-if="showRelatedTab"
             @click="switchTabs('related')"
             :class="{ active: currentTab === 'related' }"
           >
@@ -493,7 +522,6 @@ const relationship = (name) => {
             <div
               v-for="f in s.layout"
               class="record-layout__sections__item__layout__field"
-              @click="enableEditing()"
             >
               <span class="record-layout__sections__item__layout__field__label">
                 {{ $t(f.label) }}:
@@ -501,10 +529,12 @@ const relationship = (name) => {
               <FieldRenderer
                 :field="getField(f)"
                 v-model="form[f.name]"
+                :related_label="form[f.name + '__label'] ?? null"
                 :mode="getMode(f)"
                 :read-only="getField(f)?.readonly"
                 :module-color="module_color"
                 :has-error="hasError(f)"
+                @open-link-overlay="openFieldOverlay"
               />
             </div>
           </div>
@@ -532,6 +562,23 @@ const relationship = (name) => {
           :selected-parent="activeParentRecord"
         />
       </div>
+      <RecordSelectorDrawer
+        :open="fieldOverlayOpen"
+        :search-endpoint="
+          activeField ? `/${activeField.related_module}/search` : ''
+        "
+        label-key="name"
+        related-module="users"
+        sub-label-key="email"
+        :icon="activeField?.related_icon ?? 'fa-solid fa-user'"
+        @select="onFieldRecordSelect"
+        @close="
+          fieldOverlayOpen = false;
+          activeField = null;
+        "
+        :selected-user="form[activeField?.name]"
+        :active-field="activeField"
+      />
     </div>
   </div>
 </template>

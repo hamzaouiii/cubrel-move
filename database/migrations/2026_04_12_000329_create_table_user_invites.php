@@ -21,6 +21,8 @@ return new class extends Migration
       $table->boolean('is_admin')->default(false);
       $table->timestamp('accepted_at')->nullable();
       $table->timestamp('expires_at');
+            $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

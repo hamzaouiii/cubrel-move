@@ -16,6 +16,7 @@ class UserInvite extends BaseModule
     'expires_at',
     'accepted_at',
     'status',
+    'owner_id'
   ];
   protected $casts = ['accepted_at' => 'datetime', 'expires_at' => 'datetime'];
 
@@ -23,7 +24,6 @@ class UserInvite extends BaseModule
   {
     return $this->expires_at->isPast();
   }
-
   public function isPending(): bool
   {
     return is_null($this->accepted_at) && !$this->isExpired();

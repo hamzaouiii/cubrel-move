@@ -11,12 +11,14 @@ return array(
     'support' => 'Support',
     'system' => 'System',
   ),
+  'selectdrawer' => ['select' => 'Select'],
   'defaults' =>
   array(
     'name' => 'Name',
     'description' => 'Description',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
+    'owner_id' => 'Owned by',
     'no_data' => ' No data available',
   ),
   'actions' =>

@@ -1,0 +1,256 @@
+<script setup>
+import { ref, watch, nextTick, computed, getCurrentInstance } from "vue";
+import axios from "axios";
+
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false,
+  },
+  searchEndpoint: {
+    type: String,
+    required: true, // e.g. '/users/search'
+  },
+  labelKey: {
+    type: String,
+    default: "name", // which field to show as the primary label
+  },
+  subLabelKey: {
+    type: String,
+    default: null, // optional secondary line (e.g. 'email')
+  },
+  icon: {
+    type: String,
+    default: "fa-solid fa-user",
+  },
+  accentColor: {
+    type: String,
+    default: "var(--module-color)", // Fallback color for CSS variables
+  },
+  selectedUser: {
+    type: String,
+  },
+  activeField: {
+    type: Object,
+  },
+  relatedModule: {
+    type: String,
+  },
+});
+
+const emit = defineEmits(["select", "close"]);
+
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+
+const query = ref("");
+const records = ref([]);
+const loading = ref(false);
+const currentPage = ref(1);
+const lastPage = ref(1);
+const total = ref(0);
+const searchInput = ref(null);
+const drawerTitle = computed(() => {
+  return `${t("modules.selectdrawer.select")} ${t("modules." + props.relatedModule + ".single_label")}`;
+});
+
+let debounceTimer = null;
+
+const fetchRecords = async (page = 1) => {
+  loading.value = true;
+  try {
+    const { data } = await axios.get(props.searchEndpoint, {
+      params: { q: query.value, page, selected: props.selectedUser },
+    });
+    records.value = data.data;
+    currentPage.value = data.current_page;
+    lastPage.value = data.last_page;
+    total.value = data.total;
+  } catch (e) {
+    console.error("RecordSelectorDrawer fetch error", e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const onQueryInput = () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    fetchRecords(1);
+  }, 400);
+};
+
+const nextPage = () => {
+  if (currentPage.value < lastPage.value) {
+    fetchRecords(currentPage.value + 1);
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    fetchRecords(currentPage.value - 1);
+  }
+};
+
+const clearSearch = () => {
+  query.value = "";
+  fetchRecords(1);
+};
+
+watch(
+  () => props.open,
+  async (val) => {
+    if (val) {
+      query.value = "";
+      records.value = [];
+      await fetchRecords(1);
+      await nextTick();
+      searchInput.value?.focus();
+    }
+  },
+);
+
+const selectRecord = (record) => {
+  emit("select", record);
+  emit("close");
+};
+
+const close = () => emit("close");
+</script>
+
+<template>
+  <Transition name="slide-right" appear @after-leave="close">
+    <div
+      v-if="open"
+      class="record-overlay"
+      :style="{ '--related-color': accentColor }"
+      role="dialog"
+      @click.self="close"
+      aria-modal="true"
+    >
+      <div class="related-links">
+        <div class="related-links__header">
+          <div class="related-links__header__title">
+            {{ drawerTitle }}
+          </div>
+          <div class="related-links__header__actions">
+            <button
+              class="related-links__header__actions__close"
+              @click="close"
+            >
+              {{ $t("modules.linking.close") }}
+            </button>
+          </div>
+        </div>
+
+        <div class="related-links__list">
+          <div class="related-links__modifiers">
+            <span class="related-links__modifiers__info">
+              {{
+                $t("modules.linking.showing_count", {
+                  count: records?.length ?? "0",
+                })
+              }}
+              {{ $t("modules.of") }} {{ total ?? "--" }}
+            </span>
+            <div class="related-links__modifiers__search">
+              <input
+                ref="searchInput"
+                v-model="query"
+                type="text"
+                :placeholder="$t ? $t('modules.linking.search') : 'Search...'"
+                @input="onQueryInput"
+              />
+              <span
+                class="related-links__modifiers__search__clear"
+                @click.stop="clearSearch"
+              >
+                <i class="fa-solid fa-xmark" v-if="query.length"></i>
+              </span>
+            </div>
+          </div>
+          <div
+            v-if="!loading && (!records || records.length === 0)"
+            class="related-links__no-records"
+          >
+            <i class="fa-solid fa-border-none"></i>
+            <span>No records found</span>
+          </div>
+          <table class="related-links__table" v-else>
+            <thead>
+              <tr>
+                <th class="related-links__head__space"></th>
+                <th>{{ labelKey }}</th>
+                <th v-if="subLabelKey">{{ subLabelKey }}</th>
+                <th style="width: 40px"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                v-for="record in records"
+                :key="record.id"
+                @click="selectRecord(record)"
+                :class="{ selected: record.id === selectedUser }"
+                style="cursor: pointer"
+              >
+                <td :class="{ 'record-selected': record.id === selectedUser }">
+                  <i :class="[icon]" style="opacity: 0.6"></i>
+                </td>
+
+                <td>
+                  <span
+                    class="related-links__record__field related-links__record-title"
+                  >
+                    {{ record[labelKey] }}
+                  </span>
+                </td>
+
+                <td v-if="subLabelKey" class="related-links__cell">
+                  <span class="related-links__record__field">
+                    {{ record[subLabelKey] }}
+                  </span>
+                </td>
+
+                <td
+                  class="related-links__cell"
+                  style="text-align: right; opacity: 0.4"
+                >
+                  <i class="fa-solid fa-chevron-right"></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul class="related-links__pagination" v-if="lastPage > 1">
+          <li
+            @click="prevPage"
+            class="related-links__pagination__item"
+            :class="{
+              'related-links__pagination__item--disabled': currentPage === 1,
+            }"
+          >
+            <span><i class="fa-solid fa-angle-left"></i></span>
+          </li>
+          <li class="related-links__pagination__item">
+            <span
+              >{{ currentPage }} {{ $t ? $t("modules.of") : "of" }}
+              {{ lastPage }}</span
+            >
+          </li>
+          <li
+            @click="nextPage"
+            class="related-links__pagination__item"
+            :class="{
+              'related-links__pagination__item--disabled':
+                currentPage === lastPage,
+            }"
+          >
+            <span><i class="fa-solid fa-angle-right"></i></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </Transition>
+</template>

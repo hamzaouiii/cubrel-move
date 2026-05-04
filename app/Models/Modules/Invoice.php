@@ -19,6 +19,7 @@ class Invoice extends BaseModule
     'tax',
     'total',
     'notes',
+    'owner_id'
   ];
 
   protected $casts = [

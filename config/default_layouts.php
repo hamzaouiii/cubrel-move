@@ -17,6 +17,12 @@ return [
         "sortable" => true
       ],
       [
+        "name" => "owner_id",
+        "type" => "user",
+        "label" =>  "modules.defaults.owner_id",
+        "sortable" => true
+      ],
+      [
         "name" => "created_at",
         "type" => "datetime",
         "label" => "modules.defaults.created_at",
@@ -44,6 +50,12 @@ return [
             'required' => true,
             'readonly' => false,
             'sortable' => true
+          ],
+          [
+            "name" => "owner_id",
+            "type" => "user",
+            "label" =>  "modules.defaults.owner_id",
+            "sortable" => true
           ],
           [
             'name' => 'description',
@@ -85,6 +97,12 @@ return [
         "name" => "name",
         "type" => "text",
         "label" =>  "modules.defaults.name",
+        "sortable" => true
+      ],
+      [
+        "name" => "owner_id",
+        "type" => "user",
+        "label" =>  "modules.defaults.owner_id",
         "sortable" => true
       ],
       [

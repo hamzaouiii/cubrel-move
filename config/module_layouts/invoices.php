@@ -30,12 +30,18 @@ return array(
         'label' => 'modules.invoices.fields.status',
       ),
       4 =>
+       array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          5=>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
       ),
-      5 =>
+      6 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
@@ -140,16 +146,22 @@ return array(
         'layout' =>
         array(
           0 =>
-          array(
-            'name' => 'description',
-            'type' => 'longtext',
-            'label' => 'modules.invoices.fields.description',
+           array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
           ),
+          
           1 =>
           array(
             'name' => 'notes',
             'type' => 'longtext',
             'label' => 'modules.invoices.fields.notes',
+          ),
+          2=>array(
+            'name' => 'description',
+            'type' => 'longtext',
+            'label' => 'modules.invoices.fields.description',
           ),
         ),
       ),

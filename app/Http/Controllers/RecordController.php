@@ -37,7 +37,7 @@ class RecordController extends Controller
       $handler = app($handler_class);
 
       if ($handler instanceof ModuleHandler || method_exists($handler, 'getRecordData')) {
-        $props = $handler->getRecordData($module, $recordId, request()->all());
+        $props = $handler->getRecordData($module, $recordId, $moduleModel, request()->all());
       } else {
         $props = ['recordId' => $recordId];
       }
@@ -105,7 +105,7 @@ class RecordController extends Controller
     $modelClass  = $moduleModel->model_class;
 
     $record = $modelClass::findOrFail($id);
-    $record->fill($request->except('_token', '_method', 'related'))->save();
+    $record->fill($request->except('_token', '_method', 'related', 'owner_id__label'))->save();
 
     return back()->with('success', 'Record updated successfully.');
   }
@@ -295,9 +295,6 @@ class RecordController extends Controller
     return back()->with('success', "{$updatedCount} records updated.");
   }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────────────
 
   /**
    * Strip null / empty-string values from an ID array coming from the frontend.

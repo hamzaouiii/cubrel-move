@@ -16,10 +16,10 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Concerns\HasFullName;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\BaseModule;
+use  Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 //  Extend BaseModule and implement the Auth Contracts
 class User extends BaseModule implements
@@ -37,7 +37,8 @@ class User extends BaseModule implements
   protected $keyType = 'string';
 
   protected $fillable = [
-    'name',
+    'first_name',
+    'last_name',
     'email',
     'password',
     'is_admin',
@@ -70,5 +71,33 @@ class User extends BaseModule implements
   public function isAdmin(): bool
   {
     return (bool) $this->is_admin;
+  }
+
+  /**
+   * Get paginated users for linking panels.
+   * Supports search by name or email.
+   */
+  public static function getRecordsForLinking(int $perPage, ?string $search = null): LengthAwarePaginator
+  {
+    dd($perPage);
+    $query = static::query();
+
+    if ($search) {
+      $query->where(function ($q) use ($search) {
+        $q->where('name', 'like', "%{$search}%")
+          ->orWhere('email', 'like', "%{$search}%");
+      });
+    }
+
+    return $query->orderBy('name')->paginate($perPage);
+  }
+  protected static function booted(): void
+  {
+    parent::booted();
+    static::saving(function ($user) {
+      if ($user->isDirty('first_name') || $user->isDirty('last_name')) {
+        $user->name = $user->first_name . " " . $user->last_name;
+      }
+    });
   }
 }

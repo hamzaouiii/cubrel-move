@@ -139,7 +139,8 @@ class ModuleScaffolder
       }
       //for custom fields
       $tableBlueprint->json('custom_fields')->nullable();
-
+      $tableBlueprint->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $tableBlueprint->index('owner_id');
       $tableBlueprint->timestamps();
       $tableBlueprint->softDeletes();
     });

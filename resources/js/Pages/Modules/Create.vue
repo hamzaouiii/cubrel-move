@@ -13,6 +13,7 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 
 import { useFieldValidation } from "@/Composables/useFieldValidation";
+import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
 
 defineOptions({
   layout: AppLayout,
@@ -53,10 +54,26 @@ const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
 const validationErrors = ref([]);
 
+const fieldOverlayOpen = ref(false);
+const activeField = ref(null);
+
 const hasError = computed(() => (field) => {
   return validationErrors.value.some((item) => item.field === field.name);
 });
 
+const openFieldOverlay = (field) => {
+  activeField.value = field;
+  fieldOverlayOpen.value = true;
+};
+
+const onFieldRecordSelect = (record) => {
+  if (!activeField.value) return;
+  const fieldName = activeField.value.name;
+  form[fieldName] = record.id;
+  form[fieldName + "__label"] = record.name;
+  fieldOverlayOpen.value = false;
+  activeField.value = null;
+};
 const handleClickOutsideActionDropDown = (event) => {
   if (
     actionDropDownref.value &&
@@ -280,13 +297,32 @@ const getField = (f) => {
                 :field="getField(f)"
                 v-model="form[f.name]"
                 mode="edit"
+                :related_label="form[f.name + '__label'] ?? null"
                 :module-color="module_color"
                 :has-error="hasError(f)"
+                @open-link-overlay="openFieldOverlay"
               />
             </div>
           </div>
         </div>
       </div>
+      <RecordSelectorDrawer
+        :open="fieldOverlayOpen"
+        :search-endpoint="
+          activeField ? `/${activeField.related_module}/search` : ''
+        "
+        related-module="users"
+        label-key="name"
+        sub-label-key="email"
+        :icon="activeField?.related_icon ?? 'fa-solid fa-user'"
+        @select="onFieldRecordSelect"
+        @close="
+          fieldOverlayOpen = false;
+          activeField = null;
+        "
+        :selected-user="form[activeField?.name]"
+        :active-field="activeField"
+      />
     </div>
   </div>
 </template>

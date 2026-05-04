@@ -709,6 +709,7 @@ const isAdmin = computed(() => {
                   mode="table"
                   :module-color="module_color"
                   :highlight="search"
+                  :related_label="item[col.name + '__label'] ?? null"
                 />
               </td>
             </tr>

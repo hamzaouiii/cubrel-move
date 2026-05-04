@@ -23,15 +23,16 @@ class SupportCase extends BaseModule
     'closed_at',
   ];
 
-  protected $casts = [
+  protected $moduleCasts  = [
     'opened_at' => 'datetime',
     'closed_at' => 'datetime',
-    'custom_fields' => 'array',
 
   ];
 
-  protected static function booted()
+  protected static function booted(): void
   {
+    parent::booted();
+
     static::saving(function ($case) {
       if ($case->isDirty('name')) {
         $case->subject = $case->name;

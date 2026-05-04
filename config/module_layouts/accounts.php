@@ -13,38 +13,38 @@ return array(
       ),
       1 =>
       array(
-        'id' => '0f5ba6a1-b842-45e6-a864-dfdcaf92df06',
         'name' => 'website',
-        'type' => 'text',
+        'type' => 'url',
         'label' => 'modules.accounts.fields.website',
-        'module_id' => '019c99e9-1fa7-711b-853d-329ab73ed199',
         'dropdown_list_id' => NULL,
       ),
       2 =>
       array(
-        'id' => 'b09fafa7-644f-49e8-bb48-ceb1b4a94daf',
         'name' => 'phone',
         'type' => 'text',
         'label' => 'modules.accounts.fields.phone',
-        'module_id' => '019c99e9-1fa7-711b-853d-329ab73ed199',
         'dropdown_list_id' => NULL,
       ),
       3 =>
       array(
-        'id' => '7776deb0-4eb0-493b-b7d8-faef91283174',
         'name' => 'email',
         'type' => 'email',
         'label' => 'modules.accounts.fields.email',
-        'module_id' => '019c99e9-1fa7-711b-853d-329ab73ed199',
         'dropdown_list_id' => NULL,
       ),
       4 =>
+      array(
+        'name' => 'owner_id',
+        'type' => 'record',
+        'label' => 'modules.defaults.owner_id',
+      ),
+      5 =>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
         'label' => 'modules.defaults.created_at',
       ),
-      5 =>
+      6 =>
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
@@ -93,11 +93,17 @@ return array(
           ),
           5 =>
           array(
+            'name' => 'owner_id',
+            'type' => 'record',
+            'label' => 'modules.defaults.owner_id',
+          ),
+          6 =>
+          array(
             'name' => 'created_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.created_at',
           ),
-          6 =>
+          7 =>
           array(
             'name' => 'updated_at',
             'type' => 'datetime',
@@ -498,29 +504,23 @@ return array(
       ),
       1 =>
       array(
-        'id' => '0f5ba6a1-b842-45e6-a864-dfdcaf92df06',
         'name' => 'website',
         'type' => 'text',
         'label' => 'modules.accounts.fields.website',
-        'module_id' => '019c99e9-1fa7-711b-853d-329ab73ed199',
         'dropdown_list_id' => NULL,
       ),
       2 =>
       array(
-        'id' => '7776deb0-4eb0-493b-b7d8-faef91283174',
         'name' => 'email',
         'type' => 'email',
         'label' => 'modules.accounts.fields.email',
-        'module_id' => '019c99e9-1fa7-711b-853d-329ab73ed199',
         'dropdown_list_id' => NULL,
       ),
       3 =>
       array(
-        'id' => 'b09fafa7-644f-49e8-bb48-ceb1b4a94daf',
         'name' => 'phone',
         'type' => 'text',
         'label' => 'modules.accounts.fields.phone',
-        'module_id' => '019c99e9-1fa7-711b-853d-329ab73ed199',
         'dropdown_list_id' => NULL,
       ),
     ),

@@ -1531,7 +1531,6 @@
 /*  LINK RELATED RECORDS */
 
 .related-links {
-  // Use a subtle neutral border instead of goldenrod for a cleaner frame
   border: 1px solid #e2e8f0;
   background-color: white;
   width: 85%;
@@ -1539,8 +1538,8 @@
   position: absolute;
   right: 0;
   bottom: 0;
-  border-radius: 12px 0 0 0; // Slightly rounder for a modern feel
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08); // Softer, more spread out shadow
+  border-radius: 12px 0 0 0;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
 
@@ -1580,13 +1579,36 @@
           }
         }
 
-        // "Save" is your primary action using the dynamic color
         &:last-child {
           background-color: var(--related-color);
           color: white;
           &:hover {
             filter: brightness(0.9); // Subtle darken on hover
           }
+        }
+
+        &--close {
+          background-color: var(--related-color);
+          &:hover {
+            filter: brightness(0.9) !important;
+            color: white;
+          }
+        }
+      }
+
+      &__close {
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+
+        background-color: var(--related-color);
+        color: white;
+        &:hover {
+          filter: brightness(0.9); // Subtle darken on hover
         }
       }
     }
@@ -1759,9 +1781,21 @@
     border-bottom: 2px solid var(--related-color);
     color: inherit;
   }
+  &__no-records {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    i {
+      margin: 0 15px;
+    }
+  }
 }
 .related-links__record-title {
   font-weight: 600;
+}
+.record-selected i {
+  color: var(--related-color);
 }
 
 .actiondropdown-menu {

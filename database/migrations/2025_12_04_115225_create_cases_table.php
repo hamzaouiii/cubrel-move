@@ -20,6 +20,8 @@ return new class extends Migration
       $table->string('priority')->default('normal');
       $table->timestamp('opened_at')->nullable();
       $table->timestamp('closed_at')->nullable();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

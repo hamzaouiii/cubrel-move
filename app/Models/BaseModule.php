@@ -9,7 +9,7 @@ use App\Concerns\HasCustomFields;
 use App\Concerns\HasDynamicRelationships;
 use App\Services\Relationships\RelationshipService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Models\User;
 
 abstract class BaseModule extends Model
 {
@@ -25,6 +25,26 @@ abstract class BaseModule extends Model
   protected $keyType = 'string';
   protected $guarded = [];
   public $timestamps = true;
+
+  public function __construct(array $attributes = []){
+    parent::__construct($attributes);
+    
+    // Child can define $moduleCasts property instead
+    if (property_exists($this, 'moduleCasts')) {
+        $this->casts = array_merge($this->casts, $this->moduleCasts);
+    }
+  }
+
+  protected static function booted(): void
+  {
+    static::creating(function (self $model) {
+      // If no owner_id was provided in the request/seeder payload, fall back to the default
+      if (empty($model->owner_id)) {
+        $model->owner_id = static::getDefaultOwnerId();
+      }
+    });
+  }
+
   public function uniqueIds()
   {
     return ['id'];
@@ -51,5 +71,17 @@ abstract class BaseModule extends Model
   {
     return static::$moduleSlugCache[static::class] ??=
       Module::where('model_class', static::class)->value('slug');
+  }
+
+  public static function getDefaultOwnerId(): String
+  {
+    // 1. Return the authenticated user if they exist
+    if (auth()->check()) {
+      return auth()->id();
+    }
+
+    // 2. Fallback: Return the first User in the DB (ideal for seeders)
+    // 3. Last Resort: Use a constant or throw an exception if DB is empty
+    return User::first()?->id ?? 1;
   }
 }

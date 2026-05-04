@@ -17,5 +17,6 @@ class Account extends BaseModule
     'shipping_address',
     'city',
     'country',
+    'owner_id'
   ];
 }

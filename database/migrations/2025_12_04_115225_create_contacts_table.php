@@ -21,6 +21,8 @@ return new class extends Migration
       $table->string('phone')->nullable();
       $table->string('position')->nullable();
       $table->text('notes')->nullable();
+      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+      $table->index('owner_id');
       $table->timestamps();
     });
   }

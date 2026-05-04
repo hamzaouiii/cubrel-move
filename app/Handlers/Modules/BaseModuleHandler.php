@@ -28,7 +28,7 @@ abstract class BaseModuleHandler implements ModuleHandler
   }
 
 
-  public function getRecordData(string $module_slug, string $recordId, array $params = []): array
+  public function getRecordData(string $module_slug, string $recordId, Module $module, array $params = []): array
   {
     if (! isset($this->model)) {
       throw new \Exception("Model class not defined in handler.");
@@ -41,8 +41,18 @@ abstract class BaseModuleHandler implements ModuleHandler
       $customFields = $record->custom_fields ?? [];
       $recordData = $record->toArray();
       $mergedData = array_merge($recordData, $customFields);
+
+      $relateFields = collect($module->allFields())
+        ->filter(fn($f) => ($f['type'] ?? null) === 'record' && !empty($f['related_module']))
+        ->values();
+
+      if ($relateFields->isNotEmpty()) {
+        [$mergedData] = $this->resolveRelateLabels([$mergedData], $relateFields->all());
+      }
+
       $related = RelationshipService::getAllRelatedRecords($module_slug, $recordId)->toArray();
       $mergedData['related'] = $related;
+
       return [
         'record' => $mergedData
       ];
@@ -83,7 +93,6 @@ abstract class BaseModuleHandler implements ModuleHandler
 
     $items = $this->transformItems($paginator->items(), $params);
 
-    // Resolve relate field labels — injected as {field}__label alongside existing data
     $relateFields = collect($module->allFields())
       ->filter(fn($f) => ($f['type'] ?? null) === 'record' && !empty($f['related_module']))
       ->values();
