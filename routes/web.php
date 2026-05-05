@@ -48,7 +48,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user_id}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user_id}', [UserController::class, 'update'])->name('users.update');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
-    // routes/web.php
+    Route::post('/users/{user}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
+    //invites
     Route::post('/invites', [InviteController::class, 'store']);
     Route::post('/invites/bulk', [InviteController::class, 'bulkStore'])->name('invites.bulk');
     Route::post('/invites/{invite}/resend', [InviteController::class, 'resend'])->name('invites.resend');
@@ -135,6 +136,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
     Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
   });
+    Route::post('/leaveimpersonate', [UserController::class, 'leaveImpersonation'])->name('leave-impersonate');
 
   // Modules routes
   Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');

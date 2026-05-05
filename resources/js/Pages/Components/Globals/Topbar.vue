@@ -31,7 +31,7 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 const page = usePage();
-const user = page.props?.auth?.user || {};
+const user = computed(() => page.props.auth?.user || {});
 </script>
 <template>
   <div class="topbar">
@@ -82,9 +82,7 @@ const user = page.props?.auth?.user || {};
               <li>
                 <Link href="/profile">
                   <i class="fa-solid fa-id-card-clip"></i>
-                  {{
-                    user?.username || user.name || $t("globals.topbar.profile")
-                  }}
+                  {{ user?.name || user?.name || $t("globals.topbar.profile") }}
                 </Link>
               </li>
               <li @click="logout">

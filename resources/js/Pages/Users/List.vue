@@ -7,7 +7,7 @@ import {
   nextTick,
   getCurrentInstance,
 } from "vue";
-import { Head, usePage, Link, useForm, router } from "@inertiajs/vue3";
+import { Head, usePage, Link, router } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
@@ -33,7 +33,9 @@ const props = defineProps({
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-const appSettings = usePage().props.appSettings;
+const page = usePage();
+const appSettings = page.props.appSettings;
+const currentUser = computed(() => page.props.auth.user);
 
 const showListSearch = ref(false);
 const search = ref(props.filters.search ?? "");
@@ -70,6 +72,15 @@ const sortedItems = computed(() => {
       : String(valB).localeCompare(String(valA));
   });
 });
+
+const isRoot = computed(() => {
+  return usePage().props?.auth?.user?.is_root;
+});
+
+const showImpersonateButton = (item) => {
+  if (currentUser.value.id === item.id) return false;
+  return isRoot.value && item.status === "active";
+};
 
 const module_color = computed(() => {
   return appSettings.use_individual_module_colors == "0"
@@ -172,6 +183,19 @@ const handleClickOutsideActionDropDown = (event) => {
   ) {
     showActionDropDown.value = false;
   }
+};
+
+const handleImpersonate = (user) => {
+  if (!user?.id) return;
+  router.post(
+    `/users/${user.id}/impersonate`,
+    {},
+    {
+      onError: (errors) => {
+        console.error("Impersonation failed:", errors);
+      },
+    },
+  );
 };
 
 onMounted(() => {
@@ -298,6 +322,7 @@ const hidePagination = computed(() => {
                 ></i>
               </span>
             </th>
+            <th v-if="$page.props.auth.user.is_root"></th>
           </tr>
         </thead>
 
@@ -316,6 +341,19 @@ const hidePagination = computed(() => {
                   :module-color="module_color"
                   :highlight="search"
                 />
+              </td>
+              <td class="row-actions" @click.stop>
+                <button
+                  class="row-action-btn row-action-btn--resend"
+                  :class="{
+                    'row-action-btn--disabled': !showImpersonateButton(item),
+                  }"
+                  @click="handleImpersonate(item)"
+                  :title="$t('modules.users.actions.login_as')"
+                >
+                  <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                  {{ $t("modules.users.actions.login_as") }}
+                </button>
               </td>
             </tr>
           </template>

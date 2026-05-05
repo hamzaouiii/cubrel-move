@@ -5,7 +5,7 @@ import Alerts from "@/Pages/Components/Globals/Alerts.vue";
 import ConfirmOverlay from "@/Pages/Components/Globals/ConfirmOverlay.vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed, provide } from "vue";
-
+import ImpersonationBanner from "@/Pages/Components/Globals/ImpersonationBanner.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { alerts, info, error, warning, success } = useAlerts();
@@ -30,6 +30,7 @@ provide("useModuleColors", useModuleColors);
 // error("Failed to connect to the database", { timeout: 0 });
 // warning("Disk space is running low", { timeout: 0, progressable: true });
 // success("Your changes have been saved", { timeout: 0 });
+console.log(page.props);
 </script>
 
 <template>
@@ -40,10 +41,13 @@ provide("useModuleColors", useModuleColors);
       '--danger-color': appSettings.danger_color,
       '--secondary-color': appSettings.secondary_color,
     }"
+    :class="{ impersonating: page.props.auth.impersonating }"
   >
     <ConfirmOverlay />
     <Sidebar></Sidebar>
     <Alerts :alerts="alerts" />
+    <ImpersonationBanner v-if="page.props.auth.impersonating" />
+
     <main class="root__content">
       <Topbar></Topbar>
       <slot />

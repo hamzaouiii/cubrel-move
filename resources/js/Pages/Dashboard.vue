@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineOptions({
@@ -212,10 +212,14 @@ function getOrderStatusClass(status) {
                 <i
                   class="fa-solid fa-box orders-list__icon orders-list__icon--primary"
                 ></i>
+
                 <span class="orders-list__detail">
-                  <span class="orders-list__number">{{
-                    order.order_number
-                  }}</span>
+                  <Link :href="`/orders/${order.id}`">
+                    <span class="orders-list__number">{{
+                      order.order_number
+                    }}</span>
+                  </Link>
+
                   <small class="text--muted">{{ order.date }}</small>
                 </span>
               </span>

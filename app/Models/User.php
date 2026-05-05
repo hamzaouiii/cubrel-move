@@ -79,7 +79,6 @@ class User extends BaseModule implements
    */
   public static function getRecordsForLinking(int $perPage, ?string $search = null): LengthAwarePaginator
   {
-    dd($perPage);
     $query = static::query();
 
     if ($search) {
@@ -100,4 +99,14 @@ class User extends BaseModule implements
       }
     });
   }
+
+  public function isRoot(): bool
+{
+    return (bool) $this->is_root;
+}
+
+public function canBeImpersonated(): bool
+{
+    return !$this->is_root && $this->status === 'active';
+}
 }
