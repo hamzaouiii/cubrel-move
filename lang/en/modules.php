@@ -355,6 +355,9 @@ return array(
   'users' => [
     'label' => 'Users',
     'single_label' => 'User',
+    'actions' => [
+      'login_as' => 'Login as'
+    ],
     'modal' => [
       'title' => 'Invite New Users',
       'subtitle' => 'Send invitations and configure their access levels.',

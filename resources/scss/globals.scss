@@ -444,7 +444,7 @@
           min-width: 160px;
           z-index: 2;
           font-size: 1.2rem;
-          width: 180px;
+          min-width: 180px;
           overflow: hidden;
           li {
             a {
@@ -453,6 +453,7 @@
               color: #333;
               text-decoration: none;
               align-items: center;
+              text-wrap: nowrap;
               &:hover {
                 background-color: #dfdddd;
               }

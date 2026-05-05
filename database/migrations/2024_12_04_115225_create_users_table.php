@@ -32,6 +32,7 @@ return new class extends Migration
       // Status & access control
       $table->string('status')->default('active')->index();
       $table->boolean('is_admin')->default(false)->index();
+      $table->boolean('is_root')->default(false)->index();
       $table->timestamp('password_changed_at')->nullable();
       $table->unsignedTinyInteger('failed_login_attempts')->default(0);
       $table->timestamp('locked_until')->nullable();

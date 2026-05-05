@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Module;
 use Inertia\Inertia;
 use App\Support\Settings;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 
 class UserController extends Controller
@@ -133,5 +135,41 @@ class UserController extends Controller
       'last_page'    => $paginator->lastPage(),
       'total'        => $paginator->total(),
     ]);
+  }
+
+  public function impersonate(User $user)
+  {
+    
+      $currentUser = auth()->user();
+
+      if (!$currentUser->isRoot()) {
+          abort(403, 'Only root can impersonate users.');
+      }
+
+      if (!$user->canBeImpersonated()) {
+          abort(403, 'Cannot impersonate this user.');
+      }
+
+      // store original user id
+      Session::put('impersonator_id', $currentUser->id);
+
+      // login as target user
+      Auth::login($user);
+      return redirect()->route('dashboard');
+  }
+  public function leaveImpersonation()
+  {
+      $impersonatorId = session('impersonator_id');
+
+      if (!$impersonatorId) {
+          abort(403);
+      }
+
+      $originalUser = User::findOrFail($impersonatorId);
+
+      Auth::login($originalUser);
+      session()->forget('impersonator_id');
+
+      return redirect()->route('dashboard');
   }
 }
