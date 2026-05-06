@@ -135,7 +135,6 @@ const getEmailLocalPart = (email) => {
     "
   >
     <div class="email-field email-field--table">
-      {{ searchable }}
       <i class="fa-regular fa-envelope email-table-icon"></i>
       <span v-if="searchable">
         <span v-html="highlightMatch(modelValue ?? '—')"></span>

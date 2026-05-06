@@ -344,6 +344,7 @@ const hidePagination = computed(() => {
                   mode="table"
                   :module-color="module_color"
                   :highlight="search"
+                  :searchable="getField(col)?.searchable"
                 />
               </td>
               <td class="row-actions" @click.stop>

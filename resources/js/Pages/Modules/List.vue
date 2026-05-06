@@ -713,6 +713,7 @@ const isAdmin = computed(() => {
                   mode="table"
                   :module-color="module_color"
                   :highlight="search"
+                  :searchable="getField(col)?.searchable"
                   :related_label="item[col.name + '__label'] ?? null"
                 />
               </td>
