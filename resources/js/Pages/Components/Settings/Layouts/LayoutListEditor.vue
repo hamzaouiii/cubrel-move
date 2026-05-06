@@ -344,15 +344,7 @@ onBeforeUnmount(() => {
                       <span class="editor__columns__item__label">
                         {{ $t(col.label) ?? col.key }}
                       </span>
-                      <span class="editor__columns__item__flag">
-                        <span class="editor__columns__item__flag__label">{{
-                          $t("fields.metadata.sortable")
-                        }}</span>
-                        <Checkbox
-                          class="editor__columns__item__flag__field"
-                          v-model="col.sortable"
-                        ></Checkbox>
-                      </span>
+
                       <button
                         class="editor__columns__item__remove"
                         type="button"

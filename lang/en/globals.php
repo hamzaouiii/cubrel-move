@@ -103,4 +103,8 @@ return [
     ],
 
   ],
+  'impersonate' => [
+    'is_logged_in_as' => "is logged in as",
+    'return_to_original_session' => "Return to original session",
+  ]
 ];

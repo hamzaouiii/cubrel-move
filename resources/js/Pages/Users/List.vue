@@ -40,8 +40,8 @@ const currentUser = computed(() => page.props.auth.user);
 const showListSearch = ref(false);
 const search = ref(props.filters.search ?? "");
 const searchInput = ref(null);
-const sortKey = ref(null);
-const sortDir = ref("asc");
+const sortKey = ref(props.filters.sort ?? null);
+const sortDir = ref(props.filters.direction ?? "asc");
 
 const showActionDropDown = ref(false);
 const actionDropDownref = ref(null);
@@ -51,26 +51,6 @@ const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
     (column) => column !== null,
   );
-});
-
-const sortedItems = computed(() => {
-  if (!sortKey.value) return props.items;
-
-  return [...props.items].sort((a, b) => {
-    const valA = a[sortKey.value];
-    const valB = b[sortKey.value];
-
-    if (valA == null) return 1;
-    if (valB == null) return -1;
-
-    if (typeof valA === "number" && typeof valB === "number") {
-      return sortDir.value === "asc" ? valA - valB : valB - valA;
-    }
-
-    return sortDir.value === "asc"
-      ? String(valA).localeCompare(String(valB))
-      : String(valB).localeCompare(String(valA));
-  });
 });
 
 const isRoot = computed(() => {
@@ -160,6 +140,17 @@ const sortBy = (col) => {
     sortKey.value = col.name;
     sortDir.value = "asc";
   }
+
+  router.get(
+    window.location.pathname,
+    {
+      search: search.value || undefined,
+      sort: sortKey.value,
+      direction: sortDir.value,
+      page: 1,
+    },
+    { preserveState: true, preserveScroll: true, replace: true },
+  );
 };
 
 const toggleSearch = () => {
@@ -216,7 +207,11 @@ const hidePagination = computed(() => {
     <title>{{ title }} - Cubrel</title>
   </Head>
 
-  <div class="list-layout" :style="{ '--module-color': module_color }">
+  <div
+    class="list-layout"
+    :style="{ '--module-color': module_color }"
+    :class="{ impersonating: page.props.auth.impersonating }"
+  >
     <div class="list-layout__header">
       <div class="list-layout__header__details">
         <h3 class="list-layout__header__details__title">
@@ -328,11 +323,7 @@ const hidePagination = computed(() => {
 
         <tbody>
           <template v-if="meta && meta.total != 0">
-            <tr
-              v-for="item in sortedItems"
-              :key="item.id"
-              class="clickable-row"
-            >
+            <tr v-for="item in items" :key="item.id" class="clickable-row">
               <td v-for="col in listLayoutColumns || []" :key="col.name">
                 <FieldRenderer
                   :field="getField(col)"
@@ -340,6 +331,7 @@ const hidePagination = computed(() => {
                   mode="table"
                   :module-color="module_color"
                   :highlight="search"
+                  :searchable="getField(col)?.searchable"
                 />
               </td>
               <td class="row-actions" @click.stop>

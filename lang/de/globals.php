@@ -72,13 +72,11 @@ return [
     'go_back' => 'Zurück',
     '404' => [
       'title' => 'Seite nicht gefunden',
-      'badge' => '404 FEHLER',
       'heading' => 'Hier ist nichts',
       'description' => 'Die angeforderte Route existiert nicht oder wurde verschoben:',
     ],
     '405' => [
       'title' => 'Seite nicht gefunden',
-      'badge' => '404 FEHLER',
       'heading' => 'Hier ist nichts',
       'description' => 'Die angeforderte Route existiert nicht oder wurde verschoben:',
     ],
@@ -86,24 +84,22 @@ return [
       'title' => 'Zugriff verweigert',
       'heading' => 'Sie können diese Seite nicht aufrufen',
       'description' => 'Sie haben keine Berechtigung, diese Ressource zu sehen:',
-      'back_to_dashboard' => 'Zur Übersicht',
-      'go_back' => 'Zurück',
     ],
 
     '500' => [
       'title' => 'Serverfehler',
       'heading' => 'Etwas ist schiefgelaufen',
       'description' => 'Auf dem Server ist ein unerwarteter Fehler aufgetreten:',
-      'back_to_dashboard' => 'Zur Übersicht',
-      'go_back' => 'Zurück',
     ],
 
     '503' => [
       'title' => 'Dienst nicht verfügbar',
       'heading' => 'Wir sind vorübergehend offline',
       'description' => 'Der Dienst ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut:',
-      'back_to_dashboard' => 'Zur Übersicht',
-      'go_back' => 'Zurück',
     ],
-  ]
+  ],
+  'impersonate' => [
+    'is_logged_in_as' => "ist angemeldet als",
+    'return_to_original_session' => "Account wechseln zurück"
+    ],
 ];

@@ -24,13 +24,13 @@ const leaveImpersonation = () => {
     <div class="impersonation-banner__content">
       <span class="impersonation-banner__text">
         <span class="user">{{ impersonator.name }}</span>
-        is logged in as
+        {{ $t("globals.impersonate.is_logged_in_as") }}
         <span class="user">{{ currentUser.name }}</span>
       </span>
     </div>
 
     <button class="impersonation-banner__button" @click="leaveImpersonation">
-      Return to original session
+      {{ $t("globals.impersonate.return_to_original_session") }}
     </button>
   </div>
 </template>

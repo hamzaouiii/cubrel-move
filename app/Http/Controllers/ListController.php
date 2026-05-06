@@ -35,7 +35,8 @@ class ListController extends Controller
       if ($handler instanceof ModuleHandler) {
         $params = request()->all();
         $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
-
+        $params['sort']      = request()->input('sort');
+        $params['direction'] = request()->input('direction', 'asc');
         $props = $handler->getListData($moduleModel, $params);
       }
     }
@@ -51,7 +52,7 @@ class ListController extends Controller
       'title'      => $moduleModel->name,
       'listLayout' => $listLayout,
       'fields'     => $fields,
-      'filters'    => request()->only(['search', 'perPage']),
+      'filters' => request()->only(['search', 'perPage', 'sort', 'direction']),
       'dropdownLists' => $recorddropdownLists,
 
     ], $props));

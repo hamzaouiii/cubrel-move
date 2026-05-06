@@ -30,7 +30,6 @@ provide("useModuleColors", useModuleColors);
 // error("Failed to connect to the database", { timeout: 0 });
 // warning("Disk space is running low", { timeout: 0, progressable: true });
 // success("Your changes have been saved", { timeout: 0 });
-console.log(page.props);
 </script>
 
 <template>

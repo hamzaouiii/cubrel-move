@@ -76,9 +76,19 @@ abstract class BaseModuleHandler implements ModuleHandler
       });
     }
 
-    $paginator = $query
-      ->orderBy('created_at', 'desc')
-      ->paginate($perPage);
+    if ($sort = $params['sort'] ?? null) {
+    $direction = in_array($params['direction'] ?? 'asc', ['asc', 'desc'])
+        ? $params['direction']
+        : 'asc';
+
+    if (in_array($sort, $query->getModel()->getFillable())) {
+        $query->orderBy($sort, $direction);
+    }
+    } else {
+        $query->orderBy('created_at', 'desc'); 
+    }
+    
+    $paginator = $query->paginate($perPage);
 
     $pages = [];
     $last  = $paginator->lastPage();

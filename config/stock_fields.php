@@ -398,6 +398,8 @@ return [
     [
       'name' => 'username',
       'type' => 'text',
+      'searchable' => true,
+      'sortable' => true,
     ],
     'first_name' =>
     [

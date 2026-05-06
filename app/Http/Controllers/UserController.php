@@ -25,7 +25,9 @@ class UserController extends Controller
       ->firstOrFail();
 
     $handler = new UserModuleHandler();
-    $props = $handler->getListData($moduleModel);
+            $params = request()->all();
+        $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
+    $props = $handler->getListData($moduleModel, $params);
 
     $listLayout = config("module_layouts.users.list");
     $recorddropdownLists = $moduleModel->dropdownLists;
