@@ -57,8 +57,8 @@ const actionDropDownref = ref(null);
 
 const searchInput = ref(null);
 const search = ref(props.filters.search ?? "");
-const sortKey = ref(null);
-const sortDir = ref("asc");
+const sortKey = ref(props.filters.sort ?? null);
+const sortDir = ref(props.filters.direction ?? "asc");
 const showListSearch = ref(false);
 
 const updateForm = useForm({
@@ -141,49 +141,15 @@ const editModuleUrl = computed(() => {
   return base + props.module.id;
 });
 
-const sortedItems = computed(() => {
-  if (!sortKey.value) return props.items;
-
-  return [...props.items].sort((a, b) => {
-    const valA = a[sortKey.value];
-    const valB = b[sortKey.value];
-
-    if (valA == null) return 1;
-    if (valB == null) return -1;
-
-    if (typeof valA === "number" && typeof valB === "number") {
-      return sortDir.value === "asc" ? valA - valB : valB - valA;
-    }
-
-    return sortDir.value === "asc"
-      ? String(valA).localeCompare(String(valB))
-      : String(valB).localeCompare(String(valA));
-  });
-});
-
 const module_color = computed(() => {
   return appSettings.use_individual_module_colors == "0"
     ? appSettings.primary_color
     : props.module.color;
 });
 
-watch(
-  () => props.items,
-  (newItems) => {
-    if (allMatchingSelected.value) {
-      // Page changed — nothing to do for selectedIds in allMatching mode.
-      // excludedIds persist across pages intentionally.
-    }
-  },
-);
-
-// ─── Field helpers ───────────────────────────────────────────────────────────
-
 const getField = (item) => {
   return Object.values(props.fields)?.find((field) => field.name === item.name);
 };
-
-// ─── Per-row selection ───────────────────────────────────────────────────────
 
 const isSelected = (id) => {
   if (allMatchingSelected.value) {
@@ -473,9 +439,18 @@ const sortBy = (col) => {
     sortKey.value = col.name;
     sortDir.value = "asc";
   }
-};
 
-// ─── Search toggle ───────────────────────────────────────────────────────────
+  router.get(
+    window.location.pathname,
+    {
+      search: search.value || undefined,
+      sort: sortKey.value,
+      direction: sortDir.value,
+      page: 1,
+    },
+    { preserveState: true, preserveScroll: true, replace: true },
+  );
+};
 
 const toggleSearch = () => {
   showListSearch.value = !showListSearch.value;
@@ -487,8 +462,6 @@ const toggleSearch = () => {
     resetSearchValue();
   }
 };
-
-// ─── Lifecycle ───────────────────────────────────────────────────────────────
 
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
@@ -688,7 +661,7 @@ const isAdmin = computed(() => {
         <tbody>
           <template v-if="meta && meta.total != 0">
             <tr
-              v-for="item in sortedItems"
+              v-for="item in items"
               :key="item.id"
               class="clickable-row"
               :class="{ 'selected-row': isSelected(item.id) }"
