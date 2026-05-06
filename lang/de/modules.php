@@ -351,6 +351,9 @@ return array(
   'users' => [
     'label' => 'Benutzer',
     'single_label' => 'Benutzer',
+    'actions' => [
+    'login_as' => 'Anmelden als'
+    ],
     'modal' => [
       'title' => 'Neue Benutzer einladen',
       'subtitle' => 'Einladungen versenden und Zugriffsrechte konfigurieren.',

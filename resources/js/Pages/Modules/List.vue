@@ -522,7 +522,11 @@ const isAdmin = computed(() => {
     <title>{{ title }} - Cubrel</title>
   </Head>
 
-  <div class="list-layout" :style="{ '--module-color': module_color }">
+  <div
+    class="list-layout"
+    :style="{ '--module-color': module_color }"
+    :class="{ impersonating: page.props.auth.impersonating }"
+  >
     <div class="list-layout__header">
       <div class="list-layout__header__details">
         <h3 class="list-layout__header__details__title">

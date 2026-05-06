@@ -120,6 +120,7 @@ const onCollapserMouseLeave = () => {
         'sidebar--open': !collapsedSidebar,
         'sidebar--collapsed': collapsedSidebar,
       },
+      { impersonating: page.props.auth.impersonating },
     ]"
   >
     <div @click="toggleSidebar" class="sidebar__collapser">
