@@ -99,7 +99,7 @@ class InviteController extends Controller
   {
 
     $moduleModel = Module::query()
-      ->where('slug', 'user-invites')
+      ->where('slug', 'userinvites')
       ->where('is_active', true)
       ->firstOrFail();
 

@@ -143,7 +143,7 @@ return [
     'pastor'   => 'Pastor / Pastorin',
     'elder'    => 'Ältester / Älteste',
   ],
-  'user-invites_status_list' => [
+  'userinvites_status_list' => [
     'expired' => 'Abgelaufen',
     'accepted' => 'Akzeptiert',
     'pending' => 'Ausstehend',
