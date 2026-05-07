@@ -19,6 +19,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RelatedFieldController;
+
 Route::middleware(['guest'])->group(function () {
   Route::get('/login', [AuthController::class, 'index'])->name('login');
   Route::post('/login', [AuthController::class, 'login']);
@@ -44,7 +46,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users-linking-list', [UserController::class, 'getUsersForLinking'])->name('users.linking');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::get('/users/invites', [InviteController::class, 'list'])->name('invites.list');
-    Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
     Route::get('/users/{user_id}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user_id}', [UserController::class, 'update'])->name('users.update');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -137,6 +138,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
   });
     Route::post('/leaveimpersonate', [UserController::class, 'leaveImpersonation'])->name('leave-impersonate');
+    Route::get('/relatedfield/search/{related_module}', RelatedFieldController::class)->name('records.search');
 
   // Modules routes
   Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');

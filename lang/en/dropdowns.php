@@ -143,7 +143,7 @@ return [
     'pastor'   => 'Pastor',
     'elder'    => 'Elder',
   ],
-  'user-invites_status_list' => [
+  'userinvites_status_list' => [
     'expired' => 'Expired',
     'accepted' => 'Accepted',
     'pending' => 'Pending',

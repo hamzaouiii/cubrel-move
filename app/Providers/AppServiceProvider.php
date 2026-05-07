@@ -5,8 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
-use App\Models\Module;
 use App\Services\ModuleScaffolder;
+use App\Models\Module;
+use App\Models\Layout;
 use App\Services\Translations\TranslationService;
 use App\Services\Settings\SettingService;
 use App\Models\Label;
@@ -42,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
       'translations' => fn() => TranslationService::all(),
       'appSettings'  => fn() => SettingService::all(),
       'modules'      => fn() => Module::forSidebar(),
+      'layouts'      => fn() => Layout::getAllLayouts(),
+      
     ]);
   }
 }

@@ -173,25 +173,60 @@ abstract class BaseModuleHandler implements ModuleHandler
    * Fetch id → display label map for a given module's records.
    * Override in a subclass handler if a module uses non-standard name columns.
    */
-  protected function fetchLabels(string $module, array $ids): array
-  {
-    $modelMap = [
-      'users'    => \App\Models\User::class,
-    ];
+protected static array $moduleLabelCache = [];
+protected static array $moduleModelClassCache = [];
 
-    $modelClass = $modelMap[$module] ?? null;
-    if (!$modelClass) return [];
+protected function fetchLabels(string $module, array $ids): array
+{
+    if (empty($ids)) return [];
 
-    return $modelClass::whereIn('id', $ids)
-      ->get(['id', 'name', 'first_name', 'last_name'])
-      ->mapWithKeys(function ($record) {
-        $label = $record->name
-          ?? trim(($record->first_name ?? '') . ' ' . ($record->last_name ?? ''))
-          ?: (string) $record->id;
-        return [$record->id => $label];
-      })
-      ->all();
-  }
+    // Cache model_class lookups to avoid repeated DB hits per module
+    if (!isset(self::$moduleModelClassCache[$module])) {
+        $moduleRecord = Module::query()
+            ->select('model_class')
+            ->where('slug', $module)
+            ->first();
+
+        self::$moduleModelClassCache[$module] = $moduleRecord?->model_class;
+    }
+
+    $modelClass = self::$moduleModelClassCache[$module];
+    if (!$modelClass || !class_exists($modelClass)) return [];
+
+    $cachedLabels = self::$moduleLabelCache[$module] ?? [];
+
+    // Only fetch IDs we don't already have cached
+    $missingIds = array_values(array_diff($ids, array_keys($cachedLabels)));
+
+    if (!empty($missingIds)) {
+        $columns = ['id'];
+
+        // Determine available label columns from the model's table
+        $instance = new $modelClass;
+        $fillable = $instance->getFillable();
+        foreach (['name', 'first_name', 'last_name', 'title'] as $col) {
+            if (in_array($col, $fillable)) {
+                $columns[] = $col;
+            }
+        }
+
+        $modelClass::whereIn('id', $missingIds)
+            ->get($columns)
+            ->each(function ($record) use ($module) {
+                $label = $record->name
+                    ?? trim(($record->first_name ?? '') . ' ' . ($record->last_name ?? ''))
+                    ?: (string) $record->id;
+
+                self::$moduleLabelCache[$module][$record->id] = $label;
+            });
+    }
+
+    // Return only the labels for the requested IDs
+    return array_intersect_key(
+        self::$moduleLabelCache[$module],
+        array_flip($ids)
+    );
+}
 
   public function getSearchableColumns(Module $module): array
   {

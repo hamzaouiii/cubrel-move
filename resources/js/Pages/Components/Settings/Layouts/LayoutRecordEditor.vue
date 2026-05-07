@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
-import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 
 const props = defineProps({
   sections: {
@@ -195,8 +194,6 @@ const moveFieldToSection = (
     name: field.name,
     label: field.label,
     type: field.type,
-    readonly: field.readonly,
-    required: field.required,
     field: props.fieldByKey[field.name],
   };
 
@@ -541,15 +538,7 @@ onBeforeUnmount(() => {
                         >{{ $t("fields.metadata.readonly") }}</span
                       >
                     </span>
-                    <span class="editor__columns__item__flag">
-                      <span class="editor__columns__item__flag__label">{{
-                        $t("layouts.required_field")
-                      }}</span>
-                      <Checkbox
-                        class="editor__columns__item__flag__field"
-                        v-model="column.required"
-                      ></Checkbox>
-                    </span>
+
                     <button
                       @click="
                         removeColumnFromSection(sectionIndex, columnIndex)

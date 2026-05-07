@@ -9,10 +9,13 @@ export const fieldTypeRules = {
       "filterable",
       "options",
       "default_value",
+      "related_module",
+      "min_length",
+      "max_length",
     ],
   },
   checkbox: {
-    hide: ["required", "regex", "min_length", "max_length", "default_value"],
+    hide: ["required", "regex", "default_value"],
     set: { required: false },
   },
   select: {
@@ -24,11 +27,20 @@ export const fieldTypeRules = {
   datetime: {
     hide: ["regex", "min_length", "max_length"],
   },
+  record: {
+    // Explicitly surfaces fields hidden by default
+    show: ["related_module"],
+  },
 };
 
 export function useFieldRules(form, metadata) {
   /**
-   * Computed property to filter which fields should be visible in the form
+   * Computed property to filter which fields should be visible in the form.
+   *
+   * Resolution order (highest priority first):
+   *  1. type-level `show`  → always visible, overrides any hide rule
+   *  2. type-level `hide`  → hidden for this specific type
+   *  3. default-level `hide` → hidden for all types unless overridden by (1)
    */
   const visibleMetadata = computed(() => {
     const data = metadata.value;
@@ -43,25 +55,31 @@ export function useFieldRules(form, metadata) {
     const defaultRules = fieldTypeRules.default || {};
     const specificRules = fieldTypeRules[type] || {};
 
-    // Merge hide rules from default and specific type
-    const hideList = [
+    // Fields that are force-shown override any hide rule
+    const showList = new Set(specificRules.show || []);
+
+    // Merge hide lists; type-level additions stack on top of defaults
+    const hideList = new Set([
       ...(defaultRules.hide || []),
       ...(specificRules.hide || []),
-    ];
+    ]);
 
-    return allFieldNames.filter((field) => !hideList.includes(field));
+    return allFieldNames.filter((field) => {
+      // show rule wins over everything
+      if (showList.has(field)) return true;
+      // otherwise respect the merged hide list
+      return !hideList.has(field);
+    });
   });
 
   /**
-   * Applies forced values (e.g., setting required to false for checkboxes)
+   * Applies forced values (e.g., setting required to false for checkboxes).
    */
   const applyRules = (type) => {
-    const defaultRules = fieldTypeRules.default?.set || {};
-    const specificRules = fieldTypeRules[type]?.set || {};
-
-    // Merge sets (specific overrides default)
-    const sets = { ...defaultRules, ...specificRules };
-
+    const defaultSets = fieldTypeRules.default?.set || {};
+    const specificSets = fieldTypeRules[type]?.set || {};
+    // Specific overrides default
+    const sets = { ...defaultSets, ...specificSets };
     Object.entries(sets).forEach(([field, value]) => {
       if (field in form) {
         form[field] = value;
@@ -69,11 +87,9 @@ export function useFieldRules(form, metadata) {
     });
   };
 
-  /**
-   * Shared Helper: Identify checkbox types for the UI
-   */
-  const isCheckbox = (field) => {
-    return [
+  /** Identify checkbox-style boolean fields for the UI */
+  const isCheckbox = (field) =>
+    [
       "readonly",
       "hidden",
       "required",
@@ -81,19 +97,19 @@ export function useFieldRules(form, metadata) {
       "filterable",
       "sortable",
     ].includes(field);
-  };
 
   const isDropDown = (field) => field === "type";
   const isDisplayLabel = (field) => field === "label";
   const isRegex = (field) => field === "regex";
+  const isRelatedModule = (field) => field === "related_module";
 
   /**
-   * Shared Helper: Determine if a field should be disabled (Read Only)
+   * Determine if a field should be read-only.
+   * In edit mode: name + type are locked.
+   * In create mode: name is managed by the generator.
    */
   const isReadonly = (field, isEditMode = false) => {
-    // In edit mode, we usually don't allow changing the technical name or type
     if (isEditMode && (field === "name" || field === "type")) return true;
-    // In create mode, only the name might be managed by a generator
     return field === "name";
   };
 
@@ -105,6 +121,7 @@ export function useFieldRules(form, metadata) {
     isReadonly,
     isDisplayLabel,
     isRegex,
+    isRelatedModule,
     fieldTypeRules,
   };
 }

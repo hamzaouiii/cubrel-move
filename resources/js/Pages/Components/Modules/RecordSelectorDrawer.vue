@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, nextTick, computed, getCurrentInstance } from "vue";
 import axios from "axios";
-
+import FieldRenderer from "../Globals/FieldRenderer.vue";
 const props = defineProps({
   open: {
     type: Boolean,
@@ -9,15 +9,11 @@ const props = defineProps({
   },
   searchEndpoint: {
     type: String,
-    required: true, // e.g. '/users/search'
+    required: true,
   },
-  labelKey: {
-    type: String,
-    default: "name", // which field to show as the primary label
-  },
-  subLabelKey: {
-    type: String,
-    default: null, // optional secondary line (e.g. 'email')
+  layout: {
+    type: Array,
+    default: () => [],
   },
   icon: {
     type: String,
@@ -25,9 +21,9 @@ const props = defineProps({
   },
   accentColor: {
     type: String,
-    default: "var(--module-color)", // Fallback color for CSS variables
+    default: "var(--module-color)",
   },
-  selectedUser: {
+  selectedRecord: {
     type: String,
   },
   activeField: {
@@ -36,6 +32,7 @@ const props = defineProps({
   relatedModule: {
     type: String,
   },
+  fields: Object,
 });
 
 const emit = defineEmits(["select", "close"]);
@@ -50,9 +47,16 @@ const currentPage = ref(1);
 const lastPage = ref(1);
 const total = ref(0);
 const searchInput = ref(null);
+
 const drawerTitle = computed(() => {
   return `${t("modules.selectdrawer.select")} ${t("modules." + props.relatedModule + ".single_label")}`;
 });
+
+// The first column drives the primary label; remaining columns are supplementary.
+const primaryColumn = computed(
+  () => props.layout[0] ?? { name: "name", label: "Name" },
+);
+const extraColumns = computed(() => props.layout.slice(1));
 
 let debounceTimer = null;
 
@@ -60,14 +64,14 @@ const fetchRecords = async (page = 1) => {
   loading.value = true;
   try {
     const { data } = await axios.get(props.searchEndpoint, {
-      params: { q: query.value, page, selected: props.selectedUser },
+      params: { q: query.value, page, selected: props.selectedRecord },
     });
     records.value = data.data;
     currentPage.value = data.current_page;
     lastPage.value = data.last_page;
     total.value = data.total;
   } catch (e) {
-    console.error("RecordSelectorDrawer fetch error", e);
+    console.error("RecordSelectorDrawer fetch error", e.message);
   } finally {
     loading.value = false;
   }
@@ -109,6 +113,11 @@ watch(
     }
   },
 );
+
+const getField = (f) => {
+  const pp = props.fields.find((field) => field.name === f.name);
+  return pp;
+};
 
 const selectRecord = (record) => {
   emit("select", record);
@@ -169,6 +178,7 @@ const close = () => emit("close");
               </span>
             </div>
           </div>
+
           <div
             v-if="!loading && (!records || records.length === 0)"
             class="related-links__no-records"
@@ -176,12 +186,15 @@ const close = () => emit("close");
             <i class="fa-solid fa-border-none"></i>
             <span>No records found</span>
           </div>
+
           <table class="related-links__table" v-else>
             <thead>
               <tr>
                 <th class="related-links__head__space"></th>
-                <th>{{ labelKey }}</th>
-                <th v-if="subLabelKey">{{ subLabelKey }}</th>
+                <th>{{ $t(primaryColumn.label) }}</th>
+                <th v-for="col in extraColumns" :key="col.name">
+                  {{ $t(col.label) }}
+                </th>
                 <th style="width: 40px"></th>
               </tr>
             </thead>
@@ -191,10 +204,12 @@ const close = () => emit("close");
                 v-for="record in records"
                 :key="record.id"
                 @click="selectRecord(record)"
-                :class="{ selected: record.id === selectedUser }"
+                :class="{ selected: record.id === selectedRecord }"
                 style="cursor: pointer"
               >
-                <td :class="{ 'record-selected': record.id === selectedUser }">
+                <td
+                  :class="{ 'record-selected': record.id === selectedRecord }"
+                >
                   <i :class="[icon]" style="opacity: 0.6"></i>
                 </td>
 
@@ -202,13 +217,22 @@ const close = () => emit("close");
                   <span
                     class="related-links__record__field related-links__record-title"
                   >
-                    {{ record[labelKey] }}
+                    {{ record[primaryColumn.name] }}
                   </span>
                 </td>
 
-                <td v-if="subLabelKey" class="related-links__cell">
+                <td
+                  v-for="col in extraColumns"
+                  :key="col.name"
+                  class="related-links__cell"
+                >
                   <span class="related-links__record__field">
-                    {{ record[subLabelKey] }}
+                    <FieldRenderer
+                      :field="getField(col)"
+                      v-model="record[col.name]"
+                      mode="linkingPanel"
+                      :highlight="search"
+                    />
                   </span>
                 </td>
 
@@ -234,10 +258,10 @@ const close = () => emit("close");
             <span><i class="fa-solid fa-angle-left"></i></span>
           </li>
           <li class="related-links__pagination__item">
-            <span
-              >{{ currentPage }} {{ $t ? $t("modules.of") : "of" }}
-              {{ lastPage }}</span
-            >
+            <span>
+              {{ currentPage }} {{ $t ? $t("modules.of") : "of" }}
+              {{ lastPage }}
+            </span>
           </li>
           <li
             @click="nextPage"

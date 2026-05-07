@@ -32,7 +32,8 @@ defineOptions({
 
 const props = defineProps({
   module: Object,
-  field_types: Array,
+  fieldTypes: Array,
+  fieldModules: Array,
   metadata: Object,
 });
 
@@ -62,6 +63,7 @@ const default_values = {
   min_length: "",
   max_length: "",
   regex: "",
+  related_module: "",
 };
 
 const form = useForm({ ...default_values });
@@ -70,8 +72,14 @@ const form = useForm({ ...default_values });
  * COMPOSABLE INTEGRATION
  * Using the centralized rules and UI helpers
  */
-const { visibleMetadata, applyRules, isCheckbox, isDropDown, isReadonly } =
-  useFieldRules(form, toRef(props, "metadata"));
+const {
+  visibleMetadata,
+  applyRules,
+  isCheckbox,
+  isDropDown,
+  isReadonly,
+  isRelatedModule,
+} = useFieldRules(form, toRef(props, "metadata"));
 
 const generatedName = computed(() => {
   if (!form.label) return "";
@@ -123,11 +131,19 @@ watch(
   { immediate: true },
 );
 
-// UI Helpers
 const typesList = () => {
-  return props.field_types.map((type) => ({
-    value: type,
-    label: t(`fields.types.${type}`),
+  return props.fieldTypes.map((item) => ({
+    value: item.value,
+    icon: item.icon,
+    label: t(`fields.types.${item.value}`),
+  }));
+};
+
+const modulesList = () => {
+  return props.fieldModules.map((item) => ({
+    value: item.slug,
+    icon: item.icon,
+    label: t(`modules.${item.slug}.label`),
   }));
 };
 
@@ -152,7 +168,6 @@ const saveField = () => {
   if (form.type === "select") {
     form.dropdown_list = selected_dropdown_list.value;
   }
-
   form.post(page.url, {
     preserveScroll: true,
     onSuccess: () => {
@@ -221,7 +236,7 @@ onMounted(() => {
 });
 
 useUnsavedChangesGuard({
-  getIsDirty: () => isDirty,
+  getIsDirty: () => isDirty.value,
 });
 const moduleColor = computed(() =>
   appSettings.use_individual_module_colors
@@ -326,7 +341,20 @@ const moduleColor = computed(() =>
                   {{ form.errors[fieldName] }}
                 </span>
               </template>
+              <template v-else-if="isRelatedModule(fieldName)">
+                <DropdownField
+                  v-model="form[fieldName]"
+                  :options="modulesList()"
+                  :hasError="form.errors[fieldName]"
+                ></DropdownField>
 
+                <span
+                  v-if="form.errors[fieldName]"
+                  class="settings__module__edit__element__error"
+                >
+                  {{ form.errors[fieldName] }}
+                </span>
+              </template>
               <template v-else>
                 <input
                   type="text"

@@ -34,7 +34,8 @@ const props = defineProps({
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-const appSettings = usePage().props.appSettings;
+const page = usePage();
+const appSettings = page.props.appSettings;
 const { validateFieldTypes } = useFieldValidation(props);
 // State
 const form = useForm({ ...props.record });
@@ -385,6 +386,26 @@ const onFieldRecordSelect = (record) => {
   fieldOverlayOpen.value = false;
   activeField.value = null;
 };
+const allModules = computed(() => usePage().props.modules);
+const allLayouts = computed(() => usePage().props.layouts);
+console.log(allLayouts.value);
+const getIcon = (slug) => {
+  if (!slug) {
+    return;
+  }
+  const m = allModules.value.find((m) => m.slug === slug);
+
+  return m?.icon || "fa-solid fa-user";
+};
+
+const getLinkingLayout = (slug) => {
+  if (!slug) {
+    return;
+  }
+
+  const l = allLayouts.value.find((l) => l.module === slug);
+  return l?.layouts?.linkingPanel?.columns || null;
+};
 </script>
 <template>
   <Head>
@@ -533,6 +554,7 @@ const onFieldRecordSelect = (record) => {
                 :mode="getMode(f)"
                 :read-only="getField(f)?.readonly"
                 :module-color="module_color"
+                :icon="getIcon(getField(f).related_module)"
                 :has-error="hasError(f)"
                 @open-link-overlay="openFieldOverlay"
               />
@@ -565,19 +587,21 @@ const onFieldRecordSelect = (record) => {
       <RecordSelectorDrawer
         :open="fieldOverlayOpen"
         :search-endpoint="
-          activeField ? `/${activeField.related_module}/search` : ''
+          activeField
+            ? `/relatedfield/search/${activeField.related_module}`
+            : ''
         "
-        label-key="name"
-        related-module="users"
-        sub-label-key="email"
-        :icon="activeField?.related_icon ?? 'fa-solid fa-user'"
+        :related-module="activeField?.related_module"
+        :icon="getIcon(activeField?.related_module || null)"
         @select="onFieldRecordSelect"
         @close="
           fieldOverlayOpen = false;
           activeField = null;
         "
-        :selected-user="form[activeField?.name]"
+        :selected-record="form[activeField?.name]"
         :active-field="activeField"
+        :layout="getLinkingLayout(activeField?.related_module || null)"
+        :fields="fields"
       />
     </div>
   </div>

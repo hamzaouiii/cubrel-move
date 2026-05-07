@@ -21,7 +21,7 @@ return [
     'text' => 'Text',
     'datetime' => 'Date & time',
     'email' => 'Email',
-    'select' => 'Dropdown Field ',
+    'select' => 'Select Field ',
     'date' => 'Date',
     'number' => 'Number',
     'relationship' => 'Relationship',
@@ -32,7 +32,7 @@ return [
     'currency' => 'Currency',
     'integer' => 'Integer',
     'decimal' => 'Decimal',
-    'record' => 'Record',
+    'record' => 'Related Record',
     'status' => 'Status',
   ],
   'metadata' => [
@@ -51,6 +51,7 @@ return [
     'min_length' => 'Minimun Length',
     'max_length' => 'Maximun Length',
     'regex' => 'Regex Rules',
+    'related_module' => 'Related Module'
   ],
   'validation' => [
     'is_required' => "field is required!",

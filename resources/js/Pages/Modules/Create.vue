@@ -229,6 +229,27 @@ const module_color = computed(() => {
 const getField = (f) => {
   return props.fields.find((field) => field.name === f.name);
 };
+
+const allModules = computed(() => usePage().props.modules);
+const allLayouts = computed(() => usePage().props.layouts);
+
+const getIcon = (slug) => {
+  if (!slug) {
+    return;
+  }
+  const m = allModules.value.find((m) => m.slug === slug);
+
+  return m?.icon || "fa-solid fa-user";
+};
+
+const getLinkingLayout = (slug) => {
+  if (!slug) {
+    return;
+  }
+
+  const l = allLayouts.value.find((l) => l.module === slug);
+  return l?.layouts?.linkingPanel?.columns || null;
+};
 </script>
 
 <template>
@@ -299,6 +320,7 @@ const getField = (f) => {
                 mode="edit"
                 :related_label="form[f.name + '__label'] ?? null"
                 :module-color="module_color"
+                :icon="getIcon(getField(f).related_module)"
                 :has-error="hasError(f)"
                 @open-link-overlay="openFieldOverlay"
               />
@@ -309,12 +331,13 @@ const getField = (f) => {
       <RecordSelectorDrawer
         :open="fieldOverlayOpen"
         :search-endpoint="
-          activeField ? `/${activeField.related_module}/search` : ''
+          activeField
+            ? `/relatedfield/search/${activeField.related_module}`
+            : ''
         "
-        related-module="users"
-        label-key="name"
-        sub-label-key="email"
-        :icon="activeField?.related_icon ?? 'fa-solid fa-user'"
+        :related-module="activeField?.related_module"
+        :icon="getIcon(activeField?.related_module || null)"
+        :layout="getLinkingLayout(activeField?.related_module || null)"
         @select="onFieldRecordSelect"
         @close="
           fieldOverlayOpen = false;
@@ -322,6 +345,7 @@ const getField = (f) => {
         "
         :selected-user="form[activeField?.name]"
         :active-field="activeField"
+        :fields="fields"
       />
     </div>
   </div>

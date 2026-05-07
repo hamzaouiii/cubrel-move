@@ -178,4 +178,33 @@ return array(
       ),
     ),
   ),
+
+  'linkingPanel' => array(
+    "columns" => array(
+      0 => array(
+        "name" => "name",
+        "type" => "text",
+        "label" =>  "modules.defaults.name",
+        "sortable" => true
+      ),
+      1 => array(
+        "name" => "email",
+        "type" => "email",
+        "label" =>  "modules.users.fields.email",
+        "sortable" => true
+      ),
+      2 => array(
+        "name" => "created_at",
+        "type" => "datetime",
+        "label" => "modules.defaults.created_at",
+        "sortable" => true
+      ),
+      3 => array(
+        "name" => "updated_at",
+        "type" => "datetime",
+        "label" => "modules.defaults.updated_at",
+        "sortable" => true
+      ),
+     )
+  )
 );

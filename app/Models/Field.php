@@ -27,6 +27,7 @@ class Field extends Model
     'id',
     'module_id',
     'type',
+    'related_module',
     'label',
     'name',
     'key',
@@ -46,7 +47,6 @@ class Field extends Model
     'max_length',
     'regex',
     'dropdown_list_id',
-    'related_module'
   ];
 
   protected $excludedFromForms = [

@@ -555,24 +555,24 @@ return array(
     ['label' => 'dropdowns.users_title_list.pastor', 'value' => 'pastor', 'status' => 'info'],
     ['label' => 'dropdowns.users_title_list.elder', 'value' => 'elder', 'status' => 'info'],
   ),
-  'user-invites_status_list' => [
+  'userinvites_status_list' => [
     [
-      'label' => 'dropdowns.user-invites_status_list.pending',
+      'label' => 'dropdowns.userinvites_status_list.pending',
       'value' => 'pending',
       'status' => 'info',
     ],
     [
-      'label' => 'dropdowns.user-invites_status_list.revoked',
+      'label' => 'dropdowns.userinvites_status_list.revoked',
       'value' => 'revoked',
       'status' => 'danger',
     ],
     [
-      'label' => 'dropdowns.user-invites_status_list.accepted',
+      'label' => 'dropdowns.userinvites_status_list.accepted',
       'value' => 'accepted',
       'status' => 'success',
     ],
     [
-      'label' => 'dropdowns.user-invites_status_list.expired',
+      'label' => 'dropdowns.userinvites_status_list.expired',
       'value' => 'expired',
       'status' => 'warning',
     ],

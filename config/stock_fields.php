@@ -477,7 +477,7 @@ return [
       'type' => 'select',
     ],
   ],
-  'user-invites' => [
+  'userinvites' => [
     'invited_by' => [
       'name' => 'invited_by',
       'type' => 'record',

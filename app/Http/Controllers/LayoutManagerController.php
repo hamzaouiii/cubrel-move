@@ -36,7 +36,7 @@ class LayoutManagerController extends Controller
 
 
     $layout->module_id   = $module->id;
-    $layout->module_name = $module->name;
+    $layout->module_name = $module->slug;
     $layout->type        = $layoutType;
     $layout->definition  = $validated['definition'];
     $layout->save();
