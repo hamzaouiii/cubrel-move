@@ -275,7 +275,7 @@ return [
     'slug' => 'users',
     'label' => 'modules.users.label',
     'single_label' => 'modules.settings.user',
-    'icon' => 'fa-users-gear',
+    'icon' => 'fa-solid fa-users-gear',
     'color' => '#78909C',
     'path' => '/users',
     'sort_order' => 998,
@@ -291,7 +291,7 @@ return [
   ],
   [
     'name' => 'User Invites',
-    'slug' => 'user-invites',
+    'slug' => 'userinvites',
     'label' => 'modules.userinvites.label',
     'single_label' => 'modules.userinvites.single_label',
     'icon' => 'fa-paper-plane',

@@ -163,6 +163,7 @@ class Module extends Model
         'id',
         'module_id',
         'dropdown_list_id',
+        'related_module',
         'name',
         'type',
         'key',
@@ -172,7 +173,6 @@ class Module extends Model
         'label',
         'required',
         'is_draft',
-        'related_module'
 
       ])
       ->with('dropdown_list');
@@ -191,6 +191,7 @@ class Module extends Model
         'id',
         'module_id',
         'dropdown_list_id',
+        'related_module',
         'name',
         'type',
         'key',
@@ -215,6 +216,7 @@ class Module extends Model
         'id',
         'module_id',
         'dropdown_list_id',
+        'related_module',
         'name',
         'type',
         'key',
@@ -248,6 +250,7 @@ class Module extends Model
         'id',
         'module_id',
         'dropdown_list_id',
+        'related_module',
         'name',
         'type',
         'key',
@@ -281,7 +284,7 @@ class Module extends Model
 
   public function getFieldMetadata(string $field_name): array
   {
-    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_global-', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
+    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
     $field = Field::query()
       ->where(function ($query) {
         $query->where('module_id', $this->id)

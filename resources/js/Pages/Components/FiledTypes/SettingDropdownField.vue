@@ -51,6 +51,7 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  icon: String,
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
@@ -144,6 +145,8 @@ onBeforeUnmount(() => {
       @click="toggle"
     >
       <span class="field-dropdown__selected">
+        <i class="field-dropdown__icon" :class="selectedOption?.icon"></i>
+
         {{ selectedOption?.label ?? $t("settings.select") }}
       </span>
 
@@ -181,6 +184,7 @@ onBeforeUnmount(() => {
             @click="selectOption(option.value)"
           >
             <div class="field-dropdown__option-label">
+              <i class="field-dropdown__icon" :class="option.icon"></i>
               {{ option.label }}
             </div>
             <div

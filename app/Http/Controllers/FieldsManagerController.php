@@ -14,13 +14,6 @@ use Illuminate\Support\Facades\Schema;
 class FieldsManagerController extends Controller
 {
   /**
-   * Display a listing of the resource.
-   */
-
-  public function index(Request $request) {}
-
-
-  /**
    * Show the form for creating a new resource.
    */
   public function create(Request $request, string $module_id)
@@ -29,11 +22,15 @@ class FieldsManagerController extends Controller
       ->where('id', $module_id)
       ->firstOrFail();
 
-    $field_types = config("default_field_types");
+    $field_types = config("icon_default_field_types");
+    $field_modules = Module::select('slug', 'icon', 'color')
+    ->where('is_active', true)
+    ->get();
     $field  = new Field();
     return Inertia::render('Settings/Fields/Create', [
       'module'     => $module,
-      'field_types' => $field_types,
+      'fieldTypes' => $field_types,
+      'fieldModules' => $field_modules,
       'metadata' => $field->getEmptyMetadata()
     ]);
   }
@@ -93,6 +90,7 @@ class FieldsManagerController extends Controller
       'min_length' => ['nullable', 'integer'],
       'max_length' => ['nullable', 'integer'],
       'regex' => ['nullable', 'string'],
+      'related_module' => ['nullable', 'string'],
     ]);
 
     //handle language label seperately from the rest of metadata
@@ -136,6 +134,8 @@ class FieldsManagerController extends Controller
       'min_length' => ['nullable', 'integer'],
       'max_length' => ['nullable', 'integer'],
       'regex' => ['nullable', 'string'],
+      'related_module' => ['nullable', 'string'],
+      
     ]);
 
     $field_name = $data['name'];
@@ -143,7 +143,7 @@ class FieldsManagerController extends Controller
     $label_value = $data['label'];
 
     $dropdown_list = null;
-    if (isset($data['dropdown_list']) && $data['type'] === "dropdown") {
+    if (isset($data['dropdown_list']) && $data['type'] === "select") {
       $dropdown_list = $data['dropdown_list'];
     }
 
@@ -168,6 +168,7 @@ class FieldsManagerController extends Controller
       'min_length'  => $data['min_length'],
       'max_length'  => $data['max_length'],
       'regex'  => $data['regex'],
+      'related_module'  => $data['related_module'],
       'dropdown_list_id' => $dropdown_list,
       'is_custom' => 1
     ]);
