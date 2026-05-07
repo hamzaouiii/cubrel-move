@@ -49,6 +49,7 @@ return [
     'min_length' => 'Minimale Länge',
     'max_length' => 'Maximale Länge',
     'regex' => 'Regex Regeln',
+    'related_module' => 'Verwandtes Modul'
   ],
   'validation' => [
     'is_required' => "ist ein Pflichtfeld",

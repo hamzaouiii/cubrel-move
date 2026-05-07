@@ -26,6 +26,7 @@ const props = defineProps({
   },
   related_field: Object,
   highlight: String,
+  icon: String,
   searchable: Boolean,
   sortable: Boolean,
   related_label: {
@@ -63,6 +64,7 @@ const componentProps = computed(() => ({
   readOnly: props.readOnly,
   highlight: props?.highlight || null,
   errorMsg: props?.errorMsg || null,
+  icon: props?.icon || null,
   searchable: props?.searchable || null,
 }));
 

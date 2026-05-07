@@ -24,6 +24,8 @@ class Module extends Model
   use HasUuids;
   use HasTranslatableLabel;
 
+  protected static array $staticFieldCache = [];
+
   protected $fillable = [
     'slug',
     'name',
@@ -181,13 +183,16 @@ class Module extends Model
    * @return Collection<Field>
    */
   public function allFields(): Collection
-  {
-    return Field::query()
-      ->where(function ($query) {
-        $query->where('module_id', $this->id)
-          ->orWhere('is_global', true);
-      })
-      ->select([
+{
+   $key = $this->id;
+
+    if (!isset(self::$staticFieldCache[$key])) {
+        self::$staticFieldCache[$key] = Field::query()
+            ->where(function ($query) {
+                $query->where('module_id', $this->id)
+                    ->orWhere('is_global', true);
+            })
+          ->select([
         'id',
         'module_id',
         'dropdown_list_id',
@@ -202,11 +207,14 @@ class Module extends Model
         'required',
         'is_draft',
         'related_module'
-
       ])
-      ->with('dropdown_list')
-      ->get();
-  }
+        ->with('dropdown_list')
+        ->get();
+}
+
+        return self::$staticFieldCache[$key];
+}
+
   public function draftFields(): Collection
   {
     return Field::query()
@@ -230,6 +238,7 @@ class Module extends Model
       ->with('dropdown_list')
       ->get();
   }
+
 
   protected static function booted(): void
   {

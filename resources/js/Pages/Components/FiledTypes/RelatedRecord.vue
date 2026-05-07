@@ -29,9 +29,8 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  related_icon: {
+  icon: {
     type: String,
-    default: "fa-solid fa-user",
   },
   openInNewTab: {
     type: Boolean,
@@ -108,8 +107,9 @@ const emitOpenOverlay = () => {
       :class="{ 'related-field--error': showError }"
     >
       <div class="related-field--edit__content">
-        <i :class="[related_icon, 'related-detail-icon']"></i>
-
+        <i
+          :class="[icon ? icon : 'fa-solid fa-user', 'related-detail-icon']"
+        ></i>
         <div class="related-detail-content" v-if="modelValue">
           <div class="related-record-info">
             <span class="related-record-label">
@@ -147,8 +147,10 @@ const emitOpenOverlay = () => {
       }"
       @click="handleClick"
     >
-      <i v-if="modelValue" :class="[related_icon, 'related-detail-icon']"></i>
-
+      <i
+        v-if="modelValue"
+        :class="[icon ? icon : 'fa-solid fa-user', 'related-detail-icon']"
+      ></i>
       <div class="related-detail-content" v-if="modelValue">
         <component
           :is="openInNewTab ? 'a' : Link"
@@ -177,7 +179,7 @@ const emitOpenOverlay = () => {
   <div v-else-if="mode === 'related-panel'">
     <div class="related-field related-field--related-panel">
       <div class="related-panel-header" v-if="related_label">
-        <i :class="[related_icon, 'related-panel-icon']"></i>
+        <i :class="[icon, 'related-panel-icon']"></i>
         <span class="related-panel-title">{{ related_label }}</span>
       </div>
 
@@ -192,7 +194,7 @@ const emitOpenOverlay = () => {
         >
           <div class="related-panel-card">
             <div class="card-icon">
-              <i :class="[related_icon]"></i>
+              <i :class="[icon]"></i>
             </div>
             <div class="card-info">
               <div class="card-module">{{ related_module }}</div>
@@ -216,7 +218,7 @@ const emitOpenOverlay = () => {
     <div class="related-field related-field--linking-panel">
       <div class="linking-panel-content">
         <div class="linking-preview" v-if="modelValue">
-          <i :class="[related_icon, 'linking-icon']"></i>
+          <i :class="[icon, 'linking-icon']"></i>
           <div class="linking-info">
             <div class="linking-label">{{ related_label ?? modelValue }}</div>
             <div class="linking-module">{{ related_module }}</div>
@@ -248,7 +250,7 @@ const emitOpenOverlay = () => {
       }"
     >
       <div class="related-input-wrapper">
-        <i :class="[related_icon, 'related-icon']"></i>
+        <i :class="[icon, 'related-icon']"></i>
         <input
           v-model="localValue"
           type="text"

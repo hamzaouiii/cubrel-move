@@ -56,6 +56,41 @@ class Layout extends Model
     return self::normalize(config("default_layouts.record", []));
   }
 
+  public static function getAllLayouts(): array
+{
+      $layouts = [];
+
+      $path = config_path('module_layouts');
+
+      foreach (glob($path . '/*.php') as $file) {
+          $module = basename($file, '.php');
+
+          $configLayouts = require $file;
+
+          foreach ($configLayouts as $type => $definition) {
+              $layouts[$module][$type] = self::normalize($definition);
+          }
+      }
+
+
+      $dbLayouts = self::query()->get();
+
+      foreach ($dbLayouts as $layout) {
+          $layouts[$layout->module_name][$layout->type] = self::normalize(
+              $layout->definition
+          );
+      }
+    return collect($layouts)
+      ->map(function ($types, $module) {
+          return [
+              'module' => $module,
+              'layouts' => $types,
+          ];
+      })
+      ->values()
+      ->toArray();
+}
+
   public static function normalize(mixed $value): mixed
   {
     if (!is_array($value)) {
