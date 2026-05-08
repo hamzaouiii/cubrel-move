@@ -1,5 +1,6 @@
 <?php
 
+// users cannot use these words to create new or modules 
 return [
 
   'slugs' => [
