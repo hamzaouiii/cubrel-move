@@ -15,7 +15,7 @@ return new class extends Migration
       $table->string('name');
       $table->string('order_number')->nullable();
 
-      $table->uuid('opportunity_id')->nullable();
+      $table->uuid('deal_id')->nullable();
       $table->text('description')->nullable();
 
       $table->decimal('total_amount', 15, 2)->nullable();

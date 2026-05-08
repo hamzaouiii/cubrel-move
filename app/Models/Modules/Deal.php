@@ -4,9 +4,9 @@ namespace App\Models\Modules;
 
 use App\Models\BaseModule;
 
-class Opportunity extends BaseModule
+class Deal extends BaseModule
 {
-  protected $table = 'opportunities';
+  protected $table = 'deals';
 
 protected $fillable = [
     'name',

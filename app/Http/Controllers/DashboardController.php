@@ -6,7 +6,7 @@ use App\Models\Modules\Account;
 use App\Models\Modules\SupportCase as SupportCase;
 use App\Models\Modules\Contact;
 use App\Models\Modules\Lead;
-use App\Models\Modules\Opportunity;
+use App\Models\Modules\Deal;
 use App\Models\Modules\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,13 +23,13 @@ class DashboardController extends Controller
             'stats'         => $this->getStats($user),
             'recordCounts'  => $this->getRecordCounts($user),
             'recentOrders'  => $this->getRecentOrders($user),
-            'dealsOverTime' => $this->getOpportunitiesOverTime($user),
+            'dealsOverTime' => $this->getDealsOverTime($user),
         ]);
     }
 
     /**
      * Three top metric cards:
-     *  1. Pipeline value  — sum of amount on non-closed opportunities
+     *  1. Pipeline value  — sum of amount on non-closed deals
      *  2. New leads       — leads created this month
      *  3. Open cases      — cases not yet closed
      */
@@ -40,11 +40,11 @@ class DashboardController extends Controller
         $lastMonth = [$now->copy()->subMonth()->startOfMonth(), $now->copy()->subMonth()->endOfMonth()];
 
         // Pipeline value
-        $pipelineNow  = Opportunity::where('owner_id', $user->id)
+        $pipelineNow  = Deal::where('owner_id', $user->id)
             ->whereNotIn('sales_stage', ['Closed Won', 'Closed Lost'])
             ->sum('amount');
 
-        $pipelineLast = Opportunity::where('owner_id', $user->id)
+        $pipelineLast = Deal::where('owner_id', $user->id)
             ->whereNotIn('sales_stage', ['Closed Won', 'Closed Lost'])
             ->whereBetween('created_at', $lastMonth)
             ->sum('amount');
@@ -99,7 +99,7 @@ class DashboardController extends Controller
             ['label' => 'Accounts',      'icon' => 'fa-solid fa-building',   'color' => 'primary', 'count' => Account::where('owner_id', $user->id)->count()],
             ['label' => 'Contacts',      'icon' => 'fa-solid fa-user',        'color' => 'info',    'count' => Contact::where('owner_id', $user->id)->count()],
             ['label' => 'Leads',         'icon' => 'fa-solid fa-bullseye',    'color' => 'warning', 'count' => Lead::where('owner_id', $user->id)->count()],
-            ['label' => 'Opportunities', 'icon' => 'fa-solid fa-handshake',   'color' => 'success', 'count' => Opportunity::where('owner_id', $user->id)->count()],
+            ['label' => 'Deals', 'icon' => 'fa-solid fa-handshake',   'color' => 'success', 'count' => Deal::where('owner_id', $user->id)->count()],
         ];
 
         return [
@@ -129,12 +129,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Opportunities grouped by month — last 12 months.
+     * Deals grouped by month — last 12 months.
      * Prop is ready for a chart; placeholder rendered for now.
      */
-    private function getOpportunitiesOverTime(object $user): array
+    private function getDealsOverTime(object $user): array
     {
-        return Opportunity::where('owner_id', $user->id)
+        return Deal::where('owner_id', $user->id)
             ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
             ->select(
                 DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),

@@ -334,46 +334,46 @@ return array(
         array(
           0 =>
           array(
-            'name' => 'accounts_opportunities',
+            'name' => 'accounts_deals',
             'type' => 'one-to-many',
-            'label' => 'relationships.accounts_opportunities',
+            'label' => 'relationships.accounts_deals',
             'fields' =>
             array(
               0 =>
               array(
                 'name' => 'name',
                 'type' => 'text',
-                'label' => 'modules.opportunities.fields.name',
+                'label' => 'modules.deals.fields.name',
               ),
               1 =>
               array(
                 'name' => 'sales_stage',
                 'type' => 'select',
-                'label' => 'modules.opportunities.fields.sales_stage',
+                'label' => 'modules.deals.fields.sales_stage',
               ),
               2 =>
               array(
                 'name' => 'amount',
                 'type' => 'text',
-                'label' => 'modules.opportunities.fields.amount',
+                'label' => 'modules.deals.fields.amount',
               ),
               3 =>
               array(
                 'name' => 'probability',
                 'type' => 'percentage',
-                'label' => 'modules.opportunities.fields.probability',
+                'label' => 'modules.deals.fields.probability',
               ),
               4 =>
               array(
                 'name' => 'type',
                 'type' => 'select',
-                'label' => 'modules.opportunities.fields.type',
+                'label' => 'modules.deals.fields.type',
               ),
               5 =>
               array(
                 'name' => 'expected_close_date',
                 'type' => 'date',
-                'label' => 'modules.opportunities.fields.expected_close_date',
+                'label' => 'modules.deals.fields.expected_close_date',
               ),
             ),
           ),

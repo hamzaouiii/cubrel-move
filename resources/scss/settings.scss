@@ -2563,6 +2563,11 @@ textarea {
   transition: all 0.2s ease-in-out;
   color: #2d3748;
   max-width: 450px;
+  &:disabled {
+    background: #f9fafb;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+  }
 }
 
 .button-spinner {

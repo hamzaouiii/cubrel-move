@@ -5,7 +5,7 @@ namespace Database\Factories\Modules;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class OpportunityFactory extends Factory
+class DealFactory extends Factory
 {
   public function definition(): array
   {

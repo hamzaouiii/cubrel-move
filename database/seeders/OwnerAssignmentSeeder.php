@@ -17,7 +17,7 @@ class OwnerAssignmentSeeder extends Seeder
     'quotes',
     'cases',
     'products',
-    'opportunities',
+    'deals',
     'orders',
   ];
 
