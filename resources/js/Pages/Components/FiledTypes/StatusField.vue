@@ -442,10 +442,7 @@ const sizeClass = computed(() => {
 
   <!-- Detail Mode -->
   <div v-else-if="mode === 'detail'">
-    <div
-      class="status-field status-field--detail display-field"
-      :class="sizeClass"
-    >
+    <div class="status-field status-field--detail" :class="sizeClass">
       <div
         v-if="selectedOption && selectedOption.value !== null"
         class="status-badge"

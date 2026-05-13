@@ -263,51 +263,51 @@ return array(
         array(
           0 =>
           array(
-            'name' => 'opportunities_orders',
+            'name' => 'deals_orders',
             'type' => 'one-to-many',
-            'label' => 'relationships.opportunities_orders',
+            'label' => 'relationships.deals_orders',
             'fields' =>
             array(
               0 =>
               array(
                 'name' => 'name',
                 'type' => 'text',
-                'label' => 'modules.opportunities.fields.name',
+                'label' => 'modules.deals.fields.name',
                 'sortable' => false,
               ),
               1 =>
               array(
                 'name' => 'sales_stage',
                 'type' => 'select',
-                'label' => 'modules.opportunities.fields.sales_stage',
+                'label' => 'modules.deals.fields.sales_stage',
                 'sortable' => false,
               ),
               2 =>
               array(
                 'name' => 'amount',
                 'type' => 'text',
-                'label' => 'modules.opportunities.fields.amount',
+                'label' => 'modules.deals.fields.amount',
                 'sortable' => false,
               ),
               3 =>
               array(
                 'name' => 'probability',
                 'type' => 'percentage',
-                'label' => 'modules.opportunities.fields.probability',
+                'label' => 'modules.deals.fields.probability',
                 'sortable' => false,
               ),
               4 =>
               array(
                 'name' => 'currency',
                 'type' => 'select',
-                'label' => 'modules.opportunities.fields.currency',
+                'label' => 'modules.deals.fields.currency',
                 'sortable' => false,
               ),
               5 =>
               array(
                 'name' => 'type',
                 'type' => 'select',
-                'label' => 'modules.opportunities.fields.type',
+                'label' => 'modules.deals.fields.type',
                 'sortable' => false,
               ),
             ),

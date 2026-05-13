@@ -388,7 +388,6 @@ const onFieldRecordSelect = (record) => {
 };
 const allModules = computed(() => usePage().props.modules);
 const allLayouts = computed(() => usePage().props.layouts);
-console.log(allLayouts.value);
 const getIcon = (slug) => {
   if (!slug) {
     return;

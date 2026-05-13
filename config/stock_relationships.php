@@ -17,10 +17,10 @@ return [
   ],
 
   [
-    'name' => 'accounts_opportunities',
-    'label' => 'relationships.accounts_opportunities',
+    'name' => 'accounts_deals',
+    'label' => 'relationships.accounts_deals',
     'left_module' => 'accounts',
-    'right_module' => 'opportunities',
+    'right_module' => 'deals',
     'type' => 'one-to-many',
   ],
 
@@ -79,33 +79,33 @@ return [
     */
 
   [
-    'name' => 'opportunities_contacts',
-    'label' => 'relationships.opportunities_contacts',
-    'left_module' => 'opportunities',
+    'name' => 'deals_contacts',
+    'label' => 'relationships.deals_contacts',
+    'left_module' => 'deals',
     'right_module' => 'contacts',
     'type' => 'many-to-many',
   ],
 
   [
-    'name' => 'opportunities_quotes',
-    'label' => 'relationships.opportunities_quotes',
-    'left_module' => 'opportunities',
+    'name' => 'deals_quotes',
+    'label' => 'relationships.deals_quotes',
+    'left_module' => 'deals',
     'right_module' => 'quotes',
     'type' => 'one-to-many',
   ],
 
   [
-    'name' => 'opportunities_orders',
-    'label' => 'relationships.opportunities_orders',
-    'left_module' => 'opportunities',
+    'name' => 'deals_orders',
+    'label' => 'relationships.deals_orders',
+    'left_module' => 'deals',
     'right_module' => 'orders',
     'type' => 'one-to-many',
   ],
 
   [
-    'name' => 'opportunities_products',
-    'label' => 'relationships.opportunities_products',
-    'left_module' => 'opportunities',
+    'name' => 'deals_products',
+    'label' => 'relationships.deals_products',
+    'left_module' => 'deals',
     'right_module' => 'products',
     'type' => 'many-to-many',
   ],

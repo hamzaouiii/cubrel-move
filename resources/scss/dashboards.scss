@@ -1,0 +1,583 @@
+// ─── Tokens ───────────────────────────────────────────────────────────────────
+$warning: #ef9f27;
+$warning-light: #faeeda;
+$danger: #d85a30;
+$danger-light: #fcebeb;
+$info: #378add;
+$info-light: #e6f1fb;
+
+$white: #ffffff;
+$bg: #f4f5f7;
+$border: #e5e7eb;
+$muted: #6b7280;
+$text: #111827;
+$radius: 12px;
+$radius-sm: 8px;
+$shadow:
+  0 2px 5px rgba(0, 0, 0, 0.08),
+  0 2px 5px rgba(0, 0, 0, 0.04);
+$shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+$transition: 0.18s ease;
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+.dashboard {
+  &__actions {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    button {
+      all: unset;
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+      padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        background-color: color-mix(in srgb, var(--primary-color) 85%, white);
+      }
+    }
+  }
+  &__main {
+    display: grid;
+    grid-template-columns: 210px 1fr 230px;
+    grid-template-rows: auto;
+    gap: 16px;
+    padding: 20px;
+    background: $bg;
+    min-height: 100vh;
+    align-items: start;
+
+    &__left {
+      grid-column: 1;
+    }
+    &__center {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    &__right {
+      grid-column: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr 1fr;
+      &__left {
+        grid-column: 1 / 3;
+      }
+      &__center {
+        grid-column: 1 / 2;
+      }
+      &__right {
+        grid-column: 2 / 3;
+      }
+    }
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+      &__left,
+      &__center,
+      &__right {
+        grid-column: 1;
+      }
+    }
+  }
+
+  // ─── Card ─────────────────────────────────────────────────────────────────────
+  &__card {
+    font-family: "Heebo", sans-serif;
+    // border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: $shadow;
+    transition: all 0.3s ease-in-out;
+    margin-top: 15px;
+    &:hover {
+      transform: scale(1.02);
+    }
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid $border;
+    }
+
+    &__title {
+      font-size: 13px;
+      font-weight: 600;
+      color: $text;
+      letter-spacing: -0.01em;
+    }
+
+    &__body {
+      padding: 16px;
+    }
+  }
+
+  // ─── Badges / toggle ─────────────────────────────────────────────────────────
+  .badge-group {
+    display: flex;
+    gap: 6px;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    transition: all $transition;
+    line-height: 1.4;
+
+    &--active {
+      background: var(--primary-color);
+      color: $white;
+    }
+
+    &--outline {
+      background: transparent;
+      border: 1px solid $border;
+      color: $muted;
+      &:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  // ─── Misc utils ───────────────────────────────────────────────────────────────
+  .text--muted {
+    font-size: 12px;
+    color: $muted;
+  }
+  .icon--muted {
+    color: $muted;
+    opacity: 0.55;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .divider {
+    border: none;
+    border-top: 1px solid $border;
+    margin: 14px 0;
+  }
+  .big-num {
+    font-size: 34px;
+    font-weight: 300;
+    color: $text;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  // ─── Module list ─────────────────────────────────────────────────────────────
+  .mod-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    &__link {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    &__item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 0.81rem;
+      color: var(--mod-color-dash);
+
+      &:last-child {
+        border-bottom: none;
+      }
+      a {
+        all: unset;
+        font-weight: 600;
+        color: $text;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      i {
+        width: 25px;
+      }
+    }
+
+    &__left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &__dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    &__icon {
+      font-size: 13px;
+      width: 14px;
+      text-align: center;
+    }
+
+    &__count {
+      font-weight: 600;
+      font-size: 13px;
+      color: $muted;
+    }
+  }
+
+  // ─── Chart ───────────────────────────────────────────────────────────────────
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 180px;
+  }
+
+  .chart-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: $bg;
+    border-radius: $radius-sm;
+    gap: 8px;
+
+    &--sm {
+      position: static;
+      padding: 24px 0;
+    }
+
+    &__icon {
+      font-size: 24px;
+      color: $muted;
+      opacity: 0.35;
+    }
+
+    &__label {
+      font-size: 12px;
+      color: $muted;
+      opacity: 0.8;
+    }
+  }
+
+  // ─── Stages / donut ──────────────────────────────────────────────────────────
+
+  .donut-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .donut-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+  }
+
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    &__num {
+      font-size: 22px;
+      font-weight: 500;
+      color: $text;
+      line-height: 1;
+    }
+    &__sub {
+      font-size: 10px;
+      color: $muted;
+    }
+  }
+
+  .stage-legend {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+    }
+
+    &__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      &--won {
+        background: #1d9e75;
+      }
+      &--open {
+        background: var(--primary-color);
+      }
+      &--lost {
+        background: $danger;
+      }
+    }
+
+    &__val {
+      margin-left: auto;
+      font-weight: 600;
+      font-size: 12px;
+      color: $text;
+      padding-left: 12px;
+    }
+  }
+
+  // ─── Invoice bars ─────────────────────────────────────────────────────────────
+  .invoice-block {
+    flex: 1;
+    min-width: 0;
+
+    &__title {
+      font-size: 12px;
+      color: $muted;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+  }
+
+  .invoice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &__item {
+    }
+
+    &__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    &__right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    &__count {
+      font-size: 12px;
+      font-weight: 600;
+      color: $text;
+    }
+
+    &__sep {
+      opacity: 0.4;
+      font-size: 11px;
+    }
+
+    &__amt {
+      font-size: 12px;
+      color: $muted;
+    }
+  }
+
+  .bar-track {
+    height: 7px;
+    border-radius: 4px;
+    background: #f0f1f3;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  // ─── Metric cards ─────────────────────────────────────────────────────────────
+  .metric-card {
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    &__label {
+      font-size: 12px;
+      color: $muted;
+    }
+
+    &__value {
+      font-size: 28px;
+      font-weight: 300;
+      color: $text;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    &__change {
+      font-size: 11px;
+      font-weight: 600;
+      &--pos {
+        color: #1d9e75;
+      }
+      &--neg {
+        color: $danger;
+      }
+      &--neut {
+        color: $muted;
+      }
+    }
+  }
+
+  // ─── Orders list ─────────────────────────────────────────────────────────────
+  .orders-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    &__item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid #f3f4f6;
+      gap: 8px;
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    &__left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__icon-wrap {
+      width: 30px;
+      height: 30px;
+      border-radius: $radius-sm;
+      background: $info-light;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+      color: var(--module-color-dash);
+    }
+
+    &__detail {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      gap: 2px;
+    }
+
+    &__num {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--module-color-dash);
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &__right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    &__amt {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1d9e75;
+    }
+  }
+
+  // ─── Status pill ──────────────────────────────────────────────────────────────
+  .status-pill {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 4px;
+
+    &--success {
+      background: #1d9e75;
+      color: color-mix(in srgb, #1d9e75 5%, white);
+    }
+    &--warning {
+      background: $warning-light;
+      color: darken($warning, 30%);
+    }
+    &--danger {
+      background: $danger-light;
+      color: $danger;
+    }
+    &--info {
+      background: $info-light;
+      color: darken($info, 20%);
+    }
+    &--secondary {
+      background: #f3f4f6;
+      color: $muted;
+    }
+  }
+
+  // ─── Empty state ──────────────────────────────────────────────────────────────
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: $muted;
+
+    &__icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.35;
+    }
+    &__text {
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}

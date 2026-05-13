@@ -113,8 +113,8 @@ class ProductFactory extends Factory
       'currency' => $faker->randomElement(['EUR', 'USD', 'GBP']),
       'is_active' => $faker->boolean(90),
 
-      'created_at' => now(),
-      'updated_at' => now(),
+      'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
     ];
   }
 }

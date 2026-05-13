@@ -1,6 +1,6 @@
 <?php
 return [
-  'opportunities_type_list' => [
+  'deals_type_list' => [
     'new_business' => 'New Business',
     'existing_business' => 'Existing Business',
     'renewal' => 'Renewal',
@@ -14,7 +14,7 @@ return [
     'complete' => 'Complete',
     'cancelled' => 'Cancelled',
   ],
-  'opportunities_sales_stage_list' => [
+  'deals_sales_stage_list' => [
     'prospecting' => 'Prospecting',
     'qualification' => 'Qualification',
     'proposal' => 'Proposal',

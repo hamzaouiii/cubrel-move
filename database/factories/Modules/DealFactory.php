@@ -5,7 +5,7 @@ namespace Database\Factories\Modules;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class OpportunityFactory extends Factory
+class DealFactory extends Factory
 {
   public function definition(): array
   {
@@ -40,8 +40,8 @@ class OpportunityFactory extends Factory
 
       'type' => $this->faker->randomElement($types),
 
-      'created_at' => now(),
-      'updated_at' => now(),
+      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];
   }
 }

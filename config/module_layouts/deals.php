@@ -9,37 +9,37 @@ return array(
       array(
         'name' => 'name',
         'type' => 'text',
-        'label' => 'modules.opportunities.fields.name',
+        'label' => 'modules.deals.fields.name',
       ),
       1 =>
       array(
         'name' => 'expected_close_date',
         'type' => 'date',
-        'label' => 'modules.opportunities.fields.expected_close_date',
+        'label' => 'modules.deals.fields.expected_close_date',
       ),
       2 =>
       array(
         'name' => 'type',
         'type' => 'select',
-        'label' => 'modules.opportunities.fields.type',
+        'label' => 'modules.deals.fields.type',
       ),
       3 =>
       array(
         'name' => 'amount',
         'type' => 'text',
-        'label' => 'modules.opportunities.fields.amount',
+        'label' => 'modules.deals.fields.amount',
       ),
       4 =>
       array(
         'name' => 'sales_stage',
         'type' => 'select',
-        'label' => 'modules.opportunities.fields.sales_stage',
+        'label' => 'modules.deals.fields.sales_stage',
       ),
       5 =>
       array(
         'name' => 'probability',
         'type' => 'percentage',
-        'label' => 'modules.opportunities.fields.probability',
+        'label' => 'modules.deals.fields.probability',
       ),
       6=>
        array(
@@ -51,13 +51,13 @@ return array(
       array(
         'name' => 'updated_at',
         'type' => 'datetime',
-        'label' => 'modules.opportunities.fields.updated_at',
+        'label' => 'modules.deals.fields.updated_at',
       ),
       8 =>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
-        'label' => 'modules.opportunities.fields.created_at',
+        'label' => 'modules.deals.fields.created_at',
       ),
     ),
   ),
@@ -80,13 +80,13 @@ return array(
           array(
             'name' => 'sales_stage',
             'type' => 'select',
-            'label' => 'modules.opportunities.fields.sales_stage',
+            'label' => 'modules.deals.fields.sales_stage',
           ),
           2 =>
           array(
             'name' => 'type',
             'type' => 'select',
-            'label' => 'modules.opportunities.fields.type',
+            'label' => 'modules.deals.fields.type',
           ),
         ),
       ),
@@ -99,19 +99,19 @@ return array(
           array(
             'name' => 'amount',
             'type' => 'text',
-            'label' => 'modules.opportunities.fields.amount',
+            'label' => 'modules.deals.fields.amount',
           ),
           1 =>
           array(
             'name' => 'currency',
             'type' => 'text',
-            'label' => 'modules.opportunities.fields.currency',
+            'label' => 'modules.deals.fields.currency',
           ),
           2 =>
           array(
             'name' => 'probability',
             'type' => 'percentage',
-            'label' => 'modules.opportunities.fields.probability',
+            'label' => 'modules.deals.fields.probability',
           ),
         ),
       ),
@@ -124,7 +124,7 @@ return array(
           array(
             'name' => 'expected_close_date',
             'type' => 'date',
-            'label' => 'modules.opportunities.fields.expected_close_date',
+            'label' => 'modules.deals.fields.expected_close_date',
           ),
         ),
       ),
@@ -171,9 +171,9 @@ return array(
         array(
           0 =>
           array(
-            'name' => 'accounts_opportunities',
+            'name' => 'accounts_deals',
             'type' => 'one-to-many',
-            'label' => 'relationships.accounts_opportunities',
+            'label' => 'relationships.accounts_deals',
             'fields' =>
             array(
               0 =>
@@ -204,9 +204,9 @@ return array(
           ),
           1 =>
           array(
-            'name' => 'opportunities_contacts',
+            'name' => 'deals_contacts',
             'type' => 'many-to-many',
-            'label' => 'relationships.opportunities_contacts',
+            'label' => 'relationships.deals_contacts',
             'fields' =>
             array(
               0 =>
@@ -243,9 +243,9 @@ return array(
           ),
           2 =>
           array(
-            'name' => 'opportunities_quotes',
+            'name' => 'deals_quotes',
             'type' => 'one-to-many',
-            'label' => 'relationships.opportunities_quotes',
+            'label' => 'relationships.deals_quotes',
             'fields' =>
             array(
               0 =>
@@ -300,9 +300,9 @@ return array(
         array(
           0 =>
           array(
-            'name' => 'opportunities_products',
+            'name' => 'deals_products',
             'type' => 'many-to-many',
-            'label' => 'relationships.opportunities_products',
+            'label' => 'relationships.deals_products',
             'fields' =>
             array(
               0 =>
@@ -339,9 +339,9 @@ return array(
           ),
           1 =>
           array(
-            'name' => 'opportunities_orders',
+            'name' => 'deals_orders',
             'type' => 'one-to-many',
-            'label' => 'relationships.opportunities_orders',
+            'label' => 'relationships.deals_orders',
             'fields' =>
             array(
               0 =>
@@ -394,37 +394,37 @@ return array(
       array(
         'name' => 'expected_close_date',
         'type' => 'date',
-        'label' => 'modules.opportunities.fields.expected_close_date',
+        'label' => 'modules.deals.fields.expected_close_date',
       ),
       2 =>
       array(
         'name' => 'type',
         'type' => 'select',
-        'label' => 'modules.opportunities.fields.type',
+        'label' => 'modules.deals.fields.type',
       ),
       3 =>
       array(
         'name' => 'probability',
         'type' => 'percentage',
-        'label' => 'modules.opportunities.fields.probability',
+        'label' => 'modules.deals.fields.probability',
       ),
       4 =>
       array(
         'name' => 'amount',
         'type' => 'text',
-        'label' => 'modules.opportunities.fields.amount',
+        'label' => 'modules.deals.fields.amount',
       ),
       5 =>
       array(
         'name' => 'sales_stage',
         'type' => 'select',
-        'label' => 'modules.opportunities.fields.sales_stage',
+        'label' => 'modules.deals.fields.sales_stage',
       ),
       6 =>
       array(
         'name' => 'currency',
         'type' => 'text',
-        'label' => 'modules.opportunities.fields.currency',
+        'label' => 'modules.deals.fields.currency',
       ),
     ),
   ),

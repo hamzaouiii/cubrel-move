@@ -69,22 +69,22 @@ return [
   ],
 
   [
-    'name' => 'Opportunities',
-    'slug' => 'opportunities',
-    'label' => 'modules.opportunities.label',
-    'single_label' => 'modules.opportunities.single_label',
+    'name' => 'Deals',
+    'slug' => 'deals',
+    'label' => 'modules.deals.label',
+    'single_label' => 'modules.deals.single_label',
     'icon' => 'fa-solid fa-money-bills',
     'color' => '#8080c0',
-    'path' => '/opportunities',
+    'path' => '/deals',
     'sort_order' => 40,
     'category' => 'sales',
     'is_active' => true,
     'show_in_sidebar' => 1,
-    'handler_class' => 'App\\Handlers\\Modules\\OpportunitiesModuleHandler',
-    'description' => 'Sales deals and revenue opportunities.',
+    'handler_class' => 'App\\Handlers\\Modules\\DealsModuleHandler',
+    'description' => 'Sales deals and revenue deals.',
 
-    'model_class' => 'App\\Models\\Modules\\Opportunity',
-    'table_name' => 'opportunities',
+    'model_class' => 'App\\Models\\Modules\\Deal',
+    'table_name' => 'deals',
     'is_custom' => 0,
   ],
 
@@ -223,6 +223,8 @@ return [
     'model_class' => 'App\\Models\\Modules\\Email',
     'table_name' => null,
     'is_custom' => 0,
+    'has_owner' => false,
+
   ],
 
   [
@@ -239,7 +241,7 @@ return [
     'show_in_sidebar' => 1,
     'handler_class' => 'App\\Handlers\\Modules\\InquiriesModuleHandler',
     'description' => 'Manage messages from the contact form.',
-
+    'has_owner' => false,
     'model_class' => 'App\\Models\\Modules\\ContactMessage',
     'table_name' => 'contact_messages',
     'is_custom' => 0,
@@ -265,7 +267,7 @@ return [
     'show_in_sidebar' => 1,
     'handler_class' => 'App\\Handlers\\Modules\\SettingsModuleHandler',
     'description' => 'Application settings.',
-
+    'has_owner' => false,
     'model_class' => 'App\\Models\\Modules\\Settings',
     'table_name' => 'settings',
     'is_custom' => 0,
@@ -284,7 +286,7 @@ return [
     'show_in_sidebar' => 1,
     'handler_class' => 'App\\Handlers\\Modules\\UserModuleHandler',
     'description' => 'Users',
-
+    'has_owner' => false,
     'model_class' => 'App\\Models\\User',
     'table_name' => 'users',
     'is_custom' => 0,
@@ -304,8 +306,9 @@ return [
     'handler_class' => 'App\\Handlers\\Modules\\UserInviteModuleHandler',
     'description' => 'Users Invites',
     'model_class' => 'App\\Models\\UserInvite',
-    'table_name' => 'user_invites',
+    'table_name' => 'userinvites',
     'is_custom' => 0,
+    'has_owner' => false,
   ],
 
 

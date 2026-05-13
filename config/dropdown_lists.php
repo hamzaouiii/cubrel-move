@@ -1,29 +1,29 @@
 <?php
 
 return array(
-  'opportunities_type_list' =>
+  'deals_type_list' =>
   array(
     0 =>
     array(
-      'label' => 'dropdowns.opportunities_type_list.new_business',
+      'label' => 'dropdowns.deals_type_list.new_business',
       'value' => 'new_business',
       'status' => 'info',
     ),
     1 =>
     array(
-      'label' => 'dropdowns.opportunities_type_list.existing_business',
+      'label' => 'dropdowns.deals_type_list.existing_business',
       'value' => 'existing_business',
       'status' => 'info',
     ),
     2 =>
     array(
-      'label' => 'dropdowns.opportunities_type_list.renewal',
+      'label' => 'dropdowns.deals_type_list.renewal',
       'value' => 'renewal',
       'status' => 'warning',
     ),
     3 =>
     array(
-      'label' => 'dropdowns.opportunities_type_list.upsell',
+      'label' => 'dropdowns.deals_type_list.upsell',
       'value' => 'upsell',
       'status' => 'success',
     ),
@@ -67,41 +67,41 @@ return array(
       'status' => 'danger',
     ),
   ),
-  'opportunities_sales_stage_list' =>
+  'deals_sales_stage_list' =>
   array(
     0 =>
     array(
-      'label' => 'dropdowns.opportunities_sales_stage_list.prospecting',
+      'label' => 'dropdowns.deals_sales_stage_list.prospecting',
       'value' => 'prospecting',
       'status' => 'info',
     ),
     1 =>
     array(
-      'label' => 'dropdowns.opportunities_sales_stage_list.qualification',
+      'label' => 'dropdowns.deals_sales_stage_list.qualification',
       'value' => 'qualification',
       'status' => 'info',
     ),
     2 =>
     array(
-      'label' => 'dropdowns.opportunities_sales_stage_list.proposal',
+      'label' => 'dropdowns.deals_sales_stage_list.proposal',
       'value' => 'proposal',
       'status' => 'warning',
     ),
     3 =>
     array(
-      'label' => 'dropdowns.opportunities_sales_stage_list.negotiation',
+      'label' => 'dropdowns.deals_sales_stage_list.negotiation',
       'value' => 'negotiation',
       'status' => 'warning',
     ),
     4 =>
     array(
-      'label' => 'dropdowns.opportunities_sales_stage_list.closed_won',
+      'label' => 'dropdowns.deals_sales_stage_list.closed_won',
       'value' => 'closed_won',
       'status' => 'success',
     ),
     5 =>
     array(
-      'label' => 'dropdowns.opportunities_sales_stage_list.closed_lost',
+      'label' => 'dropdowns.deals_sales_stage_list.closed_lost',
       'value' => 'closed_lost',
       'status' => 'danger',
     ),

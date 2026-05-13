@@ -28,6 +28,8 @@ class SupportCaseFactory extends Factory
       'closed_at'   => $closed
         ? $faker->dateTimeBetween($openedAt, 'now')
         : null,
+              'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
     ];
   }
 }

@@ -274,10 +274,10 @@ return array(
     'label' => 'Settings',
     'single_label' => 'Setting',
   ),
-  'opportunities' =>
+  'deals' =>
   array(
-    'label' => 'Opportunities',
-    'single_label' => 'Opportunity',
+    'label' => 'Deals',
+    'single_label' => 'Deal',
     'fields' =>
     array(
       'id' => 'ID',
@@ -323,7 +323,7 @@ return array(
       'id' => 'ID',
       'order_number' => 'Order Number',
 
-      'opportunity_id' => 'Opportunity',
+      'deal_id' => 'Deal',
       'description' => 'Description',
       'total_amount' => 'Total Amount',
       'currency' => 'Currency',

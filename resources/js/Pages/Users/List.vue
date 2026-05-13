@@ -317,7 +317,7 @@ const hidePagination = computed(() => {
                 ></i>
               </span>
             </th>
-            <th v-if="$page.props.auth.user.is_root"></th>
+            <th v-if="isRoot"></th>
           </tr>
         </thead>
 
@@ -334,7 +334,7 @@ const hidePagination = computed(() => {
                   :searchable="getField(col)?.searchable"
                 />
               </td>
-              <td class="row-actions" @click.stop>
+              <td class="row-actions" @click.stop v-if="isRoot">
                 <button
                   class="row-action-btn row-action-btn--resend"
                   :class="{

@@ -48,10 +48,6 @@ return [
     'last_name' => 'Nachname',
     'first_name_placeholder' => 'Dein Vorname',
     'last_name_placeholder' => 'Dein Nachname',
-    'username' => 'Benutzername',
-    'username_placeholder' => 'Max_Mustermann_123',
-    'password' => 'Passwort',
-    'password_placeholder' => 'Mind. 8 Zeichen',
     'confirm_password' => 'Passwort bestätigen',
     'confirm_password_placeholder' => 'Passwort wiederholen',
     'create_account_button' => 'Konto erstellen',
@@ -102,4 +98,20 @@ return [
     'is_logged_in_as' => "ist angemeldet als",
     'return_to_original_session' => "Account wechseln zurück"
     ],
+    'dashboard' => [
+    'your_records'    => 'Ihre Datensätze',
+    'total_records'    => 'Datensätze insgesamt',
+    'deals_over_time'    => 'Verkaufschancen im Zeitverlauf',
+    'total'   => 'Gesamt',
+    'count'   => 'Anzahl',
+    'value'   => 'Wert',
+    'won'     => 'Gewonnen',
+    'open'     => 'Offen',
+    'lost'     => 'Verloren',
+    'months_of_data_ready'     => 'Monate an Daten verfügbar',
+    'deal_stages'   => "Verkaufschancen-Phasen",
+    'recent_orders'   => "Letzte Bestellungen",
+    'recent_leads'   => "Letzte Interessenten",
+    'no_recent_orders'   => "Keine letzten Bestellungen"
+]
 ];

@@ -6,7 +6,7 @@ use App\Models\BaseModule;
 
 class UserInvite extends BaseModule
 {
-  protected $table = 'user_invites';
+  protected $table = 'userinvites';
 
   protected $fillable = [
     'email',

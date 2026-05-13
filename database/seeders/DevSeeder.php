@@ -9,7 +9,7 @@ use App\Models\Modules\Invoice;
 use App\Models\Modules\Lead;
 use App\Models\Modules\Quote;
 use App\Models\Modules\SupportCase;
-use App\Models\Modules\Opportunity;
+use App\Models\Modules\Deal;
 use App\Models\Modules\Product;
 use App\Models\Modules\Order;
 
@@ -27,7 +27,7 @@ class DevSeeder extends Seeder
     Invoice::factory(100)->create();
     SupportCase::factory(125)->create();
     Product::factory()->count(150)->create();
-    Opportunity::factory()->count(150)->create();
+    Deal::factory()->count(150)->create();
     Order::factory()->count(150)->create();
   }
 }

@@ -14,7 +14,7 @@ use App\Models\Label;
 use App\Observers\LabelObserver;
 use App\Models\Settings\SettingValue;
 use App\Observers\SettingValueObserver;
-
+use App\Services\Users\OwnershipService;
 class AppServiceProvider extends ServiceProvider
 {
   /**
@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     $this->app->singleton(ModuleScaffolder::class, function ($app) {
       return new ModuleScaffolder($app['files']);
     });
+    $this->app->singleton(OwnershipService::class);
   }
 
 

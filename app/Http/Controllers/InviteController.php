@@ -73,7 +73,7 @@ class InviteController extends Controller
   {
     $data = $request->validate([
       'invites'           => 'required|array|min:1|max:20',
-      'invites.*.email'   => 'required|email|unique:users,email|unique:user_invites,email',
+      'invites.*.email'   => 'required|email|unique:users,email|unique:userinvites,email',
       'invites.*.is_admin' => 'boolean',
     ]);
 

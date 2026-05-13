@@ -18,7 +18,6 @@ return new class extends Migration
       $table->string('label')->nullable();
       $table->string('single_label')->nullable();
       $table->string('category')->nullable();
-
       $table->string('icon')->default('fa-bahai');
       $table->string('color')->default('#0d6efd');
       $table->string('path');
@@ -27,9 +26,9 @@ return new class extends Migration
       $table->boolean('show_in_sidebar')->default(true);
       $table->string('handler_class')->nullable();
       $table->text('description')->nullable();
-
       $table->string('model_class')->nullable();
       $table->string('table_name')->nullable();
+      $table->boolean('has_owner')->default(true);
       $table->timestamps();
       $table->boolean('is_custom')->default(false);
       $table->boolean('is_draft')->default(false);

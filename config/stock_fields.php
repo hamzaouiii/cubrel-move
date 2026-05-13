@@ -295,7 +295,7 @@ return [
       'type' => 'longtext',
     ],
   ],
-  'opportunities' =>
+  'deals' =>
   [
     'amount' =>
     [

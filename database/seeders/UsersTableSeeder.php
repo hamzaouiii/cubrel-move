@@ -35,6 +35,7 @@ class UsersTableSeeder extends Seeder
         'last_login_ip'            => null,
         'status'                   => 'active',
         'is_admin'                 => 1,
+        'is_root'                  => 0,
         'password_changed_at'      => null,
         'failed_login_attempts'    => 0,
         'locked_until'             => null,
@@ -70,6 +71,7 @@ class UsersTableSeeder extends Seeder
         'last_login_ip'            => null,
         'status'                   => 'active',
         'is_admin'                 => 1,
+        'is_root'                  => 1,
         'password_changed_at'      => null,
         'failed_login_attempts'    => 0,
         'locked_until'             => null,
@@ -107,6 +109,7 @@ class UsersTableSeeder extends Seeder
         'last_login_ip'            => null,
         'status'                   => 'active',
         'is_admin'                 => 0,
+        'is_root'                  => 0,
         'password_changed_at'      => null,
         'failed_login_attempts'    => 0,
         'locked_until'             => null,
@@ -127,7 +130,7 @@ class UsersTableSeeder extends Seeder
     ];
 
     DB::table('users')->insert($users);
-    User::factory(80)->create();
+    User::factory(10)->create();
 
   }
 }

@@ -1,6 +1,6 @@
 <?php
 return [
-  'opportunities_type_list' => [
+  'deals_type_list' => [
     'new_business' => 'Neukundengeschäft',
     'existing_business' => 'Bestandskundengeschäft',
     'renewal' => 'Verlängerung',
@@ -14,7 +14,7 @@ return [
     'complete' => 'Abgeschlossen',
     'cancelled' => 'Storniert',
   ],
-  'opportunities_sales_stage_list' => [
+  'deals_sales_stage_list' => [
     'prospecting' => 'Akquise',
     'qualification' => 'Qualifizierung',
     'proposal' => 'Angebot',

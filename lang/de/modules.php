@@ -289,7 +289,7 @@ return array(
     'label' => 'Einstellungen',
     'single_label' => 'Einstellung',
   ),
-  'opportunities' =>
+  'deals' =>
   array(
     'label' => 'Verkaufschancen',
     'single_label' => 'Verkaufschance',
@@ -336,7 +336,7 @@ return array(
       'name' => 'Name',
       'id' => 'ID',
       'order_number' => 'Bestellnummer',
-      'opportunity_id' => 'Verkaufschance',
+      'deal_id' => 'Verkaufschance',
       'description' => 'Beschreibung',
       'total_amount' => 'Gesamtbetrag',
       'currency' => 'Währung',

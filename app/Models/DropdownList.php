@@ -32,4 +32,5 @@ class DropdownList extends Model
       ->where('key', $key)
       ->first();
   }
+
 }
