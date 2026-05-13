@@ -8,13 +8,16 @@ const props = defineProps({
 
 // ─── Order status ─────────────────────────────────────────────────────────────
 const orderStatusClass = {
-  dsadsa: "status-pill--warning",
+  warning: "status-pill--warning",
   default: "status-pill--info",
-  info: "status-pill--success",
-  cancelled: "status-pill--danger",
+  info: "status-pill--info",
+  success: "status-pill--success",
+  danger: "status-pill--danger",
 };
 
 function getOrderStatusClass(status) {
+  console.log(status);
+
   return orderStatusClass[status?.toLowerCase()] ?? "status-pill--secondary";
 }
 
@@ -63,7 +66,12 @@ function formatCurrency(amount, currency = "EUR") {
             >
               {{ $t(order.status.label) }}
             </span>
-            <span class="orders-list__amt">
+            <span
+              v-if="order.status.value === 'cancelled'"
+              class="orders-list__amt orders-list__amt--cancelled"
+              >{{ formatCurrency(order.total_amount, order.currency) }}</span
+            >
+            <span class="orders-list__amt" v-else>
               {{ formatCurrency(order.total_amount, order.currency) }}
             </span>
           </div>

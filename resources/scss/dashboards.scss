@@ -1,25 +1,3 @@
-// ─── Tokens ───────────────────────────────────────────────────────────────────
-$warning: #ef9f27;
-$warning-light: #faeeda;
-$danger: #d85a30;
-$danger-light: #fcebeb;
-$info: #378add;
-$info-light: #e6f1fb;
-
-$white: #ffffff;
-$bg: #f4f5f7;
-$border: #e5e7eb;
-$muted: #6b7280;
-$text: #111827;
-$radius: 12px;
-$radius-sm: 8px;
-$shadow:
-  0 2px 5px rgba(0, 0, 0, 0.08),
-  0 2px 5px rgba(0, 0, 0, 0.04);
-$shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
-$transition: 0.18s ease;
-
-// ─── Layout ───────────────────────────────────────────────────────────────────
 .dashboard {
   &__actions {
     padding: 15px 20px;
@@ -29,13 +7,13 @@ $transition: 0.18s ease;
       all: unset;
       background-color: var(--primary-color);
       border-color: var(--primary-color);
-      color: white;
+      color: #ffffff;
       padding: 5px 8px;
       border-radius: 5px;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
       &:hover {
-        background-color: color-mix(in srgb, var(--primary-color) 85%, white);
+        background-color: color-mix(in srgb, var(--primary-color) 85%, #ffffff);
       }
     }
   }
@@ -45,7 +23,7 @@ $transition: 0.18s ease;
     grid-template-rows: auto;
     gap: 16px;
     padding: 20px;
-    background: $bg;
+    background: #f4f5f7;
     min-height: 100vh;
     align-items: start;
 
@@ -91,10 +69,11 @@ $transition: 0.18s ease;
   // ─── Card ─────────────────────────────────────────────────────────────────────
   &__card {
     font-family: "Heebo", sans-serif;
-    // border: 2px solid var(--primary-color);
     border-radius: 8px;
-    background-color: white;
-    box-shadow: $shadow;
+    background-color: #ffffff;
+    box-shadow:
+      0 2px 5px rgba(0, 0, 0, 0.08),
+      0 2px 5px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease-in-out;
     margin-top: 15px;
     &:hover {
@@ -105,13 +84,13 @@ $transition: 0.18s ease;
       align-items: center;
       justify-content: space-between;
       padding: 14px 16px;
-      border-bottom: 1px solid $border;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     &__title {
       font-size: 13px;
       font-weight: 600;
-      color: $text;
+      color: #111827;
       letter-spacing: -0.01em;
     }
 
@@ -133,18 +112,18 @@ $transition: 0.18s ease;
     border-radius: 12px;
     cursor: pointer;
     border: none;
-    transition: all $transition;
+    transition: all 0.18s ease;
     line-height: 1.4;
 
     &--active {
       background: var(--primary-color);
-      color: $white;
+      color: #ffffff;
     }
 
     &--outline {
       background: transparent;
-      border: 1px solid $border;
-      color: $muted;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
       &:hover {
         border-color: var(--primary-color);
         color: var(--primary-color);
@@ -155,23 +134,23 @@ $transition: 0.18s ease;
   // ─── Misc utils ───────────────────────────────────────────────────────────────
   .text--muted {
     font-size: 12px;
-    color: $muted;
+    color: #6b7280;
   }
   .icon--muted {
-    color: $muted;
+    color: #6b7280;
     opacity: 0.55;
     font-size: 13px;
     cursor: pointer;
   }
   .divider {
     border: none;
-    border-top: 1px solid $border;
+    border-top: 1px solid #e5e7eb;
     margin: 14px 0;
   }
   .big-num {
     font-size: 34px;
     font-weight: 300;
-    color: $text;
+    color: #111827;
     line-height: 1;
     margin-bottom: 4px;
   }
@@ -204,7 +183,7 @@ $transition: 0.18s ease;
       a {
         all: unset;
         font-weight: 600;
-        color: $text;
+        color: #111827;
         text-decoration: underline;
         cursor: pointer;
       }
@@ -235,7 +214,7 @@ $transition: 0.18s ease;
     &__count {
       font-weight: 600;
       font-size: 13px;
-      color: $muted;
+      color: #6b7280;
     }
   }
 
@@ -253,8 +232,8 @@ $transition: 0.18s ease;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: $bg;
-    border-radius: $radius-sm;
+    background: #f4f5f7;
+    border-radius: 8px;
     gap: 8px;
 
     &--sm {
@@ -264,13 +243,13 @@ $transition: 0.18s ease;
 
     &__icon {
       font-size: 24px;
-      color: $muted;
+      color: #6b7280;
       opacity: 0.35;
     }
 
     &__label {
       font-size: 12px;
-      color: $muted;
+      color: #6b7280;
       opacity: 0.8;
     }
   }
@@ -303,12 +282,12 @@ $transition: 0.18s ease;
     &__num {
       font-size: 22px;
       font-weight: 500;
-      color: $text;
+      color: #111827;
       line-height: 1;
     }
     &__sub {
       font-size: 10px;
-      color: $muted;
+      color: #6b7280;
     }
   }
 
@@ -339,7 +318,7 @@ $transition: 0.18s ease;
         background: var(--primary-color);
       }
       &--lost {
-        background: $danger;
+        background: #d85a30;
       }
     }
 
@@ -347,7 +326,7 @@ $transition: 0.18s ease;
       margin-left: auto;
       font-weight: 600;
       font-size: 12px;
-      color: $text;
+      color: #111827;
       padding-left: 12px;
     }
   }
@@ -359,7 +338,7 @@ $transition: 0.18s ease;
 
     &__title {
       font-size: 12px;
-      color: $muted;
+      color: #6b7280;
       margin-bottom: 12px;
       font-weight: 500;
     }
@@ -392,7 +371,7 @@ $transition: 0.18s ease;
     &__count {
       font-size: 12px;
       font-weight: 600;
-      color: $text;
+      color: #111827;
     }
 
     &__sep {
@@ -402,7 +381,7 @@ $transition: 0.18s ease;
 
     &__amt {
       font-size: 12px;
-      color: $muted;
+      color: #6b7280;
     }
   }
 
@@ -430,13 +409,13 @@ $transition: 0.18s ease;
 
     &__label {
       font-size: 12px;
-      color: $muted;
+      color: #6b7280;
     }
 
     &__value {
       font-size: 28px;
       font-weight: 300;
-      color: $text;
+      color: #111827;
       line-height: 1;
       margin-bottom: 4px;
     }
@@ -448,10 +427,10 @@ $transition: 0.18s ease;
         color: #1d9e75;
       }
       &--neg {
-        color: $danger;
+        color: #d85a30;
       }
       &--neut {
-        color: $muted;
+        color: #6b7280;
       }
     }
   }
@@ -485,8 +464,8 @@ $transition: 0.18s ease;
     &__icon-wrap {
       width: 30px;
       height: 30px;
-      border-radius: $radius-sm;
-      background: $info-light;
+      border-radius: 8px;
+      background: #e6f1fb;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -527,6 +506,10 @@ $transition: 0.18s ease;
       font-size: 12px;
       font-weight: 700;
       color: #1d9e75;
+      &--cancelled {
+        color: #d85a30;
+        text-decoration: line-through;
+      }
     }
   }
 
@@ -541,23 +524,23 @@ $transition: 0.18s ease;
 
     &--success {
       background: #1d9e75;
-      color: color-mix(in srgb, #1d9e75 5%, white);
+      color: color-mix(in srgb, #1d9e75 5%, #ffffff);
     }
     &--warning {
-      background: $warning-light;
-      color: darken($warning, 30%);
+      background: #faeeda;
+      color: #8a5c16;
     }
     &--danger {
-      background: $danger-light;
-      color: $danger;
+      background: #fcebeb;
+      color: #d85a30;
     }
     &--info {
-      background: $info-light;
-      color: darken($info, 20%);
+      background: #e6f1fb;
+      color: #1c5c8a;
     }
     &--secondary {
       background: #f3f4f6;
-      color: $muted;
+      color: #6b7280;
     }
   }
 
@@ -568,7 +551,7 @@ $transition: 0.18s ease;
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    color: $muted;
+    color: #6b7280;
 
     &__icon {
       font-size: 2rem;
