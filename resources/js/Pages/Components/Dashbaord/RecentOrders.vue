@@ -8,13 +8,15 @@ const props = defineProps({
 
 const orderStatusClass = {
   warning: "status-pill--warning",
-  default: "status-pill--info",
+  default: "status-pill--default",
   info: "status-pill--info",
   success: "status-pill--success",
   danger: "status-pill--danger",
 };
 
 function getOrderStatusClass(status) {
+  console.log(status);
+
   return orderStatusClass[status?.toLowerCase()] ?? "status-pill--secondary";
 }
 

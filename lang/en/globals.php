@@ -115,6 +115,7 @@ return [
     'months_of_data_ready'     => 'months of data ready',
     'deal_stages'   => "Deal Stages",
     'recent_orders'   => "Recent Orders",
+    'recent_leads'   => "Recent Leads",
     'no_recent_orders'   => "No Recent Orders"
   ]
 ];
