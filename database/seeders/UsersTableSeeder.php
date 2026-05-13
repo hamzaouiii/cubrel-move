@@ -130,7 +130,7 @@ class UsersTableSeeder extends Seeder
     ];
 
     DB::table('users')->insert($users);
-    User::factory(80)->create();
+    User::factory(10)->create();
 
   }
 }

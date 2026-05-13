@@ -48,11 +48,6 @@ return [
     'last_name' => 'Last Name',
     'first_name_placeholder' => 'Your First Name',
     'last_name_placeholder' => 'Your Last Name',
-    'username' => 'Username',
-    'username_placeholder' => 'username',
-    'password' => 'Password',
-    'password_placeholder' => 'Min. 8 characters',
-    'confirm_password' => 'Confirm Password',
     'confirm_password_placeholder' => 'Repeat your password',
     'create_account_button' => 'Create Account',
     'setting_up_account' => 'Setting up your account...',
@@ -106,5 +101,20 @@ return [
   'impersonate' => [
     'is_logged_in_as' => "is logged in as",
     'return_to_original_session' => "Return to original session",
+  ],
+  'dashboard' => [
+    'your_records'    => 'Your Recoords',
+    'total_records'    => 'Total Recoords',
+    'deals_over_time'    => 'Deals Over Time',
+    'total'   => 'Total',
+    'count'   => 'Count',
+    'value'   => 'Value',
+    'won'     => 'Won',
+    'open'     => 'Open',
+    'lost'     => 'Lost',
+    'months_of_data_ready'     => 'months of data ready',
+    'deal_stages'   => "Deal Stages",
+    'recent_orders'   => "Recent Orders",
+    'no_recent_orders'   => "No Recent Orders"
   ]
 ];

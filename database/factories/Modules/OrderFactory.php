@@ -31,8 +31,8 @@ class OrderFactory extends Factory
       'due_date' => $this->faker->dateTimeBetween('now', '+2 months'),
 
 
-      'created_at' => now(),
-      'updated_at' => now(),
+      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];
   }
 }

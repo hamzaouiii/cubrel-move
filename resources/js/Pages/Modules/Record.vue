@@ -405,7 +405,6 @@ const getLinkingLayout = (slug) => {
   const l = allLayouts.value.find((l) => l.module === slug);
   return l?.layouts?.linkingPanel?.columns || null;
 };
-console.log(props.record);
 </script>
 <template>
   <Head>

@@ -35,6 +35,8 @@ class ContactFactory extends Factory
       'position' => $this->faker->jobTitle(),
 
       'notes' => $this->faker->optional()->paragraph(),
+      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
+      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];
   }
 }
