@@ -9,6 +9,7 @@ use App\Services\Relationships\RelationshipService;
 use App\Models\Module;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Log;
+use App\Scopes\AdminOnlyModuleScope;
 
 abstract class BaseModuleHandler implements ModuleHandler
 {
@@ -183,11 +184,10 @@ protected function fetchLabels(string $module, array $ids): array
 
     // Cache model_class lookups to avoid repeated DB hits per module
     if (!isset(self::$moduleModelClassCache[$module])) {
-        $moduleRecord = Module::query()
-            ->select('model_class')
-            ->where('slug', $module)
-            ->first();
-
+$moduleRecord = Module::withoutGlobalScope(AdminOnlyModuleScope::class)
+    ->select('model_class')
+    ->where('slug', $module)
+    ->first();
 
         self::$moduleModelClassCache[$module] = $moduleRecord?->model_class;
     } else {
@@ -240,7 +240,9 @@ protected function fetchLabels(string $module, array $ids): array
             'columns'     => $columns,
         ]);
 
-        $records = $modelClass::whereIn('id', $missingIds)->get($columns);
+  $records = $modelClass::withoutGlobalScope(AdminOnlyModuleScope::class)
+    ->whereIn('id', $missingIds)
+    ->get($columns);
 
         Log::debug('[fetchLabels] DB query result', [
             'module'        => $module,
