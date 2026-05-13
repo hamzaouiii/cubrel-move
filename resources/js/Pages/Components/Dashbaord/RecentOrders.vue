@@ -6,7 +6,6 @@ const props = defineProps({
   recentOrders: { type: Array, required: true },
 });
 
-// ─── Order status ─────────────────────────────────────────────────────────────
 const orderStatusClass = {
   warning: "status-pill--warning",
   default: "status-pill--info",
@@ -16,8 +15,6 @@ const orderStatusClass = {
 };
 
 function getOrderStatusClass(status) {
-  console.log(status);
-
   return orderStatusClass[status?.toLowerCase()] ?? "status-pill--secondary";
 }
 
