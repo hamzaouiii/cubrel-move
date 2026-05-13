@@ -85,12 +85,7 @@ const getEmailLocalPart = (email) => {
         <i class="email-icon fa-regular fa-envelope"></i>
         <span v-if="readOnly">{{ localValue }}</span>
 
-        <input
-          v-else
-          v-model="localValue"
-          @input="clearErrors()"
-          placeholder="email@example.com"
-        />
+        <input v-else v-model="localValue" @input="clearErrors()" />
       </div>
       <span v-if="showError" class="error-icon-container">
         <i class="error-icon fa-solid fa-circle-exclamation"></i>

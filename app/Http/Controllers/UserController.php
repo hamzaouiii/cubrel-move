@@ -61,7 +61,7 @@ class UserController extends Controller
     $fields        = $moduleModel->allFields();
     $recorddropdownLists = $moduleModel->dropdownLists;
 
-    return Inertia::render('Modules/Create', array_merge([
+    return Inertia::render('Users/Create', array_merge([
       'module'        => $moduleModel,
       'title'         => $moduleModel->name,
       'recordLayout'  => $recordLayout,

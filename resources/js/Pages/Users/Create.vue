@@ -25,6 +25,7 @@ const props = defineProps({
   dropdownLists: Object,
   fields: Object,
 });
+
 const { validateFieldTypes } = useFieldValidation(props);
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
@@ -258,34 +259,34 @@ const getField = (f) => {
     </div>
     <div class="record-layout__scroll">
       <div class="record-layout__sections">
-        <div
-          class="record-layout__sections__item"
-          v-for="s in recordLayout.sections"
-          :key="s.name"
-        >
-          <div class="record-layout__sections__item__title">
-            {{ s.name }}
-          </div>
+        <template v-for="s in recordLayout.sections" :key="s.name">
+          <div class="record-layout__sections__item">
+            <div class="record-layout__sections__item__title">
+              {{ s.name }}
+            </div>
 
-          <div class="record-layout__sections__item__layout">
-            <div
-              v-for="f in s.layout.filter((f) => !getField(f).readonly)"
-              :key="f.name"
-              class="record-layout__sections__item__layout__field"
-            >
-              <span class="record-layout__sections__item__layout__field__label">
-                {{ $t(f.label) }}:
-              </span>
-              <FieldRenderer
-                :field="getField(f)"
-                v-model="form[f.name]"
-                mode="edit"
-                :module-color="module_color"
-                :has-error="hasError(f)"
-              />
+            <div class="record-layout__sections__item__layout">
+              <div
+                v-for="f in s.layout.filter((f) => !getField(f).readonly)"
+                :key="f.name"
+                class="record-layout__sections__item__layout__field"
+              >
+                <span
+                  class="record-layout__sections__item__layout__field__label"
+                >
+                  {{ $t(f.label) }}:
+                </span>
+                <FieldRenderer
+                  :field="getField(f)"
+                  v-model="form[f.name]"
+                  mode="edit"
+                  :module-color="module_color"
+                  :has-error="hasError(f)"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>

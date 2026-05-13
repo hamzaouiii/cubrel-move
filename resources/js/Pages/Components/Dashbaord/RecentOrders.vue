@@ -15,8 +15,6 @@ const orderStatusClass = {
 };
 
 function getOrderStatusClass(status) {
-  console.log(status);
-
   return orderStatusClass[status?.toLowerCase()] ?? "status-pill--secondary";
 }
 
