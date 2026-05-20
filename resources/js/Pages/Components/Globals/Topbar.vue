@@ -42,11 +42,6 @@ const user = computed(() => page.props.auth?.user || {});
     <GlobalSearch class="topbar__search"></GlobalSearch>
 
     <div class="topbar__actions">
-      <transition name="slide-search">
-        <!-- <form >
-          <input :placeholder="$t('globals.topbar.global_search')" />
-        </form> -->
-      </transition>
       <div class="topbar__actions__icons">
         <div
           class="topbar__actions__icons__item profile"

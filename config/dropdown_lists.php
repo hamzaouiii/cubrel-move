@@ -151,38 +151,6 @@ return [
             'status' => 'danger',
         ],
     ],
-    'emails_status_list' => [
-        0 => [
-            'label' => 'dropdowns.emails_status_list.draft',
-            'value' => 'draft',
-            'status' => 'default',
-        ],
-        1 => [
-            'label' => 'dropdowns.emails_status_list.scheduled',
-            'value' => 'scheduled',
-            'status' => 'info',
-        ],
-        2 => [
-            'label' => 'dropdowns.emails_status_list.sent',
-            'value' => 'sent',
-            'status' => 'info',
-        ],
-        3 => [
-            'label' => 'dropdowns.emails_status_list.delivered',
-            'value' => 'delivered',
-            'status' => 'success',
-        ],
-        4 => [
-            'label' => 'dropdowns.emails_status_list.read',
-            'value' => 'read',
-            'status' => 'success',
-        ],
-        5 => [
-            'label' => 'dropdowns.emails_status_list.failed',
-            'value' => 'failed',
-            'status' => 'danger',
-        ],
-    ],
     'quotes_status_list' => [
         0 => [
             'label' => 'dropdowns.quotes_status_list.draft',

@@ -9,7 +9,7 @@ use App\Services\ModuleScaffolder;
 use App\Models\Module;
 use App\Models\Layout;
 use App\Services\Translations\TranslationService;
-use App\Services\Settings\SettingService;
+use App\Support\Settings;
 use App\Models\Label;
 use App\Observers\LabelObserver;
 use App\Models\Settings\SettingValue;
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
     Inertia::share([
       'locale'       => fn() => app()->getLocale(),
       'translations' => fn() => TranslationService::all(),
-      'appSettings'  => fn() => SettingService::all(),
+      'appSettings'  => Settings::all(...),
       'modules'      => fn() => Module::forSidebar(),
       'layouts'      => fn() => Layout::getAllLayouts(),
       

@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * All modules have these fields. They are critical to the overall health and functionality of the whole system
+ * they are not editable
+ * Admins can hide them from layouts but they cannot be removed
+ */
 return [
   'name' =>
   [
@@ -14,7 +18,8 @@ return [
   'description' =>
   [
     'name' => 'description',
-    'searchable' => false,
+    'searchable' => true,
+    'required' => false,
     'type' => 'longtext',
     'key'     => 'default.description',
     'label'   => 'modules.defaults.description',
@@ -38,7 +43,9 @@ return [
     'readonly' => true,
     'key'     => 'default.created_at',
     'label'   => 'modules.defaults.created_at',
-    'is_default' => true
+    'is_default' => true,
+    'searchable' => false,
+
   ],
   'updated_at' =>
   [
@@ -47,6 +54,7 @@ return [
     'key'     => 'default.updated_at',
     'readonly' => true,
     'label'   => 'modules.defaults.updated_at',
-    'is_default' => true
+    'is_default' => true,
+    'searchable' => false,
   ],
 ];

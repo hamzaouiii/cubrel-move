@@ -32,3 +32,4 @@ package-lock.json
 .prettierrc
 /screenshots/*
 app/**/custom
+.claude/settings.local.json
