@@ -17,5 +17,12 @@ protected $fillable = [
     'order_date',
     'due_date',
 ];
+     public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->number,
+        ]);
+    }
   protected $guarded = [];
 }

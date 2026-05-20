@@ -16,5 +16,13 @@ protected $fillable = [
     'currency',
     'is_active',
 ];
+
+     public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->sku,
+        ]);
+    }
   protected $guarded = [];
 }

@@ -28,7 +28,13 @@ class SupportCase extends BaseModule
     'closed_at' => 'datetime',
 
   ];
-
+     public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->subject,
+        ]);
+    }
   protected static function booted(): void
   {
     parent::booted();
