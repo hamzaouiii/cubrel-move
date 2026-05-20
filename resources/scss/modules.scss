@@ -433,7 +433,7 @@
   &__table-scroll {
     overflow: auto;
     margin: 20px;
-    scrollbar-width: thin;
+    scrollbar-width: auto;
     scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 
     border: 1px solid #e2e8f0;
@@ -449,7 +449,7 @@
     }
 
     &::-webkit-scrollbar {
-      height: 8px;
+      height: 18px;
       width: 8px;
     }
     &::-webkit-scrollbar-track {
