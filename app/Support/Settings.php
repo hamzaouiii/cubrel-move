@@ -7,17 +7,27 @@ use Illuminate\Support\Facades\Cache;
 
 class Settings
 {
+  protected const CACHE_KEY = 'settings.all';
   protected static array $cache = [];
+
+  protected static function load(): array
+  {
+    if (!empty(static::$cache)) {
+      return static::$cache;
+    }
+
+    $resolver = fn() => SettingValue::pluck('value', 'key')->toArray();
+
+    static::$cache = app()->environment('production')
+      ? Cache::rememberForever(self::CACHE_KEY, $resolver)
+      : $resolver();
+
+    return static::$cache;
+  }
 
   public static function get(string $key, $default = null)
   {
-    if (empty(static::$cache)) {
-      static::$cache = SettingValue::where('autoload', true)
-        ->pluck('value', 'key')
-        ->toArray();
-    }
-
-    return static::$cache[$key] ?? $default;
+    return static::load()[$key] ?? $default;
   }
 
   public static function set(string $key, $value): void
@@ -26,9 +36,9 @@ class Settings
     $record->value = $value;
     $record->save();
 
-    Cache::forget('app_settings');
-    static::$cache = [];
+    static::clearCache();
   }
+
   public static function bool(string $key, bool $default = false): bool
   {
     $value = static::get($key);
@@ -38,6 +48,7 @@ class Settings
 
     return (bool) (int) $value;
   }
+
   public static function locale(): string
   {
     return static::get('app_locale', config('app.locale'));
@@ -45,12 +56,12 @@ class Settings
 
   public static function all(): array
   {
-    if (empty(static::$cache)) {
-      static::$cache = SettingValue::where('autoload', true)
-        ->pluck('value', 'key')
-        ->toArray();
-    }
+    return static::load();
+  }
 
-    return static::$cache;
+  public static function clearCache(): void
+  {
+    Cache::forget(self::CACHE_KEY);
+    static::$cache = [];
   }
 }
