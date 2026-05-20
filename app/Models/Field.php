@@ -55,6 +55,7 @@ class Field extends Model
     'key',
     'is_custom',
     'is_draft',
+    'is_default',
     'regex',
     'is_active',
     'database_type',

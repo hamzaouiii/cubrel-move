@@ -46,7 +46,7 @@ class FieldsManagerController extends Controller
       ->firstOrFail();
     return Inertia::render('Settings/Fields/List', [
       'module' => $module,
-      'fields' => $module->allFields()
+      'fields' => $module->allEditableFields()
     ]);
   }
 

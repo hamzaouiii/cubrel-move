@@ -2,354 +2,386 @@
 
 namespace App\Models;
 
+use App\Concerns\HasTranslatableLabel;
+use App\Scopes\AdminOnlyModuleScope;
+use App\Services\Relationships\RelationshipService;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use App\Concerns\HasTranslatableLabel;
-use App\Models\Layout;
-use App\Models\Field;
 use Illuminate\Support\Collection;
-use App\Services\Relationships\RelationshipService;
-use App\Models\BaseModule;
-use App\Scopes\AdminOnlyModuleScope;
 
 /**
- * This is an infrastructure class. A Module is an editable item that contains metadata for each module. 
+ * This is an infrastructure class. A Module is an editable item that contains metadata for each module.
  * Not to be confused with BaseModule => app\Models\BaseModule.php which is a business module, all CRM modules are to extend it, unlike this one which probably needs to be an abstract class
- * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Layout> $layouts
- * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\Field> $fields
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection<Layout> $layouts
+ * @property-read \Illuminate\Database\Eloquent\Collection<Field> $fields
  */
 class Module extends Model
 {
-  use HasUuids;
-  use HasTranslatableLabel;
+    use HasTranslatableLabel;
+    use HasUuids;
 
-  protected static array $staticFieldCache = [];
+    protected static array $staticFieldCache = [];
 
-  protected $fillable = [
-    'slug',
-    'name',
-    'icon',
-    'label',
-    'is_draft',
-    'category',
-    'single_label',
-    'color',
-    'path',
-    'sort_order',
-    'is_active',
-    'description',
-    'can_view',
-    'can_create',
-    'can_edit',
-    'can_delete',
-    'model_class',
-    'handler_class',
-    'table_name',
-    'show_in_sidebar',
-    'is_custom',
-    'is_draft',
-    'locked_by',
-    'locked_until'
-  ];
-
-  protected $casts = [
-    'is_active'  => 'boolean',
-    'can_view'   => 'boolean',
-    'can_create' => 'boolean',
-    'can_edit'   => 'boolean',
-    'can_delete' => 'boolean',
-  ];
-  protected $guarded = [];
-  public $timestamps = true;
-  public static function forSidebar(): Collection
-  {
-    return self::where('is_draft', 0)
-      ->where('show_in_sidebar', 1)
-      ->orderBy('category')
-      ->get()
-      ->map(function (Module $module) {
-
-        return [
-          'slug'  => $module->slug,
-          'name' => $module->name,
-          'icon'  => $module->icon,
-          'color' => $module->color,
-          'path'  => $module->path,
-          'label' => $module->label,
-          'single_label' => $module->single_label,
-          'category' => $module->category
-        ];
-      })
-      ->values();
-  }
-
-  public function scopeActive($query)
-  {
-    return $query->where('is_active', true);
-  }
-
-  /**
-   * @return HasMany<Layout, $this>
-   */
-  public function layouts()
-  {
-    return $this->hasMany(Layout::class);
-  }
-
-  public function getDefaultLayout(String $type)
-  {
-    $layout = $this->layouts()->where('type', $type)->first();
-
-    if ($layout !== null) {
-      return $layout->definition;
-    }
-
-    // Module specific config fallback
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
-      return $moduleConfig[$type];
-    }
-
-    // Global fallback
-    $globalDefault = Layout::getDefaultLayout($type);
-    if ($globalDefault !== null) {
-      return $globalDefault;
-    }
-  }
-
-  public function listLayout(): array
-  {
-    return $this->resolveLayout('list');
-  }
-
-  public function recordLayout(): array
-  {
-    return $this->resolveLayout('record');
-  }
-
-  public function relatedLayout(): array
-  {
-    return $this->resolveLayout('related');
-  }
-
-  public function linkingPanelLayout(): array
-  {
-    return $this->resolveLayout('linkingPanel');
-  }
-
-  public function getDataForPanel(): array
-  {
-    return [
-      'linkingPanel' => $this->linkingPanelLayout(),
-      'fields' => $this->allFields()
-    ];
-  }
-
-  public function layoutFor(string $type)
-  {
-    return $this->layouts()
-      ->where('type', $type)
-      ->first();
-  }
-
-
-  /**
-   * @return HasMany<Field, $this>
-   * excludes default fields
-   */
-  public function fields()
-  {
-    return $this->hasMany(Field::class, 'module_id', 'id')
-      ->select([
-        'id',
-        'module_id',
-        'dropdown_list_id',
-        'related_module',
+    protected $fillable = [
+        'slug',
         'name',
-        'type',
-        'key',
-        'readonly',
-        'sortable',
-        'searchable',
+        'icon',
         'label',
-        'required',
         'is_draft',
+        'category',
+        'single_label',
+        'color',
+        'path',
+        'sort_order',
+        'is_active',
+        'description',
+        'can_view',
+        'can_create',
+        'can_edit',
+        'can_delete',
+        'model_class',
+        'handler_class',
+        'table_name',
+        'show_in_sidebar',
+        'is_custom',
+        'is_draft',
+        'locked_by',
+        'locked_until',
+    ];
 
-      ])
-      ->with('dropdown_list');
-  }
-  /**
-   * @return Collection<Field>
-   */
-  public function allFields(): Collection
-{
-   $key = $this->id;
+    protected $casts = [
+        'is_active' => 'boolean',
+        'can_view' => 'boolean',
+        'can_create' => 'boolean',
+        'can_edit' => 'boolean',
+        'can_delete' => 'boolean',
+    ];
 
-    if (!isset(self::$staticFieldCache[$key])) {
-        self::$staticFieldCache[$key] = Field::query()
+    protected $guarded = [];
+
+    public $timestamps = true;
+
+    public static function forSidebar(): Collection
+    {
+        return self::where('is_draft', 0)
+            ->where('show_in_sidebar', 1)
+            ->orderBy('category')
+            ->get()
+            ->map(function (Module $module) {
+
+                return [
+                    'slug' => $module->slug,
+                    'name' => $module->name,
+                    'icon' => $module->icon,
+                    'color' => $module->color,
+                    'path' => $module->path,
+                    'label' => $module->label,
+                    'single_label' => $module->single_label,
+                    'category' => $module->category,
+                ];
+            })
+            ->values();
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * @return HasMany<Layout, $this>
+     */
+    public function layouts()
+    {
+        return $this->hasMany(Layout::class);
+    }
+
+    public function getDefaultLayout(string $type)
+    {
+        $layout = $this->layouts()->where('type', $type)->first();
+
+        if ($layout !== null) {
+            return $layout->definition;
+        }
+
+        // Module specific config fallback
+        $moduleConfig = config("module_layouts.{$this->slug}");
+        if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
+            return $moduleConfig[$type];
+        }
+
+        // Global fallback
+        $globalDefault = Layout::getDefaultLayout($type);
+        if ($globalDefault !== null) {
+            return $globalDefault;
+        }
+    }
+
+    public function listLayout(): array
+    {
+        return $this->resolveLayout('list');
+    }
+
+    public function recordLayout(): array
+    {
+        return $this->resolveLayout('record');
+    }
+
+    public function relatedLayout(): array
+    {
+        return $this->resolveLayout('related');
+    }
+
+    public function linkingPanelLayout(): array
+    {
+        return $this->resolveLayout('linkingPanel');
+    }
+
+    public function getDataForPanel(): array
+    {
+        return [
+            'linkingPanel' => $this->linkingPanelLayout(),
+            'fields' => $this->allFields(),
+        ];
+    }
+
+    public function layoutFor(string $type)
+    {
+        return $this->layouts()
+            ->where('type', $type)
+            ->first();
+    }
+
+    /**
+     * @return HasMany<Field, $this>
+     *                               excludes default fields
+     */
+    public function fields()
+    {
+        return $this->hasMany(Field::class, 'module_id', 'id')
+            ->select([
+                'id',
+                'module_id',
+                'dropdown_list_id',
+                'related_module',
+                'name',
+                'type',
+                'key',
+                'readonly',
+                'sortable',
+                'searchable',
+                'label',
+                'required',
+                'is_draft',
+
+            ])
+            ->with('dropdown_list');
+    }
+
+    /**
+     * @return Collection<Field>
+     */
+    public function allFields(): Collection
+    {
+        $key = $this->id;
+
+        if (! isset(self::$staticFieldCache[$key])) {
+            self::$staticFieldCache[$key] = Field::query()
+                ->where(function ($query) {
+                    $query->where('module_id', $this->id)
+                        ->orWhere('is_global', true);
+                })
+                ->select([
+                    'id',
+                    'module_id',
+                    'dropdown_list_id',
+                    'related_module',
+                    'name',
+                    'type',
+                    'key',
+                    'readonly',
+                    'sortable',
+                    'searchable',
+                    'label',
+                    'required',
+                    'is_draft',
+                    'related_module',
+                ])
+                ->with('dropdown_list')
+                ->get();
+        }
+
+        return self::$staticFieldCache[$key];
+    }
+
+    /**
+     * @return Collection<Field>
+     */
+    public function allEditableFields(): Collection
+    {
+        $key = $this->id;
+
+        if (! isset(self::$staticFieldCache[$key])) {
+            self::$staticFieldCache[$key] = Field::query()
+                ->where('module_id', $this->id)
+                ->select([
+                    'id',
+                    'module_id',
+                    'dropdown_list_id',
+                    'related_module',
+                    'name',
+                    'type',
+                    'key',
+                    'readonly',
+                    'sortable',
+                    'searchable',
+                    'label',
+                    'required',
+                    'is_draft',
+                    'related_module',
+                ])
+                ->with('dropdown_list')
+                ->get();
+        }
+
+        return self::$staticFieldCache[$key];
+    }
+
+    public function draftFields(): Collection
+    {
+        return Field::query()
+            ->where('module_id', $this->id)
+            ->where('is_draft', true)
+            ->select([
+                'id',
+                'module_id',
+                'dropdown_list_id',
+                'related_module',
+                'name',
+                'type',
+                'key',
+                'readonly',
+                'sortable',
+                'searchable',
+                'label',
+                'required',
+                'is_draft',
+            ])
+            ->with('dropdown_list')
+            ->get();
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new AdminOnlyModuleScope);
+    }
+
+    /**
+     * @return Collection<Field>
+     */
+    public function relatedfields()
+    {
+        return Field::query()
             ->where(function ($query) {
                 $query->where('module_id', $this->id)
                     ->orWhere('is_global', true);
             })
-          ->select([
-        'id',
-        'module_id',
-        'dropdown_list_id',
-        'related_module',
-        'name',
-        'type',
-        'key',
-        'readonly',
-        'sortable',
-        'searchable',
-        'label',
-        'required',
-        'is_draft',
-        'related_module'
-      ])
-        ->with('dropdown_list')
-        ->get();
-}
-
-        return self::$staticFieldCache[$key];
-}
-
-  public function draftFields(): Collection
-  {
-    return Field::query()
-      ->where('module_id', $this->id)
-      ->where('is_draft', true)
-      ->select([
-        'id',
-        'module_id',
-        'dropdown_list_id',
-        'related_module',
-        'name',
-        'type',
-        'key',
-        'readonly',
-        'sortable',
-        'searchable',
-        'label',
-        'required',
-        'is_draft'
-      ])
-      ->with('dropdown_list')
-      ->get();
-  }
-
-
-  protected static function booted(): void
-  {
-     static::addGlobalScope(new AdminOnlyModuleScope());
-  }
-
-  /**
-   * @return Collection<Field>
-   */
-  public function relatedfields()
-  {
-    return Field::query()
-      ->where(function ($query) {
-        $query->where('module_id', $this->id)
-          ->orWhere('is_global', true);
-      })
-      ->select([
-        'id',
-        'module_id',
-        'dropdown_list_id',
-        'related_module',
-        'name',
-        'type',
-        'key',
-        'readonly',
-        'sortable',
-        'label',
-        'required',
-      ])
-      ->with('dropdown_list')
-      ->get();
-  }
-
-  /**
-   * Get fields for builder (DB + default fields, unique by key)
-   *
-   * @return \Illuminate\Support\Collection
-   */
-  public function builderFields(): Collection
-  {
-    $dbFields = $this->allFields();
-
-    $defaultFields = collect($this->getDefaultFields())->map(function ($field) {
-      return new Field($field);
-    });
-
-    return $defaultFields
-      ->merge($dbFields)
-      ->unique('name')
-      ->values();
-  }
-
-  public function getFieldMetadata(string $field_name): array
-  {
-    $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
-    $field = Field::query()
-      ->where(function ($query) {
-        $query->where('module_id', $this->id)
-          ->orWhere('is_global', true);
-      })
-      ->where('name', $field_name)
-      ->first();
-    return array_diff_key(
-      $field->getAttributes(),
-      array_flip($excluded)
-    );
-  }
-
-  protected function defaultReadonlyFor(string $key, string $type): bool
-  {
-    return in_array($key, ['created_at', 'updated_at'], true);
-  }
-
-  protected function resolveLayout(string $type): array
-  {
-    // 1. DB layout
-    $layout = $this->layouts()->where('type', $type)->first();
-    if ($layout !== null) {
-      return Layout::normalize($layout->definition ?? []);
+            ->select([
+                'id',
+                'module_id',
+                'dropdown_list_id',
+                'related_module',
+                'name',
+                'type',
+                'key',
+                'readonly',
+                'sortable',
+                'label',
+                'required',
+            ])
+            ->with('dropdown_list')
+            ->get();
     }
 
-    // 2. Module config fallback
-    $moduleConfig = config("module_layouts.{$this->slug}");
-    if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
-      return Layout::normalize($moduleConfig[$type]);
+    /**
+     * Get fields for builder (DB + default fields, unique by key)
+     */
+    public function builderFields(): Collection
+    {
+        $dbFields = $this->allFields();
+
+        $defaultFields = collect($this->getDefaultFields())->map(function ($field) {
+            return new Field($field);
+        });
+
+        return $defaultFields
+            ->merge($dbFields)
+            ->unique('name')
+            ->values();
     }
 
-    // 3. Global fallback
-    $globalDefault = Layout::getDefaultLayout($type);
-    if ($globalDefault !== null) {
-      return Layout::normalize($globalDefault);
+    public function getFieldMetadata(string $field_name): array
+    {
+        $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_default', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
+        $field = Field::query()
+            ->where(function ($query) {
+                $query->where('module_id', $this->id)
+                    ->orWhere('is_global', true);
+            })
+            ->where('name', $field_name)
+            ->first();
+
+        return array_diff_key(
+            $field->getAttributes(),
+            array_flip($excluded)
+        );
     }
 
-    throw new \Exception("No {$type} layout found for module {$this->name}");
-  }
+    protected function defaultReadonlyFor(string $key, string $type): bool
+    {
+        return in_array($key, ['created_at', 'updated_at'], true);
+    }
 
-  public function relationships(): Collection
-  {
-    return RelationshipService::getRelationshipForModule($this->slug);
-  }
+    protected function resolveLayout(string $type): array
+    {
+        // 1. DB layout
+        $layout = $this->layouts()->where('type', $type)->first();
+        if ($layout !== null) {
+            return Layout::normalize($layout->definition ?? []);
+        }
 
-  /**
-   * Instantiate the actual business model this registry entry describes.
-   */
-  public function getInstance(): BaseModule
-  {
-    return new ($this->class_name);
-  }
+        // 2. Module config fallback
+        $moduleConfig = config("module_layouts.{$this->slug}");
+        if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
+            return Layout::normalize($moduleConfig[$type]);
+        }
 
-  public function getDefaultFields(): array
-  {
-    return config("default_fields");
-  }
+        // 3. Global fallback
+        $globalDefault = Layout::getDefaultLayout($type);
+        if ($globalDefault !== null) {
+            return Layout::normalize($globalDefault);
+        }
+
+        throw new \Exception("No {$type} layout found for module {$this->name}");
+    }
+
+    public function relationships(): Collection
+    {
+        return RelationshipService::getRelationshipForModule($this->slug);
+    }
+
+    /**
+     * Instantiate the actual business model this registry entry describes.
+     */
+    public function getInstance(): BaseModule
+    {
+        return new ($this->class_name);
+    }
+
+    public function getDefaultFields(): array
+    {
+        return config('default_fields');
+    }
 }
