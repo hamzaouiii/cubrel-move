@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useForm, Link, usePage } from "@inertiajs/vue3";
+import GlobalSearch from "@/Pages/Components/Globals/GlobalSearch.vue";
 
 const form = useForm({});
 const logout = () => {
@@ -38,20 +39,15 @@ const user = computed(() => page.props.auth?.user || {});
     <Link href="/" class="topbar__logo">
       <img src="/img/logo/default-monochrome.svg" alt="logo" width="240" />
     </Link>
+    <GlobalSearch class="topbar__search"></GlobalSearch>
+
     <div class="topbar__actions">
       <transition name="slide-search">
-        <form v-if="showSearch" class="topbar__actions__search-bar">
+        <!-- <form >
           <input :placeholder="$t('globals.topbar.global_search')" />
-        </form>
+        </form> -->
       </transition>
-
       <div class="topbar__actions__icons">
-        <!-- <div class="topbar__actions__icons__item" @click="toggleSearch">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </div>
-        <div class="topbar__actions__icons__item">
-          <i class="fa-solid fa-bell"></i>
-        </div> -->
         <div
           class="topbar__actions__icons__item profile"
           ref="profileRef"

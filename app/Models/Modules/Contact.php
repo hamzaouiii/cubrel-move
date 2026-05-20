@@ -18,4 +18,13 @@ class Contact extends BaseModule
     'notes',
     'owner_id'
   ];
+
+
+    public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->email,
+        ]);
+    }
 }

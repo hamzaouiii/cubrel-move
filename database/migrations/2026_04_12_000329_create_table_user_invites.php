@@ -14,6 +14,8 @@ return new class extends Migration
     Schema::create('userinvites', function (Blueprint $table) {
       $table->uuid('id');
       $table->string('email')->unique();
+      $table->string('description')->nullable();
+      $table->string('name')->nullable();
       $table->string('status')->default("pending");
       $table->string('token', 64)->unique();
       $table->uuid('invited_by');

@@ -31,4 +31,11 @@ class Invoice extends BaseModule
     'custom_fields' => 'array',
 
   ];
+       public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->number,
+        ]);
+    }
 }

@@ -19,4 +19,12 @@ class Account extends BaseModule
     'country',
     'owner_id'
   ];
+
+      public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->website,
+        ]);
+    }
 }

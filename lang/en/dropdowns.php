@@ -11,7 +11,7 @@ return [
     'pending' => 'Pending',
     'confirmed' => 'Confirmed',
     'processing' => 'Processing',
-    'complete' => 'Complete',
+    'completed' => 'Completed',
     'cancelled' => 'Cancelled',
   ],
   'deals_sales_stage_list' => [

@@ -108,13 +108,13 @@ const clearSearch = () => {
           </Link>
         </div>
       </div>
-      <div
-        v-if="Object.keys(filteredSettings).length === 0"
-        class="settings__list__empty"
-      >
-        <i class="fa-solid fa-exclamation"></i>
-        <p>{{ $t("settings.no_results") }}</p>
-      </div>
+    </div>
+    <div
+      v-if="Object.keys(filteredSettings).length === 0"
+      class="settings__empty"
+    >
+      <i class="fa-solid fa-exclamation"></i>
+      <p>{{ $t("settings.no_results") }}</p>
     </div>
   </div>
 </template>
