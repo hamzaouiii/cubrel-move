@@ -23,7 +23,7 @@ class ContactFactory extends Factory
 
       'name' => $firstName . ' ' . $lastName,
 
-      'description' => $this->faker->optional()->paragraph(),
+      'description' => $this->faker->optional()->realText(150),
 
 
       'first_name' => $firstName,
@@ -34,7 +34,7 @@ class ContactFactory extends Factory
 
       'position' => $this->faker->jobTitle(),
 
-      'notes' => $this->faker->optional()->paragraph(),
+      'notes' => $this->faker->optional()->realText(150),
       'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
       'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];

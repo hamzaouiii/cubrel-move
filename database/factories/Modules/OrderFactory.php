@@ -17,11 +17,17 @@ class OrderFactory extends Factory
       'cancelled',
     ];
 
+    $orderTypes = [
+      'Software License', 'Hardware Bundle', 'Annual Subscription',
+      'Professional Services', 'Support Package', 'Enterprise Suite',
+      'Cloud Storage', 'API Access', 'Training Package', 'Consulting Services',
+    ];
+
     return [
       'id' => (string) Str::uuid(),
-      'name' => $this->faker->words(3, true),
+      'name' => $this->faker->company() . ' – ' . $this->faker->randomElement($orderTypes),
       'order_number' => 'ORD-' . strtoupper(Str::random(6)),
-      'description' => $this->faker->sentence(),
+      'description' => $this->faker->realText(120),
 
       'total_amount' => $this->faker->randomFloat(2, 500, 20000),
       'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),

@@ -24,7 +24,7 @@ class InvoiceFactory extends Factory
 
       'name' => 'Invoice ' . $this->faker->unique()->numerify('####'),
 
-      'description' => $this->faker->optional()->paragraph(),
+      'description' => $this->faker->optional()->realText(150),
 
       'number' => $this->faker->unique()->numerify('INV-#####'),
 
@@ -45,7 +45,7 @@ class InvoiceFactory extends Factory
       'tax'      => $tax,
       'total'    => $total,
 
-      'notes' => $this->faker->optional()->paragraph(),
+      'notes' => $this->faker->optional()->realText(150),
       'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
       'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];
