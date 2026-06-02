@@ -30,8 +30,8 @@ class LeadFactory extends Factory
       'city' => $faker->optional(0.9)->city(),
       'zip' => $faker->optional(0.9)->postcode(),
       'description' => $faker->realText(150),
-      'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
+      'created_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }

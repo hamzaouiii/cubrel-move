@@ -27,12 +27,12 @@ class OrderFactory extends Factory
       'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
       'status' => $this->faker->randomElement($statuses),
 
-      'order_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
-      'due_date' => $this->faker->dateTimeBetween('now', '+2 months'),
+      'order_date' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-1 month', 'now'))->utc(),
+      'due_date' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('now', '+2 months'))->utc(),
 
 
-      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+      'created_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }

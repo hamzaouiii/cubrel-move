@@ -46,8 +46,8 @@ class InvoiceFactory extends Factory
       'total'    => $total,
 
       'notes' => $this->faker->optional()->paragraph(),
-      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+      'created_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }

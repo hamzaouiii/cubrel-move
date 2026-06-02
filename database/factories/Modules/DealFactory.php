@@ -36,12 +36,12 @@ class DealFactory extends Factory
 
       'sales_stage' => $this->faker->randomElement($stages),
       'probability' => $this->faker->numberBetween(10, 90),
-      'expected_close_date' => $this->faker->dateTimeBetween('+1 week', '+6 months'),
+      'expected_close_date' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('+1 week', '+6 months'))->utc(),
 
       'type' => $this->faker->randomElement($types),
 
-      'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+      'created_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }
