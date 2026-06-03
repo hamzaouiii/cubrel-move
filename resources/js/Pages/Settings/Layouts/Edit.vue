@@ -30,6 +30,7 @@ const props = defineProps({
   fields: Object,
   relationships: Object,
 });
+
 const page = usePage();
 const appSettings = page.props.appSettings;
 const listColumns = ref([]);
@@ -208,7 +209,6 @@ const recordLayoutSectionConfigs = computed(() => {
 
 const recordLayoutFromDB = computed(() => {
   if (props.type !== "record") return [];
-
   return recordLayoutSectionConfigs.value.map((section) => {
     const layout = (section.layout || [])
       .map((col) => {
@@ -419,6 +419,7 @@ const moduleColor = computed(() =>
         {{ $t("layouts.back_to_list") }}</Link
       >
     </div>
+
     <div class="layouts__editor">
       <div v-if="type === 'list'">
         <LayoutListEditor
@@ -432,6 +433,7 @@ const moduleColor = computed(() =>
           v-model:sections="recordSections"
           :available-fields="availableRecordFields"
           :field-by-key="fieldByName"
+          :has-line-items="!!module.has_line_items"
         />
       </div>
       <div v-else-if="type === 'related'">

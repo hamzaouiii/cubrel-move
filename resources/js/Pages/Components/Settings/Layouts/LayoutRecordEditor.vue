@@ -1,5 +1,12 @@
 <script setup>
-import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
+import {
+  ref,
+  watch,
+  computed,
+  nextTick,
+  getCurrentInstance,
+  onBeforeUnmount,
+} from "vue";
 
 const props = defineProps({
   sections: {
@@ -14,13 +21,19 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  hasLineItems: Boolean,
 });
 
 const emit = defineEmits(["update:sections"]);
 
+const hasLineItemsSection = computed(() =>
+  internalSections.value.some((s) => s.has_line_items),
+);
+
 const internalSections = ref([...props.sections]);
 const internalAvailable = ref([...props.availableFields]);
 const confirmSectionIndex = ref(null);
+
 watch(
   () => props.sections,
   (val) => {
@@ -38,6 +51,19 @@ watch(
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
+const sectionsEl = ref(null);
+
+const scrollSectionsToBottom = () => {
+  nextTick(() => {
+    if (sectionsEl.value) {
+      sectionsEl.value.scrollTo({
+        top: sectionsEl.value.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  });
+};
 
 const dragging = ref(null);
 const originOffset = ref({ x: 0, y: 0 });
@@ -72,7 +98,7 @@ const filteredAvailableFields = computed(() => {
 
 const ghostLabel = computed(() => {
   if (!dragging.value) return "";
-  const { source, sectionIndex, columnIndex, isField } = dragging.value;
+  const { source, sectionIndex, columnIndex } = dragging.value;
 
   if (source === "available") {
     const item = filteredAvailableFields.value[columnIndex];
@@ -81,6 +107,8 @@ const ghostLabel = computed(() => {
     const section = internalSections.value[sectionIndex];
     const item = section?.layout?.[columnIndex];
     return item ? (t(item.label) ?? item.key) : "";
+  } else if (source === "section-header") {
+    return internalSections.value[sectionIndex]?.name || "";
   }
   return "";
 });
@@ -91,6 +119,18 @@ const addNewSection = () => {
     layout: [],
   });
   emitUpdatedSections();
+  scrollSectionsToBottom();
+};
+
+const addLineItemsSection = () => {
+  if (hasLineItemsSection.value) return;
+  internalSections.value.push({
+    name: "Line Items",
+    has_line_items: true,
+    layout: [],
+  });
+  emitUpdatedSections();
+  scrollSectionsToBottom();
 };
 
 const removeSection = (sectionIndex) => {
@@ -155,6 +195,7 @@ const endDrag = () => {
 
 const setDragOver = (target, sectionIndex, columnIndex, event) => {
   event.preventDefault();
+  if (dragging.value?.source === "section-header") return;
   dragOver.value = { target, sectionIndex, columnIndex };
 };
 
@@ -311,6 +352,70 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
   endDrag();
 };
 
+const setSectionOrderDragOver = (pos, event) => {
+  if (!dragging.value || dragging.value.source !== "section-header") return;
+  event.preventDefault();
+  dragOver.value = {
+    target: "section-order",
+    sectionIndex: pos,
+    columnIndex: 0,
+  };
+};
+
+const startSectionDrag = (sectionIndex, event) => {
+  dragging.value = {
+    source: "section-header",
+    sectionIndex,
+    columnIndex: -1,
+    isField: false,
+  };
+
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData(
+      "text/plain",
+      `section-header:${sectionIndex}:-1`,
+    );
+    try {
+      event.dataTransfer.setDragImage(dragImage, 0, 0);
+    } catch (e) {}
+  }
+
+  const el = event.target.closest(".editor__sections__item");
+  if (el) {
+    ghostWidth.value = el.offsetWidth + "px";
+    ghostHeight.value = "48px";
+    const rect = event.target.getBoundingClientRect();
+    originOffset.value = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+    ghostRenderPos.value = { x: event.clientX, y: event.clientY };
+  } else {
+    ghostWidth.value = null;
+    ghostHeight.value = null;
+  }
+
+  startGhostAnimation();
+};
+
+const moveSectionOrder = (fromIndex, toIndex) => {
+  if (toIndex === fromIndex || toIndex === fromIndex + 1) return;
+  const sections = [...internalSections.value];
+  const [item] = sections.splice(fromIndex, 1);
+  const insertAt = toIndex > fromIndex ? toIndex - 1 : toIndex;
+  sections.splice(insertAt, 0, item);
+  internalSections.value = sections;
+  emitUpdatedSections();
+};
+
+const onDropOnSectionOrder = (toIndex, event) => {
+  event.preventDefault();
+  if (!dragging.value || dragging.value.source !== "section-header") return;
+  moveSectionOrder(dragging.value.sectionIndex, toIndex);
+  endDrag();
+};
+
 const onGlobalDragOver = (event) => {
   if (!dragging.value) return;
   dragPosition.value = { x: event.clientX, y: event.clientY };
@@ -357,7 +462,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="editor" @dragover="onGlobalDragOver">
-    <div class="editor__container">
+    <div class="editor__container" ref="sectionsEl">
       <div class="editor__container__sidebar">
         <div class="editor__container__sidebar__header">
           <span class="editor__container__sidebar__header__title">{{
@@ -429,158 +534,214 @@ onBeforeUnmount(() => {
           >
             <i class="fa-solid fa-plus"></i> {{ $t("layouts.add_section") }}
           </button>
+          <button
+            v-if="hasLineItems"
+            @click="addLineItemsSection"
+            :disabled="hasLineItemsSection"
+            class="editor__container__main__header__btn btn"
+            type="button"
+          >
+            <i class="fa-solid fa-plus"></i>
+            {{ $t("layouts.add_line_items_section") }}
+          </button>
         </div>
 
         <div class="editor__sections">
           <div
+            class="editor__sections__drop-zone"
+            :class="{
+              'editor__sections__drop-zone--active': isDropZoneActive(
+                'section-order',
+                0,
+                0,
+              ),
+            }"
+            @dragover="setSectionOrderDragOver(0, $event)"
+            @drop="onDropOnSectionOrder(0, $event)"
+          />
+          <template
             v-for="(section, sectionIndex) in internalSections"
             :key="sectionIndex"
-            class="editor__sections__item"
           >
-            <div class="editor__sections__item__header">
-              <div class="editor__sections__item__header__title">
-                <input
-                  :value="section.name"
-                  @input="updateSectionName(sectionIndex, $event.target.value)"
-                  type="text"
-                  :placeholder="$t('layouts.section_name_placeholder')"
-                />
-              </div>
-              <div class="editor__sections__item__header__actions">
-                <button
-                  v-if="internalSections.length > 1"
-                  @click="removeSection(sectionIndex)"
-                  :class="[
-                    'remove-section',
-                    confirmSectionIndex === sectionIndex
-                      ? 'confirm-remove'
-                      : 'show-remove',
-                  ]"
-                  type="button"
-                >
-                  <i
-                    :class="[
-                      'fa-solid',
-                      confirmSectionIndex === sectionIndex
-                        ? 'fa-check'
-                        : 'fa-trash',
-                    ]"
-                  />
-                  <span v-if="confirmSectionIndex === sectionIndex">{{
-                    $t("layouts.confirm_remove_section")
-                  }}</span>
-                  <span v-else>{{ $t("layouts.remove_section") }}</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="editor__sections__item__content">
-              <div
-                v-if="!section.layout || section.layout.length === 0"
-                class="editor__sections__item__content__empty"
-                :class="{
-                  'editor__sections__item__content__empty--active':
-                    isDropZoneActive('section-empty', sectionIndex, 0),
-                }"
-                @dragover="
-                  setDragOver('section-empty', sectionIndex, 0, $event)
-                "
-                @drop="onDropOnSectionEmpty(sectionIndex, $event)"
-              >
-                <p>{{ $t("layouts.drop_fields_here") }}</p>
-              </div>
-
-              <div v-else class="editor__columns">
+            <div
+              class="editor__sections__item"
+              :class="{
+                'editor__sections__item--dragging':
+                  dragging?.source === 'section-header' &&
+                  dragging?.sectionIndex === sectionIndex,
+              }"
+            >
+              <div class="editor__sections__item__header">
                 <div
-                  class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
+                  class="editor__sections__item__header__drag"
+                  draggable="true"
+                  @dragstart="startSectionDrag(sectionIndex, $event)"
+                  @dragend="endDrag"
+                >
+                  <i class="fa-solid fa-grip-vertical"></i>
+                </div>
+                <div class="editor__sections__item__header__title">
+                  <input
+                    :value="section.name"
+                    @input="
+                      updateSectionName(sectionIndex, $event.target.value)
+                    "
+                    type="text"
+                    :placeholder="$t('layouts.section_name_placeholder')"
+                  />
+                </div>
+                <div class="editor__sections__item__header__actions">
+                  <button
+                    v-if="internalSections.length > 1"
+                    @click="removeSection(sectionIndex)"
+                    :class="[
+                      'remove-section',
+                      confirmSectionIndex === sectionIndex
+                        ? 'confirm-remove'
+                        : 'show-remove',
+                    ]"
+                    type="button"
+                  >
+                    <i
+                      :class="[
+                        'fa-solid',
+                        confirmSectionIndex === sectionIndex
+                          ? 'fa-check'
+                          : 'fa-trash',
+                      ]"
+                    />
+                    <span v-if="confirmSectionIndex === sectionIndex">{{
+                      $t("layouts.confirm_remove_section")
+                    }}</span>
+                    <span v-else>{{ $t("layouts.remove_section") }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="editor__sections__item__content">
+                <div v-if="section.has_line_items">
+                  {{ $t("layouts.line_items_message") }}
+                </div>
+
+                <div
+                  v-else-if="!section.layout || section.layout.length === 0"
+                  class="editor__sections__item__content__empty"
                   :class="{
-                    'editor__columns__drop-zone--active': isDropZoneActive(
-                      'section-column',
-                      sectionIndex,
-                      0,
-                    ),
+                    'editor__sections__item__content__empty--active':
+                      isDropZoneActive('section-empty', sectionIndex, 0),
                   }"
                   @dragover="
-                    setDragOver('section-column', sectionIndex, 0, $event)
+                    setDragOver('section-empty', sectionIndex, 0, $event)
                   "
-                  @drop="onDropOnSectionColumn(sectionIndex, 0, $event)"
-                />
-
-                <div
-                  v-for="(column, columnIndex) in section.layout"
-                  :key="columnIndex"
-                  class="editor__columns__item"
-                  :class="{
-                    'editor__columns__item--dragging': isItemDragging(
-                      'section',
-                      sectionIndex,
-                      columnIndex,
-                    ),
-                  }"
+                  @drop="onDropOnSectionEmpty(sectionIndex, $event)"
                 >
-                  <div
-                    class="editor__columns__item__content"
-                    draggable="true"
-                    @dragstart="
-                      startDrag('section', sectionIndex, columnIndex, $event)
-                    "
-                    @dragend="endDrag"
-                  >
-                    <span class="editor__columns__item__handle">
-                      <i class="fa-solid fa-grip-vertical"></i>
-                    </span>
-                    <span class="editor__columns__item__label">
-                      <span>{{ $t(column.label) ?? column.key }}</span>
+                  <p>{{ $t("layouts.drop_fields_here") }}</p>
+                </div>
 
-                      <span
-                        v-if="column.readonly"
-                        class="editor__columns__item__label__flag"
-                        >{{ $t("fields.metadata.readonly") }}</span
-                      >
-                    </span>
-
-                    <button
-                      @click="
-                        removeColumnFromSection(sectionIndex, columnIndex)
-                      "
-                      class="editor__columns__item__remove"
-                      type="button"
-                      :title="$t('layouts.remove_column')"
-                    >
-                      <i class="fa-solid fa-times"></i>
-                    </button>
-                  </div>
-
-                  <!-- Drop zone after column -->
+                <div v-else class="editor__columns">
                   <div
                     class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
                     :class="{
                       'editor__columns__drop-zone--active': isDropZoneActive(
                         'section-column',
                         sectionIndex,
-                        columnIndex + 1,
+                        0,
                       ),
                     }"
                     @dragover="
-                      setDragOver(
-                        'section-column',
-                        sectionIndex,
-                        columnIndex + 1,
-                        $event,
-                      )
+                      setDragOver('section-column', sectionIndex, 0, $event)
                     "
-                    @drop="
-                      onDropOnSectionColumn(
-                        sectionIndex,
-                        columnIndex + 1,
-                        $event,
-                      )
-                    "
+                    @drop="onDropOnSectionColumn(sectionIndex, 0, $event)"
                   />
+
+                  <div
+                    v-for="(column, columnIndex) in section.layout"
+                    :key="columnIndex"
+                    class="editor__columns__item"
+                    :class="{
+                      'editor__columns__item--dragging': isItemDragging(
+                        'section',
+                        sectionIndex,
+                        columnIndex,
+                      ),
+                    }"
+                  >
+                    <div
+                      class="editor__columns__item__content"
+                      draggable="true"
+                      @dragstart="
+                        startDrag('section', sectionIndex, columnIndex, $event)
+                      "
+                      @dragend="endDrag"
+                    >
+                      <span class="editor__columns__item__handle">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                      </span>
+                      <span class="editor__columns__item__label">
+                        <span>{{ $t(column.label) ?? column.key }}</span>
+
+                        <span
+                          v-if="column.readonly"
+                          class="editor__columns__item__label__flag"
+                          >{{ $t("fields.metadata.readonly") }}</span
+                        >
+                      </span>
+
+                      <button
+                        @click="
+                          removeColumnFromSection(sectionIndex, columnIndex)
+                        "
+                        class="editor__columns__item__remove"
+                        type="button"
+                        :title="$t('layouts.remove_column')"
+                      >
+                        <i class="fa-solid fa-times"></i>
+                      </button>
+                    </div>
+
+                    <!-- Drop zone after column -->
+                    <div
+                      class="editor__columns__drop-zone editor__columns__drop-zone--horizontal"
+                      :class="{
+                        'editor__columns__drop-zone--active': isDropZoneActive(
+                          'section-column',
+                          sectionIndex,
+                          columnIndex + 1,
+                        ),
+                      }"
+                      @dragover="
+                        setDragOver(
+                          'section-column',
+                          sectionIndex,
+                          columnIndex + 1,
+                          $event,
+                        )
+                      "
+                      @drop="
+                        onDropOnSectionColumn(
+                          sectionIndex,
+                          columnIndex + 1,
+                          $event,
+                        )
+                      "
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+            <div
+              class="editor__sections__drop-zone"
+              :class="{
+                'editor__sections__drop-zone--active': isDropZoneActive(
+                  'section-order',
+                  sectionIndex + 1,
+                  0,
+                ),
+              }"
+              @dragover="setSectionOrderDragOver(sectionIndex + 1, $event)"
+              @drop="onDropOnSectionOrder(sectionIndex + 1, $event)"
+            />
+          </template>
         </div>
       </div>
     </div>
