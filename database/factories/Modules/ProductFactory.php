@@ -110,7 +110,6 @@ class ProductFactory extends Factory
       ]),
 
       'price' => $faker->randomFloat(2, 50, 5000),
-      'currency' => $faker->randomElement(['EUR', 'USD', 'GBP']),
       'unit' => $faker->randomElement(['pcs', 'hr', 'day', 'month', 'kg', 'g', 'l', 'm', 'box', 'set', 'flat']),
       'tax_rate' => $faker->numberBetween(7, 25),
 

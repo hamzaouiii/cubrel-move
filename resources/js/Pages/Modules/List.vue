@@ -27,7 +27,6 @@ defineOptions({
 
 const props = defineProps({
   module: Object,
-  title: String,
   items: Array,
   meta: Object,
   listLayout: Object,
@@ -492,7 +491,7 @@ const isAdmin = computed(() => {
 
 <template>
   <Head>
-    <title>{{ title }} - Cubrel</title>
+    <title>{{ $t(module.label) }} - Cubrel</title>
   </Head>
 
   <div

@@ -299,6 +299,6 @@ const highlightMatch = (text) => {
   </div>
 
   <div v-else-if="mode === 'related-panel' || mode === 'linkingPanel'">
-    {{ $t(selectedOption?.label) || "—" }}
+    {{ $t(selectedOption?.label) || modelValue || "—" }}
   </div>
 </template>

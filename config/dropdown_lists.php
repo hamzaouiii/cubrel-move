@@ -274,6 +274,120 @@ return [
             'status' => 'warning',
         ],
     ],
+    'products_unit_list' => [
+        0 => [
+            'label' => 'dropdowns.products_unit_list.pcs',
+            'value' => 'pcs',
+            'status' => 'default',
+        ],
+        1 => [
+            'label' => 'dropdowns.products_unit_list.hr',
+            'value' => 'hr',
+            'status' => 'default',
+        ],
+        2 => [
+            'label' => 'dropdowns.products_unit_list.day',
+            'value' => 'day',
+            'status' => 'default',
+        ],
+        3 => [
+            'label' => 'dropdowns.products_unit_list.month',
+            'value' => 'month',
+            'status' => 'default',
+        ],
+        4 => [
+            'label' => 'dropdowns.products_unit_list.kg',
+            'value' => 'kg',
+            'status' => 'default',
+        ],
+        5 => [
+            'label' => 'dropdowns.products_unit_list.g',
+            'value' => 'g',
+            'status' => 'default',
+        ],
+        6 => [
+            'label' => 'dropdowns.products_unit_list.l',
+            'value' => 'l',
+            'status' => 'default',
+        ],
+        7 => [
+            'label' => 'dropdowns.products_unit_list.m',
+            'value' => 'm',
+            'status' => 'default',
+        ],
+        8 => [
+            'label' => 'dropdowns.products_unit_list.box',
+            'value' => 'box',
+            'status' => 'default',
+        ],
+        9 => [
+            'label' => 'dropdowns.products_unit_list.set',
+            'value' => 'set',
+            'status' => 'default',
+        ],
+        10 => [
+            'label' => 'dropdowns.products_unit_list.flat',
+            'value' => 'flat',
+            'status' => 'default',
+        ],
+    ],
+        'line_items_unit_list' => [
+        0 => [
+            'label' => 'dropdowns.line_items_unit_list.pcs',
+            'value' => 'pcs',
+            'status' => 'default',
+        ],
+        1 => [
+            'label' => 'dropdowns.line_items_unit_list.hr',
+            'value' => 'hr',
+            'status' => 'default',
+        ],
+        2 => [
+            'label' => 'dropdowns.line_items_unit_list.day',
+            'value' => 'day',
+            'status' => 'default',
+        ],
+        3 => [
+            'label' => 'dropdowns.line_items_unit_list.month',
+            'value' => 'month',
+            'status' => 'default',
+        ],
+        4 => [
+            'label' => 'dropdowns.line_items_unit_list.kg',
+            'value' => 'kg',
+            'status' => 'default',
+        ],
+        5 => [
+            'label' => 'dropdowns.line_items_unit_list.g',
+            'value' => 'g',
+            'status' => 'default',
+        ],
+        6 => [
+            'label' => 'dropdowns.line_items_unit_list.l',
+            'value' => 'l',
+            'status' => 'default',
+        ],
+        7 => [
+            'label' => 'dropdowns.line_items_unit_list.m',
+            'value' => 'm',
+            'status' => 'default',
+        ],
+        8 => [
+            'label' => 'dropdowns.line_items_unit_list.box',
+            'value' => 'box',
+            'status' => 'default',
+        ],
+        9 => [
+            'label' => 'dropdowns.line_items_unit_list.set',
+            'value' => 'set',
+            'status' => 'default',
+        ],
+        10 => [
+            'label' => 'dropdowns.line_items_unit_list.flat',
+            'value' => 'flat',
+            'status' => 'default',
+        ],
+    ],
     'currency_list' => [
         0 => [
             'label' => 'dropdowns.currency_list.usd',

@@ -49,7 +49,6 @@ class ListController extends Controller
     // remove readonly fields and fields unsuited for mass update such as emails and so on.
     return Inertia::render('Modules/List', array_merge([
       'module'     => $moduleModel,
-      'title'      => $moduleModel->name,
       'listLayout' => $listLayout,
       'fields'     => $fields,
       'filters' => request()->only(['search', 'perPage', 'sort', 'direction']),

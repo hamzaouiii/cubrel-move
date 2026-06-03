@@ -18,8 +18,9 @@ return new class extends Migration
 
       $table->string('category')->nullable()->index();
       $table->decimal('price', 15, 2)->nullable();
-      $table->string('currency', 3)->nullable();
-
+      $table->string('unit')->nullable();
+      $table->string('tax_rate')->nullable();
+      
       $table->boolean('is_active')->nullable()->index();
       $table->json('custom_fields')->default(DB::raw("(JSON_OBJECT())"));
 
