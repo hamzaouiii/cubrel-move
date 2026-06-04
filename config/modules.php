@@ -282,7 +282,7 @@ return [
         'path' => '/users',
         'sort_order' => 998,
         'category' => 'system',
-        'is_active' => false,
+        'is_active' => true,
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\UserModuleHandler',
         'description' => 'Users',

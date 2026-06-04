@@ -118,29 +118,6 @@ const isLastTab = computed(() => {
   return tabs.indexOf(currentStep.value) === tabs.length - 1;
 });
 
-// const deployModule = () => {
-//   showModuleDeplyProgress.value = true;
-//   const url = "/settings/modulebuilder/" + props.settingModule.id + "/deploy";
-//   clearAllAlerts();
-//   info(t("settings.modulebuilder.deploying"));
-//   form
-//     .transform(() => childFormData.value)
-//     .post(url, {
-//       onSuccess: () => {
-//         clearAllAlerts();
-//         success(t("settings.modulebuilder.deploy_success"));
-//         isProcessing.value = false;
-//         isFormDirty.value = false;
-//       },
-//       onError: (r) => {
-//         clearAllAlerts();
-//         Object.values(r).forEach((message) => {
-//           error(message);
-//         });
-//         isProcessing.value = false;
-//       },
-//     });
-// };
 const deployModule = () => {
   clearAllAlerts();
   showModuleDeplyProgress.value = true;

@@ -10,6 +10,8 @@ import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
 import Select from "@/Pages/Components/FiledTypes/Select.vue";
+import ExplainTip from "@/Pages/Components/Globals/ExplainTip.vue";
+
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -31,6 +33,8 @@ const editableModule = reactive({
   ...props.settingModule,
 });
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
+editableModule.has_line_items = Boolean(editableModule.has_line_items);
+editableModule.has_owner = Boolean(editableModule.has_owner);
 const editableFields = computed(() => {
   const ignore = [
     "name",
@@ -68,6 +72,8 @@ const inputTypeFor = (key, value) => {
   if (typeof value === "number") return "number";
   if (key === "color") return "color";
   if (key === "description") return "textarea";
+  if (key === "has_owner") return "checkbox";
+  if (key === "has_line_items") return "checkbox";
   return "text";
 };
 
@@ -159,7 +165,27 @@ useUnsavedChangesGuard({
             :key="key"
             class="settings__module__edit__element"
           >
-            <label class="settings__module__edit__element__label">
+            <label
+              class="settings__module__edit__element__label"
+              v-if="key === 'has_line_items'"
+            >
+              {{ $t("settings.modules." + key) }}
+              <ExplainTip
+                :text="t('settings.modules.has_line_items_hint')"
+                :color="settingModule.color"
+              />
+            </label>
+            <label
+              class="settings__module__edit__element__label"
+              v-else-if="key === 'has_owner'"
+            >
+              {{ $t("settings.modules." + key) }}
+              <ExplainTip
+                :text="t('settings.modules.has_owner_hint')"
+                :color="settingModule.color"
+              />
+            </label>
+            <label v-else>
               {{ $t("settings.modules." + key) }}
             </label>
             <div class="settings__module__edit__element__content">
