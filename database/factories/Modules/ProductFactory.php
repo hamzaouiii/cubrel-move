@@ -110,11 +110,13 @@ class ProductFactory extends Factory
       ]),
 
       'price' => $faker->randomFloat(2, 50, 5000),
-      'currency' => $faker->randomElement(['EUR', 'USD', 'GBP']),
+      'unit' => $faker->randomElement(['pcs', 'hr', 'day', 'month', 'kg', 'g', 'l', 'm', 'box', 'set', 'flat']),
+      'tax_rate' => $faker->numberBetween(7, 25),
+
       'is_active' => $faker->boolean(90),
 
-      'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
+      'created_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }

@@ -115,14 +115,19 @@ return [
         'subtotal' => [
             'name' => 'subtotal',
             'type' => 'number',
+            'readonly' => true,
+
         ],
         'tax' => [
             'name' => 'tax',
             'type' => 'number',
+            'readonly' => true,
+
         ],
         'total' => [
             'name' => 'total',
             'type' => 'number',
+            'readonly' => true,
         ],
         'notes' => [
             'name' => 'notes',
@@ -137,6 +142,7 @@ return [
         'status' => [
             'name' => 'status',
             'type' => 'status',
+            'required' => true,
         ],
         'valid_until' => [
             'name' => 'valid_until',
@@ -201,6 +207,7 @@ return [
         'status' => [
             'name' => 'status',
             'type' => 'status',
+            'required' => true,
         ],
         'ip' => [
             'name' => 'ip',
@@ -252,9 +259,15 @@ return [
             'name' => 'price',
             'type' => 'number',
         ],
-        'currency' => [
-            'name' => 'currency',
+
+        'unit' => [
+            'name' => 'unit',
             'type' => 'select',
+            'required' => true,
+        ],
+        'tax_rate' => [
+            'name' => 'tax_rate',
+            'type' => 'percentage',
         ],
         'is_active' => [
             'name' => 'is_active',
@@ -377,6 +390,71 @@ return [
         'expires_at' => [
             'name' => 'expires_at',
             'type' => 'date',
+        ],
+    ],
+    'line_items' => [
+        'parent_type' => [
+            'name' => 'parent_type',
+            'type' => 'text',
+        ],
+        'parent_id' => [
+            'name' => 'parent_id',
+            'type' => 'record',
+            'required' => true,
+        ],
+        'product_id' => [
+            'name' => 'product_id',
+            'type' => 'record',
+        ],
+        'name' => [
+            'name' => 'name',
+            'type' => 'text',
+        ],
+        'unit' => [
+            'name' => 'unit',
+            'type' => 'select',
+            'required' => true,
+        ],
+        'unit_price' => [
+            'name' => 'unit_price',
+            'type' => 'currency',
+        ],
+        'quantity' => [
+            'name' => 'quantity',
+            'type' => 'decimal',
+        ],
+        'discount' => [
+            'name' => 'discount',
+            'type' => 'percentage',
+        ],
+        'tax_rate' => [
+            'name' => 'tax_rate',
+            'type' => 'percentage',
+        ],
+        'subtotal' => [
+            'name' => 'subtotal',
+            'type' => 'currency',
+        ],
+        'discount_amount' => [
+            'name' => 'discount_amount',
+            'type' => 'currency',
+        ],
+        'tax_amount' => [
+            'name' => 'tax_amount',
+            'type' => 'currency',
+
+        ],
+        'total' => [
+            'name' => 'total',
+            'type' => 'currency',
+        ],
+        'sort_order' => [
+            'name' => 'sort_order',
+            'type' => 'integer',
+        ],
+        'note' => [
+            'name' => 'note',
+            'type' => 'text',
         ],
     ],
 ];

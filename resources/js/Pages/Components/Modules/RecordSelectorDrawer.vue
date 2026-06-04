@@ -34,7 +34,6 @@ const props = defineProps({
   },
   fields: Object,
 });
-
 const emit = defineEmits(["select", "close"]);
 
 const { proxy } = getCurrentInstance();
@@ -115,8 +114,7 @@ watch(
 );
 
 const getField = (f) => {
-  const pp = props.fields.find((field) => field.name === f.name);
-  return pp;
+  return props.fields?.find((field) => field.name === f.name) ?? f;
 };
 
 const selectRecord = (record) => {

@@ -298,7 +298,7 @@ const getLinkingLayout = (slug) => {
       <div class="record-layout__sections">
         <div
           class="record-layout__sections__item"
-          v-for="s in recordLayout.sections"
+          v-for="s in recordLayout.sections.filter((s) => !s.has_line_items)"
           :key="s.name"
         >
           <div class="record-layout__sections__item__title">

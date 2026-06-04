@@ -1,368 +1,304 @@
 <?php
 
-return array(
-  'list' =>
-  array(
-    'columns' =>
-    array(
-      0 =>
-      array(
-        'name' => 'name',
-        'type' => 'text',
-        'label' => 'modules.defaults.name',
-      ),
-      1 =>
-      array(
-        'name' => 'number',
-        'type' => 'number',
-        'label' => 'modules.invoices.fields.number',
-      ),
-      2 =>
-      array(
-        'name' => 'total',
-        'type' => 'number',
-        'label' => 'modules.invoices.fields.total',
-      ),
-      3 =>
-      array(
-        'name' => 'status',
-        'type' => 'select',
-        'label' => 'modules.invoices.fields.status',
-      ),
-      4 =>
-       array(
-            'name' => 'owner_id',
-            'type' => 'record',
-            'label' => 'modules.defaults.owner_id',
-          ),
-          5=>
-      array(
-        'name' => 'created_at',
-        'type' => 'datetime',
-        'label' => 'modules.defaults.created_at',
-      ),
-      6 =>
-      array(
-        'name' => 'updated_at',
-        'type' => 'datetime',
-        'label' => 'modules.defaults.updated_at',
-      ),
-    ),
-  ),
-  'record' =>
-  array(
-    'sections' =>
-    array(
-      0 =>
-      array(
-        'name' => 'Card',
-        'layout' =>
-        array(
-          0 =>
-          array(
-            'name' => 'name',
-            'type' => 'text',
-            'label' => 'modules.defaults.name',
-          ),
-          1 =>
-          array(
-            'name' => 'number',
-            'type' => 'number',
-            'label' => 'modules.invoices.fields.number',
-          ),
-          2 =>
-          array(
-            'name' => 'status',
-            'type' => 'select',
-            'label' => 'modules.invoices.fields.status',
-          ),
-        ),
-      ),
-      1 =>
-      array(
-        'name' => 'Financial',
-        'layout' =>
-        array(
-          0 =>
-          array(
-            'name' => 'subtotal',
-            'type' => 'number',
-            'label' => 'modules.invoices.fields.subtotal',
-          ),
-          1 =>
-          array(
-            'name' => 'tax',
-            'type' => 'number',
-            'label' => 'modules.invoices.fields.tax',
-          ),
-          2 =>
-          array(
-            'name' => 'total',
-            'type' => 'number',
-            'label' => 'modules.invoices.fields.total',
-          ),
-          3 =>
-          array(
-            'name' => 'currency',
-            'type' => 'text',
-            'label' => 'modules.invoices.fields.currency',
-          ),
-        ),
-      ),
-      2 =>
-      array(
-        'name' => 'Dates',
-        'layout' =>
-        array(
-          0 =>
-          array(
-            'name' => 'due_date',
-            'type' => 'date',
-            'label' => 'modules.invoices.fields.due_date',
-          ),
-          1 =>
-          array(
-            'name' => 'created_at',
-            'type' => 'datetime',
-            'label' => 'modules.invoices.fields.created_at',
-          ),
-          2 =>
-          array(
-            'name' => 'updated_at',
-            'type' => 'datetime',
-            'label' => 'modules.invoices.fields.updated_at',
-          ),
-          3 =>
-          array(
-            'name' => 'issue_date',
-            'type' => 'date',
-            'label' => 'modules.invoices.fields.issue_date',
-          ),
-        ),
-      ),
-      3 =>
-      array(
-        'name' => 'Details',
-        'layout' =>
-        array(
-          0 =>
-           array(
-            'name' => 'owner_id',
-            'type' => 'record',
-            'label' => 'modules.defaults.owner_id',
-          ),
-          
-          1 =>
-          array(
-            'name' => 'notes',
-            'type' => 'longtext',
-            'label' => 'modules.invoices.fields.notes',
-          ),
-          2=>array(
-            'name' => 'description',
-            'type' => 'longtext',
-            'label' => 'modules.invoices.fields.description',
-          ),
-        ),
-      ),
-    ),
-  ),
-  'related' =>
-  array(
-    'columns' =>
-    array(
-      0 =>
-      array(
-        'layout' =>
-        array(
-          0 =>
-          array(
-            'name' => 'accounts_invoices',
-            'type' => 'one-to-many',
-            'label' => 'relationships.accounts_invoices',
-            'fields' =>
-            array(
-              0 =>
-              array(
+return [
+    'list' => [
+        'columns' => [
+            0 => [
                 'name' => 'name',
                 'type' => 'text',
-                'label' => 'modules.accounts.fields.name',
-              ),
-              1 =>
-              array(
-                'name' => 'phone',
-                'type' => 'phone',
-                'label' => 'modules.accounts.fields.phone',
-              ),
-              2 =>
-              array(
-                'name' => 'email',
-                'type' => 'email',
-                'label' => 'modules.accounts.fields.email',
-              ),
-              3 =>
-              array(
-                'name' => 'website',
-                'type' => 'url',
-                'label' => 'modules.accounts.fields.website',
-              ),
-            ),
-          ),
-          1 =>
-          array(
-            'name' => 'orders_invoices',
-            'type' => 'one-to-one',
-            'label' => 'relationships.orders_invoices',
-            'fields' =>
-            array(
-              0 =>
-              array(
-                'name' => 'order_number',
-                'type' => 'text',
-                'label' => 'modules.orders.fields.order_number',
-              ),
-              1 =>
-              array(
-                'name' => 'total_amount',
-                'type' => 'number',
-                'label' => 'modules.orders.fields.total_amount',
-              ),
-              2 =>
-              array(
-                'name' => 'status',
-                'type' => 'select',
-                'label' => 'modules.orders.fields.status',
-              ),
-              3 =>
-              array(
-                'name' => 'order_date',
-                'type' => 'date',
-                'label' => 'modules.orders.fields.order_date',
-              ),
-              4 =>
-              array(
-                'name' => 'due_date',
-                'type' => 'date',
-                'label' => 'modules.orders.fields.due_date',
-              ),
-            ),
-          ),
-        ),
-      ),
-      1 =>
-      array(
-        'layout' =>
-        array(
-          0 =>
-          array(
-            'name' => 'contacts_invoices',
-            'type' => 'one-to-many',
-            'label' => 'relationships.contacts_invoices',
-            'fields' =>
-            array(
-              0 =>
-              array(
-                'name' => 'name',
-                'type' => 'text',
-                'label' => 'modules.contacts.fields.name',
-              ),
-              1 =>
-              array(
-                'name' => 'position',
-                'type' => 'text',
-                'label' => 'modules.contacts.fields.position',
-              ),
-              2 =>
-              array(
-                'name' => 'phone',
-                'type' => 'phone',
-                'label' => 'modules.contacts.fields.phone',
-              ),
-              3 =>
-              array(
-                'name' => 'email',
-                'type' => 'email',
-                'label' => 'modules.contacts.fields.email',
-              ),
-            ),
-          ),
-          1 =>
-          array(
-            'name' => 'quotes_invoices',
-            'type' => 'one-to-one',
-            'label' => 'relationships.quotes_invoices',
-            'fields' =>
-            array(
-              0 =>
-              array(
-                'name' => 'name',
-                'type' => 'text',
-                'label' => 'modules.quotes.fields.name',
-              ),
-              1 =>
-              array(
-                'name' => 'valid_until',
-                'type' => 'date',
-                'label' => 'modules.quotes.fields.valid_until',
-              ),
-              2 =>
-              array(
-                'name' => 'total',
-                'type' => 'number',
-                'label' => 'modules.quotes.fields.total',
-              ),
-              3 =>
-              array(
-                'name' => 'status',
-                'type' => 'select',
-                'label' => 'modules.quotes.fields.status',
-              ),
-              4 =>
-              array(
+                'label' => 'modules.defaults.name',
+            ],
+            1 => [
                 'name' => 'number',
                 'type' => 'number',
-                'label' => 'modules.quotes.fields.number',
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  ),
-  'linkingPanel' =>
-  array(
-    'columns' =>
-    array(
-      0 =>
-      array(
-        'name' => 'name',
-        'type' => 'text',
-        'label' => 'modules.defaults.name',
-      ),
-      1 =>
-      array(
-        'name' => 'number',
-        'type' => 'number',
-        'label' => 'modules.invoices.fields.number',
-      ),
-      2 =>
-      array(
-        'name' => 'total',
-        'type' => 'number',
-        'label' => 'modules.invoices.fields.total',
-      ),
-      3 =>
-      array(
-        'name' => 'due_date',
-        'type' => 'date',
-        'label' => 'modules.invoices.fields.due_date',
-      ),
-      4 =>
-      array(
-        'name' => 'status',
-        'type' => 'select',
-        'label' => 'modules.invoices.fields.status',
-      ),
-    ),
-  ),
-);
+                'label' => 'modules.invoices.fields.number',
+            ],
+            2 => [
+                'name' => 'total',
+                'type' => 'number',
+                'label' => 'modules.invoices.fields.total',
+            ],
+            3 => [
+                'name' => 'status',
+                'type' => 'select',
+                'label' => 'modules.invoices.fields.status',
+            ],
+            4 => [
+                'name' => 'owner_id',
+                'type' => 'record',
+                'label' => 'modules.defaults.owner_id',
+            ],
+            5 => [
+                'name' => 'created_at',
+                'type' => 'datetime',
+                'label' => 'modules.defaults.created_at',
+            ],
+            6 => [
+                'name' => 'updated_at',
+                'type' => 'datetime',
+                'label' => 'modules.defaults.updated_at',
+            ],
+        ],
+    ],
+    'record' => [
+        'sections' => [
+            0 => [
+                'name' => 'Card',
+                'layout' => [
+                    0 => [
+                        'name' => 'name',
+                        'type' => 'text',
+                        'label' => 'modules.defaults.name',
+                    ],
+                    1 => [
+                        'name' => 'number',
+                        'type' => 'number',
+                        'label' => 'modules.invoices.fields.number',
+                    ],
+                    2 => [
+                        'name' => 'status',
+                        'type' => 'select',
+                        'label' => 'modules.invoices.fields.status',
+                    ],
+                    3 => [
+                        'name' => 'due_date',
+                        'type' => 'date',
+                        'label' => 'modules.invoices.fields.due_date',
+                    ],
+                    4 => [
+                        'name' => 'issue_date',
+                        'type' => 'date',
+                        'label' => 'modules.invoices.fields.issue_date',
+                    ],
+                ],
+            ],
+            1 => [
+                'name' => 'Line Items',
+                'has_line_items' => true,
+                'layout' => [],
+            ],
+            2 => [
+                'name' => 'Financial',
+                'layout' => [
+                    0 => [
+                        'name' => 'subtotal',
+                        'type' => 'number',
+                        'label' => 'modules.invoices.fields.subtotal',
+                    ],
+                    1 => [
+                        'name' => 'tax',
+                        'type' => 'number',
+                        'label' => 'modules.invoices.fields.tax',
+                    ],
+                    2 => [
+                        'name' => 'total',
+                        'type' => 'number',
+                        'label' => 'modules.invoices.fields.total',
+                    ],
+                    3 => [
+                        'name' => 'currency',
+                        'type' => 'text',
+                        'label' => 'modules.invoices.fields.currency',
+                    ],
+                ],
+            ],
+            3 => [
+                'name' => 'Details',
+                'layout' => [
+
+                    0 => [
+                        'name' => 'notes',
+                        'type' => 'longtext',
+                        'label' => 'modules.invoices.fields.notes',
+                    ],
+                    1 => [
+                        'name' => 'description',
+                        'type' => 'longtext',
+                        'label' => 'modules.invoices.fields.description',
+                    ],
+                ],
+            ],
+            4 => [
+                'name' => 'Dates',
+                'layout' => [
+
+                    0 => [
+                        'name' => 'created_at',
+                        'type' => 'datetime',
+                        'label' => 'modules.invoices.fields.created_at',
+                    ],
+                    1 => [
+                        'name' => 'updated_at',
+                        'type' => 'datetime',
+                        'label' => 'modules.invoices.fields.updated_at',
+                    ],
+                    2 => [
+                        'name' => 'owner_id',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.owner_id',
+                    ],
+
+                ],
+            ],
+        ],
+    ],
+    'related' => [
+        'columns' => [
+            0 => [
+                'layout' => [
+                    0 => [
+                        'name' => 'accounts_invoices',
+                        'type' => 'one-to-many',
+                        'label' => 'relationships.accounts_invoices',
+                        'fields' => [
+                            0 => [
+                                'name' => 'name',
+                                'type' => 'text',
+                                'label' => 'modules.accounts.fields.name',
+                            ],
+                            1 => [
+                                'name' => 'phone',
+                                'type' => 'phone',
+                                'label' => 'modules.accounts.fields.phone',
+                            ],
+                            2 => [
+                                'name' => 'email',
+                                'type' => 'email',
+                                'label' => 'modules.accounts.fields.email',
+                            ],
+                            3 => [
+                                'name' => 'website',
+                                'type' => 'url',
+                                'label' => 'modules.accounts.fields.website',
+                            ],
+                        ],
+                    ],
+                    1 => [
+                        'name' => 'orders_invoices',
+                        'type' => 'one-to-one',
+                        'label' => 'relationships.orders_invoices',
+                        'fields' => [
+                            0 => [
+                                'name' => 'order_number',
+                                'type' => 'text',
+                                'label' => 'modules.orders.fields.order_number',
+                            ],
+                            1 => [
+                                'name' => 'total_amount',
+                                'type' => 'number',
+                                'label' => 'modules.orders.fields.total_amount',
+                            ],
+                            2 => [
+                                'name' => 'status',
+                                'type' => 'select',
+                                'label' => 'modules.orders.fields.status',
+                            ],
+                            3 => [
+                                'name' => 'order_date',
+                                'type' => 'date',
+                                'label' => 'modules.orders.fields.order_date',
+                            ],
+                            4 => [
+                                'name' => 'due_date',
+                                'type' => 'date',
+                                'label' => 'modules.orders.fields.due_date',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            1 => [
+                'layout' => [
+                    0 => [
+                        'name' => 'contacts_invoices',
+                        'type' => 'one-to-many',
+                        'label' => 'relationships.contacts_invoices',
+                        'fields' => [
+                            0 => [
+                                'name' => 'name',
+                                'type' => 'text',
+                                'label' => 'modules.contacts.fields.name',
+                            ],
+                            1 => [
+                                'name' => 'position',
+                                'type' => 'text',
+                                'label' => 'modules.contacts.fields.position',
+                            ],
+                            2 => [
+                                'name' => 'phone',
+                                'type' => 'phone',
+                                'label' => 'modules.contacts.fields.phone',
+                            ],
+                            3 => [
+                                'name' => 'email',
+                                'type' => 'email',
+                                'label' => 'modules.contacts.fields.email',
+                            ],
+                        ],
+                    ],
+                    1 => [
+                        'name' => 'quotes_invoices',
+                        'type' => 'one-to-one',
+                        'label' => 'relationships.quotes_invoices',
+                        'fields' => [
+                            0 => [
+                                'name' => 'name',
+                                'type' => 'text',
+                                'label' => 'modules.quotes.fields.name',
+                            ],
+                            1 => [
+                                'name' => 'valid_until',
+                                'type' => 'date',
+                                'label' => 'modules.quotes.fields.valid_until',
+                            ],
+                            2 => [
+                                'name' => 'total',
+                                'type' => 'number',
+                                'label' => 'modules.quotes.fields.total',
+                            ],
+                            3 => [
+                                'name' => 'status',
+                                'type' => 'select',
+                                'label' => 'modules.quotes.fields.status',
+                            ],
+                            4 => [
+                                'name' => 'number',
+                                'type' => 'number',
+                                'label' => 'modules.quotes.fields.number',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'linkingPanel' => [
+        'columns' => [
+            0 => [
+                'name' => 'name',
+                'type' => 'text',
+                'label' => 'modules.defaults.name',
+            ],
+            1 => [
+                'name' => 'number',
+                'type' => 'number',
+                'label' => 'modules.invoices.fields.number',
+            ],
+            2 => [
+                'name' => 'total',
+                'type' => 'number',
+                'label' => 'modules.invoices.fields.total',
+            ],
+            3 => [
+                'name' => 'due_date',
+                'type' => 'date',
+                'label' => 'modules.invoices.fields.due_date',
+            ],
+            4 => [
+                'name' => 'status',
+                'type' => 'select',
+                'label' => 'modules.invoices.fields.status',
+            ],
+        ],
+    ],
+];

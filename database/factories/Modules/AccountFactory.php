@@ -40,8 +40,8 @@ class AccountFactory extends factory
       'city' => $faker->optional(0.9)->city(),
       'country' => $faker->optional(0.9)->country(),
       'description' => $faker->realText(150),
-      'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
+      'created_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }
