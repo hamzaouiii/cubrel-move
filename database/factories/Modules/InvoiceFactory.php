@@ -24,7 +24,7 @@ class InvoiceFactory extends Factory
 
       'name' => 'Invoice ' . $this->faker->unique()->numerify('####'),
 
-      'description' => $this->faker->optional()->paragraph(),
+      'description' => $this->faker->optional()->realText(150),
 
       'number' => $this->faker->unique()->numerify('INV-#####'),
 

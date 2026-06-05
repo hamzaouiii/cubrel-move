@@ -32,7 +32,7 @@ class DealFactory extends Factory
       'name' => $this->faker->company() . ' Deal',
       'amount' => $this->faker->randomFloat(2, 1000, 50000),
       'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
-      'description' => $this->faker->sentence(),
+      'description' => $this->faker->realText(120),
 
       'sales_stage' => $this->faker->randomElement($stages),
       'probability' => $this->faker->numberBetween(10, 90),

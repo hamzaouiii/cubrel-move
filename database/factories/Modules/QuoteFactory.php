@@ -24,7 +24,7 @@ class QuoteFactory extends Factory
 
       'name' => 'Quote ' . $this->faker->unique()->numerify('####'),
 
-      'description' => $this->faker->optional()->paragraph(),
+      'description' => $this->faker->optional()->realText(150),
 
       'number' => $this->faker->unique()->numerify('Q-#####'),
 

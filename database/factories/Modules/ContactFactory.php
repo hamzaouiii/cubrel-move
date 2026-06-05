@@ -23,7 +23,7 @@ class ContactFactory extends Factory
 
       'name' => $firstName . ' ' . $lastName,
 
-      'description' => $this->faker->optional()->paragraph(),
+      'description' => $this->faker->optional()->realText(150),
 
 
       'first_name' => $firstName,
