@@ -49,6 +49,8 @@ class Module extends Model
         'is_draft',
         'locked_by',
         'locked_until',
+        'has_line_items',
+        'has_owner'
     ];
 
     protected $casts = [

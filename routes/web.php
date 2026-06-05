@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DropdownListController;
@@ -18,7 +20,8 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LineItemController;
+
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
@@ -38,6 +41,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::get('/search', SearchController::class)->name('search');
+    Route::get('/line-items', [LineItemController::class, 'index'])->name('line-items.index');
+    Route::post('/line-items', [LineItemController::class, 'store'])->name('line-items.store');
+    Route::post('/line-items/reorder', [LineItemController::class, 'reorder'])->name('line-items.reorder');
+    Route::put('/line-items/{lineItem}', [LineItemController::class, 'update'])->name('line-items.update');
+    Route::delete('/line-items/{lineItem}', [LineItemController::class, 'destroy'])->name('line-items.destroy');
 
     // Only For admins
     Route::middleware(['admin'])->group(function () {

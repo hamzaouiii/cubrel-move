@@ -36,7 +36,7 @@ class QuoteFactory extends Factory
         'expired',
       ]),
 
-      'valid_until' => $this->faker->optional()->dateTimeBetween('now', '+30 days'),
+      'valid_until' => ($d = $this->faker->optional()->dateTimeBetween('now', '+30 days')) ? \Carbon\Carbon::instance($d)->utc() : null,
 
       'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
 
@@ -44,9 +44,9 @@ class QuoteFactory extends Factory
       'tax'      => $tax,
       'total'    => $total,
 
-      'notes' => $this->faker->optional()->realText(150),
-            'created_at' => $this->faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+      'notes' => $this->faker->optional()->paragraph(),
+            'created_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }

@@ -17,13 +17,14 @@ import PanelList from "@/Pages/Components/Modules/Relatedpanels/PanelList.vue";
 import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.vue";
 import { useFieldValidation } from "@/Composables/useFieldValidation";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
+import LineItemsPanel from "../Components/Modules/LineItemsPanel.vue";
+
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
 
 defineOptions({
   layout: AppLayout,
 });
-
 const props = defineProps({
   module: Object,
   title: String,
@@ -31,6 +32,8 @@ const props = defineProps({
   overviewLayout: Object,
   relatedLayout: Object,
   fields: Object,
+  lineItemFields: { type: Array, default: () => [] },
+  productFields: { type: Array, default: () => [] },
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -38,6 +41,7 @@ const page = usePage();
 const appSettings = page.props.appSettings;
 const { validateFieldTypes } = useFieldValidation(props);
 // State
+
 const form = useForm({ ...props.record });
 
 const isEditing = ref(false);
@@ -96,7 +100,6 @@ const requiredEmptyFields = computed(() => {
     emptyFields.value.includes(field.name),
   );
 });
-
 const module_color = computed(() => {
   return appSettings.use_individual_module_colors == "0"
     ? appSettings.primary_color
@@ -410,7 +413,6 @@ const getLinkingLayout = (slug) => {
   <Head>
     <title>{{ record.name }} - {{ title }} - Cubrel</title>
   </Head>
-
   <div class="record-layout" :style="{ '--module-color': module_color }">
     <div class="record-layout__header">
       <div class="record-layout__header__details">
@@ -535,30 +537,61 @@ const getLinkingLayout = (slug) => {
           class="record-layout__sections__item"
           v-for="s in overviewLayout.sections"
         >
-          <div class="record-layout__sections__item__title">
-            {{ s.name }}
-          </div>
-          <div class="record-layout__sections__item__layout">
-            <div
-              v-for="f in s.layout"
-              class="record-layout__sections__item__layout__field"
-            >
-              <span class="record-layout__sections__item__layout__field__label">
-                {{ $t(f.label) }}:
-              </span>
-              <FieldRenderer
-                :field="getField(f)"
-                v-model="form[f.name]"
-                :related_label="form[f.name + '__label'] ?? null"
-                :mode="getMode(f)"
-                :read-only="getField(f)?.readonly"
-                :module-color="module_color"
-                :icon="getIcon(getField(f).related_module)"
-                :has-error="hasError(f)"
-                @open-link-overlay="openFieldOverlay"
-              />
+          <!-- In Record.vue, inside the sections loop -->
+          <template v-if="s.has_line_items">
+            <div class="record-layout__sections__item__title">
+              {{ s.name }}
             </div>
-          </div>
+            <LineItemsPanel
+              :parent-id="record.id"
+              :parent-type="module.slug"
+              :mode="mode"
+              :currency="record.currency ?? ''"
+              :module-color="module_color"
+              :product-fields="productFields"
+              :line-item-fields="lineItemFields"
+              @totals-updated="
+                (t) => {
+                  form.subtotal = t.subtotal;
+                  form.tax = t.tax_amount;
+                  form.total = t.total;
+                  form.defaults({
+                    subtotal: t.subtotal,
+                    tax: t.tax_amount,
+                    total: t.total,
+                  });
+                }
+              "
+            />
+          </template>
+          <template v-else>
+            <div class="record-layout__sections__item__title">
+              {{ s.name }}
+            </div>
+            <div class="record-layout__sections__item__layout">
+              <div
+                v-for="f in s.layout"
+                class="record-layout__sections__item__layout__field"
+              >
+                <span
+                  class="record-layout__sections__item__layout__field__label"
+                >
+                  {{ $t(f.label) }}:
+                </span>
+                <FieldRenderer
+                  :field="getField(f)"
+                  v-model="form[f.name]"
+                  :related_label="form[f.name + '__label'] ?? null"
+                  :mode="getMode(f)"
+                  :read-only="getField(f)?.readonly"
+                  :module-color="module_color"
+                  :icon="getIcon(getField(f)?.related_module || null)"
+                  :has-error="hasError(f)"
+                  @open-link-overlay="openFieldOverlay"
+                />
+              </div>
+            </div>
+          </template>
         </div>
       </div>
 

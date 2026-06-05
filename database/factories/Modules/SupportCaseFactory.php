@@ -40,12 +40,12 @@ class SupportCaseFactory extends Factory
       'description' => $faker->realText(150),
       'status'      => $closed ? 'closed' : 'open',
       'priority'    => $faker->randomElement(['low', 'medium', 'high']),
-      'opened_at'   => $openedAt,
+      'opened_at'   => \Carbon\Carbon::instance($openedAt)->utc(),
       'closed_at'   => $closed
-        ? $faker->dateTimeBetween($openedAt, 'now')
+        ? \Carbon\Carbon::instance($faker->dateTimeBetween($openedAt, 'now'))->utc()
         : null,
-              'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
-      'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
+              'created_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-2 years', 'now'))->utc(),
+      'updated_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-1 year', 'now'))->utc(),
     ];
   }
 }

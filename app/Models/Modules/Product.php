@@ -15,6 +15,7 @@ protected $fillable = [
     'price',
     'currency',
     'is_active',
+    'tax_rate'
 ];
 
      public function toSearchResult(): array
