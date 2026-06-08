@@ -12,8 +12,10 @@ use App\Http\Controllers\ListController;
 use App\Http\Controllers\ModuleBuilderController;
 use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\ModuleManagerController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\RelatedFieldController;
+use App\Http\Controllers\Settings\PdfTemplatesController;
 use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
 use App\Http\Controllers\SearchController;
@@ -66,6 +68,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/invites/{invite}', [InviteController::class, 'destroy'])->name('invites.destroy');
 
         Route::prefix('settings')->name('settings.')->group(function () {
+            // PDF Templates
+            Route::get('pdf-templates', [PdfTemplatesController::class, 'index'])
+                ->name('pdf-templates.index');
+            Route::post('pdf-templates/{template}/default', [PdfTemplatesController::class, 'setDefault'])
+                ->name('pdf-templates.setDefault');
+
 
             // Module manager
             Route::resource('modules', ModuleManagerController::class)
@@ -154,6 +162,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single-link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single-link');
     Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
+    Route::get('/{module}/{recordId}/pdf', [PdfController::class, 'generate'])->name('modules.record.pdf');
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
     Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');

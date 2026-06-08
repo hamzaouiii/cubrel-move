@@ -152,4 +152,32 @@ return [
       ]
     ]
   ],
+  'company' => [
+    'label' => 'settings.groups.company',
+    'description' => 'settings.groups.description.company',
+    'items' => [
+      'company-info' => [
+        'name' => 'Company Info',
+        'slug' => 'company-info',
+        'label' => 'settings.items.company_info',
+        'path' => '/settings/company/company-info',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-building'
+      ]
+    ]
+  ],
+  'documents' => [
+    'label' => 'settings.groups.documents',
+    'description' => 'settings.groups.description.documents',
+    'items' => [
+      'pdf-templates' => [
+        'name' => 'PDF Templates',
+        'slug' => 'pdf-templates',
+        'label' => 'settings.items.pdf_templates',
+        'path' => '/settings/pdf-templates',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-file-pdf'
+      ]
+    ]
+  ],
 ];
