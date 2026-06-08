@@ -169,7 +169,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #333; line-
 <div class="sec-block">
 @if(!empty($sec['name']))<div class="sec-label">{{ __($sec['name']) }}</div>@endif
 @foreach($fItems as $fItem)
-<div class="fcell-lbl" style="margin-bottom:2px;">{{ $fItem['label'] ? __($fItem['label']) : $fItem['name'] }}</div>
+@if($fItem['showLabel'] ?? true)<div class="fcell-lbl" style="margin-bottom:2px;">{{ $fItem['label'] ? __($fItem['label']) : $fItem['name'] }}</div>@endif
 <div class="fstack-val" style="margin-bottom:8px;">{{ $resolveItem($fItem) }}</div>
 @endforeach
 </div>
@@ -195,7 +195,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #333; line-
 <div class="sec-block">
 @if(!empty($sec['name']))<div class="sec-label">{{ __($sec['name']) }}</div>@endif
 @foreach($fItems as $fItem)
-<div class="fcell-lbl" style="margin-bottom:2px;">{{ $fItem['label'] ? __($fItem['label']) : $fItem['name'] }}</div>
+@if($fItem['showLabel'] ?? true)<div class="fcell-lbl" style="margin-bottom:2px;">{{ $fItem['label'] ? __($fItem['label']) : $fItem['name'] }}</div>@endif
 <div class="fstack-val" style="margin-bottom:8px;">{{ $resolveItem($fItem) }}</div>
 @endforeach
 </div>
@@ -237,32 +237,21 @@ body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #333; line-
             @if($contact){{ $contact }}@endif
         </div>
     </td>
-    <td style="width:45%; vertical-align:top;">
-        <div class="hdr-doc-title">{{ $section['title'] ?? $moduleLabel }}</div>
+    <td style="width:45%; vertical-align:top; text-align:right;">
+        <div class="hdr-doc-title">{{ __($section['title'] ?? $moduleLabel) }}</div>
         @if(!empty($record['number']))
             <div class="hdr-doc-num"># {{ $record['number'] }}</div>
         @endif
         @foreach($section['items'] ?? [] as $hItem)
-            @if(($hItem['kind'] ?? '') === 'text' && !empty($hItem['content']))
+            @if(($hItem['kind'] ?? '') === 'field')
+            <div class="hdr-meta-row">{{ $resolveField($hItem['name']) }}</div>
+            @elseif(($hItem['kind'] ?? '') === 'text' && !empty($hItem['content']))
             <div class="hdr-meta-row">{{ $hItem['content'] }}</div>
             @endif
         @endforeach
     </td>
 </tr>
 </table>
-@php $hFieldItems = array_values(array_filter($section['items'] ?? [], fn($x) => ($x['kind'] ?? '') === 'field')); @endphp
-@if(count($hFieldItems))
-<table style="width:100%;border-collapse:collapse;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-bottom:20px;">
-<tr>
-@foreach($hFieldItems as $hItem)
-<td style="vertical-align:top;padding:10px 16px 10px 0;">
-    <div class="fcell-lbl">{{ $hItem['label'] ? __($hItem['label']) : $hItem['name'] }}</div>
-    <div class="fcell-val">{{ $resolveField($hItem['name']) }}</div>
-</td>
-@endforeach
-</tr>
-</table>
-@endif
 
 {{-- ── Footer ─────────────────────────────────────────────── --}}
 @elseif($type === 'footer')
@@ -295,7 +284,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #333; line-
 <tr>
 @foreach($fItems as $fItem)
 <td class="fcell">
-    <div class="fcell-lbl">{{ $fItem['label'] ? __($fItem['label']) : $fItem['name'] }}</div>
+    @if($fItem['showLabel'] ?? true)<div class="fcell-lbl">{{ $fItem['label'] ? __($fItem['label']) : $fItem['name'] }}</div>@endif
     <div class="fcell-val">{{ $resolveItem($fItem) }}</div>
 </td>
 @endforeach

@@ -542,7 +542,7 @@ const moduleColor = computed(() =>
           :available-relationships="moduleRelationhsips"
           :module-slug="module.slug"
           :line-item-fields="lineItemFields"
-          :module-label="module.name"
+          :module-label="$t('modules.' + module.slug + '.single_label')"
         />
       </div>
 

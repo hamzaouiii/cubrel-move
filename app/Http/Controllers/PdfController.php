@@ -71,7 +71,7 @@ class PdfController extends Controller
             ->loadView($template->blade_view, [
                 'record'           => $record,
                 'module'           => $module,
-                'moduleLabel'      => $moduleModel->name,
+                'moduleLabel'      => "modules.{$moduleModel->slug}.single_label",
                 'fields'           => $fields,
                 'company'          => $company,
                 'renderer'         => app(PdfValueRenderer::class),
@@ -81,7 +81,7 @@ class PdfController extends Controller
             ])
             ->setPaper('a4', 'portrait');
 
-        $filename = Str::slug($moduleModel->name) . '-' . ($record['number'] ?? $recordId) . '.pdf';
+        $filename = Str::slug($moduleModel->slug) . '-' . ($record['number'] ?? $recordId) . '.pdf';
 
         return $pdf->stream($filename);
     }

@@ -1,7 +1,8 @@
-<script setup>
+﻿<script setup>
 import { ref, computed, watch, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { useLayoutDragDrop } from "@/Composables/useLayoutDragDrop";
+import ExplainTip from "@/Pages/Components/Globals/ExplainTip.vue";
 
 const props = defineProps({
   sections: { type: Array, default: () => [] },
@@ -35,7 +36,6 @@ const internalAvailable = ref([...props.availableFields]);
 const internalAvailableRelationships = ref([...props.availableRelationships]);
 const openPickerIndex = ref(null);
 const openLiPickerIndex = ref(null);
-console.log(props.availableRelationships);
 
 watch(
   () => props.sections,
@@ -85,7 +85,7 @@ const {
   onGlobalDragOver,
 } = useLayoutDragDrop();
 
-// ── Computed ───────────────────────────────────────────────────────────────
+// â”€â”€ Computed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const usedFieldNames = computed(() => {
   const used = new Set();
@@ -123,7 +123,7 @@ const getRelatedModuleLable = (rel) => {
   const other_side = rel.other_side;
 };
 
-// ── Relationship field picker (sidebar) ────────────────────────────────────
+// â”€â”€ Relationship field picker (sidebar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const expandedRelationships = ref({});
 const relSearchQueries = ref({});
 
@@ -173,7 +173,7 @@ const ghostLabel = computed(() => {
     );
     const relLabel = rel ? (t(rel.label) ?? rel.name) : d.relName;
     const fieldLabel = field ? (t(field.label) ?? field.name) : d.fieldName;
-    return `${relLabel} › ${fieldLabel}`;
+    return `${relLabel} â€º ${fieldLabel}`;
   }
   if (d.source === "new-section") {
     return sectionTypeLabel(d.sectionType);
@@ -196,7 +196,7 @@ const ghostLabel = computed(() => {
   return "";
 });
 
-// ── Section management ──────────────────────────────────────────────────────
+// â”€â”€ Section management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const hasLineItems = computed(() =>
   internalSections.value.some((s) => s.type === "line_items"),
@@ -225,7 +225,7 @@ const createSectionOfType = (type) => {
   return null;
 };
 
-// ── New-section drag (right sidebar) ───────────────────────────────────────
+// â”€â”€ New-section drag (right sidebar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isNewSectionDragging = (sectionType) =>
   dragging.value?.source === "new-section" &&
@@ -269,7 +269,13 @@ const updateFieldItemLabel = (sectionIndex, itemIndex, label) => {
   emit("update:sections", internalSections.value);
 };
 
-// ── Header items ────────────────────────────────────────────────────────────
+const toggleFieldLabel = (sectionIndex, itemIndex) => {
+  const item = internalSections.value[sectionIndex].items[itemIndex];
+  item.showLabel = item.showLabel === false ? true : false;
+  emit("update:sections", internalSections.value);
+};
+
+// â”€â”€ Header items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const addHeaderField = (sectionIndex, field) => {
   const section = internalSections.value[sectionIndex];
@@ -301,7 +307,7 @@ const updateHeaderItemText = (sectionIndex, itemIndex, content) => {
   emit("update:sections", internalSections.value);
 };
 
-// ── Section reorder drag ────────────────────────────────────────────────────
+// â”€â”€ Section reorder drag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isDraggingSection = (index) =>
   dragging.value?.source === "section-reorder" &&
@@ -367,7 +373,7 @@ const onSectionDrop = (targetIndex, event) => {
   endDrag();
 };
 
-// ── Field drag into section ─────────────────────────────────────────────────
+// â”€â”€ Field drag into section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isFieldItemDragging = (sectionIndex, itemIndex) =>
   dragging.value?.source === "section-field" &&
@@ -437,6 +443,7 @@ const onDropOnSection = (sectionIndex, itemIndex, event) => {
       name: field.name,
       label: field.label,
       type: field.type,
+      showLabel: true,
     };
     const targetSection = internalSections.value[sectionIndex];
     if (!targetSection.items) targetSection.items = [];
@@ -458,6 +465,7 @@ const onDropOnSection = (sectionIndex, itemIndex, event) => {
       label: field.label,
       type: field.type,
       relationship: d.relName,
+      showLabel: true,
     };
     const targetSection = internalSections.value[sectionIndex];
     if (!targetSection.items) targetSection.items = [];
@@ -498,7 +506,7 @@ const onDropOnAvailable = (event) => {
   endDrag();
 };
 
-// ── Line-item column reorder ────────────────────────────────────────────────
+// â”€â”€ Line-item column reorder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isLiColumnDragging = (sectionIndex, colIndex) =>
   dragging.value?.source === "li-column" &&
@@ -571,7 +579,7 @@ const addLiColumn = (sectionIndex, field) => {
   emit("update:sections", internalSections.value);
 };
 
-// ── Section width (half / full) ─────────────────────────────────────────────
+// â”€â”€ Section width (half / full) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const canBeHalf = (section) => section.type === "fields";
 
@@ -614,7 +622,7 @@ const sectionRows = computed(() => {
   return rows;
 });
 
-// ── Half-slot drop zone (second slot in a lone half-width row) ──────────────
+// â”€â”€ Half-slot drop zone (second slot in a lone half-width row) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isHalfSlotDropActive = (row) =>
   dragOver.value?.target === "half-slot" && dragOver.value.rowKey === row.key;
@@ -670,7 +678,7 @@ const onHalfSlotDrop = (row, event) => {
   endDrag();
 };
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const sectionTypeLabel = (type) => {
   const map = {
@@ -692,19 +700,7 @@ const isMovable = (section) => !section.locked;
 <template>
   <div class="pdf-editor" @dragover="onGlobalDragOver">
     <div class="pdf-editor__container">
-      <!-- Sidebar: available fields -->
       <div class="pdf-editor__container__sidebar">
-        <div
-          class="pdf-editor__empty-drop-zone"
-          :class="{
-            'pdf-editor__empty-drop-zone--active':
-              dragOver?.target === 'available-remove',
-          }"
-          @dragover="setDragOver({ target: 'available-remove' }, $event)"
-          @drop="onDropOnAvailable($event)"
-        >
-          {{ $t("layouts.drop_here_to_remove") }}
-        </div>
         <div class="pdf-editor__container__sidebar__content">
           <div class="pdf-editor__container__sidebar__header">
             <span class="pdf-editor__container__sidebar__header__title">
@@ -743,7 +739,6 @@ const isMovable = (section) => !section.locked;
               {{ $t("layouts.all_fields_used") }}
             </div>
           </div>
-          <!-- Relationships: collapsible groups with per-field drags -->
           <div
             v-for="rel in internalAvailableRelationships"
             :key="rel.name"
@@ -779,7 +774,7 @@ const isMovable = (section) => !section.locked;
                   v-model="relSearchQueries[rel.name]"
                   type="text"
                   class="ple-rel-group__search-input"
-                  placeholder="Search fields…"
+                  placeholder="Search fieldsâ€¦"
                 />
               </div>
               <div
@@ -845,7 +840,6 @@ const isMovable = (section) => !section.locked;
                     [`ple-section--${section.type}`]: true,
                   }"
                 >
-                  <!-- Section header bar -->
                   <div class="ple-section__header">
                     <span
                       v-if="isMovable(section)"
@@ -866,8 +860,6 @@ const isMovable = (section) => !section.locked;
                     <span class="ple-section__type-badge">
                       {{ sectionTypeLabel(section.type) }}
                     </span>
-
-                    <!-- Editable name for fields / relationship sections -->
                     <input
                       v-if="section.type === 'fields'"
                       class="ple-section__name-input"
@@ -934,10 +926,7 @@ const isMovable = (section) => !section.locked;
                       <i class="fa-solid fa-times"></i>
                     </button>
                   </div>
-
-                  <!-- Section body -->
                   <div class="ple-section__body">
-                    <!-- Fields section -->
                     <template v-if="section.type === 'fields'">
                       <div
                         v-if="!section.items?.length"
@@ -952,7 +941,6 @@ const isMovable = (section) => !section.locked;
                         <p>{{ $t("layouts.drop_fields_here") }}</p>
                       </div>
                       <div v-else class="pdf-editor__columns">
-                        <!-- Drop zone before first item -->
                         <div
                           class="pdf-editor__columns__drop-zone pdf-editor__columns__drop-zone--horizontal"
                           :class="{
@@ -1006,14 +994,30 @@ const isMovable = (section) => !section.locked;
                                     @click.stop
                                     @mousedown.stop
                                   />
-                                  <span class="ple-rel-badge">{{
-                                    item.relationship
-                                  }}</span>
                                 </template>
                                 <template v-else>
                                   {{ $t(item.label) ?? item.name }}
                                 </template>
                               </span>
+                              <div
+                                class="ple-field-label-toggle"
+                                @click.stop
+                                @mousedown.stop
+                              >
+                                <label class="ple-field-label-toggle__check">
+                                  <input
+                                    type="checkbox"
+                                    :checked="item.showLabel !== false"
+                                    @change="
+                                      toggleFieldLabel(sectionIndex, itemIndex)
+                                    "
+                                  />
+                                  <span>{{ $t("layouts.show_label") }}</span>
+                                </label>
+                                <ExplainTip
+                                  :text="$t('layouts.tip_show_label')"
+                                />
+                              </div>
                               <button
                                 type="button"
                                 class="pdf-editor__columns__item__remove"
@@ -1025,7 +1029,6 @@ const isMovable = (section) => !section.locked;
                                 <i class="fa-solid fa-times"></i>
                               </button>
                             </div>
-                            <!-- Drop zone after item -->
                             <div
                               class="pdf-editor__columns__drop-zone pdf-editor__columns__drop-zone--horizontal"
                               :class="{
@@ -1054,28 +1057,21 @@ const isMovable = (section) => !section.locked;
                         </template>
                       </div>
                     </template>
-
-                    <!-- Line items section -->
                     <template v-else-if="section.type === 'line_items'">
-                      <!-- Column configurator -->
                       <div class="ple-li-cols">
                         <div class="ple-li-cols__row">
-                          <!-- position: required, always first -->
                           <div class="ple-li-chip ple-li-chip--required">
                             <i class="fa-solid fa-lock ple-li-chip__lock"></i>
                             <span class="ple-li-chip__label">{{
                               $t("layouts.pdf_li_position")
                             }}</span>
                           </div>
-                          <!-- name: required, always second -->
                           <div class="ple-li-chip ple-li-chip--required">
                             <i class="fa-solid fa-lock ple-li-chip__lock"></i>
                             <span class="ple-li-chip__label">{{
                               $t("layouts.pdf.name")
                             }}</span>
                           </div>
-
-                          <!-- drop zone before first optional column -->
                           <div
                             class="ple-li-chip-drop"
                             :class="{
@@ -1151,8 +1147,6 @@ const isMovable = (section) => !section.locked;
                               "
                             />
                           </template>
-
-                          <!-- total: required, always last -->
                           <div class="ple-li-chip ple-li-chip--required">
                             <i class="fa-solid fa-lock ple-li-chip__lock"></i>
                             <span class="ple-li-chip__label">{{
@@ -1160,8 +1154,6 @@ const isMovable = (section) => !section.locked;
                             }}</span>
                           </div>
                         </div>
-
-                        <!-- add column picker -->
                         <div
                           v-if="getAvailableLiColumns(section).length"
                           class="ple-li-add-col"
@@ -1199,8 +1191,6 @@ const isMovable = (section) => !section.locked;
                             </button>
                           </div>
                         </div>
-
-                        <!-- column count hint / warning -->
                         <div
                           class="ple-li-col-hint"
                           :class="{
@@ -1218,15 +1208,13 @@ const isMovable = (section) => !section.locked;
                           {{ liColumnCount(section) }}
                           {{ $t("layouts.pdf_li_col_count") }}
                           <template v-if="liColumnCount(section) < 8">
-                            — {{ $t("layouts.pdf_li_col_recommended") }}
+                            â€” {{ $t("layouts.pdf_li_col_recommended") }}
                           </template>
                           <template v-else>
-                            — {{ $t("layouts.pdf_li_col_over") }}
+                            â€” {{ $t("layouts.pdf_li_col_over") }}
                           </template>
                         </div>
                       </div>
-
-                      <!-- Dynamic preview strip -->
                       <div class="ple__li-preview">
                         <div
                           class="ple__li-preview__row ple__li-preview__row--head"
@@ -1274,8 +1262,6 @@ const isMovable = (section) => !section.locked;
                           ></span>
                         </div>
                       </div>
-
-                      <!-- Totals -->
                       <div class="ple__totals">
                         <div class="ple__totals__row">
                           <span class="ple__totals__label">{{
@@ -1315,8 +1301,6 @@ const isMovable = (section) => !section.locked;
                         </div>
                       </div>
                     </template>
-
-                    <!-- Text block -->
                     <template v-else-if="section.type === 'text'">
                       <textarea
                         class="ple-text-input"
@@ -1328,8 +1312,6 @@ const isMovable = (section) => !section.locked;
                         "
                       />
                     </template>
-
-                    <!-- Divider -->
                     <template v-else-if="section.type === 'divider'">
                       <div class="ple-divider-row">
                         <hr class="ple-divider-preview" />
@@ -1342,8 +1324,6 @@ const isMovable = (section) => !section.locked;
                         </button>
                       </div>
                     </template>
-
-                    <!-- Header preview -->
                     <template v-else-if="section.type === 'header'">
                       <div class="ple-header-preview">
                         <div class="ple-header-preview__left">
@@ -1362,7 +1342,7 @@ const isMovable = (section) => !section.locked;
                           </div>
                           <div class="ple-header-preview__company">
                             <div class="ple-header-preview__company-name">
-                              {{ company.company_name || "—" }}
+                              {{ company.company_name || "â€”" }}
                             </div>
                             <div class="ple-header-preview__company-meta">
                               <div v-if="company.company_address">
@@ -1376,27 +1356,35 @@ const isMovable = (section) => !section.locked;
                                 {{
                                   [company.company_phone, company.company_email]
                                     .filter(Boolean)
-                                    .join(" · ")
+                                    .join(" Â· ")
                                 }}
                               </div>
                             </div>
                           </div>
                         </div>
                         <div class="ple-header-preview__right">
-                          <!-- Document title (editable) -->
-                          <input
-                            class="ple-header-preview__title-input"
-                            :value="section.title || moduleLabel"
-                            :placeholder="moduleLabel || 'Document Title'"
-                            @input="
-                              updateHeaderTitle(
-                                sectionIndex,
-                                $event.target.value,
-                              )
-                            "
-                          />
-
-                          <!-- Configurable meta items -->
+                          <div class="ple-header-title-wrap">
+                            <input
+                              class="ple-header-preview__title-input"
+                              :value="section.title"
+                              :placeholder="moduleLabel || 'Document Title'"
+                              @input="
+                                updateHeaderTitle(
+                                  sectionIndex,
+                                  $event.target.value,
+                                )
+                              "
+                            />
+                            <button
+                              v-if="section.title"
+                              type="button"
+                              class="ple-header-title-clear"
+                              :title="$t('layouts.clear_title')"
+                              @click="updateHeaderTitle(sectionIndex, '')"
+                            >
+                              <i class="fa-solid fa-times"></i>
+                            </button>
+                          </div>
                           <div
                             v-if="section.items?.length"
                             class="ple-header-items"
@@ -1410,7 +1398,7 @@ const isMovable = (section) => !section.locked;
                                 <span class="ple-header-item__key">{{
                                   $t(item.label) ?? item.name
                                 }}</span>
-                                <span class="ple-header-item__sep">—</span>
+                                <span class="ple-header-item__sep"></span>
                                 <button
                                   type="button"
                                   class="ple-header-item__remove"
@@ -1448,8 +1436,6 @@ const isMovable = (section) => !section.locked;
                               </template>
                             </div>
                           </div>
-
-                          <!-- Drop target for dragged sidebar fields -->
                           <div
                             class="ple-header-drop"
                             :class="{
@@ -1473,84 +1459,22 @@ const isMovable = (section) => !section.locked;
                               )
                             "
                           />
-
-                          <!-- Add buttons -->
                           <div class="ple-header-add-row">
-                            <div class="ple-li-add-col">
-                              <button
-                                type="button"
-                                class="ple-li-add-col__btn"
-                                @click="
-                                  openPickerIndex =
-                                    openPickerIndex === sectionIndex
-                                      ? null
-                                      : sectionIndex
-                                "
-                              >
-                                <i class="fa-solid fa-plus"></i>
-                                {{ $t("layouts.add_column") }}
-                              </button>
-                              <div
-                                v-if="openPickerIndex === sectionIndex"
-                                class="ple-li-add-col__dropdown"
-                              >
-                                <button
-                                  v-for="field in filteredAvailableFields"
-                                  :key="field.name"
-                                  type="button"
-                                  class="ple-li-add-col__option"
-                                  @click="addHeaderField(sectionIndex, field)"
-                                >
-                                  <span class="ple-li-add-col__option-label">{{
-                                    $t(field.label) ?? field.name
-                                  }}</span>
-                                  <span class="ple-li-add-col__option-type">{{
-                                    $t("fields.types." + field.type)
-                                  }}</span>
-                                </button>
-                                <div
-                                  v-if="!filteredAvailableFields.length"
-                                  style="
-                                    padding: 8px 12px;
-                                    color: #9ca3af;
-                                    font-size: 12px;
-                                  "
-                                >
-                                  {{ $t("layouts.all_fields_used") }}
-                                </div>
-                              </div>
-                            </div>
                             <button
                               type="button"
                               class="ple-header-add-text-btn"
                               @click="addHeaderTextItem(sectionIndex)"
                             >
-                              <i class="fa-solid fa-font"></i>
+                              <i class="fa-solid fa-plus"></i>
                               {{ $t("layouts.text_block") }}
                             </button>
+                            <ExplainTip :text="$t('layouts.tip_text_block')" />
                           </div>
                         </div>
                       </div>
                     </template>
-
-                    <!-- Legacy relationship section -->
-                    <template v-else-if="section.type === 'relationship'">
-                      <p class="ple-locked-hint" style="color: #b45309">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        Legacy section — remove and use related fields from the
-                        sidebar instead.
-                      </p>
-                    </template>
-
-                    <!-- Footer hint -->
-                    <template v-else-if="section.type === 'footer'">
-                      <p class="ple-locked-hint">
-                        {{ $t("layouts.pdf_footer_hint") }}
-                      </p>
-                    </template>
                   </div>
                 </div>
-                <!-- Half-slot: second slot when this row has a lone half-width section -->
                 <div
                   v-if="row.halfSolo"
                   class="ple-half-slot-drop"
@@ -1561,8 +1485,6 @@ const isMovable = (section) => !section.locked;
                   @drop="onHalfSlotDrop(row, $event)"
                 />
               </div>
-
-              <!-- Drop zone after each row -->
               <div
                 class="ple-section-drop-zone"
                 :class="{
@@ -1581,8 +1503,6 @@ const isMovable = (section) => !section.locked;
           </div>
         </div>
       </div>
-
-      <!-- Right sidebar: draggable section types -->
       <div
         class="pdf-editor__container__sidebar pdf-editor__container__sidebar--right"
       >
@@ -1599,9 +1519,20 @@ const isMovable = (section) => !section.locked;
                   type: 'fields',
                   icon: 'fa-table-columns',
                   labelKey: 'field_section',
+                  tipKey: 'tip_block_fields',
                 },
-                { type: 'text', icon: 'fa-align-left', labelKey: 'text_block' },
-                { type: 'divider', icon: 'fa-minus', labelKey: 'divider' },
+                {
+                  type: 'text',
+                  icon: 'fa-align-left',
+                  labelKey: 'text_block',
+                  tipKey: 'tip_block_text',
+                },
+                {
+                  type: 'divider',
+                  icon: 'fa-minus',
+                  labelKey: 'divider',
+                  tipKey: 'tip_block_divider',
+                },
               ]"
               :key="item.type"
               class="pdf-editor__available-fields__item"
@@ -1616,13 +1547,10 @@ const isMovable = (section) => !section.locked;
               <span class="pdf-editor__available-fields__item__handle">
                 <i class="fa-solid fa-grip-vertical"></i>
               </span>
-
               <span class="pdf-editor__available-fields__item__label">{{
                 $t(`layouts.${item.labelKey}`)
               }}</span>
-              <span class="pdf-editor__available-fields__item__type">
-                <i :class="`fa-solid ${item.icon} `"></i>
-              </span>
+              <ExplainTip :text="$t(`layouts.${item.tipKey}`)" />
             </div>
             <div
               v-if="!hasLineItems"
@@ -1638,13 +1566,10 @@ const isMovable = (section) => !section.locked;
               <span class="pdf-editor__available-fields__item__handle">
                 <i class="fa-solid fa-grip-vertical"></i>
               </span>
-
               <span class="pdf-editor__available-fields__item__label">{{
                 $t("layouts.line_items")
               }}</span>
-              <span class="pdf-editor__available-fields__item__type">
-                <i class="fa-solid fa-table-list"></i>
-              </span>
+              <ExplainTip :text="$t('layouts.tip_block_line_items')" />
             </div>
           </div>
         </div>
@@ -1671,7 +1596,6 @@ const isMovable = (section) => !section.locked;
 
 <style lang="scss" scoped>
 .pdf-editor {
-  overflow: hidden;
   border-radius: 8px;
   user-select: none;
 
@@ -1763,6 +1687,12 @@ const isMovable = (section) => !section.locked;
 
       &--right {
         width: 180px;
+      }
+
+      &--right &__content {
+        max-height: none;
+        overflow-y: visible;
+        min-height: unset;
       }
 
       &__content {
@@ -1883,18 +1813,17 @@ const isMovable = (section) => !section.locked;
         background: #f8f9fa;
         border: 1px solid #e9ecef;
         border-radius: 6px;
-        padding: 8px;
+        padding: 6px 8px;
         cursor: move;
-        transition: all 0.2s;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
         display: flex;
         align-items: center;
-        gap: 8px;
-        @media (max-width: 1250px) {
-          padding: 3px;
-        }
+        gap: 6px;
         &:hover {
           border-color: #adb5bd;
-          box-shadow: 0 18px 18px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         }
       }
       &--dragging &__content {
@@ -1911,14 +1840,15 @@ const isMovable = (section) => !section.locked;
       &__label {
         flex: 1;
         font-weight: 500;
-        color: #212529;
-        font-size: 1rem;
+        color: #374151;
+        font-size: 13px;
         display: flex;
-        justify-content: space-between;
-        padding-right: 12px;
-        @media (max-width: 1250px) {
-          font-size: 0.8rem;
-        }
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       &__remove {
         background: none;
@@ -2040,7 +1970,7 @@ const isMovable = (section) => !section.locked;
   flex-shrink: 0;
 }
 
-// ── Divider — single-line: header row IS the divider ────────────────────────
+// â”€â”€ Divider â€” single-line: header row IS the divider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 .ple-section--divider {
   display: flex;
   align-items: center;
@@ -2301,13 +2231,6 @@ const isMovable = (section) => !section.locked;
       font-weight: 400;
     }
   }
-
-  &__doc-number {
-    font-size: 10px;
-    color: #888;
-    text-align: right;
-    margin-top: 3px;
-  }
 }
 
 .ple-locked-hint {
@@ -2317,7 +2240,7 @@ const isMovable = (section) => !section.locked;
   margin: 0;
 }
 
-// ── Header editable items ───────────────────────────────────────────────────
+// â”€â”€ Header editable items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 .ple-header-items {
   margin-top: 8px;
@@ -2454,97 +2377,6 @@ const isMovable = (section) => !section.locked;
   border-radius: 6px;
 }
 
-.ple__items-grid {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  font-size: 11px;
-}
-
-.ple__items-grid__row {
-  display: grid;
-  grid-template-columns: 5% 23% 23% 23% 23% 23%;
-  align-items: center;
-  border-bottom: 1px solid #f0f0f0;
-  padding: 7px 0;
-
-  &--head {
-    border-top: 1.5px solid #111;
-    border-bottom: 1.5px solid #111;
-    padding: 5px 0;
-    span {
-      font-size: 10px;
-      font-weight: 700;
-      color: #111;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-  }
-
-  span {
-    margin: 0 5px;
-  }
-}
-
-.ple__section__type-badge--accent {
-  background: color-mix(in srgb, var(--primary-color, #6366f1) 12%, #e5e7eb);
-  color: var(--primary-color, #6366f1);
-}
-
-.ple__items-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-
-  thead tr {
-    border-top: 1.5px solid #111;
-    border-bottom: 1.5px solid #111;
-  }
-
-  thead th {
-    padding: 5px 6px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #111;
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-
-    &.col-num {
-      text-align: right;
-    }
-  }
-
-  tbody tr {
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  tbody td {
-    padding: 7px 6px;
-    vertical-align: middle;
-    color: #333;
-
-    &.col-num {
-      text-align: right;
-    }
-  }
-
-  .col-pos {
-    width: 4%;
-  }
-  .col-name {
-    width: 30%;
-  }
-
-  .col-num {
-    width: 10%;
-  }
-}
-
-.ple__items-table__placeholder-row td {
-  color: #555;
-}
-
 .ple__placeholder-bar {
   display: inline-block;
   height: 9px;
@@ -2579,8 +2411,7 @@ const isMovable = (section) => !section.locked;
   margin-top: 4px;
   padding-top: 6px;
 
-  .ple__totals__label,
-  .ple__totals__value {
+  .ple__totals__label {
     font-weight: 700;
     font-size: 12px;
     color: #111;
@@ -2592,13 +2423,7 @@ const isMovable = (section) => !section.locked;
   color: #666;
 }
 
-.ple__totals__value {
-  font-size: 11px;
-  font-weight: 600;
-  color: #111;
-}
-
-// ── Line-item column configurator ───────────────────────────────────────────
+// â”€â”€ Line-item column configurator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 .ple-li-cols {
   margin-bottom: 10px;
@@ -2797,7 +2622,7 @@ const isMovable = (section) => !section.locked;
   }
 }
 
-// ── Line-item preview strip ──────────────────────────────────────────────────
+// â”€â”€ Line-item preview strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 .ple__li-preview {
   display: flex;
@@ -2848,7 +2673,7 @@ const isMovable = (section) => !section.locked;
   }
 }
 
-// ── Relationship sidebar groups ────────────────────────────────────────────
+// â”€â”€ Relationship sidebar groups â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 .ple-rel-group {
   border-bottom: 1px solid var(--border-color, #e5e7eb);
 
@@ -2928,60 +2753,11 @@ const isMovable = (section) => !section.locked;
   }
 }
 
-// ── Right sidebar: draggable new-section items ────────────────────────────
-.ple-new-section-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.ple-new-section-item--dragging {
+  opacity: 0.45;
 }
 
-.ple-new-section-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 10px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  cursor: grab;
-  user-select: none;
-  transition:
-    border-color 0.12s,
-    box-shadow 0.12s;
-
-  &:hover {
-    border-color: var(--primary-color, #6366f1);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  }
-
-  &--dragging {
-    opacity: 0.45;
-  }
-
-  &__handle {
-    color: #d1d5db;
-    font-size: 11px;
-    flex-shrink: 0;
-  }
-
-  &__icon {
-    color: var(--primary-color, #6366f1);
-    font-size: 13px;
-    flex-shrink: 0;
-    width: 14px;
-    text-align: center;
-  }
-
-  &__label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #374151;
-    flex: 1;
-    min-width: 0;
-  }
-}
-
-// ── Editable label input for related field items ───────────────────────────
+// â”€â”€ Editable label input for related field items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 .ple-label-input {
   background: transparent;
   border: none;
@@ -3005,7 +2781,7 @@ const isMovable = (section) => !section.locked;
   }
 }
 
-// ── Relationship field badge on canvas items ───────────────────────────────
+// â”€â”€ Relationship field badge on canvas items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 .ple-rel-badge {
   display: inline-block;
   margin-left: 5px;
@@ -3018,5 +2794,68 @@ const isMovable = (section) => !section.locked;
   vertical-align: middle;
   line-height: 1.4;
   white-space: nowrap;
+}
+
+// â”€â”€ Field label toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+.ple-field-label-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+
+  &__check {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
+    color: #9ca3af;
+
+    input[type="checkbox"] {
+      accent-color: var(--primary-color, #6366f1);
+      cursor: pointer;
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+    }
+
+    span {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+  }
+}
+
+// â”€â”€ Header title with hover-clear â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+.ple-header-title-wrap {
+  position: relative;
+  display: block;
+
+  .ple-header-title-clear {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #c4c9d1;
+    padding: 2px 4px;
+    line-height: 1;
+    opacity: 0;
+    transition:
+      opacity 0.15s,
+      color 0.15s;
+
+    &:hover {
+      color: #ef4444;
+    }
+  }
+
+  &:hover .ple-header-title-clear {
+    opacity: 1;
+  }
 }
 </style>
