@@ -1069,7 +1069,7 @@ const productLinkingLayout = computed(() => {
 
 .drag-handle {
   color: #d1d5db;
-  cursor: grab;
+  cursor: move;
   font-size: 12px;
 
   &:active {
