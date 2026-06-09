@@ -16,19 +16,11 @@ return [
         ],
         'billing_address' => [
             'name' => 'billing_address',
-            'type' => 'longtext',
+            'type' => 'address',
         ],
         'shipping_address' => [
             'name' => 'shipping_address',
-            'type' => 'longtext',
-        ],
-        'city' => [
-            'name' => 'city',
-            'type' => 'text',
-        ],
-        'country' => [
-            'name' => 'country',
-            'type' => 'text',
+            'type' => 'address',
         ],
     ],
     'contacts' => [
@@ -78,17 +70,9 @@ return [
             'name' => 'company',
             'type' => 'text',
         ],
-        'street' => [
-            'name' => 'street',
-            'type' => 'longtext',
-        ],
-        'city' => [
-            'name' => 'city',
-            'type' => 'text',
-        ],
-        'zip' => [
-            'name' => 'zip',
-            'type' => 'text',
+        'address' => [
+            'name' => 'address',
+            'type' => 'address',
         ],
     ],
     'invoices' => [
@@ -108,25 +92,24 @@ return [
             'name' => 'due_date',
             'type' => 'date',
         ],
-        'currency' => [
-            'name' => 'currency',
-            'type' => 'select',
-        ],
         'subtotal' => [
             'name' => 'subtotal',
-            'type' => 'number',
+            'type' => 'currency',
             'readonly' => true,
-
+        ],
+        'discount' => [
+            'name' => 'discount',
+            'type' => 'currency',
+            'readonly' => true,
         ],
         'tax' => [
             'name' => 'tax',
-            'type' => 'number',
+            'type' => 'currency',
             'readonly' => true,
-
         ],
         'total' => [
             'name' => 'total',
-            'type' => 'number',
+            'type' => 'currency',
             'readonly' => true,
         ],
         'notes' => [
@@ -148,21 +131,25 @@ return [
             'name' => 'valid_until',
             'type' => 'date',
         ],
-        'currency' => [
-            'name' => 'currency',
-            'type' => 'select',
-        ],
         'subtotal' => [
             'name' => 'subtotal',
-            'type' => 'number',
+            'type' => 'currency',
+            'readonly' => true,
+        ],
+        'discount' => [
+            'name' => 'subtotal',
+            'type' => 'currency',
+            'readonly' => true,
         ],
         'tax' => [
             'name' => 'tax',
-            'type' => 'number',
+            'type' => 'currency',
+            'readonly' => true,
         ],
         'total' => [
             'name' => 'total',
-            'type' => 'number',
+            'type' => 'currency',
+            'readonly' => true,
         ],
         'notes' => [
             'name' => 'notes',
@@ -221,13 +208,7 @@ return [
     'deals' => [
         'amount' => [
             'name' => 'amount',
-            'type' => 'text',
-        ],
-        'currency' => [
-            'name' => 'currency',
-            'type' => 'select',
-            'required' => true,
-
+            'type' => 'currency',
         ],
         'sales_stage' => [
             'name' => 'sales_stage',
@@ -257,7 +238,7 @@ return [
         ],
         'price' => [
             'name' => 'price',
-            'type' => 'number',
+            'type' => 'currency',
         ],
 
         'unit' => [
@@ -282,11 +263,7 @@ return [
         ],
         'total_amount' => [
             'name' => 'total_amount',
-            'type' => 'number',
-        ],
-        'currency' => [
-            'name' => 'currency',
-            'type' => 'select',
+            'type' => 'currency',
         ],
         'status' => [
             'name' => 'status',

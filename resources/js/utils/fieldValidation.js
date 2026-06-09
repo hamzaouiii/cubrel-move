@@ -131,6 +131,20 @@ const relatedValidate = (value) => {
   return uuidRegex.test(value);
 };
 
+// Address: valid when all present sub-values are non-empty strings
+const addressValidate = (value) => {
+  if (!value) return true;
+  return Object.values(value).every(
+    (v) => v === null || v === undefined || v === "" || typeof v === "string",
+  );
+};
+
+const currencyValidate = (value) => {
+  if (value === null || value === "" || value === undefined) return true;
+  const num = parseFloat(value);
+  return !isNaN(num) && num >= 0;
+};
+
 export function fieldValidation() {
   return {
     emailValidate,
@@ -142,5 +156,7 @@ export function fieldValidation() {
     integerValidate,
     decimalValidate,
     relatedValidate,
+    addressValidate,
+    currencyValidate,
   };
 }

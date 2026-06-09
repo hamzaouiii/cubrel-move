@@ -138,6 +138,7 @@ return [
             'street' => 'Street',
             'city' => 'City',
             'zip' => 'ZIP Code',
+            'address' => 'Address',
             'description' => 'Description',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -161,7 +162,7 @@ return [
         'fields' => [
             'id' => 'ID',
             'name' => 'Name',
-
+            'discount' => 'Discount',
             'number' => 'Invoice Number',
             'status' => 'Status',
             'issue_date' => 'Issue Date',
@@ -182,7 +183,7 @@ return [
         'fields' => [
             'id' => 'ID',
             'name' => 'Name',
-
+            'discount' => 'Discount',
             'number' => 'Quote Number',
             'status' => 'Status',
             'valid_until' => 'Valid Until',
@@ -335,6 +336,13 @@ return [
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ],
+    ],
+    'address' => [
+        'street'      => 'Street',
+        'postal_code' => 'Postal Code',
+        'city'        => 'City',
+        'state'       => 'State / Region',
+        'country'     => 'Country',
     ],
     'update' => [
         'description' => 'Select records to update',

@@ -151,14 +151,6 @@ const handleInputChange = (event) => {
         v-if="modelValue !== null && modelValue !== ''"
       >
         <span class="percentage-value">{{ formatPercentage(modelValue) }}</span>
-        <div class="percentage-bar-container">
-          <div
-            class="percentage-bar"
-            :style="{
-              width: `${Math.min(100, Math.max(0, parseFloat(modelValue)))}%`,
-            }"
-          ></div>
-        </div>
       </div>
       <div v-else>—</div>
     </div>

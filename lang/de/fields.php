@@ -33,6 +33,8 @@ return [
     'decimal' => 'Dezimalzahl',
     'record' => 'Datensatz',
     'status' => 'Status',
+    'address' => 'Addresse',
+
   ],
   'metadata' => [
     'name' => 'Name',

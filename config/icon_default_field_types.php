@@ -69,4 +69,9 @@ return [
         'value' => 'status',
         'icon'  => 'fa-solid fa-signal'
     ],
+        [
+        'value' => 'address',
+        'icon'  => 'fa-solid fa-location-dot'
+        
+    ],
 ];

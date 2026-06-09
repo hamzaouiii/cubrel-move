@@ -16,7 +16,8 @@ return [
   'integer',
   'decimal',
   'record',
-  'status'
+  'status',
+  'address',
 ];
 
 // for reference

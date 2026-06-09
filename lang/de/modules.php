@@ -17,6 +17,14 @@ return [
     ],
     'selectdrawer' => ['select' => 'Wähle'],
 
+    'address' => [
+        'street'      => 'Straße',
+        'postal_code' => 'Postleitzahl',
+        'city'        => 'Stadt',
+        'state'       => 'Bundesland / Region',
+        'country'     => 'Land',
+    ],
+
     'defaults' => [
         'name' => 'Name',
         'created_at' => 'Erstellt am',
@@ -155,6 +163,7 @@ return [
             'street' => 'Straße',
             'city' => 'Stadt',
             'zip' => 'PLZ',
+            'address' => 'Addresse',
             'description' => 'Beschreibung',
             'created_at' => 'Erstellt am',
             'updated_at' => 'Aktualisiert am',
@@ -179,6 +188,7 @@ return [
             'id' => 'ID',
             'name' => 'Name',
             'number' => 'Rechnungsnummer',
+            'discount' => 'Rabatt',
             'status' => 'Status',
             'issue_date' => 'Rechnungsdatum',
             'due_date' => 'Fälligkeitsdatum',
@@ -199,6 +209,7 @@ return [
             'name' => 'Name',
             'number' => 'Angebotsnummer',
             'status' => 'Status',
+            'discount' => 'Rabatt',
             'valid_until' => 'Gültig bis',
             'currency' => 'Währung',
             'subtotal' => 'Zwischensumme',

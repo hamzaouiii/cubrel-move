@@ -11,6 +11,8 @@ import IntegerField from "@/Pages/Components/FiledTypes/IntegerField.vue";
 import DecimalField from "@/Pages/Components/FiledTypes/DecimalField.vue";
 import RelatedRecord from "@/Pages/Components/FiledTypes/RelatedRecord.vue";
 import StatusField from "@/Pages/Components/FiledTypes/StatusField.vue";
+import AddressField from "@/Pages/Components/FiledTypes/AddressField.vue";
+import CurrencyField from "@/Pages/Components/FiledTypes/CurrencyField.vue";
 
 import { fieldValidation } from "@/utils/fieldValidation";
 const {
@@ -22,6 +24,8 @@ const {
   decimalValidate,
   integerValidate,
   relatedValidate,
+  addressValidate,
+  currencyValidate,
 } = fieldValidation();
 
 export const fieldRegistry = {
@@ -88,5 +92,14 @@ export const fieldRegistry = {
   status: {
     component: StatusField,
     validate: defaultValidate,
+  },
+  address: {
+    component: AddressField,
+    validate: addressValidate,
+    isComposite: true,
+  },
+  currency: {
+    component: CurrencyField,
+    validate: currencyValidate,
   },
 };

@@ -34,6 +34,7 @@ return [
     'decimal' => 'Decimal',
     'record' => 'Related Record',
     'status' => 'Status',
+    'address' => 'Address',
   ],
   'metadata' => [
     'name' => 'System Name',

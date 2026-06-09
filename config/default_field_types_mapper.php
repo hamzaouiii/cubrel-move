@@ -16,4 +16,6 @@ return [
   'url' => 'string',
   'percentage' => 'decimal',
   'record'  => 'string',
+  'address' => 'json',
+  'currency' => 'decimal',
 ];
