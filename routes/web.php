@@ -12,6 +12,7 @@ use App\Http\Controllers\ListController;
 use App\Http\Controllers\ModuleBuilderController;
 use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\ModuleManagerController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\RelatedFieldController;
 use App\Http\Controllers\RelationshipLinkController;
@@ -154,6 +155,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single-link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single-link');
     Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
+    Route::get('/{module}/{recordId}/pdf', [PdfController::class, 'generate'])->name('modules.record.pdf');
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
     Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');
