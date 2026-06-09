@@ -85,12 +85,14 @@ return [
         'email' => 'Email Settings',
         'system' => 'System Settings',
         'users' => 'User Management',
+        'company'        => 'Company',
         'customisations' => 'Customisations',
         'description' => [
             'email' => 'Manage outbound and inbound emails. The email settings must be configured in order to enable users to send out email and newsletter campaigns.',
             'system' => 'Configure the system-wide settings according to the specifications of your organization.',
-            'users' => 'Create, edit, activate, and deactivate users in AR-CRM. Create and manage teams and roles, including module- and field-level access.',
+            'users' => 'Invite and manage users in Cubrel.',
             'customisations' => 'Create and manage Modules, Layouts, Fields, and Relationships.',
+            'company'        => 'Manage your organization\'s identity shown on generated documents.',
         ],
     ],
     'items' => [
@@ -112,6 +114,7 @@ return [
         'system_email_settings' => 'System Email Settings',
         'dropdowns' => 'Dropdown Editor',
         'preferences' => 'Preferences',
+         'company_info'        => 'Company Info',
     ],
     'dropdown' => [
         'create' => 'Create new dropdown list',

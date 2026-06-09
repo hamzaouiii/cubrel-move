@@ -84,7 +84,7 @@ onBeforeUnmount(() =>
     >
       <i class="fa-solid fa-circle-info"></i>
     </button>
-    <span v-show="visible" class="explain-tip__popover" role="tooltip">
+    <span v-show="visible" class="explain-tip__popover" role="tooltip" style="text-align: left;">
       {{ text }}
     </span>
   </span>

@@ -714,7 +714,7 @@ $error-color: #ef4444;
     display: flex;
     align-items: center;
     justify-content: center;
-
+    margin: 0 5px;
     &:hover:not(.selected) {
       color: #333;
       background-color: rgba(0, 0, 0, 0.05);
@@ -725,7 +725,6 @@ $error-color: #ef4444;
     color: white;
     background-color: var(--primary-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    // Optional: Subtle scale up without moving neighbors
     transform: scale(1.02);
   }
 }

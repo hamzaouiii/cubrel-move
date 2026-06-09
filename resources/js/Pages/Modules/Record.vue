@@ -32,8 +32,9 @@ const props = defineProps({
   overviewLayout: Object,
   relatedLayout: Object,
   fields: Object,
-  lineItemFields: { type: Array, default: () => [] },
-  productFields: { type: Array, default: () => [] },
+  lineItemFields: Array,
+  productFields: Array,
+  hasPdfTemplate: Boolean,
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -243,6 +244,10 @@ const saveRecord = () => {
         error(t("modules.actions.update_error") + form.errors);
       },
     });
+};
+
+const openPdf = () => {
+  window.open(`/${props.module.slug}/${props.record.id}/pdf`, "_blank");
 };
 
 const deleteRecord = async () => {
@@ -488,16 +493,11 @@ const getLinkingLayout = (slug) => {
                   <span>{{ $t("modules.actions.export") }}</span>
                 </li>
                 <li
-                  class="record-layout__header__details__actions__edit__dropdown__item"
-                >
-                  <i class="fa-solid fa-hourglass-end"></i>
-                  <span>{{ $t("modules.actions.placeholder") }}</span>
-                </li>
-                <li
+                  @click="openPdf()"
                   class="record-layout__header__details__actions__edit__dropdown__item"
                 >
                   <i class="fa-solid fa-file-pdf"></i>
-                  <span>{{ $t("modules.actions.bulk_action") }}</span>
+                  <span>Print as PDF</span>
                 </li>
                 <li
                   @click="deleteRecord()"
