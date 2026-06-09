@@ -87,7 +87,7 @@ return [
         'description' => [
             'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
-            'users' => 'Erstelle, bearbeite, aktiviere und deaktiviere Benutzer. Erstelle und verwalte Teams und Rollen, einschließlich Modul und Feldebene Zugriffsrechte.',
+            'users' => 'Laden Sie Benutzer in Cubrel ein und verwalten Sie sie.',
             'customisations' => 'Erstelle und verwalte Module, Layouts, Felder und Beziehungen.',
             'company' => 'Verwalten Sie die Identität Ihres Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
         ],
