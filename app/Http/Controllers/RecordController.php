@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use App\Models\PdfTemplate;
 
 class RecordController extends Controller
 {
@@ -81,6 +82,7 @@ class RecordController extends Controller
             'lineItemFields' => $lineItemFields,
             'productFields' => $productFields,
         ], $props));
+
     }
 
     public function create(string $module)

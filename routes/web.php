@@ -15,6 +15,7 @@ use App\Http\Controllers\ModuleManagerController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\RelatedFieldController;
+use App\Http\Controllers\Settings\PdfTemplatesController;
 use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
 use App\Http\Controllers\SearchController;
@@ -67,6 +68,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/invites/{invite}', [InviteController::class, 'destroy'])->name('invites.destroy');
 
         Route::prefix('settings')->name('settings.')->group(function () {
+            // PDF Templates
+            Route::get('pdf-templates', [PdfTemplatesController::class, 'index'])
+                ->name('pdf-templates.index');
+            Route::post('pdf-templates/{template}/default', [PdfTemplatesController::class, 'setDefault'])
+                ->name('pdf-templates.setDefault');
+
 
             // Module manager
             Route::resource('modules', ModuleManagerController::class)
