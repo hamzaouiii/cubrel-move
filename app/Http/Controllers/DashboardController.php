@@ -73,12 +73,11 @@ class DashboardController extends Controller
         return Order::where('owner_id', $user->id)
             ->latest('order_date')
             ->limit(5)
-            ->get(['id','order_number', 'total_amount', 'currency', 'status', 'order_date'])
+            ->get(['id','order_number', 'total_amount', 'status', 'order_date'])
             ->map(fn (Order $o) => [
                 'id' => $o->id,
                 'order_number' => $o->order_number,
                 'total_amount' => (float) $o->total_amount,
-                'currency'     => $o->currency ?? 'EUR',
                 'status'       => $this->getItemforValue($dropdown_list, $o->status),
                 'date'         => $o->order_date,
             ])

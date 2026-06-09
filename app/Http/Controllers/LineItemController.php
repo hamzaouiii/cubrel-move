@@ -28,18 +28,18 @@ class LineItemController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'parent_type' => ['required', 'string'],
-            'parent_id'   => ['required', 'uuid'],
-            'product_id'  => ['nullable', 'uuid'],
-            'name'        => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'unit'        => ['nullable', 'string', 'max:255'],
+            'parent_type'          => ['required', 'string'],
+            'parent_id'            => ['required', 'uuid'],
+            'product_id'           => ['nullable', 'uuid'],
+            'name'                 => ['required', 'string', 'max:255'],
+            'description'          => ['nullable', 'string'],
+            'unit'                 => ['nullable', 'string', 'max:255'],
             'unit_price'  => ['required', 'numeric', 'min:0'],
-            'quantity'    => ['required', 'numeric', 'min:0'],
-            'discount'    => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'tax_rate'    => ['nullable', 'numeric', 'min:0'],
-            'note'        => ['nullable', 'string', 'max:1000'],
-            'sort_order'  => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'quantity'             => ['required', 'numeric', 'min:0'],
+            'discount'             => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'tax_rate'             => ['nullable', 'numeric', 'min:0'],
+            'note'                 => ['nullable', 'string', 'max:1000'],
+            'sort_order'           => ['nullable', 'integer', 'min:0', 'max:65535'],
         ]);
 
         $item = new LineItem($data);
@@ -52,16 +52,16 @@ class LineItemController extends Controller
     public function update(Request $request, LineItem $lineItem): JsonResponse
     {
         $data = $request->validate([
-            'product_id'  => ['nullable', 'uuid'],
-            'name'        => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'unit'        => ['nullable', 'string', 'max:255'],
+            'product_id'           => ['nullable', 'uuid'],
+            'name'                 => ['required', 'string', 'max:255'],
+            'description'          => ['nullable', 'string'],
+            'unit'                 => ['nullable', 'string', 'max:255'],
             'unit_price'  => ['required', 'numeric', 'min:0'],
-            'quantity'    => ['required', 'numeric', 'min:0'],
-            'discount'    => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'tax_rate'    => ['nullable', 'numeric', 'min:0'],
-            'note'        => ['nullable', 'string', 'max:1000'],
-            'sort_order'  => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'quantity'             => ['required', 'numeric', 'min:0'],
+            'discount'             => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'tax_rate'             => ['nullable', 'numeric', 'min:0'],
+            'note'                 => ['nullable', 'string', 'max:1000'],
+            'sort_order'           => ['nullable', 'integer', 'min:0', 'max:65535'],
         ]);
 
         $lineItem->fill($data);
