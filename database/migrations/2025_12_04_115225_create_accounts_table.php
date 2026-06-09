@@ -18,10 +18,8 @@ return new class extends Migration
       $table->string('website')->nullable();
       $table->string('email')->nullable();
       $table->string('phone')->nullable();
-      $table->string('billing_address')->nullable();
-      $table->string('shipping_address')->nullable();
-      $table->string('city')->nullable();
-      $table->string('country')->nullable();
+      $table->json('billing_address')->nullable();
+      $table->json('shipping_address')->nullable();
       $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
       $table->index('owner_id');
       $table->timestamps();

@@ -35,10 +35,20 @@ class AccountFactory extends factory
       'website' => $faker->optional(0.8)->url(), // 80% chance of having a website
       'email' => $faker->optional(0.9)->safeEmail(), // 90% chance of having email
       'phone' => $faker->optional(0.7)->phoneNumber(), // 70% chance of having phone
-      'billing_address' => $faker->optional(0.9)->streetAddress(), // 90% chance
-      'shipping_address' => $faker->optional(0.5)->streetAddress(),
-      'city' => $faker->optional(0.9)->city(),
-      'country' => $faker->optional(0.9)->country(),
+      'billing_address' => $faker->boolean(90) ? [
+        'street'      => $faker->streetAddress(),
+        'postal_code' => $faker->postcode(),
+        'city'        => $faker->city(),
+        'state'       => null,
+        'country'     => $faker->country(),
+      ] : null,
+      'shipping_address' => $faker->boolean(50) ? [
+        'street'      => $faker->streetAddress(),
+        'postal_code' => $faker->postcode(),
+        'city'        => $faker->city(),
+        'state'       => null,
+        'country'     => $faker->country(),
+      ] : null,
       'description' => $faker->realText(150),
       'created_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-2 years', 'now'))->utc(),
       'updated_at' => \Carbon\Carbon::instance($faker->dateTimeBetween('-1 year', 'now'))->utc(),

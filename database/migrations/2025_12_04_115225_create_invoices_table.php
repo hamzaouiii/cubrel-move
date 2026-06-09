@@ -19,9 +19,9 @@ return new class extends Migration
       $table->string('status')->default('draft');
       $table->date('issue_date')->nullable();
       $table->date('due_date')->nullable();
-      $table->string('currency', 3)->default('EUR');
       $table->decimal('subtotal', 15)->default(0);
       $table->decimal('tax', 15)->default(0);
+      $table->decimal('discount', 15)->default(0);
       $table->decimal('total', 15)->default(0);
       $table->text('notes')->nullable();
             $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();

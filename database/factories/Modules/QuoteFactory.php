@@ -37,9 +37,7 @@ class QuoteFactory extends Factory
       ]),
 
       'valid_until' => ($d = $this->faker->optional()->dateTimeBetween('now', '+30 days')) ? \Carbon\Carbon::instance($d)->utc() : null,
-
-      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
-
+      'discount' => 0,
       'subtotal' => $subtotal,
       'tax'      => $tax,
       'total'    => $total,

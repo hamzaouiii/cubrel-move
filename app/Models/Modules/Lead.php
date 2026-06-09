@@ -2,15 +2,10 @@
 
 namespace App\Models\Modules;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModule;
 
 class Lead extends BaseModule
 {
-  use HasUuids, HasFactory;
-
   protected $fillable = [
     'name',
     'first_name',
@@ -18,22 +13,20 @@ class Lead extends BaseModule
     'email',
     'phone',
     'company',
-    'street',
-    'city',
-    'zip',
+    'address',
     'description',
-    'owner_id'
+    'owner_id',
   ];
-     public function toSearchResult(): array
-    {
-        return array_merge(parent::toSearchResult(), [
-            'label'    => $this->name,
-            'sublabel' => $this->email,
-        ]);
-    }
 
-  protected $keyType = 'string';
-  public $incrementing = false;
+  public function getCasts(): array
+  {
+    return [...parent::getCasts(), 'address' => 'array'];
+  }
+
+  public function toSearchResult(): array
+  {
+    return [...parent::toSearchResult(), 'label' => $this->name, 'sublabel' => $this->email];
+  }
 
   protected static function booted(): void
   {
@@ -41,7 +34,7 @@ class Lead extends BaseModule
 
     static::saving(function ($lead) {
       if ($lead->isDirty('first_name') || $lead->isDirty('last_name')) {
-        $lead->name = trim($lead->first_name . ' ' . $lead->last_name);
+        $lead->name = trim("{$lead->first_name} {$lead->last_name}");
       }
     });
   }

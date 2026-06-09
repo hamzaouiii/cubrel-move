@@ -26,17 +26,21 @@ class LineItem extends BaseModule
         'note',
     ];
 
-    protected $casts = [
-        'unit_price' => 'decimal:4',
-        'quantity' => 'decimal:4',
-        'discount' => 'decimal:2',
-        'tax_rate' => 'decimal:2',
-        'subtotal' => 'decimal:4',
-        'discount_amount' => 'decimal:4',
-        'tax_amount' => 'decimal:4',
-        'total' => 'decimal:4',
-        'sort_order' => 'integer',
-    ];
+    public function getCasts(): array
+    {
+        return [
+            ...parent::getCasts(),
+            'unit_price'      => 'decimal:4',
+            'quantity'        => 'decimal:4',
+            'discount'        => 'decimal:2',
+            'tax_rate'        => 'decimal:2',
+            'subtotal'        => 'decimal:4',
+            'discount_amount' => 'decimal:4',
+            'tax_amount'      => 'decimal:4',
+            'total'           => 'decimal:4',
+            'sort_order'      => 'integer',
+        ];
+    }
 
 
     public function parent(): MorphTo
@@ -52,18 +56,18 @@ class LineItem extends BaseModule
     public function calculateTotals(): static
     {
         $unitPrice = (float) ($this->unit_price ?? 0);
-        $quantity = (float) ($this->quantity ?? 0);
-        $discount = (float) ($this->discount ?? 0);
-        $taxRate = (float) ($this->tax_rate ?? 0);
+        $quantity  = (float) ($this->quantity ?? 0);
+        $discount  = (float) ($this->discount ?? 0);
+        $taxRate   = (float) ($this->tax_rate ?? 0);
 
-        $subtotal = $unitPrice * $quantity;
+        $subtotal       = $unitPrice * $quantity;
         $discountAmount = $subtotal * ($discount / 100);
-        $taxAmount = ($subtotal - $discountAmount) * ($taxRate / 100);
+        $taxAmount      = ($subtotal - $discountAmount) * ($taxRate / 100);
 
-        $this->subtotal = $subtotal;
+        $this->subtotal        = $subtotal;
         $this->discount_amount = $discountAmount;
-        $this->tax_amount = $taxAmount;
-        $this->total = $subtotal - $discountAmount + $taxAmount;
+        $this->tax_amount      = $taxAmount;
+        $this->total           = $subtotal - $discountAmount + $taxAmount;
 
         return $this;
     }

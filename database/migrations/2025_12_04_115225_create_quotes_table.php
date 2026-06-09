@@ -18,8 +18,8 @@ return new class extends Migration
       $table->string('number')->unique();
       $table->string('status')->default('draft');
       $table->date('valid_until')->nullable();
-      $table->string('currency', 3)->default('EUR');
       $table->decimal('subtotal', 15)->default(0);
+      $table->decimal('discount', 15)->default(0);
       $table->decimal('tax', 15)->default(0);
       $table->decimal('total', 15)->default(0);
       $table->text('notes')->nullable();

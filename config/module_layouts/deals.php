@@ -26,7 +26,7 @@ return array(
       3 =>
       array(
         'name' => 'amount',
-        'type' => 'text',
+        'type' => 'currency',
         'label' => 'modules.deals.fields.amount',
       ),
       4 =>
@@ -98,16 +98,10 @@ return array(
           0 =>
           array(
             'name' => 'amount',
-            'type' => 'text',
+            'type' => 'currency',
             'label' => 'modules.deals.fields.amount',
           ),
           1 =>
-          array(
-            'name' => 'currency',
-            'type' => 'text',
-            'label' => 'modules.deals.fields.currency',
-          ),
-          2 =>
           array(
             'name' => 'probability',
             'type' => 'percentage',
@@ -320,7 +314,7 @@ return array(
               2 =>
               array(
                 'name' => 'price',
-                'type' => 'number',
+                'type' => 'currency',
                 'label' => 'modules.products.fields.price',
               ),
               3 =>
@@ -359,7 +353,7 @@ return array(
               2 =>
               array(
                 'name' => 'total_amount',
-                'type' => 'number',
+                'type' => 'currency',
                 'label' => 'modules.orders.fields.total_amount',
               ),
               3 =>
@@ -411,7 +405,7 @@ return array(
       4 =>
       array(
         'name' => 'amount',
-        'type' => 'text',
+        'type' => 'currency',
         'label' => 'modules.deals.fields.amount',
       ),
       5 =>
@@ -419,12 +413,6 @@ return array(
         'name' => 'sales_stage',
         'type' => 'select',
         'label' => 'modules.deals.fields.sales_stage',
-      ),
-      6 =>
-      array(
-        'name' => 'currency',
-        'type' => 'text',
-        'label' => 'modules.deals.fields.currency',
       ),
     ),
   ),

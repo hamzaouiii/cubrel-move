@@ -21,15 +21,15 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('unit')->nullable();
-            $table->decimal('unit_price', 15, 4)->default(0);
+            $table->decimal('unit_price', 15, 4)->nullable();
             $table->decimal('quantity', 15, 4)->default(1);
             $table->decimal('discount', 5, 2)->nullable();
             $table->decimal('tax_rate', 5, 2)->default(0);
 
-            $table->decimal('subtotal', 15, 4)->default(0);
+            $table->decimal('subtotal', 15, 4)->nullable();
             $table->decimal('discount_amount', 15, 4)->nullable();
-            $table->decimal('tax_amount', 15, 4)->default(0);
-            $table->decimal('total', 15, 4)->default(0);
+            $table->decimal('tax_amount', 15, 4)->nullable();
+            $table->decimal('total', 15, 4)->nullable();
 
             $table->unsignedSmallInteger('sort_order')->default(0);
             $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();

@@ -94,24 +94,14 @@ return [
                 'name' => 'Address',
                 'layout' => [
                     0 => [
-                        'name' => 'country',
-                        'type' => 'text',
-                        'label' => 'modules.accounts.fields.country',
+                        'name' => 'billing_address',
+                        'type' => 'address',
+                        'label' => 'modules.accounts.fields.billing_address',
                     ],
                     1 => [
-                        'name' => 'city',
-                        'type' => 'text',
-                        'label' => 'modules.accounts.fields.city',
-                    ],
-                    2 => [
                         'name' => 'shipping_address',
-                        'type' => 'longtext',
+                        'type' => 'address',
                         'label' => 'modules.accounts.fields.shipping_address',
-                    ],
-                    3 => [
-                        'name' => 'billing_address',
-                        'type' => 'longtext',
-                        'label' => 'modules.accounts.fields.billing_address',
                     ],
                 ],
             ],
@@ -285,7 +275,7 @@ return [
                             ],
                             2 => [
                                 'name' => 'amount',
-                                'type' => 'text',
+                                'type' => 'currency',
                                 'label' => 'modules.deals.fields.amount',
                             ],
                             3 => [
@@ -349,7 +339,7 @@ return [
                             ],
                             3 => [
                                 'name' => 'total_amount',
-                                'type' => 'number',
+                                'type' => 'currency',
                                 'label' => 'modules.orders.fields.total_amount',
                             ],
                             4 => [
