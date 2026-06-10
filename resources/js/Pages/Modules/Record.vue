@@ -532,7 +532,7 @@ const getLinkingLayout = (slug) => {
       </div>
     </div>
     <div class="record-layout__scroll">
-      <div v-if="currentTab !== 'related'" class="record-layout__sections">
+      <div v-show="currentTab !== 'related'" class="record-layout__sections">
         <div
           class="record-layout__sections__item"
           v-for="s in overviewLayout.sections"
@@ -546,7 +546,6 @@ const getLinkingLayout = (slug) => {
               :parent-id="record.id"
               :parent-type="module.slug"
               :mode="mode"
-              :currency="record.currency ?? ''"
               :module-color="module_color"
               :product-fields="productFields"
               :line-item-fields="lineItemFields"
@@ -596,7 +595,7 @@ const getLinkingLayout = (slug) => {
       </div>
 
       <div
-        v-else-if="currentTab === 'related'"
+        v-show="currentTab === 'related'"
         class="record-layout__subpanels"
       >
         <PanelList

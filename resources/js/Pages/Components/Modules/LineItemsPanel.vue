@@ -11,7 +11,6 @@ const props = defineProps({
   parentId: { type: String, required: true },
   parentType: { type: String, required: true },
   mode: { type: String, default: "detail" },
-  currency: { type: String, default: "" },
   moduleColor: { type: String, default: "var(--module-color)" },
   productFields: { type: Array, default: () => [] },
   lineItemFields: { type: Array, default: () => [] },
@@ -411,6 +410,7 @@ const page = usePage();
 const allModules = computed(() => page.props.modules);
 const allLayouts = computed(() => page.props.layouts);
 const appSettings = page.props.appSettings;
+const currency = computed(() => page.props.appSettings?.default_currency ?? "");
 
 const getModule = (slug) => allModules.value.find((m) => m.slug === slug);
 const getIcon = (slug) => getModule(slug)?.icon || "fa-solid fa-user";
