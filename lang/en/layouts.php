@@ -5,8 +5,9 @@ return [
     'record' => 'Record',
     'related' => 'Related Panels',
     'subpanels' => 'Subpanels',
+        'pdf_label' => 'PDF',
+
     'pdf' => [
-        'label' => 'PDF',
         'name' => 'Name',
         'quantity' => 'Quantity',
         'unit' => 'Unit',

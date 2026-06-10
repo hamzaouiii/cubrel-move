@@ -147,7 +147,7 @@ onBeforeUnmount(() => {
       <span class="field-dropdown__selected">
         <i class="field-dropdown__icon" :class="selectedOption?.icon"></i>
 
-        {{ selectedOption?.label ?? $t("settings.select") }}
+        {{ $t(selectedOption?.label) ?? $t("settings.select") }}
       </span>
 
       <i
@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
           >
             <div class="field-dropdown__option-label">
               <i class="field-dropdown__icon" :class="option.icon"></i>
-              {{ option.label }}
+              {{ $t(option.label) }}
             </div>
             <div
               v-if="option.description"

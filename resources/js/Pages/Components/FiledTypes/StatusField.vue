@@ -69,10 +69,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  size: {
-    type: String,
-    default: "default", // 'sm', 'default', 'lg'
-  },
   pillStyle: {
     type: Boolean,
     default: true, // Use pill/badge style vs flat style
@@ -295,18 +291,6 @@ const highlightMatch = (text) => {
     .toString()
     .replace(regex, '<span class="search-highlight">$1</span>');
 };
-
-// Size classes
-const sizeClass = computed(() => {
-  switch (props.size) {
-    case "sm":
-      return "status-field--sm";
-    case "lg":
-      return "status-field--lg";
-    default:
-      return "status-field--default";
-  }
-});
 </script>
 
 <template>
@@ -314,10 +298,11 @@ const sizeClass = computed(() => {
   <div
     v-if="mode === 'edit' || mode === 'settings' || mode === 'module-builder'"
   >
-    <div class="status-field" :class="sizeClass" ref="root">
+    <div class="status-field" ref="root">
       <div
-        class="status-field__control"
+        class=""
         :class="{
+          'status-field__control': !disabled && !readOnly,
           'is-open': isOpen,
           'is-invalid': showError,
           'is-disabled': disabled || readOnly,
@@ -343,6 +328,7 @@ const sizeClass = computed(() => {
               {{ t(selectedOption.label) }}
             </span>
           </div>
+          <span v-else-if="disabled || readOnly">—</span>
           <span v-else class="placeholder">
             {{ t("settings.select") }}
           </span>
@@ -363,6 +349,7 @@ const sizeClass = computed(() => {
           ></i>
 
           <i
+            v-if="!disabled && !readOnly"
             class="status-field__chevron fa-solid"
             :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"
           ></i>
@@ -442,37 +429,46 @@ const sizeClass = computed(() => {
 
   <!-- Detail Mode -->
   <div v-else-if="mode === 'detail'">
-    <div class="status-field status-field--detail" :class="sizeClass">
+    <div class="status-field status-field--detail display-field">
+      <i class="status-detail-icon fa-solid fa-tag"></i>
+
       <div
+        class="status-detail-content"
         v-if="selectedOption && selectedOption.value !== null"
-        class="status-badge"
-        :class="{
-          'status-badge--pill': pillStyle,
-          'status-badge--flat': !pillStyle,
-          'status-badge--clickable': !readOnly,
-        }"
-        :style="getStatusStyle(selectedOption)"
-        @click="!readOnly && toggle()"
       >
-        <i
-          v-if="showIcon && selectedOption.icon"
-          :class="[selectedOption.icon, 'status-icon']"
-          :style="{ color: selectedOption.color }"
-        ></i>
-        <span class="status-label">
-          {{ t(selectedOption.label) }}
-        </span>
+        <div
+          class="status-badge"
+          :class="{
+            'status-badge--pill': pillStyle,
+            'status-badge--flat': !pillStyle,
+            'status-badge--clickable': !readOnly,
+          }"
+          :style="getStatusStyle(selectedOption)"
+          @click="!readOnly && toggle()"
+        >
+          <i
+            v-if="showIcon && selectedOption.icon"
+            :class="[selectedOption.icon, 'status-icon']"
+            :style="{ color: selectedOption.color }"
+          ></i>
+          <span class="status-label">
+            {{ t(selectedOption.label) }}
+          </span>
+        </div>
       </div>
-      <span v-else class="field-empty">—</span>
+
+      <div v-else class="status-empty">
+        <span>—</span>
+      </div>
     </div>
   </div>
 
-  <!-- Table Mode -->
+  <!-- Table Mode - Original styling restored -->
   <div v-else-if="mode === 'table'">
     <div class="status-field status-field--table">
       <div
         v-if="selectedOption && selectedOption.value !== null"
-        class="status-badge status-badge--sm"
+        class="status-badge status-badge"
         :class="{ 'status-badge--pill': pillStyle }"
         :style="getStatusStyle(selectedOption)"
       >

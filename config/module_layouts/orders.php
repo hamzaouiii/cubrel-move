@@ -26,20 +26,14 @@ return array(
       ),
       3 =>
       array(
-        'name' => 'currency',
-        'type' => 'select',
-        'label' => 'modules.orders.fields.currency',
-      ),
-      4 =>
-      array(
         'name' => 'due_date',
         'type' => 'date',
         'label' => 'modules.orders.fields.due_date',
       ),
-      5 =>
+      4 =>
       array(
         'name' => 'total_amount',
-        'type' => 'number',
+        'type' => 'currency',
         'label' => 'modules.orders.fields.total_amount',
       ),
       6 =>
@@ -101,16 +95,8 @@ return array(
           3 =>
           array(
             'name' => 'total_amount',
-            'type' => 'number',
+            'type' => 'currency',
             'label' => 'modules.orders.fields.total_amount',
-            'readonly' => false,
-            'required' => false,
-          ),
-          4 =>
-          array(
-            'name' => 'currency',
-            'type' => 'select',
-            'label' => 'modules.orders.fields.currency',
             'readonly' => false,
             'required' => false,
           ),
@@ -197,20 +183,6 @@ return array(
               ),
               1 =>
               array(
-                'name' => 'country',
-                'type' => 'text',
-                'label' => 'modules.accounts.fields.country',
-                'sortable' => false,
-              ),
-              2 =>
-              array(
-                'name' => 'city',
-                'type' => 'text',
-                'label' => 'modules.accounts.fields.city',
-                'sortable' => false,
-              ),
-              3 =>
-              array(
                 'name' => 'website',
                 'type' => 'url',
                 'label' => 'modules.accounts.fields.website',
@@ -285,7 +257,7 @@ return array(
               2 =>
               array(
                 'name' => 'amount',
-                'type' => 'text',
+                'type' => 'currency',
                 'label' => 'modules.deals.fields.amount',
                 'sortable' => false,
               ),
@@ -297,13 +269,6 @@ return array(
                 'sortable' => false,
               ),
               4 =>
-              array(
-                'name' => 'currency',
-                'type' => 'select',
-                'label' => 'modules.deals.fields.currency',
-                'sortable' => false,
-              ),
-              5 =>
               array(
                 'name' => 'type',
                 'type' => 'select',
@@ -342,15 +307,8 @@ return array(
               ),
               3 =>
               array(
-                'name' => 'currency',
-                'type' => 'select',
-                'label' => 'modules.products.fields.currency',
-                'sortable' => false,
-              ),
-              4 =>
-              array(
                 'name' => 'price',
-                'type' => 'number',
+                'type' => 'currency',
                 'label' => 'modules.products.fields.price',
                 'sortable' => false,
               ),
@@ -387,7 +345,7 @@ return array(
       2 =>
       array(
         'name' => 'total_amount',
-        'type' => 'number',
+        'type' => 'currency',
         'label' => 'modules.orders.fields.total_amount',
       ),
       3 =>

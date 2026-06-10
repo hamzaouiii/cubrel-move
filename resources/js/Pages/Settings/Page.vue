@@ -8,6 +8,7 @@ import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
 import SettingsLink from "../Components/Settings/SettingsLink.vue";
+import ExplainTip from "../Components/Globals/ExplainTip.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -23,7 +24,9 @@ const props = defineProps({
   dateFormatOptions: { type: Array, default: [] },
   datetimeFormatOptions: { type: Array, default: [] },
   timezoneOptions: { type: Array, default: [] },
+  currencyOptions: { type: Array, default: [] },
 });
+
 const appSettings = usePage().props.appSettings;
 
 const normalizedValues = props.values.map((v) => ({
@@ -46,6 +49,7 @@ const inputTypeFor = (type) => {
   if (type === "date") return "date";
   if (type === "datetime") return "datetime";
   if (type === "timezone") return "timezone";
+  if (type === "currency") return "currency";
   return "text";
 };
 
@@ -92,7 +96,11 @@ const isDirty = () => form.isDirty;
           :key="i.id || i.key || index"
           class="settings__system__form__field"
         >
-          <label> {{ $t(i.label) }}</label>
+          <label v-if="inputTypeFor(i.type) === 'currency'">
+            {{ $t(i.label) }}
+            <ExplainTip :text="$t('settings.currency_hint')"></ExplainTip>
+          </label>
+          <label v-else> {{ $t(i.label) }}</label>
           <div class="settings__system__form__field__content">
             <template v-if="i.type === 'bool'">
               <Checkbox
@@ -118,6 +126,12 @@ const isDirty = () => form.isDirty;
               <DropdownField
                 v-model="form.values[index].value"
                 :options="timezoneOptions"
+              />
+            </template>
+            <template v-else-if="inputTypeFor(i.type) === 'currency'">
+              <DropdownField
+                v-model="form.values[index].value"
+                :options="currencyOptions"
               />
             </template>
             <template v-else-if="inputTypeFor(i.type) === 'lang_switcher'">

@@ -7,22 +7,23 @@ use App\Models\BaseModule;
 class Order extends BaseModule
 {
   protected $table = 'orders';
-protected $fillable = [
+  protected $fillable = [
     'name',
     'owner_id',
     'order_number',
     'total_amount',
-    'currency',
     'status',
     'order_date',
     'due_date',
-];
-     public function toSearchResult(): array
-    {
-        return array_merge(parent::toSearchResult(), [
-            'label'    => $this->name,
-            'sublabel' => $this->number,
-        ]);
-    }
+  ];
+
+  public function getCasts(): array
+  {
+    return [...parent::getCasts(), 'total_amount' => 'decimal:2'];
+  }
+  public function toSearchResult(): array
+  {
+    return [...parent::toSearchResult(), 'label' => $this->name, 'sublabel' => $this->order_number];
+  }
   protected $guarded = [];
 }

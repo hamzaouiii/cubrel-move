@@ -66,21 +66,26 @@ return [
                         'label' => 'modules.leads.fields.company',
                     ],
                     4 => [
+                        'name' => 'address',
+                        'type' => 'address',
+                        'label' => 'modules.leads.fields.address',
+                    ],
+                    5 => [
                         'name' => 'description',
                         'type' => 'longText',
                         'label' => 'modules.defaults.description',
                     ],
-                    5 => [
+                    6 => [
                         'name' => 'owner_id',
                         'type' => 'record',
                         'label' => 'modules.defaults.owner_id',
                     ],
-                    6 => [
+                    7 => [
                         'name' => 'created_at',
                         'type' => 'datetime',
                         'label' => 'modules.defaults.created_at',
                     ],
-                    7 => [
+                    8 => [
                         'name' => 'updated_at',
                         'type' => 'datetime',
                         'label' => 'modules.defaults.updated_at',

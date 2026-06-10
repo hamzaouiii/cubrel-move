@@ -39,9 +39,8 @@ class InvoiceFactory extends Factory
       'issue_date' => $this->faker->optional()->date(),
       'due_date'   => $this->faker->optional()->date(),
 
-      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
-
       'subtotal' => $subtotal,
+      'discount' => 0,
       'tax'      => $tax,
       'total'    => $total,
 

@@ -109,9 +109,13 @@ const handleInputChange = (event) => {
 </script>
 
 <template>
-  <div v-if="mode === 'edit'">
+  <div v-if="readOnly" class="percentage-field--readonly">
+    <i class="percentage-detail-icon fa-solid fa-percent"></i>
+    <span class="percentage-value">{{ formatPercentage(modelValue) }}</span>
+  </div>
+  <div v-else-if="mode === 'edit'">
     <span
-      class="percentage-field percentage-field--edit"
+      class="percentage-field percentage-field--edit edit-field"
       :class="{
         'percentage-field--error': showError,
         'percentage-field--readonly': readOnly,
@@ -139,26 +143,13 @@ const handleInputChange = (event) => {
   </div>
 
   <div v-else-if="mode === 'detail'">
-    <div
-      :class="[
-        'percentage-field percentage-field--detail display-field',
-        { 'percentage-field--readonly': readOnly },
-      ]"
-    >
+    <div :class="['percentage-field percentage-field--detail display-field']">
       <i class="percentage-detail-icon fa-solid fa-percent"></i>
       <div
         class="percentage-detail-content"
         v-if="modelValue !== null && modelValue !== ''"
       >
         <span class="percentage-value">{{ formatPercentage(modelValue) }}</span>
-        <div class="percentage-bar-container">
-          <div
-            class="percentage-bar"
-            :style="{
-              width: `${Math.min(100, Math.max(0, parseFloat(modelValue)))}%`,
-            }"
-          ></div>
-        </div>
       </div>
       <div v-else>—</div>
     </div>

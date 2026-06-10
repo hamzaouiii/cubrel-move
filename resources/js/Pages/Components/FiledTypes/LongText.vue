@@ -83,16 +83,18 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
-  <div v-if="mode === 'edit'">
+  <div v-if="readOnly">
+    {{ modelValue }}
+  </div>
+  <div v-else-if="mode === 'edit'">
     <span
-      class="long-text-field long-text-field--edit"
+      class="long-text-field long-text-field--edit edit-field"
       :class="{
         'long-text-field--error': showError,
         'long-text-field--readonly': readOnly,
       }"
     >
       <div class="long-text-input-wrapper">
-        <i class="long-text-icon fa-regular fa-rectangle-adjust"></i>
         <textarea
           v-model="localValue"
           @input="clearErrors()"

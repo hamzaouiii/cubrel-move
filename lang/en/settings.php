@@ -28,7 +28,7 @@ return [
     'back_to_settings' => 'Back to Settings',
     'search_placeholder' => 'Search settings...',
     'no_results' => 'No settings found',
-
+    'currency_hint' => 'You can add to this list by editing the dropdown list \'currency_list\' in Settings->Dropdown Editor',
     'tabs' => [
         'module_settings' => 'Module Settings',
         'layouts' => 'Layouts',
@@ -80,6 +80,8 @@ return [
         'related_panel_limit' => 'Related Panel Limit',
         'list_view_limit' => 'List View Limit',
         'linking_panel_limit' => 'Linking Panel Limit',
+        'multi_currency_mode' => 'Multi Currency Mode',
+        'default_currency'  => 'Currency',
     ],
     'groups' => [
         'email' => 'Email Settings',

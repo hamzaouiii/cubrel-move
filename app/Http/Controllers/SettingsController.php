@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Settings\Settings;
 use App\Models\Settings\SettingValue;
+use App\Models\DropdownList;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 
@@ -40,6 +41,7 @@ class SettingsController extends Controller
       'dateFormatOptions' => $this->dateFormatOptions($tz),
       'datetimeFormatOptions' => $this->datetimeFormatOptions($tz),
       'timezoneOptions' => $this->timezoneOptions($tz),
+      'currencyOptions' => DropdownList::get('currency_list')->values ?? []
     ]);
   }
 
@@ -127,4 +129,5 @@ class SettingsController extends Controller
       ];
     })->values()->all();
   }
+
 }

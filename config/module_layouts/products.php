@@ -15,7 +15,7 @@ return [
             ],
             2 => [
                 'name' => 'price',
-                'type' => 'number',
+                'type' => 'currency',
                 'label' => 'modules.products.fields.price',
             ],
             3 => [
@@ -146,6 +146,7 @@ return [
                             ],
                         ],
                     ],
+
                 ],
             ],
             1 => [
@@ -182,11 +183,7 @@ return [
                             ],
                         ],
                     ],
-                ],
-            ],
-            2 => [
-                'layout' => [
-                    0 => [
+                                        1 => [
                         'name' => 'orders_products',
                         'type' => 'many-to-many',
                         'label' => 'relationships.orders_products',
@@ -198,7 +195,7 @@ return [
                             ],
                             1 => [
                                 'name' => 'total_amount',
-                                'type' => 'number',
+                                'type' => 'currency',
                                 'label' => 'modules.orders.fields.total_amount',
                             ],
                             2 => [
@@ -221,7 +218,7 @@ return [
             ],
             1 => [
                 'name' => 'price',
-                'type' => 'number',
+                'type' => 'currency',
                 'label' => 'modules.products.fields.price',
             ],
             2 => [

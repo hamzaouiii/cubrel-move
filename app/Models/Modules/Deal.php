@@ -8,26 +8,24 @@ class Deal extends BaseModule
 {
   protected $table = 'deals';
 
-protected $fillable = [
+  protected $fillable = [
     'name',
     'owner_id',
     'amount',
-    'currency',
     'sales_stage',
     'probability',
     'expected_close_date',
     'type',
-];
-   public function toSearchResult(): array
-    {
-        return array_merge(parent::toSearchResult(), [
-            'label'    => $this->name,
-            'sublabel' => $this->probability,
-        ]);
-    }
-protected $moduleCasts  = [
-    'expected_close_date' => 'datetime' ,
+  ];
 
-];
+  public function getCasts(): array
+  {
+    return [...parent::getCasts(), 'amount' => 'decimal:2', 'expected_close_date' => 'datetime'];
+  }
+
+  public function toSearchResult(): array
+  {
+    return [...parent::toSearchResult(), 'label' => $this->name, 'sublabel' => $this->probability];
+  }
   protected $guarded = [];
 }

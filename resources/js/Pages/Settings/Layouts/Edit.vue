@@ -457,7 +457,7 @@ const moduleColor = computed(() =>
 <template>
   <Head>
     <title>
-      {{ $t("layouts." + type + ".label") }} - {{ module.label }} -
+      {{ $t("layouts." + type) }} - {{ module.label }} -
       {{ $t("layouts.label") }} - {{ $t("settings.label") }} - Cubrel
     </title>
   </Head>

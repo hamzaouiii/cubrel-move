@@ -19,7 +19,6 @@ return new class extends Migration
       $table->text('description')->nullable();
 
       $table->decimal('total_amount', 15, 2)->nullable();
-      $table->string('currency', 3)->default('EUR');
 
       $table->string('status')->nullable()->index();
       // draft, confirmed, shipped, completed, cancelled

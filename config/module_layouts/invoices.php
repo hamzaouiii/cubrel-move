@@ -15,7 +15,7 @@ return [
             ],
             2 => [
                 'name' => 'total',
-                'type' => 'number',
+                'type' => 'currency',
                 'label' => 'modules.invoices.fields.total',
             ],
             3 => [
@@ -82,23 +82,23 @@ return [
                 'layout' => [
                     0 => [
                         'name' => 'subtotal',
-                        'type' => 'number',
+                        'type' => 'currency',
                         'label' => 'modules.invoices.fields.subtotal',
                     ],
                     1 => [
                         'name' => 'tax',
-                        'type' => 'number',
+                        'type' => 'currency',
                         'label' => 'modules.invoices.fields.tax',
                     ],
                     2 => [
-                        'name' => 'total',
-                        'type' => 'number',
-                        'label' => 'modules.invoices.fields.total',
+                        'name' => 'discount',
+                        'type' => 'currency',
+                        'label' => 'modules.invoices.fields.discount',
                     ],
                     3 => [
-                        'name' => 'currency',
-                        'type' => 'text',
-                        'label' => 'modules.invoices.fields.currency',
+                        'name' => 'total',
+                        'type' => 'currency',
+                        'label' => 'modules.invoices.fields.total',
                     ],
                 ],
             ],

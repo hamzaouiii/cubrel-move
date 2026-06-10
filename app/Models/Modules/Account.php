@@ -2,7 +2,6 @@
 
 namespace App\Models\Modules;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\BaseModule;
 
 class Account extends BaseModule
@@ -15,10 +14,16 @@ class Account extends BaseModule
     'phone',
     'billing_address',
     'shipping_address',
-    'city',
-    'country',
-    'owner_id'
+    'owner_id',
   ];
+
+  public function getCasts(): array
+  {
+    return array_merge(parent::getCasts(), [
+      'billing_address'  => 'array',
+      'shipping_address' => 'array',
+    ]);
+  }
 
       public function toSearchResult(): array
     {

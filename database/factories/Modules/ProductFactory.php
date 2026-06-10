@@ -109,7 +109,7 @@ class ProductFactory extends Factory
         'consulting'
       ]),
 
-      'price' => $faker->randomFloat(2, 50, 5000),
+      'price' => number_format($faker->randomFloat(2, 50, 5000), 2, '.', ''),
       'unit' => $faker->randomElement(['pcs', 'hr', 'day', 'month', 'kg', 'g', 'l', 'm', 'box', 'set', 'flat']),
       'tax_rate' => $faker->numberBetween(7, 25),
 

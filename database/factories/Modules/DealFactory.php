@@ -30,8 +30,7 @@ class DealFactory extends Factory
       'id' => (string) Str::uuid(),
 
       'name' => $this->faker->company() . ' Deal',
-      'amount' => $this->faker->randomFloat(2, 1000, 50000),
-      'currency' => $this->faker->randomElement(['EUR', 'USD', 'GBP']),
+      'amount' => number_format($this->faker->randomFloat(2, 1000, 50000), 2, '.', ''),
       'description' => $this->faker->realText(120),
 
       'sales_stage' => $this->faker->randomElement($stages),

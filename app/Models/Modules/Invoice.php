@@ -14,7 +14,6 @@ class Invoice extends BaseModule
     'status',
     'issue_date',
     'due_date',
-    'currency',
     'subtotal',
     'tax',
     'total',
