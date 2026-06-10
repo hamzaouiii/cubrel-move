@@ -89,7 +89,7 @@ class SettingValuesSeeder extends Seeder
                 'id' => Str::uuid(),
                 'setting_item' => 'locale',
                 'key' => 'date_format',
-                'value' => 'Y-m-d',
+                'value' => 'l, d.m.Y',
                 'label' => 'settings.fields.date_format',
                 'type' => 'date',
                 'sort_order' => 3,

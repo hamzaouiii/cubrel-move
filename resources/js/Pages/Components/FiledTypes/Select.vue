@@ -187,16 +187,20 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
+  <div v-if="disabled">
+    {{ $t(selectedOption?.label) ?? modelValue ?? "—" }}
+  </div>
   <div
-    v-if="mode === 'edit' || mode === 'settings' || mode === 'module-builder'"
+    v-else-if="
+      mode === 'edit' || mode === 'settings' || mode === 'module-builder'
+    "
   >
     <div class="select-field" ref="root">
       <div
-        class="select-field__control"
+        class="select-field__control edit-field"
         :class="{
           'is-open': isOpen,
           'is-invalid': showError,
-          'is-disabled': disabled,
           'is-builder': mode === 'module-builder',
         }"
         @click="toggle"
@@ -282,8 +286,8 @@ const highlightMatch = (text) => {
   <div v-else-if="mode === 'detail'">
     <span
       :class="[
-        'record-layout__sections__item__layout__field__content ',
-        { 'view-uneditable-field': readOnly },
+        'record-layout__sections__item__layout__field__content',
+        { 'display-field': !disabled },
       ]"
     >
       {{ $t(selectedOption?.label) }}

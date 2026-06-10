@@ -61,9 +61,12 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
-  <div v-if="mode === 'edit'">
+  <div v-if="readOnly">
+    {{ modelValue }}
+  </div>
+  <div v-else-if="mode === 'edit'">
     <span
-      class="text-field text-field--edit"
+      class="text-field text-field--edit edit-field"
       :class="{
         'text-field--error': showError,
         'text-field--readonly': readOnly,

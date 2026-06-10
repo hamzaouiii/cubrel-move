@@ -90,7 +90,10 @@ return [
     'today' => 'Heute',
     'clear' => 'Abbrechen',
     'select_date' => 'Datum auswählen',
-    'time_format' => 'HH:MM'
+    'select_time' => 'Uhrzeit auswählen',
+    'time_format' => 'HH:MM',
+    'hour' => 'HH',
+    'minute' => 'MM'
   ],
   'colorpicker' => [
     'select_color'       => 'Farbe wählen',

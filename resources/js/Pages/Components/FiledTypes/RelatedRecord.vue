@@ -103,7 +103,7 @@ const emitOpenOverlay = () => {
   <!-- Edit Mode -->
   <div v-if="mode === 'edit'">
     <div
-      class="related-field related-field--edit"
+      class="related-field related-field--edit edit-field"
       :class="{ 'related-field--error': showError }"
     >
       <div class="related-field--edit__content">
@@ -115,6 +115,11 @@ const emitOpenOverlay = () => {
             <span class="related-record-label">
               {{ related_label ?? modelValue }}
             </span>
+          </div>
+        </div>
+        <div class="related-detail-content" v-else>
+          <div class="related-record-info">
+            <span class="related-record-label"> — </span>
           </div>
         </div>
       </div>
@@ -138,9 +143,9 @@ const emitOpenOverlay = () => {
   </div>
 
   <!-- Detail Mode -->
-  <div v-else-if="mode === 'detail' || mode === 'table'">
+  <div v-else-if="mode === 'detail'">
     <div
-      class="related-field related-field--detail"
+      class="related-field related-field--detail display-field"
       :class="{
         'related-field--readonly': readOnly,
         'related-field--has-value': modelValue,
@@ -170,6 +175,38 @@ const emitOpenOverlay = () => {
         <div v-if="showRecordInfo" class="related-record-metadata">
           <span class="record-id">ID: {{ modelValue }}</span>
         </div>
+      </div>
+      <div v-else class="field-empty">—</div>
+    </div>
+  </div>
+  <div v-else-if="mode === 'table'">
+    <div
+      class="related-field related-field--detail"
+      :class="{
+        'related-field--readonly': readOnly,
+        'related-field--has-value': modelValue,
+      }"
+      @click="handleClick"
+    >
+      <i
+        v-if="modelValue"
+        :class="[icon ? icon : 'fa-solid fa-user', 'related-detail-icon']"
+      ></i>
+      <div class="related-detail-content" v-if="modelValue">
+        <component
+          :is="openInNewTab ? 'a' : Link"
+          :href="getRecordUrl()"
+          :target="getLinkTarget()"
+          :rel="getLinkRel()"
+          class="related-detail-link"
+          @click="handleNavigate"
+        >
+          <div class="related-record-info">
+            <span class="related-record-label">
+              {{ related_label ?? modelValue }}
+            </span>
+          </div>
+        </component>
       </div>
       <div v-else class="field-empty">—</div>
     </div>

@@ -21,7 +21,7 @@ return [
         'home' => 'Dashboard',
     ],
     'copied' => 'Copied',
-    'Copy_failed' => 'Copy Failed',
+    'copy_failed' => 'Copy Failed',
     'login' => [
         'welcome_back' => 'Welcome Back',
         'subtitle' => 'Login to continue to your dashboard',

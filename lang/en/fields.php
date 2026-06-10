@@ -92,7 +92,10 @@ return [
     'today' => 'Today',
     'clear' => 'Clear',
     'select_date' => 'Select Date',
-    'time_format' => 'HH:MM'
+    'select_time' => 'Select Time',
+    'time_format' => 'HH:MM',
+    'hour' => 'HH',
+    'minute' => 'MM'
   ],
   'colorpicker' => [
     'select_color'       => 'Select Color',
