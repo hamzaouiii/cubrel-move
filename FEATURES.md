@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Generated 2026-06-09 from routes, controllers, models, config, migrations, and Vue components.
+> Updated 2026-06-12 from routes, controllers, models, config, migrations, and Vue components.
 > Half-built / incomplete items are marked **⚠ INCOMPLETE**.
 
 ---
@@ -57,7 +57,7 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | `LineItem` | Child row on an Order, Invoice, or Quote (polymorphic `parent_type/parent_id`) |
 | `Settings` / `SettingValue` | Key-value system settings with group and autoload support |
 | `Dashboard` | Per-user dashboard widget configuration (JSON) |
-| `PdfTemplate` | Module-scoped HTML/Blade template stored in the database |
+| `PdfTemplate` | Module-scoped PDF template; owns its section `definition` JSON directly; `is_default` flag per module |
 
 ---
 
@@ -406,15 +406,103 @@ Admins can invite users by email. Accepted invites create a new User record.
 
 ### PDF Templates
 
-Templates are stored in the `pdf_templates` table (added migration `2026_05_21`). Each template belongs to a module. The template column stores HTML/Blade markup. The `Settings/PdfTemplates/Index.vue` page manages templates.
+Templates are stored in the `pdf_templates` table (migration `2026_05_21`). Each template is fully standalone — it owns its layout `definition` (JSON) directly rather than depending on a shared Layout row. An optional `layout_id` FK is retained for backward compatibility with templates created through the old embedded-in-layout flow.
 
-A dedicated layout type (`pdf`) in the layout system defines which fields appear in the PDF output. The `LayoutPdfEditor.vue` component edits this layout.
+| Column | Type | Purpose |
+|---|---|---|
+| `id` | UUID | PK |
+| `module_slug` | string | Which module the template belongs to |
+| `name` | string | Human-readable name |
+| `blade_view` | string | Blade view path (always `pdf.layout-driven`) |
+| `layout_id` | string (nullable) | Legacy FK to `layouts` table |
+| `description` | string (nullable) | Optional admin description |
+| `is_default` | boolean | Only one default per module at a time |
+| `definition` | JSON | Section tree that drives the rendered output |
 
-### PDF Render
+`PdfTemplate::defaultFor($moduleSlug)` fetches the default template for a module; `existsFor()` checks existence.
 
-`GET /{module}/{recordId}/pdf` → `PdfController@generate` renders the template with the record's data and streams the result as a downloadable PDF.
+### Template Manager (Settings)
 
-**⚠ INCOMPLETE** — `PdfController` and `PdfTemplates/Index.vue` were added recently (`2026_05_21` migration, commit `d353885 full implementation for pdf action`). Variable substitution syntax, the rendering engine (DomPDF, mPDF, Browsershot?), and error handling for missing templates are not evident from surface inspection and need verification.
+Full CRUD at `/settings/pdf-templates` (route group `settings.pdf-templates.*`):
+
+| Route | Method | Action |
+|---|---|---|
+| `/settings/pdf-templates` | GET | `index` — paginated list; searchable by name or module label |
+| `/settings/pdf-templates/create?module=X` | GET | `create` — pre-loads fields, relationships, line-item fields for selected module |
+| `/settings/pdf-templates` | POST | `store` — validates `definition.sections`, ensures single default per module |
+| `/settings/pdf-templates/preview` | POST | `preview` — server-renders the Blade view with fake data; returns HTML for the live preview panel |
+| `/settings/pdf-templates/{id}` | GET | `edit` |
+| `/settings/pdf-templates/{id}` | PUT | `update` |
+| `/settings/pdf-templates/{id}` | DELETE | `destroy` |
+| `/settings/pdf-templates/{id}/default` | POST | `setDefault` — atomically sets one default, clears others |
+
+### Section-Based Definition Format
+
+A template `definition` is a JSON object `{ "sections": [...] }`. Each section has a `type` that controls how it is rendered:
+
+| Section type | Description |
+|---|---|
+| `header` | Two-column header row grid; left/right slots each hold a `kind` item |
+| `footer` | Fixed-to-bottom footer (static in preview mode); same two-column row format |
+| `fields` | Horizontal row of labelled field values; supports `full` or `half` width |
+| `text` | Static text/notes block with optional title |
+| `divider` | Horizontal rule |
+| `relationship` | Table of related records with configurable columns |
+| `line_items` | Full line-items table with subtotal / tax / discount / total summary |
+
+**Slot `kind` values** (used inside `header`/`footer` rows and `fields` sections):
+
+| Kind | Renders |
+|---|---|
+| `logo` | Company logo image, or initials fallback box |
+| `meta` | Company name, address, phone, email |
+| `title` | Document title + record number |
+| `field` | A single record field value, with optional label |
+| `page_number` | DomPDF `counter(page) / counter(pages)` |
+| `date` | Today's date |
+
+**Field `displayStyle` variants**: `title`, `subtitle`, `bold`, `small`, `label`, `status` (colored pill badge), `address` (multi-line), `highlight`, `muted`.
+
+**Half-width pairing**: consecutive `fields` or `relationship` sections with `width: "half"` are automatically paired into a two-column table row.
+
+### Rendering Engine
+
+- **Engine**: [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf) (DomPDF).
+- **Blade view**: `resources/views/pdf/layout-driven.blade.php` — a single template that handles all section types.
+- **Fonts**: Fira Sans and Heebo TTF files in `resources/fonts/` are registered directly with `FontMetrics` before rendering so CSS can reference them by name. For browser preview, WOFF2 variants are embedded as Base64 `@font-face` data URIs (cached 30 days).
+- **Value rendering**: `PdfValueRenderer::render($type, $value, $dropdownValues)` normalises all field types:
+  - `date` / `datetime` — formatted via the system `date_format` / `datetime_format` setting
+  - `select` / `status` / `dropdown` — resolved to the human-readable label; i18n keys resolved automatically
+  - `decimal` / `currency` / `number` — formatted by `PdfNumberFormatter::format()`, which uses PHP `NumberFormatter` (ext-intl) when available, falling back to locale-aware `number_format`
+  - `address` — formatted as `street / postal city / state, country` multi-line
+  - `checkbox` / `bool` — `globals.pdf.yes` / `globals.pdf.no` translations
+- **Currency symbols**: `PdfNumberFormatter::symbol($code)` maps ISO 4217 codes to glyphs for ~25 currencies, falls back to the raw code.
+- **Company branding**: logo URL is converted to a Base64 data URI (cached 6 h) so DomPDF can embed it without HTTP round-trips. Local URLs are read from disk; remote URLs fetched with a 2 s timeout.
+- **Relationship data**: all relationships referenced by field items across sections are pre-loaded via `RelationshipService::getRelatedRecords()` before rendering; failures are silenced.
+- **Record data**: `custom_fields` JSON is merged into a flat array so all field values are accessible via uniform `$record['key']`.
+- **Output**: `stream()` — displays inline in the browser.
+- **Filename**: `{module-slug}-{record.number|recordId}.pdf`
+- **Template selection**: caller may pass `?template={id}` to request a specific template; otherwise the module's default is used.
+
+### Live Preview Panel
+
+`PdfPreviewPanel.vue` POSTs the current section definition to `/settings/pdf-templates/preview`. The controller builds fake data matching each field type (including 3 sample line-items and sample relationship rows), renders the Blade view with `isPreview: true`, and returns HTML. The panel displays this in a scaled `<iframe>` (A4 width 794 px, auto-height).
+
+### Record-Level PDF Modal
+
+`PdfModal.vue` is mounted on the record view when templates exist for the module. It shows a picker of all available templates for the module (default pre-highlighted). Selecting a template:
+
+1. Shows an animated progress bar + spinner while fetching.
+2. Fetches `GET /{module}/{recordId}/pdf?template={id}` as a blob.
+3. Creates an object URL and triggers a download automatically.
+4. Shows a "ready" state with a "Download again" button.
+5. On failure, shows error text with Retry and "Choose template" options.
+
+Auto-generates immediately if there is only one template (skips the picker).
+
+### Field Type Coverage in PDFs
+
+All currently supported field types render correctly in PDFs: `text`, `longtext`, `email`, `phone`, `url`, `select`, `status`, `checkbox`, `date`, `datetime`, `integer`, `decimal`, `percentage`, `currency`, `address`, `record`.
 
 ---
 
@@ -452,7 +540,7 @@ An `ip_whitelists` table exists in migrations. No middleware or controller refer
 
 | Area | Issue |
 |---|---|
-| `AddressField.vue`, `CurrencyField.vue` | New field type components untracked on `feat/82-field-types` — not yet committed |
+| `AddressField.vue`, `CurrencyField.vue` | New field type components committed on `feat/82-field-types` — now merged; fully wired in registry and PDF renderer |
 | Line item parent total roll-up | No server-side observer to recompute parent `total_amount` when line items change |
 | Global search driver | `Searchable` trait present; no Scout driver configured — likely falling back to naive LIKE queries |
 | Dashboard personalisation | `dashboards` table exists for per-user config but no UI to customise widget layout |
@@ -463,4 +551,3 @@ An `ip_whitelists` table exists in migrations. No middleware or controller refer
 | Custom module deployment | Generated handler quality and deploy rollback reliability are untested |
 | Two-factor authentication | DB columns present, no UI or enforcement middleware found |
 | IP whitelist | Table exists, no middleware reads it |
-| PDF rendering engine | Implementation details (engine, template syntax, error handling) not surfaced |
