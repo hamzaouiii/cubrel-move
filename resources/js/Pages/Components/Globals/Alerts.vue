@@ -3,6 +3,13 @@ import { onUnmounted, ref, computed, watch } from "vue";
 
 const timers = ref({});
 
+const iconMap = {
+  error: "fa-solid fa-circle-exclamation",
+  success: "fa-solid fa-circle-check",
+  warning: "fa-solid fa-triangle-exclamation",
+  info: "fa-solid fa-circle-info",
+};
+
 const props = defineProps({
   alerts: {
     type: Array,
@@ -59,6 +66,7 @@ onUnmounted(() => {
       class="alerts__item"
       :class="`alerts__item--${alert.type}`"
     >
+      <i :class="iconMap[alert.type]"></i>
       <div class="alerts__item__message">
         {{ alert.message }}
       </div>
