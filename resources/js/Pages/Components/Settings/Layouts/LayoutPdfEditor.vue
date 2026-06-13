@@ -1,42 +1,49 @@
 ﻿<script setup>
+// ============================================================
+// 1. IMPORTS & DEPENDENCIES
+// ============================================================
 import { ref, computed, watch, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { useLayoutDragDrop } from "@/Composables/useLayoutDragDrop";
 import ExplainTip from "@/Pages/Components/Globals/ExplainTip.vue";
 
+// ============================================================
+// 2. PROPS & EMITS
+// ============================================================
 const props = defineProps({
   sections: { type: Array, default: () => [] },
   availableFields: { type: Array, default: () => [] },
   availableRelationships: { type: Array, default: () => [] },
   lineItemFields: { type: Array, default: () => [] },
   moduleLabel: { type: String, default: "" },
+  module: { type: Object, default: () => {} },
 });
 
 const emit = defineEmits(["update:sections"]);
 
+// ============================================================
+// 3. GLOBAL HELPERS & TRANSLATION
+// ============================================================
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
-
 const page = usePage();
-const company = computed(() => page.props.appSettings || {});
-const companyInitials = computed(() => {
-  const name = company.value.company_name || "";
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w[0]?.toUpperCase() ?? "")
-      .join("") || "CO"
-  );
-});
 
+// ============================================================
+// 4. REACTIVE STATE (REFS)
+// ============================================================
 const internalSections = ref(cloneSections(props.sections));
 const internalAvailable = ref([...props.availableFields]);
 const internalAvailableRelationships = ref([...props.availableRelationships]);
 const openPickerIndex = ref(null);
 const openLiPickerIndex = ref(null);
 
+// Relationship picker state
+const expandedRelationships = ref({});
+const relSearchQueries = ref({});
+
+// ============================================================
+// 5. WATCHERS (Dependencies: props → internal refs)
+// ============================================================
 watch(
   () => props.sections,
   (val) => {
@@ -44,6 +51,7 @@ watch(
   },
   { deep: true },
 );
+
 watch(
   () => props.availableFields,
   (val) => {
@@ -51,6 +59,7 @@ watch(
   },
   { deep: true },
 );
+
 watch(
   () => props.availableRelationships,
   (val) => {
@@ -59,11 +68,32 @@ watch(
   { deep: true },
 );
 
+// ============================================================
+// 6. HELPER FUNCTIONS
+// ============================================================
 function cloneSections(sections) {
   return (sections || []).map((s) => {
     const cloned = { ...s };
-    if (s.type === "fields" || s.type === "header")
+    if (s.type === "fields")
       cloned.items = (s.items || []).map((i) => ({ ...i }));
+    if (s.type === "header" || s.type === "footer") {
+      const cloneItem = (i) => (i ? { ...i } : null);
+      if (s.rows) {
+        cloned.rows = s.rows.map((r) => ({
+          left: cloneItem(r.left),
+          right: cloneItem(r.right),
+        }));
+      } else {
+        // migrate header from leftItems/rightItems or original items array
+        const leftItems = s.leftItems || [];
+        const rightItems = s.rightItems ?? s.items ?? [];
+        const len = Math.max(leftItems.length, rightItems.length, 1);
+        cloned.rows = Array.from({ length: len }, (_, i) => ({
+          left: leftItems[i] ? { ...leftItems[i] } : null,
+          right: rightItems[i] ? { ...rightItems[i] } : null,
+        }));
+      }
+    }
     if (s.type === "relationship")
       cloned.columns = (s.columns || []).map((c) => ({ ...c }));
     if (s.type === "line_items")
@@ -72,6 +102,25 @@ function cloneSections(sections) {
   });
 }
 
+const sectionTypeLabel = (type) => {
+  const map = {
+    header: t("layouts.pdf_block_header"),
+    footer: t("layouts.pdf_block_footer"),
+    fields: t("layouts.pdf_block_fields"),
+    text: t("layouts.pdf_block_text"),
+    divider: t("layouts.pdf_block_divider"),
+    line_items: t("layouts.pdf_block_line_items"),
+    relationship: t("layouts.pdf_block_relationship"),
+  };
+  return map[type] ?? type;
+};
+
+const isLocked = (section) => !!section.locked;
+const isMovable = (section) => !section.locked;
+
+// ============================================================
+// 7. DRAG & DROP COMPOSABLE (Dependencies: useLayoutDragDrop)
+// ============================================================
 const {
   dragging,
   dragOver,
@@ -85,14 +134,38 @@ const {
   onGlobalDragOver,
 } = useLayoutDragDrop();
 
-// â”€â”€ Computed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ============================================================
+// 8. COMPUTED PROPERTIES
+// ============================================================
+// Company info
+const company = computed(() => page.props.appSettings || {});
+const companyInitials = computed(() => {
+  const name = company.value.company_name || "";
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? "")
+      .join("") || "CO"
+  );
+});
+const today = computed(() => new Date().toLocaleDateString());
 
+// Track used fields to filter available ones
 const usedFieldNames = computed(() => {
   const used = new Set();
   internalSections.value.forEach((section) => {
-    if (section.type === "fields" || section.type === "header") {
+    if (section.type === "fields") {
       (section.items || []).forEach((item) => {
         if (item.kind === "field" && !item.relationship) used.add(item.name);
+      });
+    }
+    if (section.type === "header" || section.type === "footer") {
+      (section.rows || []).forEach((row) => {
+        [row.left, row.right].filter(Boolean).forEach((item) => {
+          if (item.kind === "field" && !item.relationship) used.add(item.name);
+        });
       });
     }
   });
@@ -103,30 +176,128 @@ const filteredAvailableFields = computed(() =>
   internalAvailable.value.filter((f) => !usedFieldNames.value.has(f.name)),
 );
 
-// Track rel fields used as "relName:fieldName"
+// Track relationship fields
 const usedRelFieldKeys = computed(() => {
   const used = new Set();
   internalSections.value.forEach((section) => {
-    if (section.type === "fields" || section.type === "header") {
+    if (section.type === "fields") {
       (section.items || []).forEach((item) => {
         if (item.kind === "field" && item.relationship)
           used.add(`${item.relationship}:${item.name}`);
+      });
+    }
+    if (section.type === "header" || section.type === "footer") {
+      (section.rows || []).forEach((row) => {
+        [row.left, row.right].filter(Boolean).forEach((item) => {
+          if (item.kind === "field" && item.relationship)
+            used.add(`${item.relationship}:${item.name}`);
+        });
       });
     }
   });
   return used;
 });
 
-// util
+// Line items validation
+const hasLineItems = computed(() =>
+  internalSections.value.some((s) => s.type === "line_items"),
+);
 
-const getRelatedModuleLable = (rel) => {
-  const other_side = rel.other_side;
-};
+const moduleHasLineItems = computed(() => props.module?.has_line_items === 1);
+const LI_REQUIRED = new Set(["position", "name", "total"]);
 
-// â”€â”€ Relationship field picker (sidebar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const expandedRelationships = ref({});
-const relSearchQueries = ref({});
+// Section layout (half/full width)
+const canBeHalf = (section) => section.type === "fields";
 
+const sectionRows = computed(() => {
+  const rows = [];
+  let i = 0;
+  const sections = internalSections.value;
+  while (i < sections.length) {
+    const s = sections[i];
+    if (canBeHalf(s) && s.width === "half") {
+      const next = sections[i + 1];
+      if (next && canBeHalf(next) && next.width === "half") {
+        rows.push({
+          key: `${s.id}-${next.id}`,
+          sections: [
+            { section: s, index: i },
+            { section: next, index: i + 1 },
+          ],
+          dropAfterIndex: i + 2,
+          halfSolo: false,
+        });
+        i += 2;
+        continue;
+      }
+    }
+    rows.push({
+      key: s.id,
+      sections: [{ section: s, index: i }],
+      dropAfterIndex: i + 1,
+      halfSolo: canBeHalf(s) && s.width === "half",
+    });
+    i++;
+  }
+  return rows;
+});
+
+// ============================================================
+// 9. DRAG GHOST LABEL (Visual feedback during drag)
+// ============================================================
+const ghostLabel = computed(() => {
+  if (!dragging.value) return "";
+  const d = dragging.value;
+  if (d.source === "available") {
+    const f = filteredAvailableFields.value[d.fieldIndex];
+    return f ? (t(f.label) ?? f.name) : "";
+  }
+  if (d.source === "available-rel-field") {
+    const rel = internalAvailableRelationships.value.find(
+      (r) => r.name === d.relName,
+    );
+    const field = (rel?.related_fields || []).find(
+      (f) => f.name === d.fieldName,
+    );
+    const relLabel = rel ? (t(rel.label) ?? rel.name) : d.relName;
+    const fieldLabel = field ? (t(field.label) ?? field.name) : d.fieldName;
+    return `${fieldLabel}`;
+  }
+  if (d.source === "new-section") {
+    return sectionTypeLabel(d.sectionType);
+  }
+  if (d.source === "new-header-block") {
+    const labels = {
+      logo: "Logo",
+      meta: t("layouts.meta_block"),
+      title: t("layouts.title_block"),
+      page_number: t("layouts.page_number_block"),
+      date: t("layouts.date_block"),
+      co_info_line: t("layouts.co_info_line_block"),
+    };
+    return labels[d.blockType] || d.blockType;
+  }
+  if (d.source === "section-field") {
+    const section = internalSections.value[d.sectionIndex];
+    const item = section?.items?.[d.itemIndex];
+    return item?.kind === "field"
+      ? (t(item.label) ?? item.name)
+      : (item?.kind ?? "");
+  }
+  if (d.source === "section-reorder") {
+    const section = internalSections.value[d.sectionIndex];
+    return section ? sectionTypeLabel(section.type) : "";
+  }
+  if (d.source === "li-column") {
+    const col = internalSections.value[d.sectionIndex]?.columns?.[d.colIndex];
+    return col ? (t(col.label) ?? col.name) : "";
+  }
+  return "";
+});
+
+// ============================================================
+// 10. RELATIONSHIP FIELD PICKER (Sidebar)
+// ============================================================
 const toggleRelExpanded = (relName) => {
   expandedRelationships.value = {
     ...expandedRelationships.value,
@@ -157,53 +328,9 @@ const onRelFieldDragStart = (relName, fieldName, event) => {
   );
 };
 
-const ghostLabel = computed(() => {
-  if (!dragging.value) return "";
-  const d = dragging.value;
-  if (d.source === "available") {
-    const f = filteredAvailableFields.value[d.fieldIndex];
-    return f ? (t(f.label) ?? f.name) : "";
-  }
-  if (d.source === "available-rel-field") {
-    const rel = internalAvailableRelationships.value.find(
-      (r) => r.name === d.relName,
-    );
-    const field = (rel?.related_fields || []).find(
-      (f) => f.name === d.fieldName,
-    );
-    const relLabel = rel ? (t(rel.label) ?? rel.name) : d.relName;
-    const fieldLabel = field ? (t(field.label) ?? field.name) : d.fieldName;
-    return `${relLabel} â€º ${fieldLabel}`;
-  }
-  if (d.source === "new-section") {
-    return sectionTypeLabel(d.sectionType);
-  }
-  if (d.source === "section-field") {
-    const section = internalSections.value[d.sectionIndex];
-    const item = section?.items?.[d.itemIndex];
-    return item?.kind === "field"
-      ? (t(item.label) ?? item.name)
-      : (item?.kind ?? "");
-  }
-  if (d.source === "section-reorder") {
-    const section = internalSections.value[d.sectionIndex];
-    return section ? sectionTypeLabel(section.type) : "";
-  }
-  if (d.source === "li-column") {
-    const col = internalSections.value[d.sectionIndex]?.columns?.[d.colIndex];
-    return col ? (t(col.label) ?? col.name) : "";
-  }
-  return "";
-});
-
-// â”€â”€ Section management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-const hasLineItems = computed(() =>
-  internalSections.value.some((s) => s.type === "line_items"),
-);
-
-const LI_REQUIRED = new Set(["position", "name", "total"]);
-
+// ============================================================
+// 11. SECTION MANAGEMENT (Create, Remove, Update)
+// ============================================================
 const createSectionOfType = (type) => {
   if (type === "fields")
     return {
@@ -225,25 +352,6 @@ const createSectionOfType = (type) => {
   return null;
 };
 
-// â”€â”€ New-section drag (right sidebar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-const isNewSectionDragging = (sectionType) =>
-  dragging.value?.source === "new-section" &&
-  dragging.value.sectionType === sectionType;
-
-const onNewSectionDragStart = (sectionType, event) => {
-  beginDrag(
-    { source: "new-section", sectionType },
-    event,
-    ".pdf-editor__available-fields__item",
-  );
-};
-
-const updateHeaderTitle = (sectionIndex, title) => {
-  internalSections.value[sectionIndex].title = title;
-  emit("update:sections", internalSections.value);
-};
-
 const removeSection = (sectionIndex) => {
   internalSections.value.splice(sectionIndex, 1);
   emit("update:sections", internalSections.value);
@@ -259,6 +367,30 @@ const updateTextContent = (sectionIndex, content) => {
   emit("update:sections", internalSections.value);
 };
 
+const toggleSectionWidth = (sectionIndex) => {
+  const s = internalSections.value[sectionIndex];
+  s.width = s.width === "half" ? "full" : "half";
+  emit("update:sections", internalSections.value);
+};
+
+// ============================================================
+// 12. NEW SECTION DRAG (Right Sidebar)
+// ============================================================
+const isNewSectionDragging = (sectionType) =>
+  dragging.value?.source === "new-section" &&
+  dragging.value.sectionType === sectionType;
+
+const onNewSectionDragStart = (sectionType, event) => {
+  beginDrag(
+    { source: "new-section", sectionType },
+    event,
+    ".pdf-editor__available-fields__item",
+  );
+};
+
+// ============================================================
+// 13. FIELD ITEMS MANAGEMENT (Fields section)
+// ============================================================
 const removeItemFromSection = (sectionIndex, itemIndex) => {
   internalSections.value[sectionIndex].items.splice(itemIndex, 1);
   emit("update:sections", internalSections.value);
@@ -275,40 +407,153 @@ const toggleFieldLabel = (sectionIndex, itemIndex) => {
   emit("update:sections", internalSections.value);
 };
 
-// â”€â”€ Header items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const updateFieldItemStyle = (sectionIndex, itemIndex, style) => {
+  const item = internalSections.value[sectionIndex]?.items?.[itemIndex];
+  if (!item) return;
+  if (style) item.displayStyle = style;
+  else delete item.displayStyle;
+  emit("update:sections", internalSections.value);
+};
 
-const addHeaderField = (sectionIndex, field) => {
+// ============================================================
+// 14. HEADER/FOOTER MANAGEMENT
+// ============================================================
+const updateHeaderTitle = (sectionIndex, title) => {
+  internalSections.value[sectionIndex].title = title;
+  emit("update:sections", internalSections.value);
+};
+
+const removeHeaderSlotItem = (sectionIndex, rowIndex, side) => {
+  const rows = internalSections.value[sectionIndex]?.rows;
+  if (rows?.[rowIndex]) {
+    rows[rowIndex][side] = null;
+    emit("update:sections", internalSections.value);
+  }
+};
+
+const addHeaderRow = (sectionIndex) => {
   const section = internalSections.value[sectionIndex];
-  if (!section.items) section.items = [];
-  section.items.push({
-    kind: "field",
-    name: field.name,
-    label: field.label,
-    type: field.type,
-  });
-  openPickerIndex.value = null;
+  if (!section.rows) section.rows = [];
+  section.rows.push({ left: null, right: null });
   emit("update:sections", internalSections.value);
 };
 
-const addHeaderTextItem = (sectionIndex) => {
+const removeHeaderRow = (sectionIndex, rowIndex) => {
+  const rows = internalSections.value[sectionIndex]?.rows;
+  if (rows && rows.length > 1) {
+    rows.splice(rowIndex, 1);
+    emit("update:sections", internalSections.value);
+  }
+};
+
+// ============================================================
+// 15. HEADER BUILDING BLOCKS (Right Sidebar)
+// ============================================================
+const onHeaderBlockDragStart = (blockType, event) => {
+  beginDrag(
+    { source: "new-header-block", blockType },
+    event,
+    ".pdf-editor__available-fields__item",
+  );
+};
+
+const isHeaderBlockDragging = (blockType) =>
+  dragging.value?.source === "new-header-block" &&
+  dragging.value.blockType === blockType;
+
+// ============================================================
+// 16. HEADER SLOT DROP ZONES
+// ============================================================
+const isHeaderSlotDropActive = (sectionIndex, rowIndex, side) =>
+  dragOver.value?.target === "header-slot" &&
+  dragOver.value.sectionIndex === sectionIndex &&
+  dragOver.value.rowIndex === rowIndex &&
+  dragOver.value.side === side;
+
+const onHeaderSlotDragOver = (sectionIndex, rowIndex, side, event) => {
+  const src = dragging.value?.source;
+  if (
+    src !== "available" &&
+    src !== "available-rel-field" &&
+    src !== "new-header-block"
+  )
+    return;
+  const row = (internalSections.value[sectionIndex]?.rows || [])[rowIndex];
+  if (!row || row[side] != null) return;
+  setDragOver({ target: "header-slot", sectionIndex, rowIndex, side }, event);
+};
+
+const onDropOnHeaderSlot = (sectionIndex, rowIndex, side, event) => {
+  event.preventDefault();
+  if (!dragging.value) return;
+  const d = dragging.value;
   const section = internalSections.value[sectionIndex];
-  if (!section.items) section.items = [];
-  section.items.push({ kind: "text", content: "" });
-  emit("update:sections", internalSections.value);
+  if (!section.rows) section.rows = [{ left: null, right: null }];
+  const row = section.rows[rowIndex];
+  if (!row || row[side] != null) {
+    endDrag();
+    return;
+  }
+
+  let item = null;
+
+  if (d.source === "available") {
+    const field = filteredAvailableFields.value[d.fieldIndex];
+    if (!field) {
+      endDrag();
+      return;
+    }
+    item = {
+      kind: "field",
+      name: field.name,
+      label: field.label,
+      type: field.type,
+    };
+  } else if (d.source === "available-rel-field") {
+    const rel = internalAvailableRelationships.value.find(
+      (r) => r.name === d.relName,
+    );
+    const field = (rel?.related_fields || []).find(
+      (f) => f.name === d.fieldName,
+    );
+    if (!field) {
+      endDrag();
+      return;
+    }
+    item = {
+      kind: "field",
+      name: field.name,
+      label: field.label,
+      type: field.type,
+      relationship: d.relName,
+    };
+  } else if (d.source === "new-header-block") {
+    if (
+      ["logo", "title", "page_number", "date", "co_info_line"].includes(
+        d.blockType,
+      )
+    ) {
+      const exists = (section.rows || []).some(
+        (r) => r.left?.kind === d.blockType || r.right?.kind === d.blockType,
+      );
+      if (exists) {
+        endDrag();
+        return;
+      }
+    }
+    item = { kind: d.blockType };
+  }
+
+  if (item) {
+    row[side] = item;
+    emit("update:sections", internalSections.value);
+  }
+  endDrag();
 };
 
-const removeHeaderItem = (sectionIndex, itemIndex) => {
-  internalSections.value[sectionIndex].items.splice(itemIndex, 1);
-  emit("update:sections", internalSections.value);
-};
-
-const updateHeaderItemText = (sectionIndex, itemIndex, content) => {
-  internalSections.value[sectionIndex].items[itemIndex].content = content;
-  emit("update:sections", internalSections.value);
-};
-
-// â”€â”€ Section reorder drag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+// ============================================================
+// 17. SECTION REORDER DRAG & DROP
+// ============================================================
 const isDraggingSection = (index) =>
   dragging.value?.source === "section-reorder" &&
   dragging.value.sectionIndex === index;
@@ -373,8 +618,9 @@ const onSectionDrop = (targetIndex, event) => {
   endDrag();
 };
 
-// â”€â”€ Field drag into section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+// ============================================================
+// 18. FIELD DRAG INTO SECTION (Available fields → Section)
+// ============================================================
 const isFieldItemDragging = (sectionIndex, itemIndex) =>
   dragging.value?.source === "section-field" &&
   dragging.value.sectionIndex === sectionIndex &&
@@ -410,7 +656,8 @@ const onFieldDropZoneDragOver = (sectionIndex, itemIndex, event) => {
   if (
     src !== "available" &&
     src !== "section-field" &&
-    src !== "available-rel-field"
+    src !== "available-rel-field" &&
+    src !== "new-header-block"
   )
     return;
   setDragOver({ target: "section-field", sectionIndex, itemIndex }, event);
@@ -421,7 +668,8 @@ const onSectionEmptyDragOver = (sectionIndex, event) => {
   if (
     src !== "available" &&
     src !== "section-field" &&
-    src !== "available-rel-field"
+    src !== "available-rel-field" &&
+    src !== "new-header-block"
   )
     return;
   setDragOver({ target: "section-empty", sectionIndex }, event);
@@ -470,6 +718,10 @@ const onDropOnSection = (sectionIndex, itemIndex, event) => {
     const targetSection = internalSections.value[sectionIndex];
     if (!targetSection.items) targetSection.items = [];
     targetSection.items.splice(itemIndex, 0, item);
+  } else if (d.source === "new-header-block") {
+    const targetSection = internalSections.value[sectionIndex];
+    if (!targetSection.items) targetSection.items = [];
+    targetSection.items.splice(itemIndex, 0, { kind: d.blockType });
   } else if (d.source === "section-field") {
     const fromSection = d.sectionIndex;
     const fromItem = d.itemIndex;
@@ -496,18 +748,39 @@ const onDropOnSectionEmpty = (sectionIndex, event) => {
   onDropOnSection(sectionIndex, 0, event);
 };
 
-// Drop on available = remove from section
-const onDropOnAvailable = (event) => {
-  event.preventDefault();
-  if (!dragging.value || dragging.value.source !== "section-field") return;
-  const { sectionIndex, itemIndex } = dragging.value;
-  internalSections.value[sectionIndex].items.splice(itemIndex, 1);
-  emit("update:sections", internalSections.value);
-  endDrag();
+// ============================================================
+// 19. LINE ITEMS MANAGEMENT
+// ============================================================
+const getAvailableLiColumns = (section) => {
+  const used = new Set((section.columns || []).map((c) => c.name));
+  return props.lineItemFields.filter(
+    (f) => !LI_REQUIRED.has(f.name) && !used.has(f.name),
+  );
 };
 
-// â”€â”€ Line-item column reorder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const addLiColumn = (sectionIndex, field) => {
+  const section = internalSections.value[sectionIndex];
+  if (!section.columns) section.columns = [];
+  section.columns.push({
+    name: field.name,
+    label: field.label,
+    type: field.type,
+    enabled: true,
+  });
+  openLiPickerIndex.value = null;
+  emit("update:sections", internalSections.value);
+};
 
+const removeLiColumn = (sectionIndex, colIndex) => {
+  internalSections.value[sectionIndex].columns.splice(colIndex, 1);
+  emit("update:sections", internalSections.value);
+};
+
+const liColumnCount = (section) => 3 + (section.columns || []).length;
+
+// ============================================================
+// 20. LINE ITEMS COLUMN REORDER
+// ============================================================
 const isLiColumnDragging = (sectionIndex, colIndex) =>
   dragging.value?.source === "li-column" &&
   dragging.value.sectionIndex === sectionIndex &&
@@ -552,78 +825,9 @@ const onLiColumnDrop = (sectionIndex, toZone, event) => {
   endDrag();
 };
 
-const removeLiColumn = (sectionIndex, colIndex) => {
-  internalSections.value[sectionIndex].columns.splice(colIndex, 1);
-  emit("update:sections", internalSections.value);
-};
-
-const liColumnCount = (section) => 3 + (section.columns || []).length;
-
-const getAvailableLiColumns = (section) => {
-  const used = new Set((section.columns || []).map((c) => c.name));
-  return props.lineItemFields.filter(
-    (f) => !LI_REQUIRED.has(f.name) && !used.has(f.name),
-  );
-};
-
-const addLiColumn = (sectionIndex, field) => {
-  const section = internalSections.value[sectionIndex];
-  if (!section.columns) section.columns = [];
-  section.columns.push({
-    name: field.name,
-    label: field.label,
-    type: field.type,
-    enabled: true,
-  });
-  openLiPickerIndex.value = null;
-  emit("update:sections", internalSections.value);
-};
-
-// â”€â”€ Section width (half / full) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-const canBeHalf = (section) => section.type === "fields";
-
-const toggleSectionWidth = (sectionIndex) => {
-  const s = internalSections.value[sectionIndex];
-  s.width = s.width === "half" ? "full" : "half";
-  emit("update:sections", internalSections.value);
-};
-
-const sectionRows = computed(() => {
-  const rows = [];
-  let i = 0;
-  const sections = internalSections.value;
-  while (i < sections.length) {
-    const s = sections[i];
-    if (canBeHalf(s) && s.width === "half") {
-      const next = sections[i + 1];
-      if (next && canBeHalf(next) && next.width === "half") {
-        rows.push({
-          key: `${s.id}-${next.id}`,
-          sections: [
-            { section: s, index: i },
-            { section: next, index: i + 1 },
-          ],
-          dropAfterIndex: i + 2,
-          halfSolo: false,
-        });
-        i += 2;
-        continue;
-      }
-    }
-    rows.push({
-      key: s.id,
-      sections: [{ section: s, index: i }],
-      dropAfterIndex: i + 1,
-      halfSolo: canBeHalf(s) && s.width === "half",
-    });
-    i++;
-  }
-  return rows;
-});
-
-// â”€â”€ Half-slot drop zone (second slot in a lone half-width row) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+// ============================================================
+// 21. HALF-WIDTH SLOT DROP ZONE (Lone half-width row)
+// ============================================================
 const isHalfSlotDropActive = (row) =>
   dragOver.value?.target === "half-slot" && dragOver.value.rowKey === row.key;
 
@@ -677,26 +881,7 @@ const onHalfSlotDrop = (row, event) => {
   emit("update:sections", internalSections.value);
   endDrag();
 };
-
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-const sectionTypeLabel = (type) => {
-  const map = {
-    header: t("layouts.pdf_block_header"),
-    footer: t("layouts.pdf_block_footer"),
-    fields: t("layouts.pdf_block_fields"),
-    text: t("layouts.pdf_block_text"),
-    divider: t("layouts.pdf_block_divider"),
-    line_items: t("layouts.pdf_block_line_items"),
-    relationship: t("layouts.pdf_block_relationship"),
-  };
-  return map[type] ?? type;
-};
-
-const isLocked = (section) => !!section.locked;
-const isMovable = (section) => !section.locked;
 </script>
-
 <template>
   <div class="pdf-editor" @dragover="onGlobalDragOver">
     <div class="pdf-editor__container">
@@ -774,7 +959,7 @@ const isMovable = (section) => !section.locked;
                   v-model="relSearchQueries[rel.name]"
                   type="text"
                   class="ple-rel-group__search-input"
-                  placeholder="Search fieldsâ€¦"
+                  :placeholder="t('settings.search_in_drop_down')"
                 />
               </div>
               <div
@@ -880,24 +1065,6 @@ const isMovable = (section) => !section.locked;
                         emit('update:sections', internalSections.value);
                       "
                     />
-
-                    <span
-                      v-else-if="section.type === 'header'"
-                      class="ple-section__hint"
-                    >
-                      <i
-                        class="fa-solid fa-building"
-                        style="margin-right: 4px; opacity: 0.6"
-                      ></i>
-                      {{ $t("layouts.pdf_header_hint") }}
-                    </span>
-                    <span
-                      v-else-if="section.type === 'footer'"
-                      class="ple-section__hint"
-                    >
-                      {{ $t("layouts.pdf_footer_hint") }}
-                    </span>
-
                     <button
                       v-if="canBeHalf(section)"
                       type="button"
@@ -979,45 +1146,124 @@ const isMovable = (section) => !section.locked;
                               <span class="pdf-editor__columns__item__handle">
                                 <i class="fa-solid fa-grip-vertical"></i>
                               </span>
-                              <span class="pdf-editor__columns__item__label">
-                                <template v-if="item.relationship">
-                                  <input
-                                    class="ple-label-input"
-                                    :value="t(item.label)"
-                                    @change="
-                                      updateFieldItemLabel(
-                                        sectionIndex,
-                                        itemIndex,
-                                        $event.target.value,
-                                      )
-                                    "
-                                    @click.stop
-                                    @mousedown.stop
+                              <template v-if="item.kind === 'field'">
+                                <span
+                                  class="pdf-editor__columns__item__label"
+                                  :class="
+                                    item.displayStyle
+                                      ? `ple-item-style--${item.displayStyle}`
+                                      : ''
+                                  "
+                                >
+                                  <template v-if="item.relationship">
+                                    <input
+                                      class="ple-label-input"
+                                      :value="t(item.label)"
+                                      @change="
+                                        updateFieldItemLabel(
+                                          sectionIndex,
+                                          itemIndex,
+                                          $event.target.value,
+                                        )
+                                      "
+                                      @click.stop
+                                      @mousedown.stop
+                                    />
+                                  </template>
+                                  <template v-else>
+                                    {{ $t(item.label) ?? item.name }}
+                                  </template>
+                                </span>
+                                <select
+                                  class="ple-field-style-select"
+                                  :class="{
+                                    'ple-field-style-select--active':
+                                      item.displayStyle,
+                                  }"
+                                  :value="item.displayStyle || ''"
+                                  @change="
+                                    updateFieldItemStyle(
+                                      sectionIndex,
+                                      itemIndex,
+                                      $event.target.value,
+                                    )
+                                  "
+                                  @click.stop
+                                  @mousedown.stop
+                                >
+                                  <option value="">
+                                    {{ $t("layouts.display_style_none") }}
+                                  </option>
+                                  <option value="title">
+                                    {{ $t("layouts.display_style_title") }}
+                                  </option>
+                                  <option value="subtitle">
+                                    {{ $t("layouts.display_style_subtitle") }}
+                                  </option>
+                                  <option value="bold">
+                                    {{ $t("layouts.display_style_bold") }}
+                                  </option>
+                                  <option value="small">
+                                    {{ $t("layouts.display_style_small") }}
+                                  </option>
+                                  <option value="label">
+                                    {{ $t("layouts.display_style_label") }}
+                                  </option>
+                                  <option value="status">
+                                    {{ $t("layouts.display_style_status") }}
+                                  </option>
+                                  <option value="address">
+                                    {{ $t("layouts.display_style_address") }}
+                                  </option>
+                                  <option value="highlight">
+                                    {{ $t("layouts.display_style_highlight") }}
+                                  </option>
+                                  <option value="muted">
+                                    {{ $t("layouts.display_style_muted") }}
+                                  </option>
+                                </select>
+                                <div
+                                  class="ple-field-label-toggle"
+                                  @click.stop
+                                  @mousedown.stop
+                                >
+                                  <label class="ple-field-label-toggle__check">
+                                    <input
+                                      type="checkbox"
+                                      :checked="item.showLabel !== false"
+                                      @change="
+                                        toggleFieldLabel(
+                                          sectionIndex,
+                                          itemIndex,
+                                        )
+                                      "
+                                    />
+                                    <span>{{ $t("layouts.show_label") }}</span>
+                                  </label>
+                                  <ExplainTip
+                                    :text="$t('layouts.tip_show_label')"
                                   />
-                                </template>
-                                <template v-else>
-                                  {{ $t(item.label) ?? item.name }}
-                                </template>
-                              </span>
-                              <div
-                                class="ple-field-label-toggle"
-                                @click.stop
-                                @mousedown.stop
-                              >
-                                <label class="ple-field-label-toggle__check">
-                                  <input
-                                    type="checkbox"
-                                    :checked="item.showLabel !== false"
-                                    @change="
-                                      toggleFieldLabel(sectionIndex, itemIndex)
-                                    "
-                                  />
-                                  <span>{{ $t("layouts.show_label") }}</span>
-                                </label>
-                                <ExplainTip
-                                  :text="$t('layouts.tip_show_label')"
-                                />
-                              </div>
+                                </div>
+                              </template>
+                              <template v-else>
+                                <span
+                                  class="pdf-editor__columns__item__label ple-bb-chip"
+                                >
+                                  <i
+                                    class="fa-solid"
+                                    :class="{
+                                      'fa-image': item.kind === 'logo',
+                                      'fa-building': item.kind === 'meta',
+                                      'fa-heading': item.kind === 'title',
+                                      'fa-hashtag': item.kind === 'page_number',
+                                      'fa-calendar': item.kind === 'date',
+                                      'fa-address-card':
+                                        item.kind === 'co_info_line',
+                                    }"
+                                  ></i>
+                                  {{ $t(`layouts.${item.kind}_block`) }}
+                                </span>
+                              </template>
                               <button
                                 type="button"
                                 class="pdf-editor__columns__item__remove"
@@ -1208,10 +1454,10 @@ const isMovable = (section) => !section.locked;
                           {{ liColumnCount(section) }}
                           {{ $t("layouts.pdf_li_col_count") }}
                           <template v-if="liColumnCount(section) < 8">
-                            â€” {{ $t("layouts.pdf_li_col_recommended") }}
+                            - {{ $t("layouts.pdf_li_col_recommended") }}
                           </template>
                           <template v-else>
-                            â€” {{ $t("layouts.pdf_li_col_over") }}
+                            - {{ $t("layouts.pdf_li_col_over") }}
                           </template>
                         </div>
                       </div>
@@ -1241,8 +1487,7 @@ const isMovable = (section) => !section.locked;
                           <span class="ple__li-preview__pos">{{ i }}</span>
                           <span class="ple__li-preview__name"
                             ><span
-                              class="ple__placeholder-bar"
-                              style="width: 70%; height: 8px"
+                              class="ple__placeholder-bar ple__placeholder-bar--row-name"
                             ></span
                           ></span>
                           <span
@@ -1250,14 +1495,12 @@ const isMovable = (section) => !section.locked;
                             :key="col.name"
                             class="ple__li-preview__col"
                             ><span
-                              class="ple__placeholder-bar"
-                              style="width: 55%; height: 8px"
+                              class="ple__placeholder-bar ple__placeholder-bar--row-cell"
                             ></span
                           ></span>
                           <span class="ple__li-preview__col"
                             ><span
-                              class="ple__placeholder-bar"
-                              style="width: 55%; height: 8px"
+                              class="ple__placeholder-bar ple__placeholder-bar--row-cell"
                             ></span
                           ></span>
                         </div>
@@ -1268,8 +1511,7 @@ const isMovable = (section) => !section.locked;
                             $t("layouts.pdf.subtotal")
                           }}</span>
                           <span
-                            class="ple__placeholder-bar"
-                            style="width: 70px"
+                            class="ple__placeholder-bar ple__placeholder-bar--total-md"
                           ></span>
                         </div>
                         <div class="ple__totals__row">
@@ -1277,8 +1519,7 @@ const isMovable = (section) => !section.locked;
                             $t("layouts.pdf.discount_amount")
                           }}</span>
                           <span
-                            class="ple__placeholder-bar"
-                            style="width: 70px"
+                            class="ple__placeholder-bar ple__placeholder-bar--total-md"
                           ></span>
                         </div>
                         <div class="ple__totals__row">
@@ -1286,8 +1527,7 @@ const isMovable = (section) => !section.locked;
                             $t("layouts.pdf.tax_amount")
                           }}</span>
                           <span
-                            class="ple__placeholder-bar"
-                            style="width: 60px"
+                            class="ple__placeholder-bar ple__placeholder-bar--total-sm"
                           ></span>
                         </div>
                         <div class="ple__totals__row ple__totals__row--grand">
@@ -1295,8 +1535,7 @@ const isMovable = (section) => !section.locked;
                             $t("layouts.pdf.total")
                           }}</span>
                           <span
-                            class="ple__placeholder-bar"
-                            style="width: 80px"
+                            class="ple__placeholder-bar ple__placeholder-bar--total-lg"
                           ></span>
                         </div>
                       </div>
@@ -1306,7 +1545,6 @@ const isMovable = (section) => !section.locked;
                         class="ple-text-input"
                         :value="section.content"
                         :placeholder="$t('layouts.pdf_text_placeholder')"
-                        rows="3"
                         @input="
                           updateTextContent(sectionIndex, $event.target.value)
                         "
@@ -1324,153 +1562,307 @@ const isMovable = (section) => !section.locked;
                         </button>
                       </div>
                     </template>
-                    <template v-else-if="section.type === 'header'">
-                      <div class="ple-header-preview">
-                        <div class="ple-header-preview__left">
-                          <div class="ple-header-preview__logo">
-                            <img
-                              v-if="company.company_logo_url"
-                              :src="company.company_logo_url"
-                              class="ple-header-preview__logo-img"
-                            />
+                    <template
+                      v-else-if="
+                        section.type === 'header' || section.type === 'footer'
+                      "
+                    >
+                      <div class="ple-header-rows">
+                        <div
+                          v-for="(row, rowIndex) in section.rows || [
+                            { left: null, right: null },
+                          ]"
+                          :key="rowIndex"
+                          class="ple-header-row"
+                        >
+                          <!-- Left slot -->
+                          <div class="ple-header-slot">
                             <div
-                              v-else
-                              class="ple-header-preview__logo-initials"
-                            >
-                              {{ companyInitials }}
-                            </div>
-                          </div>
-                          <div class="ple-header-preview__company">
-                            <div class="ple-header-preview__company-name">
-                              {{ company.company_name || "â€”" }}
-                            </div>
-                            <div class="ple-header-preview__company-meta">
-                              <div v-if="company.company_address">
-                                {{ company.company_address }}
-                              </div>
-                              <div
-                                v-if="
-                                  company.company_phone || company.company_email
-                                "
-                              >
-                                {{
-                                  [company.company_phone, company.company_email]
-                                    .filter(Boolean)
-                                    .join(" Â· ")
-                                }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="ple-header-preview__right">
-                          <div class="ple-header-title-wrap">
-                            <input
-                              class="ple-header-preview__title-input"
-                              :value="section.title"
-                              :placeholder="moduleLabel || 'Document Title'"
-                              @input="
-                                updateHeaderTitle(
+                              v-if="row.left == null"
+                              class="ple-header-slot__empty"
+                              :class="{
+                                'ple-header-slot__empty--active':
+                                  isHeaderSlotDropActive(
+                                    sectionIndex,
+                                    rowIndex,
+                                    'left',
+                                  ),
+                              }"
+                              @dragover="
+                                onHeaderSlotDragOver(
                                   sectionIndex,
-                                  $event.target.value,
+                                  rowIndex,
+                                  'left',
+                                  $event,
                                 )
                               "
-                            />
-                            <button
-                              v-if="section.title"
-                              type="button"
-                              class="ple-header-title-clear"
-                              :title="$t('layouts.clear_title')"
-                              @click="updateHeaderTitle(sectionIndex, '')"
+                              @drop="
+                                onDropOnHeaderSlot(
+                                  sectionIndex,
+                                  rowIndex,
+                                  'left',
+                                  $event,
+                                )
+                              "
                             >
-                              <i class="fa-solid fa-times"></i>
-                            </button>
-                          </div>
-                          <div
-                            v-if="section.items?.length"
-                            class="ple-header-items"
-                          >
-                            <div
-                              v-for="(item, itemIndex) in section.items"
-                              :key="itemIndex"
-                              class="ple-header-item"
-                            >
-                              <template v-if="item.kind === 'field'">
-                                <span class="ple-header-item__key">{{
-                                  $t(item.label) ?? item.name
-                                }}</span>
-                                <span class="ple-header-item__sep"></span>
-                                <button
-                                  type="button"
-                                  class="ple-header-item__remove"
-                                  @click="
-                                    removeHeaderItem(sectionIndex, itemIndex)
-                                  "
-                                >
-                                  <i class="fa-solid fa-times"></i>
-                                </button>
+                              <span>{{ $t("layouts.drop_boxes_here") }}</span>
+                            </div>
+                            <div v-else class="ple-hb-item">
+                              <template v-if="row.left.kind === 'logo'">
+                                <div class="ple-hb-logo">
+                                  <img
+                                    v-if="company.company_logo_url"
+                                    :src="company.company_logo_url"
+                                    class="ple-hb-logo__img"
+                                  />
+                                  <div v-else class="ple-hb-logo__initials">
+                                    {{ companyInitials }}
+                                  </div>
+                                </div>
                               </template>
-                              <template v-else-if="item.kind === 'text'">
-                                <input
-                                  class="ple-header-item__text-input"
-                                  :value="item.content"
-                                  :placeholder="
-                                    $t('layouts.pdf_text_placeholder')
-                                  "
-                                  @input="
-                                    updateHeaderItemText(
-                                      sectionIndex,
-                                      itemIndex,
-                                      $event.target.value,
-                                    )
-                                  "
-                                />
-                                <button
-                                  type="button"
-                                  class="ple-header-item__remove"
-                                  @click="
-                                    removeHeaderItem(sectionIndex, itemIndex)
-                                  "
-                                >
-                                  <i class="fa-solid fa-times"></i>
-                                </button>
+                              <template v-else-if="row.left.kind === 'meta'">
+                                <div class="ple-hb-meta">
+                                  <div class="ple-hb-meta__name">
+                                    {{ company.company_name }}
+                                  </div>
+                                  <div
+                                    v-if="company.company_address"
+                                    class="ple-hb-meta__address"
+                                  >
+                                    {{ company.company_address }}
+                                  </div>
+                                </div>
                               </template>
+                              <template v-else-if="row.left.kind === 'title'">
+                                <div class="ple-hb-title">
+                                  <div class="ple-header-title-wrap">
+                                    <input
+                                      class="ple-header-preview__title-input"
+                                      :value="section.title"
+                                      :placeholder="
+                                        moduleLabel || 'Document Title'
+                                      "
+                                      @input="
+                                        updateHeaderTitle(
+                                          sectionIndex,
+                                          $event.target.value,
+                                        )
+                                      "
+                                    />
+                                    <button
+                                      v-if="section.title"
+                                      type="button"
+                                      class="ple-header-title-clear"
+                                      :title="$t('layouts.clear_title')"
+                                      @click="
+                                        updateHeaderTitle(sectionIndex, '')
+                                      "
+                                    >
+                                      <i class="fa-solid fa-times"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </template>
+                              <template v-else-if="row.left.kind === 'field'">
+                                <span class="ple-hb-field">
+                                  {{ $t(row.left.label) ?? row.left.name }}
+                                </span>
+                              </template>
+                              <template
+                                v-else-if="row.left.kind === 'page_number'"
+                              >
+                                <span class="ple-hb-page-number">1 / 3</span>
+                              </template>
+                              <template v-else-if="row.left.kind === 'date'">
+                                <span class="ple-hb-date">{{ today }}</span>
+                              </template>
+                              <template
+                                v-else-if="row.left.kind === 'co_info_line'"
+                              >
+                                <div class="ple-hb-co-info-line">
+                                  {{
+                                    [
+                                      company.company_name,
+                                      company.company_address,
+                                      company.company_phone,
+                                      company.company_email,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" · ") ||
+                                    $t("layouts.co_info_line_block")
+                                  }}
+                                </div>
+                              </template>
+                              <button
+                                type="button"
+                                class="ple-hb-item__remove"
+                                @click="
+                                  removeHeaderSlotItem(
+                                    sectionIndex,
+                                    rowIndex,
+                                    'left',
+                                  )
+                                "
+                              >
+                                <i class="fa-solid fa-times"></i>
+                              </button>
                             </div>
                           </div>
-                          <div
-                            class="ple-header-drop"
-                            :class="{
-                              'ple-header-drop--active': isFieldDropZoneActive(
-                                sectionIndex,
-                                (section.items || []).length,
-                              ),
-                            }"
-                            @dragover="
-                              onFieldDropZoneDragOver(
-                                sectionIndex,
-                                (section.items || []).length,
-                                $event,
-                              )
-                            "
-                            @drop="
-                              onDropOnSection(
-                                sectionIndex,
-                                (section.items || []).length,
-                                $event,
-                              )
-                            "
-                          />
-                          <div class="ple-header-add-row">
-                            <button
-                              type="button"
-                              class="ple-header-add-text-btn"
-                              @click="addHeaderTextItem(sectionIndex)"
+
+                          <!-- Right slot -->
+                          <div class="ple-header-slot">
+                            <div
+                              v-if="row.right == null"
+                              class="ple-header-slot__empty"
+                              :class="{
+                                'ple-header-slot__empty--active':
+                                  isHeaderSlotDropActive(
+                                    sectionIndex,
+                                    rowIndex,
+                                    'right',
+                                  ),
+                              }"
+                              @dragover="
+                                onHeaderSlotDragOver(
+                                  sectionIndex,
+                                  rowIndex,
+                                  'right',
+                                  $event,
+                                )
+                              "
+                              @drop="
+                                onDropOnHeaderSlot(
+                                  sectionIndex,
+                                  rowIndex,
+                                  'right',
+                                  $event,
+                                )
+                              "
                             >
-                              <i class="fa-solid fa-plus"></i>
-                              {{ $t("layouts.text_block") }}
-                            </button>
-                            <ExplainTip :text="$t('layouts.tip_text_block')" />
+                              <span>{{ $t("layouts.drop_boxes_here") }}</span>
+                            </div>
+                            <div v-else class="ple-hb-item">
+                              <template v-if="row.right.kind === 'logo'">
+                                <div class="ple-hb-logo">
+                                  <img
+                                    v-if="company.company_logo_url"
+                                    :src="company.company_logo_url"
+                                    class="ple-hb-logo__img"
+                                  />
+                                  <div v-else class="ple-hb-logo__initials">
+                                    {{ companyInitials }}
+                                  </div>
+                                </div>
+                              </template>
+                              <template v-else-if="row.right.kind === 'meta'">
+                                <div class="ple-hb-meta">
+                                  <div class="ple-hb-meta__name">
+                                    {{ company.company_name }}
+                                  </div>
+                                  <div
+                                    v-if="company.company_address"
+                                    class="ple-hb-meta__address"
+                                  >
+                                    {{ company.company_address }}
+                                  </div>
+                                </div>
+                              </template>
+                              <template v-else-if="row.right.kind === 'title'">
+                                <div class="ple-hb-title">
+                                  <div class="ple-header-title-wrap">
+                                    <input
+                                      class="ple-header-preview__title-input"
+                                      :value="section.title"
+                                      :placeholder="
+                                        moduleLabel || 'Document Title'
+                                      "
+                                      @input="
+                                        updateHeaderTitle(
+                                          sectionIndex,
+                                          $event.target.value,
+                                        )
+                                      "
+                                    />
+                                    <button
+                                      v-if="section.title"
+                                      type="button"
+                                      class="ple-header-title-clear"
+                                      :title="$t('layouts.clear_title')"
+                                      @click="
+                                        updateHeaderTitle(sectionIndex, '')
+                                      "
+                                    >
+                                      <i class="fa-solid fa-times"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </template>
+                              <template v-else-if="row.right.kind === 'field'">
+                                <span class="ple-hb-field">
+                                  {{ $t(row.right.label) ?? row.right.name }}
+                                </span>
+                              </template>
+                              <template
+                                v-else-if="row.right.kind === 'page_number'"
+                              >
+                                <span class="ple-hb-page-number">1 / 3</span>
+                              </template>
+                              <template v-else-if="row.right.kind === 'date'">
+                                <span class="ple-hb-date">{{ today }}</span>
+                              </template>
+                              <template
+                                v-else-if="row.right.kind === 'co_info_line'"
+                              >
+                                <div class="ple-hb-co-info-line">
+                                  {{
+                                    [
+                                      company.company_name,
+                                      company.company_address,
+                                      company.company_phone,
+                                      company.company_email,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" · ") ||
+                                    $t("layouts.co_info_line_block")
+                                  }}
+                                </div>
+                              </template>
+                              <button
+                                type="button"
+                                class="ple-hb-item__remove"
+                                @click="
+                                  removeHeaderSlotItem(
+                                    sectionIndex,
+                                    rowIndex,
+                                    'right',
+                                  )
+                                "
+                              >
+                                <i class="fa-solid fa-times"></i>
+                              </button>
+                            </div>
                           </div>
+
+                          <!-- Remove row -->
+                          <button
+                            v-if="(section.rows || []).length > 1"
+                            type="button"
+                            class="ple-header-row__remove"
+                            @click="removeHeaderRow(sectionIndex, rowIndex)"
+                          >
+                            <i class="fa-solid fa-times"></i>
+                          </button>
                         </div>
+
+                        <button
+                          v-if="section.type !== 'footer'"
+                          type="button"
+                          class="ple-header-add-row-btn"
+                          @click="addHeaderRow(sectionIndex)"
+                        >
+                          <i class="fa-solid fa-plus"></i>
+                          {{ $t("layouts.add_row") }}
+                        </button>
                       </div>
                     </template>
                   </div>
@@ -1553,7 +1945,7 @@ const isMovable = (section) => !section.locked;
               <ExplainTip :text="$t(`layouts.${item.tipKey}`)" />
             </div>
             <div
-              v-if="!hasLineItems"
+              v-if="!hasLineItems && moduleHasLineItems"
               class="pdf-editor__available-fields__item"
               :class="{
                 'ple-new-section-item--dragging':
@@ -1570,6 +1962,140 @@ const isMovable = (section) => !section.locked;
                 $t("layouts.line_items")
               }}</span>
               <ExplainTip :text="$t('layouts.tip_block_line_items')" />
+            </div>
+          </div>
+
+          <div class="pdf-editor__available-fields">
+            <div
+              class="pdf-editor__available-fields__item"
+              :class="{
+                'pdf-editor__available-fields__item--dragging':
+                  isHeaderBlockDragging('logo'),
+              }"
+              draggable="true"
+              @dragstart="onHeaderBlockDragStart('logo', $event)"
+              @dragend="endDrag"
+            >
+              <span class="pdf-editor__available-fields__item__handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span
+                class="pdf-editor__available-fields__item__label ple-bb-label"
+              >
+                <img
+                  v-if="company.company_logo_url"
+                  :src="company.company_logo_url"
+                  class="ple-bb-logo-thumb"
+                />
+                <i v-else class="fa-solid fa-image ple-bb-icon"></i>
+                Logo
+              </span>
+              <ExplainTip :text="$t('layouts.tip_logo')" />
+            </div>
+            <div
+              class="pdf-editor__available-fields__item"
+              :class="{
+                'pdf-editor__available-fields__item--dragging':
+                  isHeaderBlockDragging('meta'),
+              }"
+              draggable="true"
+              @dragstart="onHeaderBlockDragStart('meta', $event)"
+              @dragend="endDrag"
+            >
+              <span class="pdf-editor__available-fields__item__handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span
+                class="pdf-editor__available-fields__item__label ple-bb-label"
+              >
+                <i class="fa-solid fa-building ple-bb-icon"></i>
+                {{ $t("layouts.meta_block") }}
+              </span>
+              <ExplainTip :text="$t('layouts.tip_meta')" />
+            </div>
+            <div
+              class="pdf-editor__available-fields__item"
+              :class="{
+                'pdf-editor__available-fields__item--dragging':
+                  isHeaderBlockDragging('title'),
+              }"
+              draggable="true"
+              @dragstart="onHeaderBlockDragStart('title', $event)"
+              @dragend="endDrag"
+            >
+              <span class="pdf-editor__available-fields__item__handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span
+                class="pdf-editor__available-fields__item__label ple-bb-label"
+              >
+                <i class="fa-solid fa-heading ple-bb-icon"></i>
+                {{ $t("layouts.title_block") }}
+              </span>
+              <ExplainTip :text="$t('layouts.tip_title_block')" />
+            </div>
+            <div
+              class="pdf-editor__available-fields__item"
+              :class="{
+                'pdf-editor__available-fields__item--dragging':
+                  isHeaderBlockDragging('page_number'),
+              }"
+              draggable="true"
+              @dragstart="onHeaderBlockDragStart('page_number', $event)"
+              @dragend="endDrag"
+            >
+              <span class="pdf-editor__available-fields__item__handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span
+                class="pdf-editor__available-fields__item__label ple-bb-label"
+              >
+                <i class="fa-solid fa-file-lines ple-bb-icon"></i>
+                {{ $t("layouts.page_number_block") }}
+              </span>
+              <ExplainTip :text="$t('layouts.tip_page_number')" />
+            </div>
+            <div
+              class="pdf-editor__available-fields__item"
+              :class="{
+                'pdf-editor__available-fields__item--dragging':
+                  isHeaderBlockDragging('date'),
+              }"
+              draggable="true"
+              @dragstart="onHeaderBlockDragStart('date', $event)"
+              @dragend="endDrag"
+            >
+              <span class="pdf-editor__available-fields__item__handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span
+                class="pdf-editor__available-fields__item__label ple-bb-label"
+              >
+                <i class="fa-solid fa-calendar ple-bb-icon"></i>
+                {{ $t("layouts.date_block") }}
+              </span>
+              <ExplainTip :text="$t('layouts.tip_date')" />
+            </div>
+            <div
+              class="pdf-editor__available-fields__item"
+              :class="{
+                'pdf-editor__available-fields__item--dragging':
+                  isHeaderBlockDragging('co_info_line'),
+              }"
+              draggable="true"
+              @dragstart="onHeaderBlockDragStart('co_info_line', $event)"
+              @dragend="endDrag"
+            >
+              <span class="pdf-editor__available-fields__item__handle">
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span
+                class="pdf-editor__available-fields__item__label ple-bb-label"
+              >
+                <i class="fa-solid fa-address-card ple-bb-icon"></i>
+                {{ $t("layouts.co_info_line_block") }}
+              </span>
+              <ExplainTip :text="$t('layouts.tip_co_info_line')" />
             </div>
           </div>
         </div>
@@ -1593,1269 +2119,3 @@ const isMovable = (section) => !section.locked;
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.pdf-editor {
-  border-radius: 8px;
-  user-select: none;
-
-  &__available-fields {
-    min-height: 250px;
-    margin-bottom: 2rem;
-
-    &__item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      background: white;
-      border: 1px solid #e9ecef;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      cursor: move;
-      transition: all 0.2s;
-      user-select: none;
-
-      &:hover {
-        border-color: #adb5bd;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      }
-      &--dragging {
-        opacity: 0.5;
-        background: #f8f9fa;
-      }
-      &__handle {
-        color: #adb5bd;
-        cursor: move;
-        &:active {
-          cursor: movebing;
-        }
-      }
-      &__label {
-        font-size: 0.9rem;
-        color: #212529;
-        flex: 1;
-      }
-      &__type {
-        border: 1px solid var(--secondary-color);
-        padding: 2.5px;
-        font-size: 0.7rem;
-        border-radius: 5px;
-        color: var(--secondary-color);
-        background-color: color-mix(
-          in srgb,
-          var(--secondary-color) 10%,
-          rgb(255, 255, 255)
-        );
-      }
-    }
-    &__no-fields {
-      text-align: center;
-      padding: 20px;
-      color: #6c757d;
-      font-size: 14px;
-      background: white;
-      border: 1px dashed #dee2e6;
-      border-radius: 6px;
-    }
-  }
-
-  &__empty-drop-zone {
-    border: 2px dashed #dee2e6;
-    border-radius: 6px;
-    padding: 12px;
-    text-align: center;
-    color: #6c757d;
-    font-size: 14px;
-    margin-bottom: 12px;
-    transition: all 0.2s;
-    &--active {
-      border-color: #dc3545;
-      background-color: rgba(220, 53, 69, 0.05);
-      color: #dc3545;
-    }
-  }
-
-  &__container {
-    display: flex;
-    padding: 20px;
-    gap: 24px;
-
-    &__sidebar {
-      width: 220px;
-      flex-shrink: 0;
-
-      &--right {
-        width: 180px;
-      }
-
-      &--right &__content {
-        max-height: none;
-        overflow-y: visible;
-        min-height: unset;
-      }
-
-      &__content {
-        padding: 5px;
-        border-radius: 8px;
-        min-height: 350px;
-        max-height: calc(100vh - 380px);
-        position: relative;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-        z-index: 11;
-        &::-webkit-scrollbar {
-          width: 6px;
-        }
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        &::-webkit-scrollbar-thumb {
-          background-color: rgba(0, 0, 0, 0.25);
-          border-radius: 8px;
-        }
-      }
-      &__header {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 8px;
-        padding: 4px 6px;
-        &__title {
-          font-family: "Fira Sans", "Heebo", sans-serif;
-          font-weight: 700;
-          font-size: 1.1rem;
-          color: #323450;
-        }
-      }
-    }
-
-    &__main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-width: 0;
-
-      &__content {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        width: 100%;
-        min-height: 400px;
-        height: 100%;
-        max-height: calc(100vh - 380px);
-        position: relative;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-        z-index: 11;
-        &::-webkit-scrollbar {
-          height: 10px;
-          width: 10px;
-        }
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        &::-webkit-scrollbar-thumb {
-          background-color: rgba(0, 0, 0, 0.25);
-          border-radius: 8px;
-          &:hover {
-            background-color: color-mix(
-              in srgb,
-              var(--module-color) 55%,
-              rgba(0, 0, 0, 0.35)
-            );
-          }
-        }
-      }
-    }
-  }
-
-  &__sections__item__content__empty {
-    border: 2px dashed #dee2e6;
-    border-radius: 6px;
-    padding: 40px 20px;
-    text-align: center;
-    transition: all 0.2s;
-    color: #6c757d;
-    &--active {
-      border-color: #0d6efd;
-      background-color: rgba(13, 110, 253, 0.05);
-    }
-  }
-
-  &__columns {
-    position: relative;
-
-    &__drop-zone {
-      height: 4px;
-      margin: 4px 0;
-      background: transparent;
-      border-radius: 2px;
-      transition: all 0.2s;
-      &--horizontal {
-        width: 100%;
-      }
-      &--active {
-        background: rgba(80, 161, 255, 0.06);
-        border: 1px dashed rgba(0, 0, 0, 0.699);
-        height: 46px;
-        margin: 12px 0;
-      }
-    }
-
-    &__item {
-      position: relative;
-
-      &__content {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 6px;
-        padding: 6px 8px;
-        cursor: move;
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        &:hover {
-          border-color: #adb5bd;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-        }
-      }
-      &--dragging &__content {
-        opacity: 0.5;
-        background: #f8f9fa;
-      }
-      &__handle {
-        color: #adb5bd;
-        cursor: move;
-        &:active {
-          cursor: movebing;
-        }
-      }
-      &__label {
-        flex: 1;
-        font-weight: 500;
-        color: #374151;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      &__remove {
-        background: none;
-        border: none;
-        color: #6c757d;
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-        transition: all 0.2s;
-        &:hover {
-          color: #dc3545;
-          background: rgba(220, 53, 69, 0.1);
-        }
-      }
-    }
-  }
-
-  &__ghost {
-    position: fixed;
-    z-index: 100;
-    pointer-events: none;
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 10px 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0.9;
-    transform: translateZ(0);
-    &__handle {
-      color: #adb5bd;
-    }
-    &__label {
-      font-size: 14px;
-      color: #212529;
-    }
-  }
-
-  &__canvas {
-    max-width: 740px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      0 0 0 1px rgba(0, 0, 0, 0.04);
-    padding: 40px 48px;
-  }
-}
-
-.ple-section {
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 6px;
-  margin-bottom: 4px;
-  background: var(--card-bg, #fff);
-  transition:
-    opacity 0.15s,
-    border-color 0.15s;
-
-  &:hover {
-    border-color: #adb5bd;
-  }
-}
-
-.ple-section--dragging {
-  opacity: 0.35;
-}
-
-.ple-section__header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  min-height: 28px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
-  background: var(--surface-subtle, #f9fafb);
-  border-radius: 6px 6px 0 0;
-}
-
-// Drag handle & remove fade in on hover
-.ple-section__handle {
-  cursor: move;
-  color: var(--text-muted, #9ca3af);
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity 0.15s;
-  &:active {
-    cursor: grabbing;
-  }
-  .ple-section:hover & {
-    opacity: 1;
-  }
-}
-
-.ple-section__handle--locked {
-  cursor: default;
-  color: var(--text-muted, #c4c9d1);
-  opacity: 1 !important;
-}
-
-.ple-section__remove {
-  opacity: 0;
-  transition: opacity 0.15s;
-  .ple-section:hover & {
-    opacity: 1;
-  }
-}
-
-.ple-section__type-badge {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #9ca3af;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 1px 5px;
-  border-radius: 3px;
-  flex-shrink: 0;
-}
-
-// â”€â”€ Divider â€” single-line: header row IS the divider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-.ple-section--divider {
-  display: flex;
-  align-items: center;
-}
-
-.ple-section--divider .ple-section__header {
-  border-bottom: none;
-  background: transparent;
-  border-radius: 6px;
-  flex-shrink: 0;
-  min-height: 28px;
-  padding: 4px 8px;
-}
-
-.ple-section--divider .ple-section__body {
-  flex: 1;
-  padding: 0 8px 0 0;
-}
-
-.ple-section--divider .ple-divider-preview {
-  margin: 0;
-}
-
-.ple-section__name-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 500;
-  outline: none;
-  min-width: 0;
-}
-
-.ple-section__hint {
-  flex: 1;
-  font-size: 12px;
-  color: var(--text-muted, #9ca3af);
-  font-style: italic;
-}
-
-.ple-canvas-row {
-  &--pair {
-    display: flex;
-    gap: 8px;
-
-    .ple-section {
-      flex: 1;
-      min-width: 0;
-    }
-  }
-
-  &--half-solo {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-
-    .ple-section {
-      flex: 0 0 calc(50% - 4px);
-      max-width: calc(50% - 4px);
-      min-width: 0;
-    }
-  }
-}
-
-.ple-half-slot-drop {
-  flex: 1;
-  min-height: 48px;
-  border-radius: 6px;
-  border: 2px dashed #e5e7eb;
-  transition: all 0.15s;
-  align-self: stretch;
-
-  &--active {
-    border-color: var(--primary-color, #6366f1);
-    background: color-mix(
-      in srgb,
-      var(--primary-color, #6366f1) 8%,
-      transparent
-    );
-  }
-}
-
-.ple-section__width-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted, #9ca3af);
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-size: 11px;
-  flex-shrink: 0;
-  transition: all 0.15s;
-
-  &:hover {
-    color: var(--primary-color, #6366f1);
-    background: color-mix(
-      in srgb,
-      var(--primary-color, #6366f1) 8%,
-      transparent
-    );
-  }
-}
-
-.ple-section__remove {
-  margin-left: auto;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted, #9ca3af);
-  padding: 2px 4px;
-  flex-shrink: 0;
-  &:hover {
-    color: var(--danger-color, #ef4444);
-  }
-}
-
-.ple-section__body {
-  padding: 5px;
-}
-
-.ple-text-input {
-  width: 100%;
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-family: inherit;
-  line-height: 1.6;
-  color: #374151;
-  resize: vertical;
-  background: #fafafa;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-  min-height: 80px;
-
-  &:hover {
-    border-color: #adb5bd;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary-color, #6366f1);
-    box-shadow: 0 0 0 3px
-      color-mix(in srgb, var(--primary-color, #6366f1) 12%, transparent);
-    background: #fff;
-  }
-
-  &::placeholder {
-    color: #c5c9d0;
-  }
-}
-
-.ple-divider-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .ple-divider-preview {
-    flex: 1;
-    margin: 0;
-  }
-}
-
-.ple-divider-preview {
-  border: none;
-  border-top: 1px solid var(--border-color, #e5e7eb);
-  margin: 4px 0;
-}
-
-.ple-header-preview {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-
-  &__left {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__logo {
-    flex-shrink: 0;
-    width: 46px;
-    height: 46px;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  &__logo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  &__logo-initials {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-color, #6366f1);
-    color: #fff;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 8px;
-  }
-
-  &__company {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__company-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 3px;
-  }
-
-  &__company-meta {
-    font-size: 10px;
-    color: #666;
-    line-height: 1.7;
-  }
-
-  &__right {
-    flex-shrink: 0;
-    text-align: right;
-    min-width: 130px;
-  }
-
-  &__title-input {
-    display: block;
-    width: 100%;
-    text-align: right;
-    font-size: 18px;
-    font-weight: 700;
-    color: #111;
-    border: none;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    outline: none;
-    padding: 1px 0 2px;
-    transition: border-color 0.15s;
-    font-family: inherit;
-
-    &:hover,
-    &:focus {
-      border-bottom-color: var(--primary-color, #6366f1);
-    }
-
-    &::placeholder {
-      color: #c5c9d0;
-      font-weight: 400;
-    }
-  }
-}
-
-.ple-locked-hint {
-  font-size: 12px;
-  color: var(--text-muted, #9ca3af);
-  font-style: italic;
-  margin: 0;
-}
-
-// â”€â”€ Header editable items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-.ple-header-items {
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.ple-header-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  min-height: 22px;
-
-  &__key {
-    font-weight: 600;
-    color: #374151;
-    white-space: nowrap;
-    font-size: 11px;
-  }
-
-  &__sep {
-    color: #d1d5db;
-    font-size: 10px;
-    flex: 1;
-  }
-
-  &__remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #c4c9d1;
-    padding: 1px 3px;
-    font-size: 10px;
-    flex-shrink: 0;
-    line-height: 1;
-    &:hover {
-      color: #ef4444;
-    }
-  }
-
-  &__text-input {
-    flex: 1;
-    border: none;
-    border-bottom: 1px dashed #e5e7eb;
-    background: transparent;
-    font-size: 11px;
-    font-family: inherit;
-    color: #374151;
-    padding: 1px 2px;
-    outline: none;
-    text-align: right;
-
-    &:focus {
-      border-bottom-color: var(--primary-color, #6366f1);
-    }
-    &::placeholder {
-      color: #d1d5db;
-    }
-  }
-}
-
-.ple-header-drop {
-  height: 24px;
-  border-radius: 4px;
-  border: 1.5px dashed #e9ecef;
-  margin-top: 8px;
-  transition: all 0.15s;
-
-  &--active {
-    border-color: var(--primary-color, #6366f1);
-    background: color-mix(
-      in srgb,
-      var(--primary-color, #6366f1) 8%,
-      transparent
-    );
-  }
-}
-
-.ple-header-add-row {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-
-.ple-header-add-text-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: none;
-  border: 1px dashed #d1d5db;
-  border-radius: 5px;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: #6b7280;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-
-  &:hover {
-    border-color: var(--primary-color, #6366f1);
-    color: var(--primary-color, #6366f1);
-    background: color-mix(in srgb, var(--primary-color, #6366f1) 4%, #fff);
-  }
-}
-
-.ple-section-drop-zone {
-  height: 6px;
-  border-radius: 3px;
-  transition:
-    height 0.15s,
-    background 0.15s;
-  margin: 2px 0;
-}
-
-.ple-section-drop-zone--active {
-  height: 28px;
-  background: color-mix(
-    in srgb,
-    var(--primary-color, #6366f1) 15%,
-    transparent
-  );
-  border: 2px dashed var(--primary-color, #6366f1);
-}
-
-.ple-empty-canvas {
-  padding: 40px;
-  text-align: center;
-  color: var(--text-muted, #9ca3af);
-  border: 2px dashed var(--border-color, #e5e7eb);
-  border-radius: 6px;
-}
-
-.ple__placeholder-bar {
-  display: inline-block;
-  height: 9px;
-  background: #e5e7eb;
-  border-radius: 3px;
-  vertical-align: middle;
-}
-
-.ple__totals {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin-top: 10px;
-  gap: 0;
-}
-
-.ple__totals__row {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  width: 300px;
-  border-bottom: 1px solid #f0f0f0;
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.ple__totals__row--grand {
-  border-top: 1.5px solid #111;
-  border-bottom: none;
-  margin-top: 4px;
-  padding-top: 6px;
-
-  .ple__totals__label {
-    font-weight: 700;
-    font-size: 12px;
-    color: #111;
-  }
-}
-
-.ple__totals__label {
-  font-size: 11px;
-  color: #666;
-}
-
-// â”€â”€ Line-item column configurator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-.ple-li-cols {
-  margin-bottom: 10px;
-
-  &__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0;
-    margin-bottom: 8px;
-  }
-}
-
-.ple-li-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  max-width: 150px;
-  padding: 4px 8px;
-  border-radius: 5px;
-  border: 1px solid #e9ecef;
-  background: #f8f9fa;
-  font-size: 12px;
-  transition: opacity 0.15s;
-  margin: 2px 0;
-
-  &--required {
-    background: color-mix(in srgb, var(--primary-color, #6366f1) 4%, #f9fafb);
-    border-color: color-mix(
-      in srgb,
-      var(--primary-color, #6366f1) 20%,
-      #e5e7eb
-    );
-    cursor: default;
-  }
-
-  &--dragging {
-    opacity: 0.4;
-  }
-
-  &__lock {
-    color: #9ca3af;
-    font-size: 10px;
-    flex-shrink: 0;
-  }
-
-  &__handle {
-    color: #adb5bd;
-    cursor: move;
-    font-size: 11px;
-    flex-shrink: 0;
-    &:hover {
-      color: #6b7280;
-    }
-  }
-
-  &__label {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 500;
-    color: #374151;
-  }
-
-  &__remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #9ca3af;
-    padding: 0 1px;
-    font-size: 10px;
-    flex-shrink: 0;
-    line-height: 1;
-    &:hover {
-      color: #ef4444;
-    }
-  }
-}
-
-.ple-li-chip-drop {
-  width: 4px;
-  height: 26px;
-  flex-shrink: 0;
-  border-radius: 2px;
-  transition: all 0.15s;
-  margin: 2px 0;
-
-  &--active {
-    width: 18px;
-    background: color-mix(
-      in srgb,
-      var(--primary-color, #6366f1) 12%,
-      transparent
-    );
-    border: 1.5px dashed var(--primary-color, #6366f1);
-    border-radius: 4px;
-  }
-}
-
-.ple-li-add-col {
-  position: relative;
-
-  &__btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: 1px dashed #d1d5db;
-    border-radius: 5px;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: #6b7280;
-    cursor: pointer;
-    width: 100%;
-    transition: all 0.15s;
-
-    &:hover {
-      border-color: var(--primary-color, #6366f1);
-      color: var(--primary-color, #6366f1);
-      background: color-mix(in srgb, var(--primary-color, #6366f1) 4%, #fff);
-    }
-  }
-
-  &__dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 20;
-    overflow: hidden;
-  }
-
-  &__option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 8px 12px;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 13px;
-    border-bottom: 1px solid #f3f4f6;
-    transition: background 0.1s;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &:hover {
-      background: color-mix(in srgb, var(--primary-color, #6366f1) 6%, #fff);
-    }
-  }
-
-  &__option-label {
-    flex: 1;
-    font-weight: 500;
-    color: #374151;
-  }
-
-  &__option-type {
-    font-size: 11px;
-    color: var(--secondary-color, #6b7280);
-    border: 1px solid currentColor;
-    padding: 1px 5px;
-    border-radius: 3px;
-    opacity: 0.8;
-  }
-}
-
-.ple-li-col-hint {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 6px;
-  font-size: 11px;
-  color: #9ca3af;
-  padding: 0 2px;
-
-  i {
-    font-size: 11px;
-  }
-
-  &--warn {
-    color: #d97706;
-    i {
-      color: #d97706;
-    }
-  }
-}
-
-// â”€â”€ Line-item preview strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-.ple__li-preview {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  font-size: 11px;
-  margin-bottom: 8px;
-
-  &__row {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 5px 0;
-
-    &--head {
-      border-top: 1.5px solid #111;
-      border-bottom: 1.5px solid #111;
-      padding: 4px 0;
-
-      > span {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: #111;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-
-  &__pos {
-    flex: 0 0 5%;
-    margin: 0 4px;
-  }
-
-  &__name {
-    flex: 3;
-    margin: 0 4px;
-    min-width: 0;
-  }
-
-  &__col {
-    flex: 1;
-    margin: 0 4px;
-    min-width: 0;
-  }
-}
-
-// â”€â”€ Relationship sidebar groups â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-.ple-rel-group {
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 8px 12px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    color: #374151;
-    font-size: 12px;
-    font-weight: 600;
-    transition: background 0.12s;
-
-    &:hover {
-      background: color-mix(
-        in srgb,
-        var(--primary-color, #6366f1) 5%,
-        transparent
-      );
-    }
-
-    i {
-      font-size: 10px;
-      color: #9ca3af;
-      flex-shrink: 0;
-    }
-  }
-
-  &__name {
-    flex: 1;
-  }
-
-  &__count {
-    font-size: 10px;
-    font-weight: 500;
-    color: #9ca3af;
-    background: #f3f4f6;
-    border-radius: 10px;
-    padding: 1px 6px;
-    flex-shrink: 0;
-  }
-
-  &__body {
-    padding: 0 4px 6px;
-  }
-
-  &__search {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px 6px;
-  }
-
-  &__search-icon {
-    font-size: 11px;
-    color: #9ca3af;
-    flex-shrink: 0;
-  }
-
-  &__search-input {
-    flex: 1;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    outline: none;
-    background: #fafafa;
-
-    &:focus {
-      border-color: var(--primary-color, #6366f1);
-    }
-  }
-}
-
-.ple-new-section-item--dragging {
-  opacity: 0.45;
-}
-
-// â”€â”€ Editable label input for related field items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-.ple-label-input {
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed #d1d5db;
-  outline: none;
-  font-size: inherit;
-  color: #374151;
-  width: 100%;
-  min-width: 60px;
-  padding: 1px 2px;
-  cursor: text;
-  transition: border-color 0.12s;
-
-  &:hover {
-    border-bottom-color: #9ca3af;
-  }
-
-  &:focus {
-    border-bottom-color: var(--primary-color, #6366f1);
-    border-bottom-style: solid;
-  }
-}
-
-// â”€â”€ Relationship field badge on canvas items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-.ple-rel-badge {
-  display: inline-block;
-  margin-left: 5px;
-  padding: 1px 5px;
-  font-size: 10px;
-  font-weight: 500;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--primary-color, #6366f1) 12%, #e5e7eb);
-  color: var(--primary-color, #6366f1);
-  vertical-align: middle;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-// â”€â”€ Field label toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-.ple-field-label-toggle {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-
-  &__check {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    user-select: none;
-    color: #9ca3af;
-
-    input[type="checkbox"] {
-      accent-color: var(--primary-color, #6366f1);
-      cursor: pointer;
-      width: 11px;
-      height: 11px;
-      flex-shrink: 0;
-    }
-
-    span {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      white-space: nowrap;
-    }
-  }
-}
-
-// â”€â”€ Header title with hover-clear â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-.ple-header-title-wrap {
-  position: relative;
-  display: block;
-
-  .ple-header-title-clear {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #c4c9d1;
-    padding: 2px 4px;
-    line-height: 1;
-    opacity: 0;
-    transition:
-      opacity 0.15s,
-      color 0.15s;
-
-    &:hover {
-      color: #ef4444;
-    }
-  }
-
-  &:hover .ple-header-title-clear {
-    opacity: 1;
-  }
-}
-</style>

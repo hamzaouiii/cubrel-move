@@ -72,6 +72,11 @@ class RecordController extends Controller
             ->firstOrFail();
         $productFields = $productModel->allFields();
 
+        $pdfTemplates = PdfTemplate::where('module_slug', $moduleModel->slug)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->get(['id', 'name', 'is_default']);
+
         return Inertia::render('Modules/Record', array_merge([
             'module' => $moduleModel,
             'title' => $moduleModel->name,
@@ -81,6 +86,7 @@ class RecordController extends Controller
             'fields' => $fields,
             'lineItemFields' => $lineItemFields,
             'productFields' => $productFields,
+            'pdfTemplates' => $pdfTemplates,
         ], $props));
 
     }

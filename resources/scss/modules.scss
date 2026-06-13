@@ -111,7 +111,7 @@
           border: none;
           padding: 8px 10px;
           border-radius: 8px;
-          font-family: "Fira Sans", "Heebo", sans-serif;
+          font-family: "Fira Sans", sans-serif;
           border-right: none;
           width: 380px;
           @media (max-width: 1250px) {
@@ -146,7 +146,7 @@
           font-size: 1.1rem;
           color: #212529;
           text-align: left;
-          font-family: "Fira Sans", "Heebo", sans-serif;
+          font-family: "Fira Sans", sans-serif;
           overflow: hidden;
           list-style: none;
           background-color: #ffffff;
@@ -312,7 +312,7 @@
           font-size: 1.1rem;
           color: #212529;
           text-align: left;
-          font-family: "Fira Sans", "Heebo", sans-serif;
+          font-family: "Fira Sans", sans-serif;
           overflow: hidden;
           list-style: none;
           background-color: #ffffff;
@@ -529,13 +529,15 @@
       font-size: 0.7rem;
     }
     .row-actions {
-      width: 1%;
       white-space: nowrap;
       text-align: right;
       padding-right: 1rem;
       display: flex;
       align-items: center;
       gap: 0.35rem;
+      width: 100%;
+      align-items: flex-end;
+      justify-content: flex-end;
       i {
         margin-right: 5px;
       }
@@ -588,6 +590,28 @@
           border-color: var(--danger-color);
           background-color: color-mix(in srgb, var(--danger-color) 82%, white);
           color: white;
+        }
+      }
+
+      &--primary {
+        color: var(--primary-color);
+        border-color: color-mix(in srgb, var(--primary-color) 82%, white);
+
+        &:hover {
+          border-color: var(--primary-color);
+          background-color: color-mix(in srgb, var(--primary-color) 82%, white);
+          color: white;
+        }
+      }
+
+      &--neutral {
+        color: #64748b;
+        border-color: #e2e8f0;
+        text-decoration: none;
+
+        &:hover {
+          background-color: #f1f5f9;
+          border-color: #94a3b8;
         }
       }
 
@@ -660,7 +684,7 @@
     background-color: white;
     display: flex;
     flex-direction: column;
-    font-family: "Fira Sans", "Heebo", sans-serif;
+    font-family: "Fira Sans", sans-serif;
     border-radius: 5px;
     position: sticky;
     box-shadow:
@@ -801,7 +825,7 @@
             border: none;
             padding: 8px 10px;
             border-radius: 8px;
-            font-family: "Fira Sans", "Heebo", sans-serif;
+            font-family: "Fira Sans", sans-serif;
             border-right: none;
             width: 380px;
             @media (max-width: 1250px) {
@@ -836,7 +860,7 @@
             font-size: 1.1rem;
             color: #212529;
             text-align: left;
-            font-family: "Fira Sans", "Heebo", sans-serif;
+            font-family: "Fira Sans", sans-serif;
             overflow: hidden;
             list-style: none;
             background-color: #ffffff;
@@ -921,6 +945,7 @@
         display: flex;
         flex-direction: row;
         user-select: none;
+        list-style: none;
         li {
           padding: 10px;
           margin: 0 10px;
@@ -1294,7 +1319,7 @@
     border-radius: 12px;
 
     &__header {
-      font-family: "Fira Sans", "Heebo", sans-serif;
+      font-family: "Fira Sans", sans-serif;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -1997,7 +2022,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  font-family: "Fira Sans", "Heebo", sans-serif;
+  font-family: "Fira Sans", sans-serif;
 
   &__backdrop {
     position: absolute;

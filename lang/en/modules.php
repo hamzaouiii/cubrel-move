@@ -22,7 +22,8 @@ return [
     ],
     'actions' => [
         'share' => 'Share',
-        'export' => 'export',
+        'export' => 'Export',
+        'pdf' => 'Print As PDF',
         'placeholder' => 'Something here...',
         'bulk_action' => 'Bulk Actions',
         'delete' => 'Delete',

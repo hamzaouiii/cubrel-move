@@ -166,4 +166,18 @@ return [
       ]
     ]
   ],
+  'pdf_templates' => [
+    'label' => 'settings.groups.pdf_templates',
+    'description' => 'settings.groups.description.pdf_templates',
+    'items' => [
+      'pdf_templates' => [
+        'name' => 'PDF Manager',
+        'slug' => 'pdf_templates',
+        'label' => 'settings.items.pdf_templates',
+        'path' => '/settings/pdf-templates',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-file-pdf'
+      ]
+    ]
+  ]
 ];

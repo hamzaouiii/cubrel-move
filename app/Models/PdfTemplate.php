@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class PdfTemplate extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
         'module_slug',
         'name',
@@ -13,11 +16,18 @@ class PdfTemplate extends Model
         'layout_id',
         'description',
         'is_default',
+        'definition',
     ];
 
     protected $casts = [
         'is_default' => 'boolean',
+        'definition' => 'array',
     ];
+
+    public function layout()
+    {
+        return $this->belongsTo(Layout::class);
+    }
 
     public static function defaultFor(string $moduleSlug): ?self
     {

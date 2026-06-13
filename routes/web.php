@@ -22,6 +22,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
+use App\Http\Controllers\PdfTemplatesController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -138,6 +139,18 @@ Route::middleware(['auth'])->group(function () {
             Route::post('dropdowns_in_fields', [DropdownListController::class, 'storeAndAttach']);
             Route::get('dropdowns/{dropdown_id}', [DropdownListController::class, 'show'])
                 ->name('dropdowns.show');
+
+            // PDF Templates
+            Route::prefix('pdf-templates')->name('pdf-templates.')->group(function () {
+                Route::get('/', [PdfTemplatesController::class, 'index'])->name('index');
+                Route::get('/create', [PdfTemplatesController::class, 'create'])->name('create');
+                Route::post('/', [PdfTemplatesController::class, 'store'])->name('store');
+                Route::post('/preview', [PdfTemplatesController::class, 'preview'])->name('preview');
+                Route::get('/{pdfTemplate}', [PdfTemplatesController::class, 'edit'])->name('edit');
+                Route::put('/{pdfTemplate}', [PdfTemplatesController::class, 'update'])->name('update');
+                Route::delete('/{pdfTemplate}', [PdfTemplatesController::class, 'destroy'])->name('destroy');
+                Route::post('/{pdfTemplate}/default', [PdfTemplatesController::class, 'setDefault'])->name('default');
+            });
         });
 
         // System Settings
@@ -165,8 +178,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$).+')->name('modules.index');
 });
 
-// why are these duplicate ?
-Route::middleware(['guest'])->group(function () {
-    Route::get('/login', [AuthController::class, 'index'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-});

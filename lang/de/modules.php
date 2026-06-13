@@ -36,6 +36,7 @@ return [
     'actions' => [
         'share' => 'Teilen',
         'export' => 'Exportieren',
+        'pdf'   => 'Als PDF Drucken',
         'placeholder' => 'Irgendetwas hier',
         'bulk_action' => 'Sammelaktion',
         'delete' => 'Löschen',
