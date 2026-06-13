@@ -67,6 +67,7 @@ const editUrl = (f) => {
 
       <div class="dropdowns__actions">
         <Link class="btn-create" :href="createUrl">
+          <i class="fa-solid fa-plus"></i>
           {{ $t("settings.dropdown.create") }}
         </Link>
       </div>
@@ -93,7 +94,7 @@ const editUrl = (f) => {
               </span> -->
 
               <Link
-                class="dropdowns__table__row__actions__edit btn"
+                class="dropdowns__table__row__actions__edit"
                 :href="editUrl(f.id)"
               >
                 <i
