@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Module;
-use App\Models\PdfTemplate;
 use App\Services\Relationships\RelationshipService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LayoutManagerController extends Controller
 {
-    public function store(Request $request, Module $module, string $layoutType)
+    public function store(\Illuminate\Http\Request $request, Module $module, string $layoutType)
     {
         $validated = [];
         if ($layoutType == 'list' || $layoutType === 'linkingPanel') {
@@ -28,11 +26,6 @@ class LayoutManagerController extends Controller
                 'definition' => 'required|array',
                 'definition.columns' => 'required|array',
             ]);
-        } elseif ($layoutType == 'pdf') {
-            $validated = $request->validate([
-                'definition' => 'required|array',
-                'definition.sections' => 'required|array',
-            ]);
         }
 
         $layout = \App\Models\Layout::firstOrNew([
@@ -45,18 +38,6 @@ class LayoutManagerController extends Controller
         $layout->type = $layoutType;
         $layout->definition = $validated['definition'];
         $layout->save();
-
-        if ($layoutType === 'pdf') {
-            PdfTemplate::updateOrCreate(
-                ['layout_id' => $layout->id],
-                [
-                    'module_slug' => $module->slug,
-                    'name' => $module->name,
-                    'blade_view' => 'pdf.layout-driven',
-                    'is_default' => true,
-                ]
-            );
-        }
 
         return redirect()
             ->route('settings.modules.layouts.edit', [$module->id, $layoutType])
@@ -76,7 +57,7 @@ class LayoutManagerController extends Controller
         return Inertia::render('Settings/Layouts/Record', ['module' => $module]);
     }
 
-    public function edit(Request $request, string $id, string $type)
+    public function edit(string $id, string $type)
     {
         $module = Module::query()->where('id', $id)
             ->with([
