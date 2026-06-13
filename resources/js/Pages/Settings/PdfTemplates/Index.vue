@@ -1,26 +1,63 @@
 <script setup>
+import { computed, ref, nextTick, getCurrentInstance } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
-import SettingsLink from "@/Pages/Components/Settings/SettingsLink.vue";
+import { useConfirm } from "@/Composables/useConfirm";
+import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 
 defineOptions({ layout: AppLayout });
 
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 const { success, error } = useAlerts();
+const { confirm } = useConfirm();
 const appSettings = usePage().props.appSettings;
 
 const props = defineProps({
   templates: Array,
+  pdf_modules: Object,
+  meta: Object,
+  filters: Object,
 });
 
-const grouped = () => {
+const search = ref(props.filters?.search ?? "");
+const showSearch = ref(!!props.filters?.search);
+const searchInput = ref(null);
+
+const toggleSearch = () => {
+  if (showSearch.value) {
+    showSearch.value = false;
+    search.value = "";
+    performSearch();
+  } else {
+    showSearch.value = true;
+    nextTick(() => searchInput.value?.focus());
+  }
+};
+
+const performSearch = (page = 1) => {
+  router.get(
+    window.location.pathname,
+    { search: search.value || undefined, page },
+    { preserveState: true, preserveScroll: true, replace: true },
+  );
+};
+
+const grouped = computed(() => {
   const map = {};
-  for (const t of props.templates) {
-    if (!map[t.module_slug]) map[t.module_slug] = [];
-    map[t.module_slug].push(t);
+  for (const tpl of props.templates) {
+    if (!map[tpl.module_slug]) map[tpl.module_slug] = [];
+    map[tpl.module_slug].push(tpl);
   }
   return map;
-};
+});
+
+const moduleLabel = (slug) => props.pdf_modules?.[slug]?.label ?? slug;
+
+const hidePagination = computed(
+  () => (props.meta?.total ?? 0) <= (props.meta?.perPage ?? 15),
+);
 
 const setDefault = (id) => {
   router.post(
@@ -28,150 +65,161 @@ const setDefault = (id) => {
     {},
     {
       preserveScroll: true,
-      onSuccess: () => success("Default template updated."),
-      onError: () => error("Could not update template."),
+      onSuccess: () => success(t("globals.pdf_templates.default_updated")),
+      onError: () => error(t("globals.pdf_templates.default_update_error")),
     },
   );
 };
 
-const previewUrl = (module, recordId = null) =>
-  recordId ? `/${module}/${recordId}/pdf` : null;
+const handleDelete = async (tpl) => {
+  const confirmed = await confirm({
+    title: t("globals.pdf_templates.delete_confirm_title"),
+    message: t("globals.pdf_templates.delete_template_confirm", {
+      template: tpl.name,
+    }),
+    highlight: tpl.name,
+    danger: true,
+  });
+  if (!confirmed) return;
+
+  router.delete(`/settings/pdf-templates/${tpl.id}`, {
+    preserveScroll: true,
+    onSuccess: () => success(t("globals.pdf_templates.deleted")),
+    onError: () => error(t("globals.pdf_templates.delete_error")),
+  });
+};
+
+const metaSentence = computed(() => {
+  return `${props.templates?.length ?? null} ${t("modules.of")} ${props.meta.total}`;
+});
 </script>
 
 <template>
   <Head>
-    <title>PDF Templates - Settings - Cubrel</title>
+    <title>{{ $t("globals.pdf_templates.page_title") }}</title>
   </Head>
 
   <div
-    class="settings"
+    class="settings pdf-templates"
     :style="{
       '--primary-color': appSettings.primary_color,
+      '--module-color': appSettings.primary_color,
       '--secondary-color': appSettings.secondary_color,
+      '--danger-color': appSettings.danger_color,
     }"
   >
-    <SettingsLink :color="appSettings.primary_color" />
+    <div class="settings__module__header">
+      <Link href="/settings">
+        <i class="fa-solid fa-arrow-left"></i>
+        {{ $t("settings.back_to_settings") }}
+      </Link>
+    </div>
 
-    <div class="settings__system">
-      <div class="settings__system__header" style="margin-bottom: 24px">
-        <h3
-          style="font-size: 18px; font-weight: 600; color: var(--primary-color)"
-        >
-          PDF Templates
-        </h3>
-        <p style="color: #6b7280; margin-top: 4px; font-size: 13px">
-          Manage which PDF template is used when generating documents from a
-          module's record view.
-        </p>
+    <div class="pdf-templates__header">
+      <div class="pdf-templates__header__details">
+        <span class="pdf-templates__header__details__title">
+          {{ $t("globals.pdf_templates.page_title") }}
+        </span>
+        <span class="pdf-templates__header__details__meta">
+          {{ metaSentence ?? "" }}
+        </span>
       </div>
 
-      <div
-        v-if="templates.length === 0"
-        style="padding: 32px 0; text-align: center; color: #9ca3af"
-      >
-        <i
-          class="fa-solid fa-file-pdf"
-          style="font-size: 32px; margin-bottom: 12px"
-        ></i>
-        <p>No PDF templates configured yet.</p>
-      </div>
-
-      <div
-        v-for="(group, slug) in grouped()"
-        :key="slug"
-        style="margin-bottom: 32px"
-      >
-        <div
-          style="
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: #9ca3af;
-            margin-bottom: 12px;
-          "
-        >
-          {{ slug }}
-        </div>
-
-        <div
-          v-for="t in group"
-          :key="t.id"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: #fff;
-          "
-        >
-          <div style="display: flex; align-items: center; gap: 12px">
-            <i
-              class="fa-solid fa-file-pdf"
-              :style="{
-                color: t.is_default ? appSettings.primary_color : '#9ca3af',
-                fontSize: '20px',
-              }"
-            ></i>
-            <div>
-              <div style="font-weight: 600; font-size: 14px">{{ t.name }}</div>
-              <div style="font-size: 12px; color: #6b7280; margin-top: 2px">
-                View:
-                <code
-                  style="
-                    background: #f3f4f6;
-                    padding: 1px 5px;
-                    border-radius: 3px;
-                  "
-                  >{{ t.blade_view }}</code
-                >
-              </div>
-              <div
-                v-if="t.description"
-                style="font-size: 12px; color: #9ca3af; margin-top: 2px"
-              >
-                {{ t.description }}
-              </div>
-            </div>
+      <div class="pdf-templates__header__actions">
+        <Transition name="slide-search">
+          <div class="pdf-templates__header__actions__search" v-if="showSearch">
+            <input
+              ref="searchInput"
+              v-model="search"
+              type="text"
+              :placeholder="$t('settings.dropdown.search')"
+              @keyup.enter="performSearch()"
+            />
           </div>
-
-          <div style="display: flex; align-items: center; gap: 10px">
-            <span
-              v-if="t.is_default"
-              style="
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                padding: 3px 10px;
-                border-radius: 4px;
-                background: #d1fae5;
-                color: #065f46;
-              "
-            >
-              Default
-            </span>
-            <button
-              v-else
-              @click="setDefault(t.id)"
-              style="
-                font-size: 12px;
-                padding: 5px 12px;
-                border-radius: 6px;
-                cursor: pointer;
-                border: 1px solid #e5e7eb;
-                background: #f9fafb;
-                color: #374151;
-              "
-            >
-              Set as default
-            </button>
-          </div>
-        </div>
+        </Transition>
+        <button @click="toggleSearch">
+          <i
+            class="fa-solid"
+            :class="showSearch ? 'fa-xmark' : 'fa-magnifying-glass'"
+          ></i>
+        </button>
+        <Link href="/settings/pdf-templates/create">
+          <i class="fa-solid fa-plus"></i>
+        </Link>
       </div>
+    </div>
+
+    <div class="list-layout__table-scroll">
+      <table class="list-layout__table">
+        <tbody>
+          <template v-if="templates.length === 0">
+            <tr>
+              <td colspan="2" class="pdf-templates__empty">
+                {{
+                  !filters?.search
+                    ? $t("globals.pdf_templates.no_templates")
+                    : $t("settings.no_results")
+                }}
+              </td>
+            </tr>
+          </template>
+
+          <template v-else>
+            <template v-for="(group, slug) in grouped" :key="slug">
+              <tr class="pdf-templates__group-row">
+                <td colspan="2">{{ moduleLabel(slug) }}</td>
+              </tr>
+              <tr v-for="tpl in group" :key="tpl.id">
+                <td>
+                  <div class="pdf-templates__cell-name">
+                    <i
+                      class="fa-solid fa-file-pdf"
+                      :class="
+                        tpl.is_default
+                          ? 'pdf-templates__icon--active'
+                          : 'pdf-templates__icon--muted'
+                      "
+                    ></i>
+                    <span>{{ tpl.name }}</span>
+                    <span v-if="tpl.is_default" class="pdf-templates__badge">
+                      {{ $t("globals.pdf_templates.default_badge") }}
+                    </span>
+                  </div>
+                </td>
+                <td class="row-actions">
+                  <button
+                    v-if="!tpl.is_default"
+                    class="row-action-btn row-action-btn--primary"
+                    @click="setDefault(tpl.id)"
+                    :title="$t('globals.pdf_templates.set_as_default_btn')"
+                  >
+                    <i class="fa-regular fa-circle-dot"></i>
+                    {{ $t("globals.pdf_templates.set_as_default_btn") }}
+                  </button>
+                  <Link
+                    class="row-action-btn row-action-btn--revoke"
+                    :href="`/settings/pdf-templates/${tpl.id}`"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    {{ $t("globals.pdf_templates.edit_btn") }}
+                  </Link>
+                  <button
+                    class="row-action-btn row-action-btn--delete"
+                    @click="handleDelete(tpl)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                    {{ $t("globals.pdf_templates.delete_btn") }}
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="list-layout__pagination" v-if="!hidePagination">
+      <Pagination v-if="meta && meta.total !== 0" :meta="meta" />
     </div>
   </div>
 </template>

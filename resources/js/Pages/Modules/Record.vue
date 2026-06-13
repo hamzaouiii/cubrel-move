@@ -18,6 +18,7 @@ import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.
 import { useFieldValidation } from "@/Composables/useFieldValidation";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
 import LineItemsPanel from "../Components/Modules/LineItemsPanel.vue";
+import PdfModal from "@/Pages/Components/Modules/PdfModal.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -34,7 +35,7 @@ const props = defineProps({
   fields: Object,
   lineItemFields: Array,
   productFields: Array,
-  hasPdfTemplate: Boolean,
+  pdfTemplates: { type: Array, default: () => [] },
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -48,6 +49,7 @@ const form = useForm({ ...props.record });
 const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
+const showPdfModal = ref(false);
 const actionDropDownref = ref(null);
 const currentTab = ref("overview");
 const overlayOpen = ref(false);
@@ -247,7 +249,8 @@ const saveRecord = () => {
 };
 
 const openPdf = () => {
-  window.open(`/${props.module.slug}/${props.record.id}/pdf`, "_blank");
+  showActionDropDown.value = false;
+  showPdfModal.value = true;
 };
 
 const deleteRecord = async () => {
@@ -493,11 +496,12 @@ const getLinkingLayout = (slug) => {
                   <span>{{ $t("modules.actions.export") }}</span>
                 </li>
                 <li
+                  v-if="pdfTemplates.length > 0"
                   @click="openPdf()"
                   class="record-layout__header__details__actions__edit__dropdown__item"
                 >
                   <i class="fa-solid fa-file-pdf"></i>
-                  <span>Print as PDF</span>
+                  <span>{{ $t("modules.actions.pdf") }}</span>
                 </li>
                 <li
                   @click="deleteRecord()"
@@ -594,10 +598,7 @@ const getLinkingLayout = (slug) => {
         </div>
       </div>
 
-      <div
-        v-show="currentTab === 'related'"
-        class="record-layout__subpanels"
-      >
+      <div v-show="currentTab === 'related'" class="record-layout__subpanels">
         <PanelList
           :relationships="record.related"
           :layout="relatedLayout"
@@ -615,6 +616,15 @@ const getLinkingLayout = (slug) => {
           :selected-parent="activeParentRecord"
         />
       </div>
+      <PdfModal
+        v-if="showPdfModal"
+        :module-slug="module.slug"
+        :record-id="record.id"
+        :record-name="record.name ?? record.number ?? record.id"
+        :templates="pdfTemplates"
+        @close="showPdfModal = false"
+      />
+
       <RecordSelectorDrawer
         :open="fieldOverlayOpen"
         :search-endpoint="

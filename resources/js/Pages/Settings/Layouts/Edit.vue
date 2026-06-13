@@ -9,7 +9,6 @@ import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecord
 import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelatedEditor.vue";
 import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubpanelEditor.vue";
 import LayoutLinkingPanelEditor from "@/Pages/Components/Settings/Layouts/LayoutLinkingPanelEditor.vue";
-import LayoutPdfEditor from "@/Pages/Components/Settings/Layouts/LayoutPdfEditor.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
@@ -37,7 +36,6 @@ const appSettings = page.props.appSettings;
 const listColumns = ref([]);
 const relatedColumns = ref([]);
 const recordSections = ref([]);
-const pdfSections = ref([]);
 const emptyColumns = ref(new Set());
 
 // setup layouts + record + related
@@ -271,48 +269,6 @@ const availableRecordFields = computed(() => {
   return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
 
-// pdf layout
-const pdfLayoutFromDB = computed(() => {
-  if (props.type !== "pdf") return [];
-  return Object.values(currentLayout?.value?.sections || {});
-});
-
-const LOCKED_HEADER = { id: "section-header", type: "header", locked: true };
-const LOCKED_FOOTER = { id: "section-footer", type: "footer", locked: true };
-
-const clonePdfSection = (s) => {
-  if (s.type === "fields")
-    return { ...s, items: (s.items || []).map((i) => ({ ...i })) };
-  if (s.type === "relationship")
-    return { ...s, columns: (s.columns || []).map((c) => ({ ...c })) };
-  return { ...s };
-};
-
-watch(
-  pdfLayoutFromDB,
-  (val) => {
-    let sections = val.map(clonePdfSection);
-    if (!sections.some((s) => s.type === "header"))
-      sections.unshift({ ...LOCKED_HEADER });
-    if (!sections.some((s) => s.type === "footer"))
-      sections.push({ ...LOCKED_FOOTER });
-    pdfSections.value = sections;
-  },
-  { immediate: true },
-);
-
-const availablePdfFields = computed(() => {
-  if (props.type !== "pdf") return [];
-  const used = new Set();
-  pdfSections.value.forEach((section) => {
-    if (section.type === "fields") {
-      (section.items || []).forEach((item) => {
-        if (item.kind === "field") used.add(item.name);
-      });
-    }
-  });
-  return moduleFields.value.filter((f) => !used.has(f.name));
-});
 
 const isDirty = computed(() => {
   if (props.type === "list" || props.type === "linkingPanel") {
@@ -327,7 +283,7 @@ const isDirty = computed(() => {
     const originalCleaned = relatedLayoutColumnConfigs.value.map((column) => ({
       ...column,
       layout: (column.layout || []).map((col) => {
-        const { rel, ...rest } = col || {}; // Remove any joined relation objects
+        const { rel, ...rest } = col || {};
         return rest;
       }),
     }));
@@ -336,11 +292,6 @@ const isDirty = computed(() => {
     const original = JSON.stringify(originalCleaned);
 
     return current !== original;
-  } else if (props.type === "pdf") {
-    return (
-      JSON.stringify(pdfSections.value) !==
-      JSON.stringify(pdfLayoutFromDB.value)
-    );
   }
   return false;
 });
@@ -350,7 +301,6 @@ const typeDefinitionKey = {
   linkingPanel: "columns",
   record: "sections",
   related: "columns",
-  pdf: "sections",
 };
 const form = useForm({
   module_id: props.module.id,
@@ -367,13 +317,6 @@ const resetToDatabaseValue = () => {
     recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value);
   } else if (props.type === "related") {
     relatedColumns.value = cloneRelatedColumnsFromDb(relatedLayoutFromDB.value);
-  } else if (props.type === "pdf") {
-    let sections = pdfLayoutFromDB.value.map(clonePdfSection);
-    if (!sections.some((s) => s.type === "header"))
-      sections.unshift({ ...LOCKED_HEADER });
-    if (!sections.some((s) => s.type === "footer"))
-      sections.push({ ...LOCKED_FOOTER });
-    pdfSections.value = sections;
   }
   form.definition = currentLayout.value || {};
   clearAllAlerts();
@@ -407,8 +350,6 @@ const saveLayout = () => {
     }
     emptyColumns.value = new Set();
     definition.columns = cleanedRelatedColumns.value;
-  } else if (props.type === "pdf") {
-    definition.sections = pdfSections.value;
   }
   form.definition = definition;
   const url = page.url;
@@ -521,16 +462,6 @@ const moduleColor = computed(() =>
         <LayoutLinkingPanelEditor
           v-model:columns="listColumns"
           :available-fields="availableListFields"
-        />
-      </div>
-
-      <div v-else-if="type === 'pdf'">
-        <LayoutPdfEditor
-          v-model:sections="pdfSections"
-          :available-fields="availablePdfFields"
-          :module-slug="module.slug"
-          :line-item-fields="lineItemFields"
-          :module-label="$t('modules.' + module.slug + '.single_label')"
         />
       </div>
 

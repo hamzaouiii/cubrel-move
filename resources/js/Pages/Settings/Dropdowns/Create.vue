@@ -6,7 +6,7 @@ import {
   onMounted,
   onBeforeUnmount,
 } from "vue";
-import { Head, usePage, useForm } from "@inertiajs/vue3";
+import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
@@ -58,6 +58,7 @@ const appSettings = usePage().props.appSettings;
 const form = useForm({
   key: "",
   values: {},
+  is_draft: false,
 });
 let listItems = ref([]);
 let newItem = ref({ label: "", value: "" });
@@ -77,7 +78,7 @@ const addItem = () => {
       (item) => item.value === generatedSystemvalue(newItem.value.label),
     )
   ) {
-    error("Value Already Exists");
+    error(t("settings.dropdown.errors.duplicate_value"));
     valueExistsError.value = true;
     return;
   }
@@ -108,10 +109,10 @@ const saveList = () => {
       clearAllAlerts();
       success(t("modules.actions.save_success"));
     },
-    onError: (error) => {
+    onError: (e) => {
       clearAllAlerts();
       error(t("modules.actions.save_error"));
-      console.error(error);
+      console.error(e);
     },
   });
 };
@@ -124,6 +125,9 @@ function handleKeydown(e) {
     }
   }
 }
+const handleCancel = () => {
+  router.visit("/settings/dropdowns");
+};
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
@@ -155,7 +159,7 @@ useUnsavedChangesGuard({
   >
     <div class="settings__dropdown">
       <div class="settings__dropdown__edit">
-        <form class="dropdown-form" action="" method="post">
+        <form class="dropdown-form" action="" method="post" @submit.prevent>
           <div class="dropdown-form__item">
             <span class="dropdown-form__item__label"
               ><label for="name">Name</label></span
@@ -233,7 +237,13 @@ useUnsavedChangesGuard({
 
         <div class="settings__actions">
           <button
-            type="submit"
+            class="settings__actions__cancel"
+            :disabled="!listIsDirty"
+            @click="handleCancel()"
+          >
+            {{ $t("settings.cancel") }}
+          </button>
+          <button
             class="settings__actions__save"
             :disabled="!listIsDirty"
             @click="saveList()"

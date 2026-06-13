@@ -20,6 +20,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.2.0",
         "@inertiajs/vue3": "^2.2.8",
         "@mdi/font": "^7.4.47",
         "@vitejs/plugin-vue": "^6.0.1",

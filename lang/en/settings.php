@@ -24,8 +24,8 @@ return [
     'setting_update_success' => 'The settings have been successfully updated',
     'setting_update_error' => 'An error occurred while updating the settings',
     'dropdown_list_fetch_failed' => 'Failed to fetch dropdown lists:',
-    'back_to_modules' => 'Back to Module List',
-    'back_to_settings' => 'Back to Settings',
+    'back_to_modules' => 'Module List',
+    'back_to_settings' => 'Settings',
     'search_placeholder' => 'Search settings...',
     'no_results' => 'No settings found',
     'currency_hint' => 'You can add to this list by editing the dropdown list \'currency_list\' in Settings->Dropdown Editor',
@@ -82,6 +82,11 @@ return [
         'linking_panel_limit' => 'Linking Panel Limit',
         'multi_currency_mode' => 'Multi Currency Mode',
         'default_currency'  => 'Currency',
+        'company_name'      => 'Company Name',
+        'company_address'   => 'Company Address',
+        'company_phone'     => 'Company Phone',
+        'company_website'   => 'Company Website',
+        'company_logo_url'  => 'Company Logo URL',
     ],
     'groups' => [
         'email' => 'Email Settings',
@@ -89,16 +94,19 @@ return [
         'users' => 'User Management',
         'company'        => 'Company',
         'customisations' => 'Customisations',
+                'pdf_templates' => 'PDF Templates',
         'description' => [
             'email' => 'Manage outbound and inbound emails. The email settings must be configured in order to enable users to send out email and newsletter campaigns.',
             'system' => 'Configure the system-wide settings according to the specifications of your organization.',
             'users' => 'Invite and manage users in Cubrel.',
             'customisations' => 'Create and manage Modules, Layouts, Fields, and Relationships.',
+                        'pdf_templates' => 'Create and manage the PDF layouts used when generating documents for your records.',
             'company'        => 'Manage your organization\'s identity shown on generated documents.',
         ],
     ],
     'items' => [
         'role_management' => 'Role Management',
+         'pdf_templates' => 'PDF Templates',
         'inbound_email' => 'Inbound Email',
         'currencies' => 'Currencies',
         'create_user' => 'Create A User',
@@ -119,7 +127,7 @@ return [
          'company_info'        => 'Company Info',
     ],
     'dropdown' => [
-        'create' => 'Create new dropdown list',
+        'create' => 'New List',
         'edit' => 'Edit Dropdown list',
         'display_label' => 'Display Label',
         'value' => 'Value',
@@ -129,6 +137,9 @@ return [
         'update_success' => 'Dropdown list updated successfully',
         'save_error' => 'An error occurred while saving the Dropdown list',
         'search' => 'Search dropdown lists',
+              'errors' => [
+        'duplicate_value' => 'Value already exists',
+      ]
     ],
     'iconpicker' => [
         'search_placeholder' => 'Search icons...',

@@ -75,15 +75,6 @@ const t = proxy.$t;
             {{ $t("layouts.linkingPanel") }}
           </span>
         </Link>
-
-        <Link class="settings__modules__card" :href="currentPath + '/pdf'">
-          <div class="settings__modules__card__icon">
-            <i class="fa-solid fa-file-pdf"></i>
-          </div>
-          <span class="settings__modules__card__label">
-            {{ $t("layouts.pdf.label") }}
-          </span>
-        </Link>
       </div>
     </div>
   </div>

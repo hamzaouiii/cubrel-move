@@ -1154,3 +1154,430 @@
     }
   }
 }
+
+// ── PDF Generation Modal ──────────────────────────────────────────────────
+.pdf-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: "Fira Sans", "Heebo", sans-serif;
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 20% 50%,
+      rgba(99, 102, 241, 0.08),
+      rgba(15, 23, 42, 0.55)
+    );
+    backdrop-filter: blur(8px);
+    animation: backdrop-fade 0.3s ease-out;
+    cursor: pointer;
+  }
+
+  &__container {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 24px;
+    z-index: 1020;
+    animation: modal-slide-up 0.35s ease-out;
+  }
+
+  &__close {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1010;
+    backdrop-filter: blur(4px);
+    padding: 0;
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.22);
+      transform: rotate(90deg);
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  &__generating-bar {
+    margin-top: 16px;
+
+    &__track {
+      height: 5px;
+      background: #e5e7eb;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    &__fill {
+      height: 100%;
+      width: 40%;
+      background: linear-gradient(
+        90deg,
+        var(--module-color),
+        color-mix(in srgb, var(--module-color) 70%, white)
+      );
+      border-radius: 3px;
+      animation: indeterminate 1.6s ease-in-out infinite;
+    }
+  }
+
+  &__body {
+    padding: 24px 32px;
+    background: white;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__spinner-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 0;
+  }
+
+  &__spinner {
+    color: var(--module-color);
+    animation: spin 1.1s linear infinite;
+    transform-origin: center;
+    display: flex;
+  }
+
+  &__spinner-label {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  &__ready {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+
+    &__icon {
+      width: 72px;
+      height: 72px;
+      background: color-mix(in srgb, #10b981 10%, white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop-in 0.3s ease-out;
+    }
+
+    &__label {
+      font-size: 14px;
+      color: #374151;
+      text-align: center;
+    }
+  }
+
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+
+    &__icon {
+      width: 72px;
+      height: 72px;
+      background: rgba(239, 68, 68, 0.08);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--danger-color, #ef4444);
+    }
+
+    &__label {
+      font-size: 14px;
+      color: #374151;
+      text-align: center;
+    }
+  }
+}
+
+.pdf-template-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+  margin-bottom: 8px;
+  border: 1px solid #f3f4f6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  &--default {
+    border-color: color-mix(in srgb, var(--module-color) 30%, #e5e7eb);
+    background: color-mix(in srgb, var(--module-color) 3%, white);
+
+    &:hover {
+      background: color-mix(in srgb, var(--module-color) 6%, white);
+    }
+  }
+
+  &__icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background: #f3f4f6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+
+    .pdf-template-row--default & {
+      background: color-mix(in srgb, var(--module-color) 10%, white);
+      color: var(--module-color);
+    }
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  &__badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 2px 7px;
+    border-radius: 100px;
+    background: color-mix(in srgb, #10b981 12%, white);
+    color: #059669;
+  }
+
+  &__action {
+    color: #d1d5db;
+    transition:
+      color 0.15s,
+      transform 0.15s;
+
+    .pdf-template-row:hover & {
+      color: var(--module-color);
+      transform: translateX(3px);
+    }
+  }
+}
+
+.deployment-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+
+  &__header {
+    padding: 28px 32px 22px;
+    background: linear-gradient(135deg, #f9fafb 0%, white 100%);
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  &__title-group {
+    margin-bottom: 4px;
+  }
+
+  &__title {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+
+    &--success {
+      color: #10b981;
+      font-weight: 500;
+    }
+
+    &--danger {
+      color: var(--danger-color, #ef4444);
+      font-weight: 500;
+    }
+  }
+
+  &__footer {
+    padding: 18px 32px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+
+    &__content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: var(--module-color);
+    color: #fff;
+
+    &:hover {
+      background: color-mix(in srgb, var(--module-color) 80%, black);
+      transform: translateY(-1px);
+    }
+
+    &--retry {
+      background: var(--danger-color, #ef4444);
+
+      &:hover {
+        background: color-mix(in srgb, var(--danger-color, #ef4444) 80%, black);
+      }
+    }
+
+    &--secondary {
+      background: #6b7280;
+
+      &:hover {
+        background: #4b5563;
+      }
+    }
+  }
+}
+
+.deployment-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--module-color);
+    animation: pulse 1.5s ease infinite;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: 13px;
+    color: #6b7280;
+  }
+}
+
+.deployment-success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+
+  &__message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #10b981;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.deployment-failed {
+  width: 100%;
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-150%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .pdf-modal__container {
+    margin: 0 16px;
+  }
+
+  .deployment-card__header,
+  .pdf-modal__body,
+  .deployment-card__footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .deployment-success {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

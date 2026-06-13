@@ -25,6 +25,7 @@ return [
     'dropdown_list_fetch_failed' => 'Dropdown-Listen konnten nicht abgerufen werden:',
     'back_to_modules' => 'Zurück zur Modul-Liste',
     'back_to_settings' => 'Zurück zu Einstellungen',
+    'currency_hint' => 'Sie können diese Liste erweitern, indem Sie die Dropdown-Liste \'currency_list\' unter Einstellungen → Dropdown-Editor bearbeiten.',
     'search_placeholder' => 'In dieser Liste suchen...',
     'no_results' => 'Keine Einstellungen gefunden',
     'tabs' => [
@@ -76,7 +77,13 @@ return [
         'related_panel_limit' => 'Limit verknüpfte Panels',
         'list_view_limit' => 'Limit Listenansicht',
         'linking_panel_limit' => 'Limit Verknüpfte Listenansicht',
-
+        'multi_currency_mode' => 'Mehrwährungsmodus',
+        'default_currency'   => 'Währung',
+        'company_name'       => 'Firmenname',
+        'company_address'    => 'Firmenadresse',
+        'company_phone'      => 'Firmentelefon',
+        'company_website'    => 'Firmenwebseite',
+        'company_logo_url'   => 'Firmenlogo-URL',
     ],
     'groups' => [
         'email' => 'E-Mail Einstellungen',
@@ -84,15 +91,18 @@ return [
         'users' => 'Benutzerverwaltung',
         'customisations' => 'Anpassungen',
         'company' => 'Unternehmen',
+        'pdf_templates' => 'PDF-Vorlagen',
         'description' => [
             'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
             'users' => 'Laden Sie Benutzer in Cubrel ein und verwalten Sie sie.',
             'customisations' => 'Erstelle und verwalte Module, Layouts, Felder und Beziehungen.',
+            'pdf_templates' => 'Erstellen und verwalten Sie die PDF-Layouts, die beim Generieren von Dokumenten für Ihre Datensätze verwendet werden.',
             'company' => 'Verwalten Sie die Identität Ihres Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
         ],
     ],
     'items' => [
+        'pdf_templates' => 'PDF-Vorlagen',
         'role_management' => 'Rollenverwaltung',
         'inbound_email' => 'Eingehende E-Mails',
         'currencies' => 'Währungen',
@@ -114,7 +124,7 @@ return [
         'company_info' => 'Unternehmensdaten',
     ],
     'dropdown' => [
-        'create' => 'Neue Dropdown Liste erstellen',
+        'create' => 'Neue Liste',
         'edit' => 'Dropdown Liste bearbeiten',
         'display_label' => 'Anzeigebezeichnung',
         'value' => 'Elementname',
@@ -124,6 +134,9 @@ return [
         'update_success' => 'Dropdown Liste erfolgreich gespeichert',
         'save_error' => 'Beim Speichern der Dropdown Liste ist ein Fehler aufgetreten',
         'search' => 'In dieser Liste suchen',
+                      'errors' => [
+        'duplicate_value' => 'Wert existiert bereits',
+      ]
     ],
     'select_dropdown_list' => 'Dropdown Liste auswählen...',
     'iconpicker' => [
