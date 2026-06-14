@@ -61,7 +61,28 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
-  <div v-if="readOnly">
+  <div v-if="mode === 'settings'">
+    <span
+      class="text-field text-field--edit text-field--settings"
+      :class="{
+        'text-field--error': showError,
+        'text-field--readonly': readOnly,
+      }"
+    >
+      <div class="text-input-wrapper">
+        <input
+          v-model="localValue"
+          type="text"
+          @input="clearErrors()"
+          :disabled="readOnly"
+        />
+      </div>
+      <span v-if="showError" class="error-icon-container">
+        <i class="error-icon fa-solid fa-circle-exclamation"></i>
+      </span>
+    </span>
+  </div>
+  <div v-else-if="readOnly">
     {{ modelValue }}
   </div>
   <div v-else-if="mode === 'edit'">
@@ -120,27 +141,5 @@ const highlightMatch = (text) => {
         {{ modelValue || "—" }}
       </span>
     </div>
-  </div>
-
-  <div v-if="mode === 'settings'">
-    <span
-      class="text-field text-field--edit text-field--settings"
-      :class="{
-        'text-field--error': showError,
-        'text-field--readonly': readOnly,
-      }"
-    >
-      <div class="text-input-wrapper">
-        <input
-          v-model="localValue"
-          type="text"
-          @input="clearErrors()"
-          :disabled="readOnly"
-        />
-      </div>
-      <span v-if="showError" class="error-icon-container">
-        <i class="error-icon fa-solid fa-circle-exclamation"></i>
-      </span>
-    </span>
   </div>
 </template>
