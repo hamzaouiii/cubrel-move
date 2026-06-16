@@ -24,6 +24,7 @@ const { error, clearAllAlerts, success } = useAlerts();
 const { confirm } = useConfirm();
 
 const rowErrors = ref({});
+const lastEdited = ref("percent");
 
 const validateRow = () => {
   const errors = {};
@@ -162,28 +163,49 @@ const row = ref(emptyRow());
 const recalcRow = () => {
   const up = parseFloat(row.value.unit_price || 0);
   const qty = parseFloat(row.value.quantity || 0);
-  const dis = parseFloat(row.value.discount || 0);
   const tax = parseFloat(row.value.tax_rate || 0);
-
   const subtotal = up * qty;
-  const discount_amount = subtotal * (dis / 100);
-  const tax_amount = (subtotal - discount_amount) * (tax / 100);
 
+  let da;
+  if (lastEdited.value === "amount") {
+    da =
+      Math.round(
+        Math.min(
+          Math.max(parseFloat(row.value.discount_amount || 0), 0),
+          subtotal,
+        ) * 100,
+      ) / 100;
+    row.value.discount_amount = da;
+    row.value.discount =
+      subtotal > 0 ? Math.round((da / subtotal) * 10000) / 100 : 0;
+  } else {
+    const dis = parseFloat(row.value.discount || 0);
+    da = Math.round(subtotal * (dis / 100) * 100) / 100;
+    row.value.discount_amount = da;
+  }
+
+  const tax_amount = (subtotal - da) * (tax / 100);
   row.value.subtotal = subtotal;
-  row.value.discount_amount = discount_amount;
   row.value.tax_amount = tax_amount;
-  row.value.total = subtotal - discount_amount + tax_amount;
+  row.value.total = subtotal - da + tax_amount;
 };
 
 watch(
-  () => [
-    row.value.unit_price,
-    row.value.quantity,
-    row.value.discount,
-    row.value.tax_rate,
-  ],
+  () => [row.value.unit_price, row.value.quantity, row.value.tax_rate],
   recalcRow,
 );
+
+const onDiscountPercentChange = (val) => {
+  lastEdited.value = "percent";
+  row.value.discount = parseFloat(val) || 0;
+  recalcRow();
+};
+
+const onDiscountAmountChange = (val) => {
+  lastEdited.value = "amount";
+  row.value.discount_amount = parseFloat(val) || 0;
+  recalcRow();
+};
 
 // ── Product select ────────────────────────────────────────────────────────────
 
@@ -205,6 +227,7 @@ const openNewRow = () => {
   editingItem.value = null;
   row.value = emptyRow();
   rowErrors.value = {};
+  lastEdited.value = "percent";
   sheetOpen.value = true;
 };
 
@@ -213,6 +236,7 @@ const openEditRow = (item) => {
   editingItem.value = item;
   row.value = { ...item, product__label: item.product__label ?? "" };
   rowErrors.value = {};
+  lastEdited.value = "percent";
   sheetOpen.value = true;
 };
 
@@ -810,8 +834,7 @@ const productLinkingLayout = computed(() => {
               />
             </div>
 
-            <!-- Discount + Tax rate -->
-            <div class="sheet-field-row">
+            <div class="sheet-field-row sheet-field-row--3">
               <div class="sheet-field">
                 <label
                   class="sheet-field__label"
@@ -821,10 +844,26 @@ const productLinkingLayout = computed(() => {
                 </label>
                 <FieldRenderer
                   :field="getLineItemField('discount')"
-                  v-model="row.discount"
+                  :modelValue="row.discount"
+                  @update:modelValue="onDiscountPercentChange"
                   mode="edit"
                   :module-color="moduleColor"
                   :has-error="!!rowErrors.discount"
+                />
+              </div>
+              <div class="sheet-field">
+                <label class="sheet-field__label">
+                  {{ $t("modules.line_items.fields.discount_amount") }}
+                </label>
+                <FieldRenderer
+                  :field="{
+                    ...getLineItemField('notes'),
+                    name: 'discount_amount',
+                  }"
+                  :modelValue="row.discount_amount"
+                  @update:modelValue="onDiscountAmountChange"
+                  mode="edit"
+                  :module-color="moduleColor"
                 />
               </div>
               <div class="sheet-field">
@@ -1199,6 +1238,10 @@ const productLinkingLayout = computed(() => {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+
+    &--3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
   }
 
   &__label {
