@@ -101,7 +101,6 @@ class ModuleManagerController extends Controller
     $DEFAULT_COLOR         = '#000000';
     $DEFAULT_SORT_ORDER    = (Module::max('sort_order') ?? 0) + 1;
     $DEFAULT_IS_ACTIVE     = true;
-    $DEFAULT_PERMISSION    = true;
     $DEFAULT_SHOW_SIDEBAR  = true;
 
     $baseName = Str::studly($validated['slug']);
@@ -119,10 +118,6 @@ class ModuleManagerController extends Controller
       'sort_order'  => $DEFAULT_SORT_ORDER,
       'is_active'   => $DEFAULT_IS_ACTIVE,
       'description' => $validated['description'] ?? '',
-      'can_view'    => $DEFAULT_PERMISSION,
-      'can_create'  => $DEFAULT_PERMISSION,
-      'can_edit'    => $DEFAULT_PERMISSION,
-      'can_delete'  => $DEFAULT_PERMISSION,
       'model_class' =>  $model_class,
       'table_name'  => Str::snake($validated['slug']) . "_cstm",
       'show_in_sidebar' => $request->boolean('show_in_sidebar', $DEFAULT_SHOW_SIDEBAR),

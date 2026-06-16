@@ -106,7 +106,6 @@ class ModuleBuilderController extends Controller
     $baseName = Str::studly($validated['slug']);
     $DEFAULT_ICON          = 'fa-solid fa-bahai';
     $DEFAULT_SORT_ORDER    = (Module::max('sort_order') ?? 0) + 1;
-    $DEFAULT_PERMISSION    = true;
 
     $module->update([
       'name'        => $validated['display_label'],
@@ -117,10 +116,6 @@ class ModuleBuilderController extends Controller
       'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
       'category'        => $validated['category'],
       'sort_order'      => $DEFAULT_SORT_ORDER,
-      'can_view'        => $DEFAULT_PERMISSION,
-      'can_create'      => $DEFAULT_PERMISSION,
-      'can_edit'        => $DEFAULT_PERMISSION,
-      'can_delete'      => $DEFAULT_PERMISSION,
       'is_draft'        => false,
       'is_active'       => true,
       'handler_class'   => "App\\Handlers\\Modules\\Custom\\" . $baseName . "ModuleHandler",

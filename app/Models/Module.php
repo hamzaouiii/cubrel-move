@@ -37,10 +37,6 @@ class Module extends Model
         'sort_order',
         'is_active',
         'description',
-        'can_view',
-        'can_create',
-        'can_edit',
-        'can_delete',
         'model_class',
         'handler_class',
         'table_name',
@@ -55,10 +51,6 @@ class Module extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'can_view' => 'boolean',
-        'can_create' => 'boolean',
-        'can_edit' => 'boolean',
-        'can_delete' => 'boolean',
     ];
 
     protected $guarded = [];
