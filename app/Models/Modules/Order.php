@@ -11,16 +11,15 @@ class Order extends BaseModule
     'name',
     'owner_id',
     'order_number',
-    'total_amount',
     'status',
     'order_date',
     'due_date',
+    'subtotal',
+    'discount_amount',
+    'tax_amount',
+    'total',
   ];
 
-  public function getCasts(): array
-  {
-    return [...parent::getCasts(), 'total_amount' => 'decimal:2'];
-  }
   public function toSearchResult(): array
   {
     return [...parent::toSearchResult(), 'label' => $this->name, 'sublabel' => $this->order_number];

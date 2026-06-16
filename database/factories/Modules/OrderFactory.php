@@ -29,7 +29,6 @@ class OrderFactory extends Factory
       'order_number' => 'ORD-' . strtoupper(Str::random(6)),
       'description' => $this->faker->realText(120),
 
-      'total_amount' => number_format($this->faker->randomFloat(2, 500, 20000), 2, '.', ''),
       'status' => $this->faker->randomElement($statuses),
 
       'order_date' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-1 month', 'now'))->utc(),

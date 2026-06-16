@@ -16,10 +16,6 @@ class InvoiceFactory extends Factory
    */
   public function definition(): array
   {
-    $subtotal = $this->faker->randomFloat(2, 100, 5000);
-    $discount = $this->faker->randomFloat(2, 10, 100);
-    $tax      = round($subtotal * 0.19, 2);
-    $total    = $subtotal + $tax -$discount;
 
     return [
 
@@ -39,11 +35,6 @@ class InvoiceFactory extends Factory
 
       'issue_date' => $this->faker->optional()->date(),
       'due_date'   => $this->faker->optional()->date(),
-
-      'subtotal' => $subtotal,
-      'discount_amount' => $discount,
-      'tax_amount'      => $tax,
-      'total'    => $total,
 
       'notes' => $this->faker->optional()->paragraph(),
       'created_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-2 years', 'now'))->utc(),
