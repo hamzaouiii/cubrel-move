@@ -23,6 +23,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
 use App\Http\Controllers\PdfTemplatesController;
+use App\Http\Controllers\ExportController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -169,6 +170,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
     Route::get('/{module}/{recordId}/pdf', [PdfController::class, 'generate'])->name('modules.record.pdf');
+    Route::get('/{module}/{recordId}/export', [ExportController::class, 'export'])->name('modules.record.export');
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
     Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');

@@ -19,6 +19,7 @@ import { useFieldValidation } from "@/Composables/useFieldValidation";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
 import LineItemsPanel from "../Components/Modules/LineItemsPanel.vue";
 import PdfModal from "@/Pages/Components/Modules/PdfModal.vue";
+import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -50,6 +51,7 @@ const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const showPdfModal = ref(false);
+const showExportModal = ref(false);
 const actionDropDownref = ref(null);
 const currentTab = ref("overview");
 const overlayOpen = ref(false);
@@ -251,6 +253,11 @@ const saveRecord = () => {
 const openPdf = () => {
   showActionDropDown.value = false;
   showPdfModal.value = true;
+};
+
+const openExport = () => {
+  showActionDropDown.value = false;
+  showExportModal.value = true;
 };
 
 const deleteRecord = async () => {
@@ -504,13 +511,8 @@ const handleTotalsUpdated = (totals) => {
                 class="record-layout__header__details__actions__edit__dropdown show"
               >
                 <li
-                  class="record-layout__header__details__actions__edit__dropdown__item disabled"
-                >
-                  <i class="fa-solid fa-share-from-square"></i>
-                  <span>{{ $t("modules.actions.share") }}</span>
-                </li>
-                <li
-                  class="record-layout__header__details__actions__edit__dropdown__item disabled"
+                  @click="openExport()"
+                  class="record-layout__header__details__actions__edit__dropdown__item"
                 >
                   <i class="fa-solid fa-download"></i>
                   <span>{{ $t("modules.actions.export") }}</span>
@@ -632,6 +634,14 @@ const handleTotalsUpdated = (totals) => {
         :record-name="record.name ?? record.number ?? record.id"
         :templates="pdfTemplates"
         @close="showPdfModal = false"
+      />
+
+      <ExportModal
+        v-if="showExportModal"
+        :module-slug="module.slug"
+        :record-id="record.id"
+        :record-name="record.name ?? record.number ?? record.id"
+        @close="showExportModal = false"
       />
 
       <RecordSelectorDrawer
