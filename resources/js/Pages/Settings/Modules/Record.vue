@@ -33,7 +33,6 @@ const editableModule = reactive({
   ...props.settingModule,
 });
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
-editableModule.has_line_items = Boolean(editableModule.has_line_items);
 editableModule.has_owner = Boolean(editableModule.has_owner);
 const editableFields = computed(() => {
   const ignore = [
@@ -57,6 +56,7 @@ const editableFields = computed(() => {
     "is_draft",
     "locked_by",
     "locked_until",
+    "has_line_items",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),
@@ -73,7 +73,6 @@ const inputTypeFor = (key, value) => {
   if (key === "color") return "color";
   if (key === "description") return "textarea";
   if (key === "has_owner") return "checkbox";
-  if (key === "has_line_items") return "checkbox";
   return "text";
 };
 
@@ -167,17 +166,7 @@ useUnsavedChangesGuard({
           >
             <label
               class="settings__module__edit__element__label"
-              v-if="key === 'has_line_items'"
-            >
-              {{ $t("settings.modules." + key) }}
-              <ExplainTip
-                :text="t('settings.modules.has_line_items_hint')"
-                :color="settingModule.color"
-              />
-            </label>
-            <label
-              class="settings__module__edit__element__label"
-              v-else-if="key === 'has_owner'"
+              v-if="key === 'has_owner'"
             >
               {{ $t("settings.modules." + key) }}
               <ExplainTip

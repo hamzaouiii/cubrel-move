@@ -50,7 +50,7 @@ class Module extends Model
         'locked_by',
         'locked_until',
         'has_line_items',
-        'has_owner'
+        'has_owner',
     ];
 
     protected $casts = [
@@ -188,6 +188,7 @@ class Module extends Model
     public function allFields(): Collection
     {
         $key = $this->id;
+        $has_line_items = $this->has_line_items;
 
         if (! isset(self::$staticFieldCache[$key])) {
             self::$staticFieldCache[$key] = Field::query()
@@ -213,6 +214,31 @@ class Module extends Model
                 ])
                 ->with('dropdown_list')
                 ->get();
+
+            if ($has_line_items) {
+                $lineItemFields = Field::query()
+                    ->where('is_default_for_line_items', true)
+                    ->select([
+                        'id',
+                        'module_id',
+                        'dropdown_list_id',
+                        'related_module',
+                        'name',
+                        'type',
+                        'key',
+                        'readonly',
+                        'sortable',
+                        'searchable',
+                        'label',
+                        'required',
+                        'is_draft',
+                        'related_module',
+                    ])
+                    ->get();
+
+                self::$staticFieldCache[$key] = self::$staticFieldCache[$key]->merge($lineItemFields);
+            }
+
         }
 
         return self::$staticFieldCache[$key];
@@ -318,8 +344,13 @@ class Module extends Model
             return new Field($field);
         });
 
+        $lineItemFields = $this->has_line_items
+        ? collect(config('default_line_item_fields'))->map(fn ($field) => new Field($field))
+        : collect();
+
         return $defaultFields
             ->merge($dbFields)
+            ->merge($lineItemFields)
             ->unique('name')
             ->values();
     }

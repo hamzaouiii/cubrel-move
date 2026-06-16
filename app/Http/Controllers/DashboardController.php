@@ -73,11 +73,10 @@ class DashboardController extends Controller
         return Order::where('owner_id', $user->id)
             ->latest('order_date')
             ->limit(5)
-            ->get(['id','order_number', 'total_amount', 'status', 'order_date'])
+            ->get(['id','order_number', 'status', 'order_date'])
             ->map(fn (Order $o) => [
                 'id' => $o->id,
                 'order_number' => $o->order_number,
-                'total_amount' => (float) $o->total_amount,
                 'status'       => $this->getItemforValue($dropdown_list, $o->status),
                 'date'         => $o->order_date,
             ])
@@ -129,56 +128,6 @@ class DashboardController extends Controller
             'lost' => (int) $lost,
             'open' => (int) $open,
         ];
-    }
-
-    /**
-     * Group invoices by status to generate the invoice overview bars.
-     */
-    private function getInvoiceOverview(object $user): array
-    {
-        $invoices = Invoice::where('owner_id', $user->id)
-            ->select('status', DB::raw('COUNT(*) as count'), DB::raw('SUM(total_amount) as amount'))
-            ->groupBy('status')
-            ->get()
-            ->keyBy('status');
-
-        $statusMap = [
-            'overdue'        => 'Overdue',
-            'not_paid'       => 'Unpaid',
-            'partially_paid' => 'Partially Paid',
-            'fully_paid'     => 'Fully Paid',
-            'draft'          => 'Draft',
-        ];
-
-        $overview = [];
-
-        foreach ($statusMap as $key => $label) {
-            $stat = $invoices->get($key);
-            
-            // Only return statuses that have records, or return all if you prefer placeholders
-            if ($stat && $stat->count > 0) {
-                $overview[] = [
-                    'key'    => $key,
-                    'label'  => $label,
-                    'count'  => (int) $stat->count,
-                    'amount' => (float) $stat->amount,
-                ];
-            }
-        }
-
-        // Sort descending by amount so the largest bars sit at the top
-        usort($overview, fn($a, $b) => $b['amount'] <=> $a['amount']);
-
-        return $overview;
-    }
-
-    private function percentChange(float|int $old, float|int $new): float|null
-    {
-        if ($old == 0) {
-            return $new > 0 ? 100.0 : null;
-        }
-
-        return round((($new - $old) / $old) * 100, 2);
     }
 
     private static function getItemforValue(Array $list, String $value): Array

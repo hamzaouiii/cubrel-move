@@ -52,7 +52,7 @@ return [
         'next' => 'Next',
         'has_owner' => 'Has Owner',
         'has_line_items' => 'Has Line Items',
-        'has_line_items_hint' => 'When enabled, this module will support line items, allowing records to include itemized entries such as products or services with quantities and prices.',
+        'has_line_items_hint' => 'When enabled, this module will support line items, allowing records to include itemized entries such as products or services with quantities and prices. It will also add 4 fields to this module: Total, Subtotal, Tax Amount and Discount Amount',
         'has_owner_hint' => 'When enabled, each record in this module will be assigned an owner',
 
     ],

@@ -15,20 +15,21 @@ class Invoice extends BaseModule
     'issue_date',
     'due_date',
     'subtotal',
-    'tax',
+    'discount_amount',
+    'tax_amount',
     'total',
     'notes',
     'owner_id'
   ];
 
   protected $casts = [
-    'issue_date' => 'date',
-    'due_date'   => 'date',
-    'subtotal'   => 'decimal:2',
-    'tax'        => 'decimal:2',
-    'total'      => 'decimal:2',
-    'custom_fields' => 'array',
-
+    'issue_date'      => 'date',
+    'due_date'        => 'date',
+    'subtotal'        => 'decimal:2',
+    'discount_amount' => 'decimal:2',
+    'tax_amount'      => 'decimal:2',
+    'total'           => 'decimal:2',
+    'custom_fields'   => 'array',
   ];
        public function toSearchResult(): array
     {

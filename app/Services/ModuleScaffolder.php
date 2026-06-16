@@ -2,48 +2,47 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Schema;
+use App\Models\Label;
+use App\Models\Module;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
-use App\Models\Module;
-use App\Models\Label;
+use Illuminate\Support\Facades\Schema;
 
 class ModuleScaffolder
 {
-  public function __construct(protected Filesystem $files) {}
+    public function __construct(protected Filesystem $files) {}
 
-  public function scaffold(Module $module, string $label, string $single_label = ''): void
-  {
+    public function scaffold(Module $module, string $label, string $single_label = ''): void
+    {
 
-    $slug = $module->slug;
-    $modelClass = $module->model_class;
-    $table = $module->table_name;
+        $slug = $module->slug;
+        $modelClass = $module->model_class;
+        $table = $module->table_name;
 
-    $baseName = class_basename($modelClass);
+        $baseName = class_basename($modelClass);
 
-    $this->createModelFile($baseName, $table);
-    $this->createHandlerFile($baseName, $modelClass);
-    $this->createModuleLabels($module);
-    $this->activateFields($module);
-    $this->createTable($table, $module);
-  }
-
-  public function createModelFile(string $baseName, string $table): void
-  {
-    $directory = app_path('Models/Modules/Custom');
-
-    if (! $this->files->exists($directory)) {
-      $this->files->makeDirectory($directory, 0755, true);
+        $this->createModelFile($baseName, $table);
+        $this->createHandlerFile($baseName, $modelClass);
+        $this->createModuleLabels($module);
+        $this->activateFields($module);
+        $this->createTable($table, $module);
     }
 
-    $path = $directory . "/{$baseName}.php";
+    public function createModelFile(string $baseName, string $table): void
+    {
+        $directory = app_path('Models/Modules/Custom');
 
-    if ($this->files->exists($path)) {
-      return;
-    }
+        if (! $this->files->exists($directory)) {
+            $this->files->makeDirectory($directory, 0755, true);
+        }
 
-    $contents = <<<PHP
+        $path = $directory."/{$baseName}.php";
+
+        if ($this->files->exists($path)) {
+            return;
+        }
+
+        $contents = <<<PHP
         <?php
 
         namespace App\Models\\Modules\\Custom;
@@ -59,28 +58,28 @@ class ModuleScaffolder
 
         PHP;
 
-    $this->files->put($path, $contents);
-    if (function_exists('opcache_invalidate')) {
-      opcache_invalidate($path, true);
-    }
-  }
-
-  public function createHandlerFile(string $baseName, string $modelClass): void
-  {
-    $directory = app_path('Handlers/Modules/Custom');
-
-    if (! $this->files->exists($directory)) {
-      $this->files->makeDirectory($directory, 0755, true);
+        $this->files->put($path, $contents);
+        if (function_exists('opcache_invalidate')) {
+            opcache_invalidate($path, true);
+        }
     }
 
-    $handlerName = "{$baseName}ModuleHandler";
-    $path = $directory . "/{$handlerName}.php";
+    public function createHandlerFile(string $baseName, string $modelClass): void
+    {
+        $directory = app_path('Handlers/Modules/Custom');
 
-    if ($this->files->exists($path)) {
-      return;
-    }
+        if (! $this->files->exists($directory)) {
+            $this->files->makeDirectory($directory, 0755, true);
+        }
 
-    $contents = <<<PHP
+        $handlerName = "{$baseName}ModuleHandler";
+        $path = $directory."/{$handlerName}.php";
+
+        if ($this->files->exists($path)) {
+            return;
+        }
+
+        $contents = <<<PHP
         <?php
 
         namespace App\Handlers\Modules\Custom;
@@ -105,135 +104,139 @@ class ModuleScaffolder
 
         PHP;
 
-    $this->files->put($path, $contents);
-  }
-
-  public function createTable(string $table, Module $module): void
-  {
-    if (Schema::hasTable($table)) {
-      return;
+        $this->files->put($path, $contents);
     }
 
-
-    $typeMapper = config('default_field_types_mapper');
-    $fields = $module->draftFields();
-
-    Schema::create($table, function (Blueprint $tableBlueprint) use ($fields, $typeMapper) {
-      $tableBlueprint->uuid('id')->primary();
-      $tableBlueprint->string('name')->nullable();
-      $tableBlueprint->text('description')->nullable();
-
-      foreach ($fields as $field) {
-        $key = $field['key'] ?? null;
-
-        if (!$key || str_starts_with($key, 'default.')) {
-          continue;
+    public function createTable(string $table, Module $module): void
+    {
+        if (Schema::hasTable($table)) {
+            return;
         }
 
-        $fieldType = $field['type'] ?? 'text';
+        $typeMapper = config('default_field_types_mapper');
+        $fields = $module->draftFields();
+        $hasLineItems = $module->has_line_items;
 
-        $blueprintMethod = $typeMapper[$fieldType] ?? 'string';
+        Schema::create($table, function (Blueprint $tableBlueprint) use ($fields, $typeMapper, $hasLineItems) {
+            $tableBlueprint->uuid('id')->primary();
+            $tableBlueprint->string('name')->nullable();
+            $tableBlueprint->text('description')->nullable();
+            foreach ($fields as $field) {
+                $key = $field['key'] ?? null;
 
-        $column = $tableBlueprint->{$blueprintMethod}($key);
-        $column->nullable();
-      }
-      //for custom fields
-      $tableBlueprint->json('custom_fields')->nullable();
-      $tableBlueprint->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
-      $tableBlueprint->index('owner_id');
-      $tableBlueprint->timestamps();
-      $tableBlueprint->softDeletes();
-    });
-  }
+                if (! $key || str_starts_with($key, 'default.')) {
+                    continue;
+                }
 
-  public function createModuleLabels(Module $module): void
-  {
-    $label_key = "modules." . $module->slug . ".label";
-    $single_label_key = "modules." . $module->slug . ".single_label";
+                $fieldType = $field['type'] ?? 'text';
 
+                $blueprintMethod = $typeMapper[$fieldType] ?? 'string';
 
-    // updateOrCreate takes two arrays: [Search attributes], [Values to update/insert]
-    Label::updateOrCreate(
-      [
-        'key' => $label_key,
-        'module_id' => $module->id,
-      ],
-      [
-        'value' => $module->label,
-        'is_custom' => true
-      ]
-    );
+                $column = $tableBlueprint->{$blueprintMethod}($key);
+                $column->nullable();
+            }
 
-    Label::updateOrCreate(
-      [
-        'key' => $single_label_key,
-        'module_id' => $module->id,
-      ],
-      [
-        'value' => $module->single_label,
-        'is_custom' => true
-      ]
-    );
-  }
-
-
-  public function activateFields(Module $module): void
-  {
-    // 1. Get fields for module. 
-    $fields = $module->draftFields();
-
-    foreach ($fields as $field) {
-      $field->is_draft = false;
-      $field->is_active = true;
-
-      $field->key = $module->slug . '_' . $field->name;
-
-      if ($field->type === 'select' && $field->dropdown_list_id) {
-        $dropdown = $field->dropdown_list;
-
-        // Assuming you want to un-draft the dropdown to activate it alongside the field
-        if ($dropdown && $dropdown->is_draft) {
-          $dropdown->is_draft = false;
-          $dropdown->save();
-        }
-      }
-
-      $label_key = "modules." . $module->slug . ".fields." . $field->name;
-      $label_value = $field->label;
-
-      Label::updateOrCreate(
-        [
-          'key' => $label_key,
-          'module_id' => $module->id,
-        ],
-        [
-          'value' => $label_value,
-          'is_custom' => true
-        ]
-      );
-
-      $field->label = $label_key;
-      $field->save();
+            if ($hasLineItems) {
+                $tableBlueprint->decimal('subtotal', 15, 2)->nullable();
+                $tableBlueprint->decimal('discount_amount', 15, 2)->nullable();
+                $tableBlueprint->decimal('tax_amount', 15, 2)->nullable();
+                $tableBlueprint->decimal('total', 15, 2)->nullable();
+            }
+            // for custom fields
+            $tableBlueprint->json('custom_fields')->nullable();
+            $tableBlueprint->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+            $tableBlueprint->index('owner_id');
+            $tableBlueprint->timestamps();
+            $tableBlueprint->softDeletes();
+        });
     }
-  }
 
-  public function rollback(Module $module): void
-  {
-    $baseName = class_basename($module->model_class);
-    $table = $module->table_name;
+    public function createModuleLabels(Module $module): void
+    {
+        $label_key = 'modules.'.$module->slug.'.label';
+        $single_label_key = 'modules.'.$module->slug.'.single_label';
 
-    $this->files->delete(app_path("Models/Modules/Custom/{$baseName}.php"));
-    $this->files->delete(app_path("Handlers/Modules/Custom/{$baseName}ModuleHandler.php"));
+        // updateOrCreate takes two arrays: [Search attributes], [Values to update/insert]
+        Label::updateOrCreate(
+            [
+                'key' => $label_key,
+                'module_id' => $module->id,
+            ],
+            [
+                'value' => $module->label,
+                'is_custom' => true,
+            ]
+        );
 
-    Schema::dropIfExists($table);
+        Label::updateOrCreate(
+            [
+                'key' => $single_label_key,
+                'module_id' => $module->id,
+            ],
+            [
+                'value' => $module->single_label,
+                'is_custom' => true,
+            ]
+        );
+    }
 
-    Label::where('module_id', $module->id)->delete();
+    public function activateFields(Module $module): void
+    {
+        // 1. Get fields for module.
+        $fields = $module->draftFields();
 
-    // 4. Reset Module State
-    $module->update([
-      'is_active' => false,
-      'is_draft' => true,
-      'table_name' => null,
-    ]);
-  }
+        foreach ($fields as $field) {
+            $field->is_draft = false;
+            $field->is_active = true;
+
+            $field->key = $module->slug.'_'.$field->name;
+
+            if ($field->type === 'select' && $field->dropdown_list_id) {
+                $dropdown = $field->dropdown_list;
+
+                // Assuming you want to un-draft the dropdown to activate it alongside the field
+                if ($dropdown && $dropdown->is_draft) {
+                    $dropdown->is_draft = false;
+                    $dropdown->save();
+                }
+            }
+
+            $label_key = 'modules.'.$module->slug.'.fields.'.$field->name;
+            $label_value = $field->label;
+
+            Label::updateOrCreate(
+                [
+                    'key' => $label_key,
+                    'module_id' => $module->id,
+                ],
+                [
+                    'value' => $label_value,
+                    'is_custom' => true,
+                ]
+            );
+
+            $field->label = $label_key;
+            $field->save();
+        }
+    }
+
+    public function rollback(Module $module): void
+    {
+        $baseName = class_basename($module->model_class);
+        $table = $module->table_name;
+
+        $this->files->delete(app_path("Models/Modules/Custom/{$baseName}.php"));
+        $this->files->delete(app_path("Handlers/Modules/Custom/{$baseName}ModuleHandler.php"));
+
+        Schema::dropIfExists($table);
+
+        Label::where('module_id', $module->id)->delete();
+
+        // 4. Reset Module State
+        $module->update([
+            'is_active' => false,
+            'is_draft' => true,
+            'table_name' => null,
+        ]);
+    }
 }

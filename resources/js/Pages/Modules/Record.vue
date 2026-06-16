@@ -416,6 +416,26 @@ const getLinkingLayout = (slug) => {
   const l = allLayouts.value.find((l) => l.module === slug);
   return l?.layouts?.linkingPanel?.columns || null;
 };
+
+const handleTotalsUpdated = (totals) => {
+  form.subtotal = totals.subtotal;
+  form.tax_amount = totals.tax_amount;
+  form.discount_amount = totals.discount_amount;
+  form.total = totals.total;
+
+  form.defaults({
+    subtotal: totals.subtotal,
+    tax_amount: totals.tax_amount,
+    discount_amount: totals.discount_amount,
+    total: totals.total,
+  });
+
+  const moduleSlug = props.module.slug ?? props.module;
+  router.put(`/${moduleSlug}/${props.record.id}`, totals, {
+    preserveScroll: true,
+    preserveState: true,
+  });
+};
 </script>
 <template>
   <Head>
@@ -553,18 +573,7 @@ const getLinkingLayout = (slug) => {
               :module-color="module_color"
               :product-fields="productFields"
               :line-item-fields="lineItemFields"
-              @totals-updated="
-                (t) => {
-                  form.subtotal = t.subtotal;
-                  form.tax = t.tax_amount;
-                  form.total = t.total;
-                  form.defaults({
-                    subtotal: t.subtotal,
-                    tax: t.tax_amount,
-                    total: t.total,
-                  });
-                }
-              "
+              @totals-updated="handleTotalsUpdated"
             />
           </template>
           <template v-else>

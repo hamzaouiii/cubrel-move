@@ -83,22 +83,22 @@ return [
                     0 => [
                         'name' => 'subtotal',
                         'type' => 'currency',
-                        'label' => 'modules.invoices.fields.subtotal',
+                        'label' => 'modules.defaults.subtotal',
                     ],
                     1 => [
-                        'name' => 'tax',
+                        'name' => 'tax_amount',
                         'type' => 'currency',
-                        'label' => 'modules.invoices.fields.tax',
+                        'label' => 'modules.defaults.tax_amount',
                     ],
                     2 => [
-                        'name' => 'discount',
+                        'name' => 'discount_amount',
                         'type' => 'currency',
-                        'label' => 'modules.invoices.fields.discount',
+                        'label' => 'modules.defaults.discount_amount',
                     ],
                     3 => [
                         'name' => 'total',
                         'type' => 'currency',
-                        'label' => 'modules.invoices.fields.total',
+                        'label' => 'modules.defaults.total',
                     ],
                 ],
             ],

@@ -338,11 +338,6 @@ return [
                                 'label' => 'modules.orders.fields.status',
                             ],
                             3 => [
-                                'name' => 'total_amount',
-                                'type' => 'currency',
-                                'label' => 'modules.orders.fields.total_amount',
-                            ],
-                            4 => [
                                 'name' => 'due_date',
                                 'type' => 'date',
                                 'label' => 'modules.orders.fields.due_date',
