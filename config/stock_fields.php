@@ -92,26 +92,6 @@ return [
             'name' => 'due_date',
             'type' => 'date',
         ],
-        'subtotal' => [
-            'name' => 'subtotal',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
-        'discount' => [
-            'name' => 'discount',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
-        'tax' => [
-            'name' => 'tax',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
-        'total' => [
-            'name' => 'total',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
         'notes' => [
             'name' => 'notes',
             'type' => 'longtext',
@@ -131,26 +111,7 @@ return [
             'name' => 'valid_until',
             'type' => 'date',
         ],
-        'subtotal' => [
-            'name' => 'subtotal',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
-        'discount' => [
-            'name' => 'subtotal',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
-        'tax' => [
-            'name' => 'tax',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
-        'total' => [
-            'name' => 'total',
-            'type' => 'currency',
-            'readonly' => true,
-        ],
+  
         'notes' => [
             'name' => 'notes',
             'type' => 'longtext',
@@ -260,10 +221,6 @@ return [
             'name' => 'order_number',
             'type' => 'text',
             'required' => true,
-        ],
-        'total_amount' => [
-            'name' => 'total_amount',
-            'type' => 'currency',
         ],
         'status' => [
             'name' => 'status',

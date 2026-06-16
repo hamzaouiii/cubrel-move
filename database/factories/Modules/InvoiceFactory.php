@@ -17,8 +17,9 @@ class InvoiceFactory extends Factory
   public function definition(): array
   {
     $subtotal = $this->faker->randomFloat(2, 100, 5000);
+    $discount = $this->faker->randomFloat(2, 10, 100);
     $tax      = round($subtotal * 0.19, 2);
-    $total    = $subtotal + $tax;
+    $total    = $subtotal + $tax -$discount;
 
     return [
 
@@ -40,8 +41,8 @@ class InvoiceFactory extends Factory
       'due_date'   => $this->faker->optional()->date(),
 
       'subtotal' => $subtotal,
-      'discount' => 0,
-      'tax'      => $tax,
+      'discount_amount' => $discount,
+      'tax_amount'      => $tax,
       'total'    => $total,
 
       'notes' => $this->faker->optional()->paragraph(),

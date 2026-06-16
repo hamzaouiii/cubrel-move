@@ -20,6 +20,7 @@ return new class extends Migration
       $table->char('module_id', 36)->nullable();
       $table->boolean('is_global')->default(false);
       $table->boolean('is_default')->default(false);
+      $table->boolean('is_default_for_line_items')->default(false);
       $table->boolean('is_draft')->default(false);
       $table->boolean('is_custom')->default(false);
       $table->boolean('is_active')->default(false);

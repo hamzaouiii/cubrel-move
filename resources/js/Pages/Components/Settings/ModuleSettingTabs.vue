@@ -53,7 +53,7 @@ const appSettings = usePage().props.appSettings;
       :class="{
         'settings__module__tabs__item--active': activeKey === 'relationships',
       }"
-      >Relationships</Link
+      >{{ $t("settings.tabs.relationships") }}</Link
     >
   </div>
 </template>

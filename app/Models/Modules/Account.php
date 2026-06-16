@@ -13,6 +13,7 @@ class Account extends BaseModule
     'email',
     'phone',
     'billing_address',
+    'description',
     'shipping_address',
     'owner_id',
   ];

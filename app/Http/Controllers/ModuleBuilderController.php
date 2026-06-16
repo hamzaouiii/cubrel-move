@@ -54,8 +54,10 @@ class ModuleBuilderController extends Controller
       'description'     => ['nullable', 'string'],
       'category'     => ['required', 'string'],
       'show_in_sidebar' => ['boolean'],
+      'has_line_items' => ['required', 'boolean'],
+      'has_owner' => ['required', 'boolean']
     ]);
-    $baseName = Str::studly($validated['slug']);
+    $baseName = $validated['display_label'];
     $module->update([
       'name'            => $baseName,
       'slug'            => $validated['slug'],
@@ -72,6 +74,9 @@ class ModuleBuilderController extends Controller
       'model_class'     => "App\\Models\\Modules\\Custom\\" . $baseName,
       'table_name'      => Str::snake($validated['slug']) . "_cstm",
       'path'            => '/' . $validated['slug'],
+      'has_line_items' => $validated['has_line_items'],
+      'has_owner' => $validated['has_owner']
+
     ]);
     return back();
   }
@@ -123,10 +128,9 @@ class ModuleBuilderController extends Controller
       'table_name'      =>  "cstm_" . Str::snake($validated['slug']),
       'path'            => '/' . $validated['slug'],
     ]);
-    $fields = $module->builderFields();
 
     // NOW scaffold the tables/files since the user has had time to define Fields and Layouts
-    app(ModuleScaffolder::class)->scaffold($module, $validated['display_label'], $validated['single_label'], $fields);
+    app(ModuleScaffolder::class)->scaffold($module, $validated['display_label'], $validated['single_label']);
 
     return back();
     // return redirect()
@@ -136,10 +140,15 @@ class ModuleBuilderController extends Controller
 
   public function saveDraftField(Request $request, Module $module)
   {
+       $nameRules = ['required', 'string', Rule::notIn(array_keys(config('default_fields')))];
+
+    if ($module->has_line_items) {
+        $nameRules[] = Rule::notIn(array_keys(config('default_line_item_fields')));
+    }
     $data = $request->validate([
       'id' => ['nullable', 'exists:fields,id'],
       'label' => ['required', 'string', 'min:4'],
-      'name' => ['required', 'string', Rule::notIn(array_keys(config('default_fields')))],
+      'name' =>  $nameRules,
       'key' => [
         'required',
         'string',

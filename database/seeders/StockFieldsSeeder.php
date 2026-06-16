@@ -32,6 +32,30 @@ class StockFieldsSeeder extends Seeder
         ])
       );
     }
+
+    // default line item fields
+    $li_fields = config("default_line_item_fields", []);
+
+    foreach ($li_fields as $fieldKey => $field) {
+      Field::updateOrCreate(
+        [
+          'name'      => $fieldKey,
+        ],
+        array_merge($field, [
+          'module_id' => null,
+          'key'               => "defaults_{$fieldKey}",
+          'label'             => "modules.defaults.{$fieldKey}",
+          'id'                =>  Str::uuid(),
+          'is_custom'         => false,
+          'is_active'         => true,
+          'sortable'         => true,
+          'is_global' => false,
+          'is_default_for_line_items' => true,
+        ])
+      );
+    }
+
+
     foreach (Module::withoutGlobalScope(AdminOnlyModuleScope::class)->get() as $module) {
       $definitions = config("stock_fields.{$module->slug}", []);
 

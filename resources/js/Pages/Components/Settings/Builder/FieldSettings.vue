@@ -102,7 +102,7 @@ const setFieldToEdit = (f) => {
       <div class="list-mode">
         <div class="fields__header">
           <span class="fields__header__name">
-            {{ module?.display_label || module?.name }}</span
+            {{ module?.label || module?.name }}</span
           >
           <button
             class="fields__header__create"
