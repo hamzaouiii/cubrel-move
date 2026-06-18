@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Field;
 use App\Models\Module;
-use App\Models\DropDownList;
+use App\Models\DropdownList;
 use Illuminate\Support\Str;
 use App\Scopes\AdminOnlyModuleScope;
 
@@ -69,7 +69,7 @@ class StockFieldsSeeder extends Seeder
           // maybe not a good idea ??
           $dropdownKey = $fieldKey === 'currency' ? "{$fieldKey}_list" : "{$module->slug}_{$fieldKey}_list";
 
-          $dropdown = DropDownList::where('key', $dropdownKey)->first();
+          $dropdown = DropdownList::where('key', $dropdownKey)->first();
 
           if ($dropdown) {
             $dropdownListId = $dropdown->id;

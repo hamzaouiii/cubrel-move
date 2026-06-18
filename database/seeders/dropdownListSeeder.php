@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\DropDownList;
+use App\Models\DropdownList;
 use Illuminate\Support\Str;
 
 class dropdownListSeeder extends Seeder
@@ -14,7 +14,7 @@ class dropdownListSeeder extends Seeder
 
     foreach ($dropdowns as $key => $values) {
 
-      DropDownList::updateOrCreate(
+      DropdownList::updateOrCreate(
         ['key' => $key],
         [
           'values'    => $values,

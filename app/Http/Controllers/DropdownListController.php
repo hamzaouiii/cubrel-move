@@ -7,7 +7,7 @@ use App\Models\Settings\Settings;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class DropDownListController extends Controller
+class DropdownListController extends Controller
 {
   /**
    * Display a listing of the resource.
