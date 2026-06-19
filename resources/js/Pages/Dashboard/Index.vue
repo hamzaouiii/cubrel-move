@@ -70,9 +70,7 @@ function getBarColor(key) {
     <title>Dashboard - Cubrel</title>
   </Head>
   <div class="dashboard">
-    <div class="dashboard__actions">
-      <!-- <button><i class="fa-solid fa-gauge"></i> Page Setup</button> -->
-    </div>
+    <div class="dashboard__actions"></div>
     <div class="dashboard__main">
       <aside class="db__right">
         <NewRecords :new-records="leads" module-slug="leads"></NewRecords>
