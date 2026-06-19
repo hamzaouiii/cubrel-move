@@ -19,6 +19,10 @@ const props = defineProps({
           Object.prototype.hasOwnProperty.call(o, "value"),
       ),
   },
+  color: {
+    type: String,
+    required: false,
+  },
 });
 
 const current = computed({
@@ -27,13 +31,11 @@ const current = computed({
 });
 const page = usePage();
 const appSettings = page.props.appSettings;
+const color = computed(() => props?.color ?? appSettings.primary_color);
 </script>
 
 <template>
-  <div
-    class="switcher"
-    :style="{ '--primary-color': appSettings.primary_color }"
-  >
+  <div class="switcher" :style="{ '--primary-color': color }">
     <span
       v-for="opt in options"
       :key="opt.value"
