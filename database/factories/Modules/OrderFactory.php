@@ -12,7 +12,8 @@ class OrderFactory extends Factory
     $statuses = [
       'draft',
       'confirmed',
-      'shipped',
+      'pending',
+      'procecessing',
       'completed',
       'cancelled',
     ];
