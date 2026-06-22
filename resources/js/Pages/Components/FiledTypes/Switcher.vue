@@ -31,7 +31,16 @@ const current = computed({
 });
 const page = usePage();
 const appSettings = page.props.appSettings;
-const color = computed(() => props?.color ?? appSettings.primary_color);
+const color = computed(() => {
+  const useIndividual =
+    appSettings.use_individual_module_colors === true ||
+    appSettings.use_individual_module_colors === 1 ||
+    appSettings.use_individual_module_colors === "1";
+
+  return useIndividual
+    ? (props.color ?? appSettings.primary_color)
+    : appSettings.primary_color;
+});
 </script>
 
 <template>
