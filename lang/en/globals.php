@@ -351,7 +351,6 @@ return [
         'default_badge'           => 'Default',
         'set_as_default_btn'      => 'Set as default',
         'edit_btn'                => 'Edit',
-        'delete_confirm'          => 'Delete template',
         'delete_confirm_title'    => 'Delete Template',
         'delete_template_confirm' => 'Delete :template? This cannot be undone.',
         'new_title'               => 'New PDF Template',

@@ -44,7 +44,7 @@ const getModuleBySlug = (slug) => {
         >
           <span class="mod-list__link">
             <i :class="getModuleBySlug(mod.slug).icon"></i>
-            <Link :href="`/${mod.slug}`">
+            <Link :href="`/${mod.slug}?filter=my_records`">
               {{ $t(mod.label) }}
             </Link>
           </span>

@@ -70,22 +70,19 @@ const showSelectAllPrompt = computed(() => {
       <span v-else> </span>
     </div>
 
-    <div class="delete-zone__actions">
+    <div class="list__actions">
       <button
         :disabled="!totalSelected"
-        class="btn delete-zone__actions__cancel"
+        class="list__actions--secondary"
         @click="emitClearSelection"
       >
         {{ $t("modules.delete.clear_selection") }}
       </button>
-      <button
-        class="delete-zone__actions__cancel btn"
-        @click="emitCancelClicked"
-      >
+      <button class="list__actions--secondary" @click="emitCancelClicked">
         {{ $t("modules.actions.cancel") }}
       </button>
       <button
-        class="delete-zone__actions__delete btn"
+        class="list__actions--danger"
         :disabled="!totalSelected"
         @click="emitDeleteClicked"
       >

@@ -59,7 +59,8 @@ class Field extends Model
     'regex',
     'is_active',
     'database_type',
-    'dropdown_list_id'
+    'dropdown_list_id',
+    'is_default_for_line_items'
 
   ];
   /**

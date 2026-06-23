@@ -434,8 +434,8 @@ const isEmpty = computed(() => !selectedDate.value);
         </div>
 
         <div class="datetime-inputs">
-          <div class="datetime-row datetime-row--split">
-            <div class="input-group input-group--grow">
+          <div class="datetime-row">
+            <div class="input-group">
               <div class="date-input-wrapper">
                 <input
                   type="text"

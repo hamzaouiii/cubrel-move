@@ -115,7 +115,6 @@ const highlightMatch = (text) => {
         { 'long-text-field--readonly': readOnly },
       ]"
     >
-      <i class="long-text-detail-icon fa-regular fa-rectangle-adjust"></i>
       <div class="long-text-detail-content">
         <pre class="long-text-value">{{ modelValue || "—" }}</pre>
       </div>

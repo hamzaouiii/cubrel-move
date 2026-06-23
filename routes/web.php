@@ -9,6 +9,7 @@ use App\Http\Controllers\FieldsManagerController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\ListController;
+use App\Http\Controllers\ListFilterController;
 use App\Http\Controllers\ModuleBuilderController;
 use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\ModuleManagerController;
@@ -49,6 +50,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/line-items/reorder', [LineItemController::class, 'reorder'])->name('line-items.reorder');
     Route::put('/line-items/{lineItem}', [LineItemController::class, 'update'])->name('line-items.update');
     Route::delete('/line-items/{lineItem}', [LineItemController::class, 'destroy'])->name('line-items.destroy');
+
+
+
 
     // Only For admins
     Route::middleware(['admin'])->group(function () {
@@ -163,6 +167,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/relatedfield/search/{related_module}', RelatedFieldController::class)->name('records.search');
 
     // Modules routes
+        Route::prefix('{module}/filters')->name('list-filters.')->group(function () {
+        Route::post('/', [ListFilterController::class, 'store'])->name('store');
+        Route::put('/{filter}', [ListFilterController::class, 'update'])->name('update');
+        Route::delete('/{filter}', [ListFilterController::class, 'destroy'])->name('destroy');
+    });
     Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
     Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/available', [RelationshipLinkController::class, 'getRecordsForLinking'])->name('relationships.available');

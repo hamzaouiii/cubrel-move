@@ -20,7 +20,7 @@ class Deal extends BaseModule
 
   public function getCasts(): array
   {
-    return [...parent::getCasts(), 'amount' => 'decimal:2', 'expected_close_date' => 'datetime'];
+    return [...parent::getCasts(), 'amount' => 'decimal:2', 'expected_close_date' => 'date'];
   }
 
   public function toSearchResult(): array

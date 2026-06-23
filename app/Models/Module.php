@@ -199,6 +199,7 @@ class Module extends Model
                     'readonly',
                     'sortable',
                     'searchable',
+                    'filterable',
                     'label',
                     'required',
                     'is_draft',
@@ -221,6 +222,7 @@ class Module extends Model
                         'readonly',
                         'sortable',
                         'searchable',
+                        'filterable',
                         'label',
                         'required',
                         'is_draft',
@@ -349,7 +351,7 @@ class Module extends Model
 
     public function getFieldMetadata(string $field_name): array
     {
-        $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_default', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at'];
+        $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_default', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at','is_default_for_line_items'];
         $field = Field::query()
             ->where(function ($query) {
                 $query->where('module_id', $this->id)

@@ -16,6 +16,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 import ListDeleteZone from "@/Pages/Components/Modules/ListActions/ListDeleteZone.vue";
 import MassUpdateZone from "@/Pages/Components/Modules/ListActions/MassUpdateZone.vue";
+import FilterZone from "@/Pages/Components/Modules/ListActions/FilterZone.vue";
 import Selectbox from "@/Pages//Components/FiledTypes/Selectbox.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
@@ -32,6 +33,9 @@ const props = defineProps({
   listLayout: Object,
   filters: Object,
   fields: Object,
+  filterableFields: { type: Array, default: () => [] },
+  availableFilters: { type: Array, default: () => [] },
+  activeFilter: { type: Object, default: null },
 });
 
 const { proxy } = getCurrentInstance();
@@ -294,6 +298,9 @@ const performSearch = (page = 1) => {
     window.location.pathname,
     {
       search: search.value || undefined,
+      sort: sortKey.value || undefined,
+      direction: sortDir.value,
+      filter: props.filters?.filter || undefined,
       page,
     },
     {
@@ -445,6 +452,36 @@ const sortBy = (col) => {
       search: search.value || undefined,
       sort: sortKey.value,
       direction: sortDir.value,
+      filter: props.filters?.filter || undefined,
+      page: 1,
+    },
+    { preserveState: true, preserveScroll: true, replace: true },
+  );
+};
+
+// ─── Saved filters ───────────────────────────────────────────────────────────
+
+const applyFilter = (filterKey) => {
+  router.get(
+    window.location.pathname,
+    {
+      search: search.value || undefined,
+      sort: sortKey.value || undefined,
+      direction: sortDir.value,
+      filter: filterKey || undefined,
+      page: 1,
+    },
+    { preserveState: true, preserveScroll: true, replace: true },
+  );
+};
+
+const clearFilter = () => {
+  router.get(
+    window.location.pathname,
+    {
+      search: search.value || undefined,
+      sort: sortKey.value || undefined,
+      direction: sortDir.value,
       page: 1,
     },
     { preserveState: true, preserveScroll: true, replace: true },
@@ -578,7 +615,6 @@ const isAdmin = computed(() => {
                   {{ $t("modules.actions.mass_update") }}
                 </span>
               </li>
-
               <li>
                 <span
                   class="list-layout__header__actions__list__dropdown__item list-layout__header__actions__list__dropdown__item--delete"
@@ -617,6 +653,15 @@ const isAdmin = computed(() => {
       @massUpdate="handleMassUpdate"
       @selectAllMatching="selectAllMatching()"
       @clearSelection="clearSelection()"
+      @cancelClicked="resetActionZone()"
+    />
+    <FilterZone
+      :filterable-fields="filterableFields"
+      :available-filters="availableFilters"
+      :active-filter="activeFilter"
+      :module-slug="module.slug"
+      @applyFilter="applyFilter"
+      @clearFilter="clearFilter"
       @cancelClicked="resetActionZone()"
     />
 

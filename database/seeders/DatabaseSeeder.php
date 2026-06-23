@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
     $this->call(UsersTableSeeder::class);
     $this->call(dropdownListSeeder::class);
     $this->call(StockFieldsSeeder::class);
+    $this->call(DefaultFiltersSeeder::class);
     $this->call(SettingValuesSeeder::class);
     $this->call(RelationshipDropdownSeeder::class);
     $this->call(RelationshipSeeder::class);

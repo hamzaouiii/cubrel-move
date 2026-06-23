@@ -185,7 +185,7 @@ class SettingValuesSeeder extends Seeder
                 'id' => Str::uuid(),
                 'setting_item' => 'style',
                 'key' => 'secondary_color',
-                'value' => '#d1969a',
+                'value' => '#64748B',
                 'label' => 'settings.fields.secondary_color',
                 'type' => 'color',
                 'sort_order' => 3,

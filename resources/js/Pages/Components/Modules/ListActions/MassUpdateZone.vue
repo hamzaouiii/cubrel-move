@@ -140,22 +140,19 @@ const resetInputValue = () => {
       </div>
     </div>
 
-    <div class="mass-update-zone__actions">
+    <div class="list__actions">
       <button
         :disabled="!totalSelected"
-        class="mass-update-zone__actions__cancel"
+        class="list__actions--secondary"
         @click="emitClearSelection"
       >
         {{ $t("modules.update.clear_selection") }}
       </button>
-      <button
-        class="mass-update-zone__actions__cancel"
-        @click="emitCancelClicked"
-      >
+      <button class="list__actions--secondary" @click="emitCancelClicked">
         {{ $t("modules.update.cancel") }}
       </button>
       <button
-        class="mass-update-zone__actions__update"
+        class="list__actions--primary"
         :disabled="!canSubmit"
         @click="emitMassUpdate"
       >

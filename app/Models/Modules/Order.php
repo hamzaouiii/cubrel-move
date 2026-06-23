@@ -20,6 +20,11 @@ class Order extends BaseModule
     'total',
   ];
 
+  protected $moduleCasts = [
+    'order_date' => 'date',
+    'due_date'   => 'date',
+  ];
+
   public function toSearchResult(): array
   {
     return [...parent::toSearchResult(), 'label' => $this->name, 'sublabel' => $this->order_number];
