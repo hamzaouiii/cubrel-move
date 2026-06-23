@@ -180,6 +180,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
     Route::get('/{module}/{recordId}/pdf', [PdfController::class, 'generate'])->name('modules.record.pdf');
     Route::get('/{module}/{recordId}/export', [ExportController::class, 'export'])->name('modules.record.export');
+    Route::post('/{module}/export', [ExportController::class, 'exportMany'])->name('modules.records.exportMany');
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
     Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');

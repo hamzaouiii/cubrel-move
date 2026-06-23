@@ -58,7 +58,7 @@ return [
         'updating' => 'Wird aktualisiert...',
         'edit_module' => 'Dieses Module bearbeiten',
         'mass_delete' => 'Löschen',
-        'mass_update' => 'Massenänderung',
+        'mass_update' => 'Massenaktualisierung',
         'save_success' => 'Datensatz wurde erfolgreich gespeichert',
         'update_success' => 'Datensatz wurde erfolgreich aktualisiert',
         'create_success' => 'Datensatz wurde erfolgreich erstellt',
@@ -109,6 +109,13 @@ return [
         'clear_selection' => 'Auswahl löschen',
         'select_all' => 'Alle :total Datensätze im Ergebnis auswählen',
         'delete' => 'Löschen',
+    ],
+    'export' => [
+        'selected_count' => 'Du hast :count Datensätze ausgewählt.',
+        'description' => 'Wähle Datensätze zum Exportieren aus',
+        'clear_selection' => 'Auswahl löschen',
+        'select_all' => 'Alle :total Datensätze im Ergebnis auswählen',
+        'export' => 'Exportieren',
     ],
     'update' => [
         'description' => 'Wähle Datensätze zum Aktualisieren aus',

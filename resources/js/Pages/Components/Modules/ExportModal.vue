@@ -3,12 +3,14 @@ import { ref, computed, getCurrentInstance } from "vue";
 import axios from "axios";
 
 const props = defineProps({
+  mode: { type: String, default: "single" }, // "single" | "bulk"
   moduleSlug: { type: String, required: true },
-  recordId: { type: String, required: true },
+  recordId: { type: String, default: "" },
   recordName: { type: String, default: "" },
+  selection: { type: Object, default: () => ({}) },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "cancel"]);
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -35,20 +37,31 @@ const formats = [
   },
 ];
 
+const isBulk = computed(() => props.mode === "bulk");
+
 const generate = async (format) => {
   selectedFormat.value = format;
   phase.value = "generating";
   blobUrl.value = null;
   errorMessage.value = "";
 
-  const url = `/${props.moduleSlug}/${props.recordId}/export?format=${format.id}`;
-  downloadFilename.value =
-    `${props.moduleSlug}-${props.recordName || props.recordId}.${format.id}`
-      .toLowerCase()
-      .replace(/\s+/g, "-");
+  downloadFilename.value = isBulk.value
+    ? `${props.moduleSlug}-export.${format.id}`.toLowerCase()
+    : `${props.moduleSlug}-${props.recordName || props.recordId}.${format.id}`
+        .toLowerCase()
+        .replace(/\s+/g, "-");
 
   try {
-    const response = await axios.get(url, { responseType: "blob" });
+    const response = isBulk.value
+      ? await axios.post(
+          `/${props.moduleSlug}/export`,
+          { ...props.selection, format: format.id },
+          { responseType: "blob" },
+        )
+      : await axios.get(
+          `/${props.moduleSlug}/${props.recordId}/export?format=${format.id}`,
+          { responseType: "blob" },
+        );
     blobUrl.value = URL.createObjectURL(response.data);
     phase.value = "ready";
     triggerDownload();
@@ -84,11 +97,17 @@ const close = () => {
   if (blobUrl.value) URL.revokeObjectURL(blobUrl.value);
   emit("close");
 };
+
+const cancel = () => {
+  if (!canClose.value) return;
+  if (blobUrl.value) URL.revokeObjectURL(blobUrl.value);
+  emit("cancel");
+};
 </script>
 
 <template>
   <div class="pdf-modal">
-    <div class="pdf-modal__backdrop" @click="close"></div>
+    <div class="pdf-modal__backdrop" @click="cancel"></div>
 
     <div class="pdf-modal__container">
       <div class="deployment-card">
@@ -97,7 +116,9 @@ const close = () => {
           <div class="deployment-card__title-group">
             <h3 class="deployment-card__title">
               <template v-if="phase === 'select'">{{
-                $t("globals.export.modal_title_select")
+                isBulk
+                  ? $t("globals.export.modal_title_select_bulk")
+                  : $t("globals.export.modal_title_select")
               }}</template>
               <template v-else-if="phase === 'generating'">{{
                 $t("globals.export.modal_title_generating")
@@ -111,7 +132,11 @@ const close = () => {
             </h3>
 
             <p class="deployment-card__subtitle" v-if="phase === 'select'">
-              {{ $t("globals.export.modal_sub_select") }}
+              {{
+                isBulk
+                  ? $t("globals.export.modal_sub_select_bulk")
+                  : $t("globals.export.modal_sub_select")
+              }}
             </p>
             <p
               class="deployment-card__subtitle"
@@ -459,7 +484,7 @@ const close = () => {
       </div>
 
       <!-- Close button -->
-      <button class="pdf-modal__close" @click="close" :disabled="!canClose">
+      <button class="pdf-modal__close" @click="cancel" :disabled="!canClose">
         <svg
           width="18"
           height="18"

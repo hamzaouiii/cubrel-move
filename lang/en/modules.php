@@ -44,7 +44,7 @@ return [
         'saved' => 'Saved',
         'edit_module' => 'Edit this module',
         'mass_delete' => 'Delete',
-        'mass_update' => 'Mass Update',
+        'mass_update' => 'Bulk Update',
         'updating' => 'Updating...',
         'save_success' => 'Record saved successfully',
         'update_success' => 'Record updated successfully',
@@ -96,6 +96,13 @@ return [
         'clear_selection' => 'Clear Selection',
         'select_all' => 'Select all :total records in the result set',
         'delete' => 'Delete',
+    ],
+    'export' => [
+        'selected_count' => 'You have selected :count records.',
+        'description' => 'Select records to export',
+        'clear_selection' => 'Clear Selection',
+        'select_all' => 'Select all :total records in the result set',
+        'export' => 'Export',
     ],
     'accounts' => [
         'label' => 'Accounts',

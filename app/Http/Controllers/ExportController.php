@@ -6,6 +6,9 @@ use App\Models\Module;
 use App\Models\Modules\LineItem;
 use App\Support\PdfValueRenderer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use function in_array;
 use function is_array;
@@ -27,6 +30,114 @@ class ExportController extends Controller
         $fields = $moduleModel->allFields();
         $renderer = app(PdfValueRenderer::class);
 
+        $data = $this->buildExportRow($fields, $record, $format, $renderer);
+
+        $lineItems = null;
+        if ($moduleModel->has_line_items) {
+            $lineItems = $this->resolveLineItems($recordId, $module, $renderer);
+        }
+
+        $filename = Str::slug($module.'-'.($record['number'] ?? $record['name'] ?? $recordId));
+
+        if ($format === 'json') {
+            if ($lineItems !== null) {
+                $data['line_items'] = $lineItems['rows'];
+            }
+
+            return $this->respondJson($data, $filename);
+        }
+
+        return $this->respondCsv($data, $filename, $lineItems);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // exportMany
+    //
+    // Same three selection modes as RecordController::destroyMany/updateMany:
+    //
+    //   1. Explicit list  — allMatchingSelected=false, selectedIds=[1,2,3]
+    //   2. All matching   — allMatchingSelected=true,  excludedIds=[]
+    //   3. All except     — allMatchingSelected=true,  excludedIds=[4,5]
+    //
+    // Produces one merged file (CSV: one row per record, JSON: array of
+    // record objects). Line items are not included — they don't fit a flat
+    // merged row when records have a different number of them.
+    // ─────────────────────────────────────────────────────────────────────────
+    public function exportMany(Request $request, string $module)
+    {
+        $format = $request->input('format', 'json');
+        abort_unless(in_array($format, ['json', 'csv']), 400, 'Invalid export format.');
+
+        $moduleModel = Module::query()
+            ->where('slug', $module)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $modelClass = $moduleModel->model_class;
+        abort_if(! $modelClass || ! class_exists($modelClass), 500, 'No model class for module.');
+
+        $handlerClass = $moduleModel->handler_class
+            ?? 'App\\Handlers\\Modules\\'.Str::studly($moduleModel->slug).'ModuleHandler';
+
+        $selectedIds = $this->cleanIds($request->input('selectedIds', []));
+        $excludedIds = $this->cleanIds($request->input('excludedIds', []));
+        $allMatchingSelected = (bool) $request->input('allMatchingSelected', false);
+        $filters = (array) $request->input('filters', []);
+
+        if (! $allMatchingSelected && count($selectedIds) === 0) {
+            return back()->with('error', 'No records selected.');
+        }
+
+        $baseQuery = $modelClass::query();
+
+        if ($allMatchingSelected) {
+            if (class_exists($handlerClass)) {
+                $handler = app($handlerClass);
+                $searchable = $handler->getSearchableColumns($moduleModel);
+            } else {
+                $searchable = ['name', 'email', 'description'];
+            }
+
+            $search = trim((string) Arr::get($filters, 'search', ''));
+            if ($search !== '') {
+                $existing = array_filter($searchable, fn ($col) => Schema::hasColumn((new $modelClass)->getTable(), $col));
+                if (! empty($existing)) {
+                    $baseQuery->where(function ($q) use ($existing, $search) {
+                        foreach ($existing as $col) {
+                            $q->orWhere($col, 'like', "%{$search}%");
+                        }
+                    });
+                }
+            }
+
+            if (! empty($excludedIds)) {
+                $baseQuery->whereNotIn('id', $excludedIds);
+            }
+        } else {
+            $baseQuery->whereIn('id', $selectedIds);
+        }
+
+        $ids = $baseQuery->pluck('id')->all();
+        abort_if(empty($ids), 404, 'No matching records to export.');
+
+        $fields = $moduleModel->allFields();
+        $renderer = app(PdfValueRenderer::class);
+
+        $rows = [];
+        foreach ($ids as $id) {
+            $record = $this->resolveRecord($moduleModel, (string) $id);
+            $rows[] = $this->buildExportRow($fields, $record, $format, $renderer);
+        }
+
+        $filename = Str::slug($module.'-export-'.now()->format('Y-m-d'));
+
+        return $format === 'json'
+            ? $this->respondJson($rows, $filename)
+            : $this->respondCsvMany($rows, $filename);
+    }
+
+    private function buildExportRow(Collection $fields, array $record, string $format, PdfValueRenderer $renderer): array
+    {
         $data = [];
 
         foreach ($fields as $field) {
@@ -65,22 +176,17 @@ class ExportController extends Controller
             $data[$label] = $rendered === '—' ? '' : $rendered;
         }
 
-        $lineItems = null;
-        if ($moduleModel->has_line_items) {
-            $lineItems = $this->resolveLineItems($recordId, $module, $renderer);
-        }
+        return $data;
+    }
 
-        $filename = Str::slug($module.'-'.($record['number'] ?? $record['name'] ?? $recordId));
-
-        if ($format === 'json') {
-            if ($lineItems !== null) {
-                $data['line_items'] = $lineItems['rows'];
-            }
-
-            return $this->respondJson($data, $filename);
-        }
-
-        return $this->respondCsv($data, $filename, $lineItems);
+    /**
+     * Strip null / empty-string values from an ID array coming from the frontend.
+     */
+    private function cleanIds(mixed $input): array
+    {
+        return array_values(
+            array_filter((array) $input, fn ($id) => $id !== null && $id !== '')
+        );
     }
 
     private function resolveRecord(Module $moduleModel, string $recordId): array
@@ -232,6 +338,28 @@ class ExportController extends Controller
                     array_values($row)
                 ));
             }
+        }
+
+        rewind($buffer);
+        $content = stream_get_contents($buffer);
+        fclose($buffer);
+
+        return response($content, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'.csv"',
+        ]);
+    }
+
+    private function respondCsvMany(array $rows, string $filename): \Illuminate\Http\Response
+    {
+        $buffer = fopen('php://temp', 'r+');
+
+        fputcsv($buffer, array_keys($rows[0] ?? []));
+        foreach ($rows as $row) {
+            fputcsv($buffer, array_map(
+                fn ($v) => is_array($v) ? json_encode($v) : (string) $v,
+                array_values($row)
+            ));
         }
 
         rewind($buffer);
