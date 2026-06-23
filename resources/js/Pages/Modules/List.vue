@@ -298,6 +298,9 @@ const performSearch = (page = 1) => {
     window.location.pathname,
     {
       search: search.value || undefined,
+      sort: sortKey.value || undefined,
+      direction: sortDir.value,
+      filter: props.filters?.filter || undefined,
       page,
     },
     {
@@ -449,6 +452,7 @@ const sortBy = (col) => {
       search: search.value || undefined,
       sort: sortKey.value,
       direction: sortDir.value,
+      filter: props.filters?.filter || undefined,
       page: 1,
     },
     { preserveState: true, preserveScroll: true, replace: true },
@@ -652,7 +656,6 @@ const isAdmin = computed(() => {
       @cancelClicked="resetActionZone()"
     />
     <FilterZone
-      v-else
       :filterable-fields="filterableFields"
       :available-filters="availableFilters"
       :active-filter="activeFilter"

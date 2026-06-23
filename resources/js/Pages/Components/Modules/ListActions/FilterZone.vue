@@ -10,10 +10,8 @@ import { useForm, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
-import { operatorsForType } from "@/Registries/operatorRegistry";
 import Checkbox from "../../FiledTypes/Checkbox.vue";
 import Switcher from "../../FiledTypes/Switcher.vue";
-import Select from "../../FiledTypes/Select.vue";
 
 const props = defineProps({
   filterableFields: { type: Array, default: () => [] },
@@ -29,6 +27,13 @@ const t = proxy.$t;
 const page = usePage();
 
 const getField = (name) => props.filterableFields.find((f) => f.name === name);
+
+// Source of truth lives in config/filter_operators.php, shared here as the
+// `filterOperators` page prop (see ListController).
+const operatorsForType = (type) => {
+  const operators = page.props.filterOperators ?? {};
+  return operators.by_type?.[type] ?? operators.default ?? [];
+};
 
 const emptyOperators = ["is_empty", "is_not_empty"];
 const arrayOperators = ["between", "in"];
@@ -176,6 +181,11 @@ const activeOverlayField = computed(() => {
   return getField(builderForm.conditions[activeConditionIndex.value]?.field);
 });
 
+const selectFromOverflow = (filter) => {
+  selectFilter(filter);
+  overflowOpen.value = false;
+  overflowSearch.value = "";
+};
 // ─── Submit ───────────────────────────────────────────────────────────────────
 
 const canSave = computed(() => {
@@ -216,14 +226,13 @@ const saveFilter = () => {
         success(t("modules.filters.save_success"));
         builderForm.reset();
         builderForm.conditions = [newCondition()];
+        showFilterBuilder.value = false;
       },
       onError: () => {
         error(t("modules.filters.save_error"));
       },
     });
 };
-
-const emitCancel = () => emit("cancelClicked");
 
 const currentModule = () => {
   return page.props.modules.find((e) => {
@@ -286,7 +295,7 @@ onBeforeUnmount(() => {
             'filter-zone__saved__filter--selected': isSelected(filter),
           }"
         >
-          <span>{{ filter.name }}</span>
+          <span>{{ $t(filter?.label) || filter.name }}</span>
         </div>
 
         <div
@@ -385,27 +394,6 @@ onBeforeUnmount(() => {
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-
-        <div class="filter-zone__builder__row">
-          <div class="filter-zone__builder__field">
-            <label>{{ $t("modules.filters.name") }}</label>
-            <input
-              v-model="builderForm.name"
-              mode="edit"
-              class="filter-zone__builder__name"
-            />
-          </div>
-
-          <div class="filter-zone__match-type">
-            <label>{{ $t("modules.filters.match_conditions") }}</label>
-            <Switcher
-              v-model="builderForm.match_type"
-              :options="matchTypeOptions"
-              :color="currentModule().color"
-            />
-          </div>
-        </div>
-
         <div
           v-for="(condition, index) in builderForm.conditions"
           :key="index"
@@ -441,28 +429,31 @@ onBeforeUnmount(() => {
             <div class="filter-zone__condition__field">
               <label>{{ $t("modules.filters.value") }}</label>
 
-              <input
+              <!-- <input
                 v-if="condition.operator === 'in'"
                 type="text"
                 class="filter-zone__condition__raw-input"
                 :placeholder="$t('modules.filters.comma_separated')"
                 v-model="condition.value"
               />
-
+ -->
               <div
-                v-else-if="condition.operator === 'between'"
+                v-if="condition.operator === 'between'"
                 class="filter-zone__condition__between"
               >
-                <input
-                  type="text"
+                <FieldRenderer
+                  :field="getField(condition.field)"
                   v-model="condition.value[0]"
-                  :placeholder="$t('modules.filters.from')"
+                  mode="edit"
+                  :related_label="condition.valueLabel ?? null"
+                  @open-link-overlay="openValueOverlay(index)"
                 />
-                <span class="filter-zone__condition__between-sep">—</span>
-                <input
-                  type="text"
+                <FieldRenderer
+                  :field="getField(condition.field)"
                   v-model="condition.value[1]"
-                  :placeholder="$t('modules.filters.to')"
+                  mode="edit"
+                  :related_label="condition.valueLabel ?? null"
+                  @open-link-overlay="openValueOverlay(index)"
                 />
               </div>
 
@@ -486,34 +477,54 @@ onBeforeUnmount(() => {
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
+        <div class="filter-zone__builder__row">
+          <div class="filter-zone__builder__field">
+            <label>{{ $t("modules.filters.name") }}</label>
+            <input
+              v-model="builderForm.name"
+              mode="edit"
+              class="filter-zone__builder__name"
+            />
+          </div>
+        </div>
 
         <div class="filter-zone__builder__actions">
-          <button class="filter-zone__builder__add-btn" @click="addCondition">
-            <i class="fa-solid fa-plus"></i>
-            {{ $t("modules.filters.add_condition") }}
-          </button>
+          <div class="filter-zone__builder__match">
+            <button class="filter-zone__builder__add-btn" @click="addCondition">
+              <i class="fa-solid fa-plus"></i>
+              {{ $t("modules.filters.add_condition") }}
+            </button>
+            <div v-if="builderForm.conditions.length > 1">
+              <label>{{ $t("modules.filters.match_conditions") }}</label>
+              <Switcher
+                v-model="builderForm.match_type"
+                :options="matchTypeOptions"
+                :color="currentModule().color"
+              />
+            </div>
+          </div>
+          <div class="filter-zone__builder__match">
+            <label class="filter-zone__share">
+              <Checkbox
+                v-model="builderForm.is_shared"
+                :module-color="currentModule().color"
+              />
+              {{ $t("modules.filters.share_with_team") }}
+            </label>
 
-          <label class="filter-zone__share">
-            <Checkbox
-              v-model="builderForm.is_shared"
-              :module-color="currentModule().color"
-            />
-            {{ $t("modules.filters.share_with_team") }}
-          </label>
-
-          <button
-            class="filter-zone__builder__save-btn"
-            :disabled="!canSave"
-            @click="saveFilter"
-          >
-            <i class="fa-solid fa-floppy-disk"></i>
-            {{ $t("modules.filters.save") }}
-          </button>
+            <button
+              class="filter-zone__builder__save-btn"
+              :disabled="!canSave"
+              @click="saveFilter"
+            >
+              <i class="fa-solid fa-floppy-disk"></i>
+              {{ $t("modules.filters.save") }}
+            </button>
+          </div>
         </div>
       </div>
     </Transition>
 
-    <!-- Record Selector Drawer -->
     <RecordSelectorDrawer
       :open="overlayOpen"
       :search-endpoint="
@@ -530,5 +541,3 @@ onBeforeUnmount(() => {
     />
   </div>
 </template>
-
-<style lang="scss" scoped></style>

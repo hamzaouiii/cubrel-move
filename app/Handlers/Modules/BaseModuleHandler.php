@@ -3,9 +3,11 @@
 namespace App\Handlers\Modules;
 
 use App\Contracts\ModuleHandler;
+use App\Models\ListFilter;
 use App\Models\Module;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Relationships\RelationshipService;
+use App\Support\Filters\FilterQueryBuilder;
 use App\Support\Settings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -60,6 +62,15 @@ abstract class BaseModuleHandler implements ModuleHandler
     {
         $perPage = $this->getPerPage($params);
         $query = $this->query($params);
+
+        if (! empty($params['filter'])) {
+            $filter = ListFilter::findVisibleByKey($module->slug, $params['filter'], auth()->user());
+
+            if ($filter) {
+                FilterQueryBuilder::apply($query, $module, $filter->conditions, $filter->match_type);
+            }
+        }
+
         $searchable = $this->getSearchableColumns($module);
 
         if (! empty($params['search']) && ! empty($searchable)) {

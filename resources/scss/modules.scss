@@ -1262,9 +1262,9 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-
   transition: box-shadow 0.3s ease;
-  margin: 0 20px;
+  margin: 20px;
+  margin-bottom: 0px;
 
   &__toolbar {
     display: flex;
@@ -1604,6 +1604,15 @@
       align-items: center;
       gap: 16px;
       margin-top: 4px;
+      justify-content: space-between;
+    }
+    &__match {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      label {
+        margin: 0 10px;
+      }
     }
   }
 
@@ -1639,7 +1648,6 @@
       flex-direction: column;
       gap: 4px;
       min-width: 120px;
-
       label {
         font-size: 0.7rem;
         font-weight: 600;
@@ -1674,49 +1682,12 @@
           outline: none;
         }
       }
-
-      input[type="text"] {
-        padding: 8px 12px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-        background: white;
-
-        &:focus {
-          border-color: var(--module-color, #4f7df3);
-          box-shadow: 0 0 0 3px
-            rgba(var(--module-color-rgb, 79, 125, 243), 0.08);
-          outline: none;
-        }
-
-        &::placeholder {
-          color: #b0c4de;
-        }
-      }
     }
 
     &__between {
       display: flex;
       align-items: center;
       gap: 8px;
-
-      input {
-        flex: 1;
-        padding: 8px 12px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-        background: white;
-
-        &:focus {
-          border-color: var(--module-color, #4f7df3);
-          box-shadow: 0 0 0 3px
-            rgba(var(--module-color-rgb, 79, 125, 243), 0.08);
-          outline: none;
-        }
-      }
 
       &-sep {
         color: #94a3b8;
@@ -1733,16 +1704,6 @@
       transition: all 0.2s ease;
       background: white;
       width: 100%;
-
-      &:focus {
-        border-color: var(--module-color, #4f7df3);
-        box-shadow: 0 0 0 3px rgba(var(--module-color-rgb, 79, 125, 243), 0.08);
-        outline: none;
-      }
-
-      &::placeholder {
-        color: #b0c4de;
-      }
     }
 
     &__remove {

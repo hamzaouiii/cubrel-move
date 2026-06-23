@@ -6,7 +6,6 @@ export const fieldTypeRules = {
     hide: [
       "dropdown_list_id",
       "hidden",
-      "filterable",
       "options",
       "default_value",
       "related_module",

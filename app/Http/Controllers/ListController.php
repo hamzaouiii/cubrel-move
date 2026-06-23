@@ -2,58 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Module;
-use Inertia\Inertia;
-use Illuminate\Support\Str;
 use App\Contracts\ModuleHandler;
-use App\Support\Settings;
 use App\Exceptions\ModuleHandlerNotFoundException;
+use App\Models\ListFilter;
+use App\Models\Module;
+use App\Support\Filters\FilterQueryBuilder;
+use App\Support\Settings;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class ListController extends Controller
 {
-  public function __invoke(string $module)
-  {
-    $moduleModel = Module::query()
-      ->where('slug', $module)
-      ->where('is_active', true)
-      ->firstOrFail();
+    public function __invoke(string $module)
+    {
+        $moduleModel = Module::query()
+            ->where('slug', $module)
+            ->where('is_active', true)
+            ->firstOrFail();
 
-    $handlerClass = $moduleModel->handler_class
-      ?? "App\\Handlers\\Modules\\" . Str::studly($moduleModel->slug) . "ModuleHandler";
+        $handlerClass = $moduleModel->handler_class
+          ?? 'App\\Handlers\\Modules\\'.Str::studly($moduleModel->slug).'ModuleHandler';
 
-    if (empty($handlerClass)) {
-      throw new ModuleHandlerNotFoundException(
-        "Handler class [{$handlerClass}] not found for module [{$module}]. Please check if the file exists or re-deploy."
-      );
+        if (empty($handlerClass)) {
+            throw new ModuleHandlerNotFoundException(
+                "Handler class [{$handlerClass}] not found for module [{$module}]. Please check if the file exists or re-deploy."
+            );
+        }
+
+        $props = [];
+
+        if (class_exists($handlerClass)) {
+            $handler = app($handlerClass);
+
+            if ($handler instanceof ModuleHandler) {
+                $params = request()->all();
+                $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
+                $params['sort'] = request()->input('sort');
+                $params['direction'] = request()->input('direction', 'asc');
+                $props = $handler->getListData($moduleModel, $params);
+            }
+        }
+
+        $listLayout = $moduleModel->listLayout();
+        $recorddropdownLists = $moduleModel->dropdownLists;
+        $fields = $moduleModel->allFields();
+
+        $availableFilters = ListFilter::query()
+            ->forModule($moduleModel->slug)
+            ->visibleTo(request()->user())
+            ->orderBy('is_system', 'desc')
+            ->orderBy('name')
+            ->get(['id', 'slug', 'name','label', 'is_shared', 'is_system', 'is_global', 'user_id', 'conditions', 'match_type'])
+            ->filter(fn ($f) => FilterQueryBuilder::isApplicable($moduleModel, $f->conditions))
+            ->values()
+            ->groupBy(fn ($f) => $f->is_shared ? 'shared' : 'private');
+
+        $activeFilterKey = request()->input('filter');
+        $activeFilter = $activeFilterKey
+  ? $availableFilters->flatten()->first(fn ($f) => $f->slug === $activeFilterKey || $f->id === $activeFilterKey)
+  : null;
+
+        return Inertia::render('Modules/List', array_merge([
+            'module' => $moduleModel,
+            'listLayout' => $listLayout,
+            'fields' => $fields,
+            'filterableFields' => array_values(FilterQueryBuilder::allowedFieldsMap($moduleModel)),
+            'filterOperators' => config('filter_operators'),
+            'filters' => request()->only(['search', 'perPage', 'sort', 'direction', 'filter']),
+            'availableFilters' => $availableFilters,
+            'activeFilter' => $activeFilter,
+            'dropdownLists' => $recorddropdownLists,
+
+        ], $props));
     }
-
-    $props = [];
-
-    if (class_exists($handlerClass)) {
-      $handler = app($handlerClass);
-
-      if ($handler instanceof ModuleHandler) {
-        $params = request()->all();
-        $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
-        $params['sort']      = request()->input('sort');
-        $params['direction'] = request()->input('direction', 'asc');
-        $props = $handler->getListData($moduleModel, $params);
-      }
-    }
-
-    $listLayout = $moduleModel->listLayout();
-    $recorddropdownLists = $moduleModel->dropdownLists;
-    $fields = $moduleModel->allFields();
-
-    //TODO: make the fields list customizable
-    // remove readonly fields and fields unsuited for mass update such as emails and so on.
-    return Inertia::render('Modules/List', array_merge([
-      'module'     => $moduleModel,
-      'listLayout' => $listLayout,
-      'fields'     => $fields,
-      'filters' => request()->only(['search', 'perPage', 'sort', 'direction']),
-      'dropdownLists' => $recorddropdownLists,
-
-    ], $props));
-  }
 }
