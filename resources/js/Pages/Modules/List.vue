@@ -16,8 +16,10 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 import ListDeleteZone from "@/Pages/Components/Modules/ListActions/ListDeleteZone.vue";
 import MassUpdateZone from "@/Pages/Components/Modules/ListActions/MassUpdateZone.vue";
+import ExportZone from "@/Pages/Components/Modules/ListActions/ExportZone.vue";
 import FilterZone from "@/Pages/Components/Modules/ListActions/FilterZone.vue";
 import Selectbox from "@/Pages//Components/FiledTypes/Selectbox.vue";
+import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -46,6 +48,8 @@ const appSettings = page.props.appSettings;
 const bulkActionmode = ref(false);
 const showDeleteZone = ref(false);
 const showMassUpdateZone = ref(false);
+const showExportZone = ref(false);
+const showExportModal = ref(false);
 
 // ─── Selection State ────────────────────────────────────────────────────────
 // allMatchingSelected = true means "every record in the result set is selected,
@@ -249,7 +253,11 @@ const clearSelection = () => {
 const toggleMassUpdateZone = () => {
   showMassUpdateZone.value = !showMassUpdateZone.value;
 
-  if (showMassUpdateZone.value === true || showDeleteZone.value === true) {
+  if (
+    showMassUpdateZone.value === true ||
+    showDeleteZone.value === true ||
+    showExportZone.value === true
+  ) {
     bulkActionmode.value = true;
   } else {
     bulkActionmode.value = false;
@@ -259,18 +267,50 @@ const toggleMassUpdateZone = () => {
   if (showDeleteZone.value == true) {
     showDeleteZone.value = false;
   }
+  if (showExportZone.value == true) {
+    showExportZone.value = false;
+  }
 };
 
 const toggleDeleteZone = () => {
   showDeleteZone.value = !showDeleteZone.value;
 
-  if (showMassUpdateZone.value === true || showDeleteZone.value === true) {
+  if (
+    showMassUpdateZone.value === true ||
+    showDeleteZone.value === true ||
+    showExportZone.value === true
+  ) {
     bulkActionmode.value = true;
   } else {
     bulkActionmode.value = false;
   }
   clearSelection();
   showActionDropDown.value = false;
+  if (showMassUpdateZone.value == true) {
+    showMassUpdateZone.value = false;
+  }
+  if (showExportZone.value == true) {
+    showExportZone.value = false;
+  }
+};
+
+const toggleExportZone = () => {
+  showExportZone.value = !showExportZone.value;
+
+  if (
+    showMassUpdateZone.value === true ||
+    showDeleteZone.value === true ||
+    showExportZone.value === true
+  ) {
+    bulkActionmode.value = true;
+  } else {
+    bulkActionmode.value = false;
+  }
+  clearSelection();
+  showActionDropDown.value = false;
+  if (showDeleteZone.value == true) {
+    showDeleteZone.value = false;
+  }
   if (showMassUpdateZone.value == true) {
     showMassUpdateZone.value = false;
   }
@@ -333,6 +373,7 @@ const goToCreateView = () => {
 const resetActionZone = () => {
   showDeleteZone.value = false;
   showMassUpdateZone.value = false;
+  showExportZone.value = false;
   bulkActionmode.value = false;
   showActionDropDown.value = false;
   clearSelection();
@@ -617,6 +658,15 @@ const isAdmin = computed(() => {
               </li>
               <li>
                 <span
+                  class="list-layout__header__actions__list__dropdown__item"
+                  @click="toggleExportZone()"
+                >
+                  <i class="fa-solid fa-download"></i>
+                  {{ $t("modules.actions.export") }}
+                </span>
+              </li>
+              <li>
+                <span
                   class="list-layout__header__actions__list__dropdown__item list-layout__header__actions__list__dropdown__item--delete"
                   @click.prevent="toggleDeleteZone()"
                 >
@@ -655,6 +705,36 @@ const isAdmin = computed(() => {
       @clearSelection="clearSelection()"
       @cancelClicked="resetActionZone()"
     />
+
+    <ExportZone
+      v-else-if="showExportZone"
+      :selectedIds="selectedIds"
+      :excludedIds="excludedIds"
+      :meta="meta"
+      :allMatchingSelected="allMatchingSelected"
+      @selectAllMatching="selectAllMatching()"
+      @clearSelection="clearSelection()"
+      @cancelClicked="resetActionZone()"
+      @exportClicked="showExportModal = true"
+    />
+
+    <ExportModal
+      v-if="showExportModal"
+      mode="bulk"
+      :module-slug="module.slug"
+      :selection="{
+        selectedIds,
+        excludedIds,
+        allMatchingSelected,
+        filters: props.filters ?? {},
+      }"
+      @cancel="showExportModal = false"
+      @close="
+        showExportModal = false;
+        resetActionZone();
+      "
+    />
+
     <FilterZone
       :filterable-fields="filterableFields"
       :available-filters="availableFilters"
