@@ -30,7 +30,7 @@ class Quote extends BaseModule
         ]);
     }
 
-  protected $modelCasts = [
+  protected $moduleCasts = [
     'valid_until'     => 'date',
     'subtotal'        => 'decimal:2',
     'discount_amount' => 'decimal:2',

@@ -300,16 +300,18 @@ class RecordController extends Controller
                 $baseQuery->whereNotIn('id', $excludedIds);
             }
 
+            $value = $field->is_custom ? $newValue : $this->castValueForColumn($modelClass, $field->name, $newValue);
+
             $count = 0;
-            DB::transaction(function () use ($baseQuery, $field, $newValue, &$count, $modelClass) {
-                $baseQuery->select('id')->chunkById(500, function ($chunk) use ($field, $newValue, &$count, $modelClass) {
+            DB::transaction(function () use ($baseQuery, $field, $value, &$count, $modelClass) {
+                $baseQuery->select('id')->chunkById(500, function ($chunk) use ($field, $value, &$count, $modelClass) {
                     $ids = $chunk->pluck('id')->all();
                     if (! empty($ids)) {
                         $column = $field->is_custom
                           ? "custom_fields->{$field->name}"
                           : $field->name;
 
-                        $count += $modelClass::whereIn('id', $ids)->update([$column => $newValue]);
+                        $count += $modelClass::whereIn('id', $ids)->update([$column => $value]);
                     }
                 });
             });
@@ -323,10 +325,26 @@ class RecordController extends Controller
                 ->update(["custom_fields->{$field_name}" => $newValue]);
         } else {
             $updatedCount = $modelClass::whereIn('id', $selectedIds)
-                ->update([$field_name => $newValue]);
+                ->update([$field_name => $this->castValueForColumn($modelClass, $field_name, $newValue)]);
         }
 
         return back()->with('success', "{$updatedCount} records updated.");
+    }
+
+    /**
+     * Run a raw bulk-edit value through the model's attribute casts, so values like
+     * ISO datetime strings are normalized the same way Eloquent would on save().
+     */
+    private function castValueForColumn(string $modelClass, string $column, mixed $value): mixed
+    {
+        if ($value === null) {
+            return $value;
+        }
+
+        $model = new $modelClass;
+        $model->setAttribute($column, $value);
+
+        return $model->getAttributes()[$column] ?? $value;
     }
 
     /**
