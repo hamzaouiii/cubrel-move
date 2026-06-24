@@ -6,8 +6,9 @@ import {
   onMounted,
   onBeforeUnmount,
 } from "vue";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { useForm, usePage, router } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useConfirm } from "@/Composables/useConfirm";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
 import Checkbox from "../../FiledTypes/Checkbox.vue";
@@ -22,9 +23,18 @@ const props = defineProps({
 const emit = defineEmits(["applyFilter", "clearFilter", "cancelClicked"]);
 
 const { success, error } = useAlerts();
+const { confirm } = useConfirm();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 const page = usePage();
+
+const currentUser = computed(() => page.props.auth?.user ?? null);
+
+const canManageFilter = (filter) => {
+  if (!filter || !currentUser.value) return false;
+  if (currentUser.value.is_admin) return true;
+  return !filter.is_system && filter.user_id === currentUser.value.id;
+};
 
 const getField = (name) => props.filterableFields.find((f) => f.name === name);
 
@@ -43,38 +53,30 @@ const overflowOpen = ref(false);
 const overflowSearch = ref("");
 const overflowRef = ref(null);
 
+const byLastUsed = (a, b) => {
+  const aTime = a?.last_used ? new Date(a.last_used).getTime() : 0;
+  const bTime = b?.last_used ? new Date(b.last_used).getTime() : 0;
+  return bTime - aTime; // descending: most recently used first
+};
+
 const sortedFilters = computed(() => {
   const DBprivateFilters = props.availableFilters?.private || [];
   const sharedFilters =
     props.availableFilters?.shared.filter((f) => f.slug !== "my_records") || [];
   const Myrecords =
     props.availableFilters?.shared.find((f) => f.slug === "my_records") || [];
-  const privateFilters = [Myrecords, ...DBprivateFilters];
-  return [...privateFilters, ...sharedFilters];
-});
 
+  const allFilters = [...DBprivateFilters, ...sharedFilters].filter(Boolean);
+  return [Myrecords, ...allFilters.sort(byLastUsed)];
+});
 const visibleFilters = computed(() => {
   const base = sortedFilters.value.slice(0, VISIBLE_LIMIT);
 
-  if (!selectedFilterKey.value) return base;
-
-  const alreadyVisible = base.some(
-    (f) =>
-      f.slug === selectedFilterKey.value || f.id === selectedFilterKey.value,
-  );
-  if (alreadyVisible) return base;
-
-  const selected = sortedFilters.value.find(
-    (f) =>
-      f.slug === selectedFilterKey.value || f.id === selectedFilterKey.value,
-  );
-
-  return selected ? [selected, ...base.slice(0, VISIBLE_LIMIT - 1)] : base;
+  return base;
 });
 
 const overflowFilters = computed(() => {
-  const visibleKeys = new Set(visibleFilters.value.map((f) => f.slug ?? f.id));
-  return sortedFilters.value.filter((f) => !visibleKeys.has(f.slug ?? f.id));
+  return sortedFilters.value;
 });
 
 const filteredOverflow = computed(() => {
@@ -89,7 +91,12 @@ const overflowPrivate = computed(() =>
 const overflowShared = computed(() =>
   filteredOverflow.value.filter((f) => f.is_shared),
 );
-const newCondition = () => ({ field: null, operator: null, value: null });
+const newCondition = () => ({
+  field: null,
+  operator: null,
+  value: null,
+  valueLabel: null,
+});
 
 // ─── Saved filters panel ─────────────────────────────────────────────────────
 
@@ -162,6 +169,7 @@ const operatorPickerField = (fieldName) => {
 const overlayOpen = ref(false);
 const activeConditionIndex = ref(null);
 const showFilterBuilder = ref(false);
+const editingFilter = ref(null);
 const openValueOverlay = (index) => {
   activeConditionIndex.value = index;
   overlayOpen.value = true;
@@ -216,20 +224,36 @@ const saveFilter = () => {
             .map((v) => v.trim())
             .filter(Boolean)
         : c.value,
+    valueLabel: c.valueLabel,
   }));
+
+  const isEditing = !!editingFilter.value;
+  const url = isEditing
+    ? `/${props.moduleSlug}/filters/${editingFilter.value.id}`
+    : `/${props.moduleSlug}/filters`;
 
   builderForm
     .transform((data) => ({ ...data, conditions }))
-    .post(`/${props.moduleSlug}/filters`, {
+    [isEditing ? "put" : "post"](url, {
       preserveScroll: true,
       onSuccess: () => {
-        success(t("modules.filters.save_success"));
-        builderForm.reset();
-        builderForm.conditions = [newCondition()];
-        showFilterBuilder.value = false;
+        success(
+          t(
+            isEditing
+              ? "modules.filters.update_success"
+              : "modules.filters.save_success",
+          ),
+        );
+        closeFilterBuilder();
       },
       onError: () => {
-        error(t("modules.filters.save_error"));
+        error(
+          t(
+            isEditing
+              ? "modules.filters.update_error"
+              : "modules.filters.save_error",
+          ),
+        );
       },
     });
 };
@@ -244,13 +268,68 @@ const matchTypeOptions = [
   { label: t("modules.filters.match_all"), value: "all" },
   { label: t("modules.filters.match_any"), value: "any" },
 ];
-const toggleFilterBuilder = () => {
-  toggleFilterOverflow();
-  showFilterBuilder.value = !showFilterBuilder.value;
+const resetBuilderForm = () => {
+  builderForm.reset();
+  builderForm.conditions = [newCondition()];
 };
 
-const toggleFilterOverflow = () => {
-  overflowOpen.value = !overflowOpen.value;
+const openNewFilterBuilder = () => {
+  editingFilter.value = null;
+  resetBuilderForm();
+  overflowOpen.value = false;
+  showFilterBuilder.value = true;
+};
+
+const startEditFilter = (filter) => {
+  if (!canManageFilter(filter)) return;
+  console.log(filter);
+  editingFilter.value = filter;
+  builderForm.name = filter.name;
+  builderForm.is_shared = !!filter.is_shared;
+  builderForm.match_type = filter.match_type || "all";
+  builderForm.conditions = (filter.conditions || []).map((c) => ({
+    field: c.field,
+    operator: c.operator,
+    value: c.value,
+    valueLabel: c.valueLabel || null,
+  }));
+  overflowOpen.value = false;
+  showFilterBuilder.value = true;
+};
+
+const closeFilterBuilder = () => {
+  showFilterBuilder.value = false;
+  editingFilter.value = null;
+  resetBuilderForm();
+};
+
+const deleteFilter = async (filter) => {
+  if (!canManageFilter(filter)) return;
+
+  const ok = await confirm({
+    title: t("modules.filters.delete_title"),
+    message: t("modules.filters.delete_confirm", {
+      name: filter.label ? t(filter.label) : filter.name,
+    }),
+    confirmText: t("modules.filters.delete_yes"),
+    cancelText: t("modules.filters.delete_no"),
+    danger: true,
+  });
+  if (!ok) return;
+
+  router.delete(`/${props.moduleSlug}/filters/${filter.id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      if (selectedFilterKey.value === (filter.slug ?? filter.id)) {
+        clearSelected();
+        closeFilterBuilder();
+      }
+      success(t("modules.filters.delete_success"));
+    },
+    onError: () => {
+      error(t("modules.filters.delete_error"));
+    },
+  });
 };
 
 const selectFilter = (filter) => {
@@ -316,10 +395,12 @@ onBeforeUnmount(() => {
           >
             <div
               class="filter-zone__saved__overflow-panel__item filter-zone__saved__overflow-panel__item--action"
-              @click="toggleFilterBuilder"
+              @click="openNewFilterBuilder"
             >
-              <i class="fa-solid fa-plus"></i>
-              {{ $t("modules.filters.new_filter") }}
+              <span>
+                <i class="fa-solid fa-plus"></i>
+                {{ $t("modules.filters.new_filter") }}
+              </span>
             </div>
             <input
               v-if="overflowFilters.length"
@@ -336,14 +417,29 @@ onBeforeUnmount(() => {
                 <div
                   v-for="filter in overflowPrivate"
                   :key="filter.id ?? filter.slug"
-                  class="filter-zone__saved__overflow-panel__item"
-                  :class="{
-                    'filter-zone__saved__overflow-panel__item--selected':
-                      isSelected(filter),
-                  }"
-                  @click="selectFromOverflow(filter)"
+                  class="filter-zone__saved__overflow-panel__row"
                 >
-                  {{ filter.name }}
+                  <div
+                    class="filter-zone__saved__overflow-panel__item"
+                    :class="{
+                      'filter-zone__saved__overflow-panel__item--selected':
+                        isSelected(filter),
+                    }"
+                    @click="selectFromOverflow(filter)"
+                  >
+                    <span>{{ filter.name }}</span>
+                  </div>
+
+                  <span
+                    v-if="canManageFilter(filter)"
+                    class="filter-zone__saved__overflow-panel__item__actions"
+                    @click.stop="startEditFilter(filter)"
+                  >
+                    <i
+                      class="fa-solid fa-pen"
+                      :title="$t('modules.filters.edit_filter')"
+                    ></i>
+                  </span>
                 </div>
               </template>
 
@@ -354,21 +450,35 @@ onBeforeUnmount(() => {
                 <div
                   v-for="filter in overflowShared"
                   :key="filter.id ?? filter.slug"
-                  class="filter-zone__saved__overflow-panel__item"
-                  :class="{
-                    'filter-zone__saved__overflow-panel__item--selected':
-                      isSelected(filter),
-                  }"
-                  @click="selectFromOverflow(filter)"
+                  class="filter-zone__saved__overflow-panel__row"
                 >
-                  {{ filter.name }}
+                  <div
+                    class="filter-zone__saved__overflow-panel__item"
+                    :class="{
+                      'filter-zone__saved__overflow-panel__item--selected':
+                        isSelected(filter),
+                    }"
+                  >
+                    <span @click="selectFromOverflow(filter)">{{
+                      filter.name
+                    }}</span>
+                  </div>
+                  <span
+                    v-if="canManageFilter(filter)"
+                    class="filter-zone__saved__overflow-panel__item__actions"
+                    @click.stop="startEditFilter(filter)"
+                  >
+                    <i
+                      class="fa-solid fa-pen"
+                      :title="$t('modules.filters.edit_filter')"
+                    ></i>
+                  </span>
                 </div>
               </template>
             </div>
           </div>
         </div>
 
-        <!-- Clear filter -->
         <span
           class="filter-zone__saved__filter filter-zone__saved__filter--clear"
           @click="clearSelected()"
@@ -385,11 +495,17 @@ onBeforeUnmount(() => {
         <div class="filter-zone__builder__header">
           <div class="filter-zone__builder__title">
             <i class="fa-solid fa-sliders"></i>
-            <h3>{{ $t("modules.filters.builder_title") }}</h3>
+            <h3>
+              {{
+                editingFilter
+                  ? $t("modules.filters.edit_builder_title")
+                  : $t("modules.filters.builder_title")
+              }}
+            </h3>
           </div>
           <button
             class="filter-zone__builder__close"
-            @click="toggleFilterBuilder"
+            @click="closeFilterBuilder"
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -415,6 +531,7 @@ onBeforeUnmount(() => {
               :field="operatorPickerField(condition.field)"
               v-model="condition.operator"
               mode="edit"
+              :related_label="condition.valueLabel ?? null"
               @update:modelValue="onOperatorChange(condition)"
             />
           </div>
@@ -429,14 +546,6 @@ onBeforeUnmount(() => {
             <div class="filter-zone__condition__field">
               <label>{{ $t("modules.filters.value") }}</label>
 
-              <!-- <input
-                v-if="condition.operator === 'in'"
-                type="text"
-                class="filter-zone__condition__raw-input"
-                :placeholder="$t('modules.filters.comma_separated')"
-                v-model="condition.value"
-              />
- -->
               <div
                 v-if="condition.operator === 'between'"
                 class="filter-zone__condition__between"
@@ -518,7 +627,19 @@ onBeforeUnmount(() => {
               @click="saveFilter"
             >
               <i class="fa-solid fa-floppy-disk"></i>
-              {{ $t("modules.filters.save") }}
+              {{
+                editingFilter
+                  ? $t("modules.filters.update")
+                  : $t("modules.filters.save")
+              }}
+            </button>
+            <button
+              v-if="editingFilter"
+              class="filter-zone__builder__delete-btn"
+              @click="deleteFilter(editingFilter)"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+              {{ $t("modules.filters.delete_filter") }}
             </button>
           </div>
         </div>

@@ -50,17 +50,19 @@ class ListController extends Controller
         $availableFilters = ListFilter::query()
             ->forModule($moduleModel->slug)
             ->visibleTo(request()->user())
-            ->orderBy('is_system', 'desc')
-            ->orderBy('name')
-            ->get(['id', 'slug', 'name','label', 'is_shared', 'is_system', 'is_global', 'user_id', 'conditions', 'match_type'])
+            ->orderBy('last_used','desc')
+            ->get(['id', 'slug', 'name', 'label', 'last_used', 'is_shared', 'is_system', 'is_global', 'user_id', 'conditions', 'match_type'])
             ->filter(fn ($f) => FilterQueryBuilder::isApplicable($moduleModel, $f->conditions))
             ->values()
             ->groupBy(fn ($f) => $f->is_shared ? 'shared' : 'private');
 
         $activeFilterKey = request()->input('filter');
         $activeFilter = $activeFilterKey
-  ? $availableFilters->flatten()->first(fn ($f) => $f->slug === $activeFilterKey || $f->id === $activeFilterKey)
-  : null;
+                      ? $availableFilters->flatten()->first(fn ($f) => $f->slug === $activeFilterKey || $f->id === $activeFilterKey)
+                      : null;
+        if ($activeFilter) {
+            $activeFilter->forceFill(['last_used' => now()])->saveQuietly();
+        }
 
         return Inertia::render('Modules/List', array_merge([
             'module' => $moduleModel,

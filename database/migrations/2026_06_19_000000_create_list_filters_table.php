@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('is_global')->default(false);
             $table->json('conditions');
             $table->string('match_type')->default('all');
-
+            $table->dateTime('last_used')->nullable();
             $table->timestamps();
 
             $table->index(['module_slug', 'slug']);
