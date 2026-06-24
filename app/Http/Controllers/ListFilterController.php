@@ -81,6 +81,7 @@ class ListFilterController extends Controller
                 }
             }],
             'conditions.*.value' => 'present',
+            'conditions.*.valueLabel' => 'sometimes',
         ]);
     }
 }

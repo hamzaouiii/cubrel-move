@@ -167,10 +167,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/relatedfield/search/{related_module}', RelatedFieldController::class)->name('records.search');
 
     // Modules routes
-        Route::prefix('{module}/filters')->name('list-filters.')->group(function () {
-        Route::post('/', [ListFilterController::class, 'store'])->name('store');
-        Route::put('/{filter}', [ListFilterController::class, 'update'])->name('update');
-        Route::delete('/{filter}', [ListFilterController::class, 'destroy'])->name('destroy');
+    Route::prefix('{module}/filters')->name('list-filters.')->group(function () {
+      Route::post('/', [ListFilterController::class, 'store'])->name('store');
+      Route::put('/{filter}', [ListFilterController::class, 'update'])->name('update');
+      Route::delete('/{filter}', [ListFilterController::class, 'destroy'])->name('destroy');
     });
     Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
     Route::post('{module}', [RecordController::class, 'store'])->name('record.store');

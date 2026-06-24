@@ -22,6 +22,7 @@ class ListFilter extends Model
         'is_global',
         'conditions',
         'match_type',
+        'last_used',
     ];
 
     protected $casts = [
@@ -29,6 +30,7 @@ class ListFilter extends Model
         'is_system' => 'boolean',
         'is_global' => 'boolean',
         'conditions' => 'array',
+        'last_used' => 'datetime',
     ];
 
     /**
