@@ -739,7 +739,7 @@ const productLinkingLayout = computed(() => {
                 :disabled="!row.name || saving"
                 @click="saveRow"
               >
-                <i v-if="saving" class="fa-solid fa-circle-notch fa-spin"></i>
+                <i v-if="saving" class="fa-solid fa-atom fa-spin"></i>
                 {{ $t("modules.actions.save") }}
               </button>
             </div>

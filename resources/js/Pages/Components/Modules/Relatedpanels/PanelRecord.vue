@@ -55,7 +55,7 @@ const fieldResolver = (name) => {
           class="related-records__actions__menu-btn"
           @click.stop="emit('toggleMenu', record.id)"
         >
-          <i v-if="isUnlinking" class="fa-solid fa-circle-notch fa-spin"></i>
+          <i v-if="isUnlinking" class="fa-solid fa-atom fa-spin"></i>
           <i v-else class="fa-solid fa-ellipsis-vertical"></i>
         </button>
 

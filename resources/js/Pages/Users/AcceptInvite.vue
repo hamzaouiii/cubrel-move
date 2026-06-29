@@ -165,7 +165,7 @@ const submit = () => {
               $t("globals.login.create_account_button")
             }}</span>
             <span v-else class="submit-spinner">
-              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <i class="fa-solid fa-atom fa-spin"></i>
               {{ $t("globals.login.setting_up_account") }}
             </span>
           </button>

@@ -370,10 +370,7 @@ onMounted(() => {
                   @click="abortAndCleanup"
                   :disabled="isRollingBack"
                 >
-                  <i
-                    v-if="isRollingBack"
-                    class="fa-solid fa-spinner fa-spin"
-                  ></i>
+                  <i v-if="isRollingBack" class="fa-solid fa-atom fa-spin"></i>
                   <i v-else class="fa-solid fa-trash-can"></i>
                   {{
                     isRollingBack
