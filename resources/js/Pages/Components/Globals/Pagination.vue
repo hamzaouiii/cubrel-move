@@ -1,11 +1,12 @@
 <script setup>
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 const props = defineProps({
   meta: { type: Object, required: true },
   visibleRange: { type: Number, default: 2 },
 });
+const p = usePage();
 
 const pages = computed(() => props.meta.pages || []);
 
@@ -74,7 +75,11 @@ const pageKey = (page) => page.page;
 </script>
 
 <template>
-  <nav v-if="meta" aria-label="Pagination">
+  <nav
+    v-if="meta"
+    aria-label="Pagination"
+    :class="{ impersonating: p.props.auth.impersonating }"
+  >
     <ul class="pagination">
       <!-- Previous -->
       <li
