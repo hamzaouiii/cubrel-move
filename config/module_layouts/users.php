@@ -24,19 +24,24 @@ return array(
         'type' => 'checkbox',
         'label' => 'modules.users.fields.is_admin',
       ),
-      3 =>
+      3 =>  array(
+            'name' => 'type',
+            'type' => 'select',
+            'label' => 'modules.users.fields.type',
+          ),
+          4=>
       array(
         'name' => 'status',
         'type' => 'select',
         'label' => 'modules.users.fields.status',
       ),
-      4 =>
+      5 =>
       array(
         'name' => 'email',
         'type' => 'email',
         'label' => 'modules.users.fields.email',
       ),
-      5 =>
+      6 =>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
@@ -130,7 +135,6 @@ return array(
             'name' => 'type',
             'type' => 'select',
             'label' => 'modules.users.fields.type',
-            'readonly' => true,
             'required' => false,
           ),
           1 =>
