@@ -76,6 +76,11 @@ const isForgotFormDirty = () => {
       </div>
     </div>
     <div class="login__card" v-if="showLogin">
+      <img
+        class="login__card__logo"
+        src="img/logo/default-monochrome.svg"
+        alt="Cubrel"
+      />
       <div class="login__card__header">
         {{ $t("globals.login.welcome_back") }}
       </div>
@@ -182,6 +187,11 @@ const isForgotFormDirty = () => {
     </div>
 
     <div class="login__card" v-else-if="!showLogin">
+      <img
+        class="login__card__logo"
+        src="img/logo/default-monochrome.svg"
+        alt="Cubrel"
+      />
       <div class="login__card__header" v-if="!forgotSuccess">
         {{ $t("globals.login.reset_password") }}
       </div>
