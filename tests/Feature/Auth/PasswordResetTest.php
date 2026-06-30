@@ -12,12 +12,10 @@ class PasswordResetTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_reset_password_link_screen_can_be_rendered(): void
-    {
-        $response = $this->get('/forgot-password');
-
-        $response->assertStatus(200);
-    }
+    // No test_reset_password_link_screen_can_be_rendered: this app has no
+    // standalone GET /forgot-password screen — only POST exists. The forgot-
+    // password form lives inline on /login (Login.vue's showLogin toggle),
+    // which AuthenticationTest::test_login_screen_can_be_rendered covers.
 
     public function test_reset_password_link_can_be_requested(): void
     {
