@@ -103,6 +103,10 @@ const highlightMatch = (text) => {
     </span>
   </div>
 
+  <div v-else-if="mode === 'dashboard'" class="df-field">
+    <input v-model="localValue" type="text" @input="clearErrors()" />
+  </div>
+
   <div v-else-if="mode === 'detail'">
     <div
       :class="[

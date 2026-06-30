@@ -2,142 +2,149 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Modules\Account;
-use App\Models\Modules\SupportCase as SupportCase;
-use App\Models\Modules\Contact;
-use App\Models\Modules\Lead;
-use App\Models\Modules\Deal;
-use App\Models\Modules\Order;
-use App\Models\Modules\Invoice;
+use App\Models\Dashboard;
+use App\Models\Module;
+use App\Services\Aggregation\AggregationService;
+use App\Support\Filters\FilterQueryBuilder;
+use App\Services\Users\OwnershipService;
+use App\Support\DashboardPresets;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Services\Users\OwnershipService;
-use App\Models\DropdownList;
 
 class DashboardController extends Controller
 {
     public function index(): Response
     {
-        $user = Auth::user();
+        $user      = Auth::user();
+        $dashboard = Dashboard::where('user_id', $user->id)->first();
 
         return Inertia::render('Dashboard/Index', [
-            'leads'         => $this->getLastLeads($user)->toArray(),
-            'recordCounts'  => $this->getRecordCounts($user),
-            'ownedRecords'  => $this->getOwnedRecords($user),
-            'recentOrders'  => $this->getRecentOrders($user),
-            'dealsOverTime' => $this->getDealsOverTime($user),
-            'dealStages'      => $this->getDealStages($user), 
-            // 'invoiceOverview' => $this->getInvoiceOverview($user),
+            'ownedRecords'     => $this->getOwnedRecords($user),
+            'dashboardLayout'  => $dashboard?->layout ?? DashboardPresets::layout(DashboardPresets::presetType($user)),
+            'dashboardModules' => $this->getActiveModules(),
+            'dashboardConfig'  => config('dashboard'),
+            'filterOperators'  => config('filter_operators'),
         ]);
     }
 
-    private function getLastLeads(object $user) : Collection
+    public function widgetData(Request $request): JsonResponse
     {
-          return Lead::where('owner_id', $user->id)
-        ->orderBy('created_at')
-        ->limit(10)
-        ->get();
-    }
-    private function getOwnedRecords(object $user) : Collection
-    {
-      return  app(OwnershipService::class)->getRecordsByUser($user->id);
+        $request->validate([
+            'type'          => ['required', 'string', Rule::in(config('dashboard.widget_types'))],
+            'config'        => ['required', 'array'],
+            'config.module' => ['required', 'string'],
+        ]);
 
-    }
-    /**
-     * Record counts per core module owned by user.
-     */
-    private function getRecordCounts(object $user): array
-    {
-        $modules = [
-            ['label' => 'Accounts',      'icon' => 'fa-solid fa-building',   'color' => 'primary', 'count' => Account::where('owner_id', $user->id)->count()],
-            ['label' => 'Contacts',      'icon' => 'fa-solid fa-user',        'color' => 'info',    'count' => Contact::where('owner_id', $user->id)->count()],
-            ['label' => 'Leads',         'icon' => 'fa-solid fa-bullseye',    'color' => 'warning', 'count' => Lead::where('owner_id', $user->id)->count()],
-            ['label' => 'Deals', 'icon' => 'fa-solid fa-handshake',   'color' => 'success', 'count' => Deal::where('owner_id', $user->id)->count()],
-        ];
+        $module = Module::where('slug', $request->input('config.module'))
+            ->where('is_active', true)
+            ->first();
 
-        return [
-            'total'   => array_sum(array_column($modules, 'count')),
-            'modules' => $modules,
-        ];
-    }
-
-    /**
-     * Last 5 orders owned by user — replaces the "transactions" widget.
-     */
-    private function getRecentOrders(object $user): array
-    {
-      $dropdown_list = DropdownList::get('orders_status_list')->values;
-        return Order::where('owner_id', $user->id)
-            ->latest('order_date')
-            ->limit(5)
-            ->get(['id','order_number', 'status', 'order_date', 'total'])
-            ->map(fn (Order $o) => [
-                'id' => $o->id,
-                'order_number' => $o->order_number,
-                'status'       => $this->getItemforValue($dropdown_list, $o->status),
-                'date'         => $o->order_date,
-                'total_amount'         => $o->total,
-            ])
-            ->toArray();
-    }
-
-    /**
-     * Deals grouped by month — last 12 months.
-     * Prop is ready for a chart; placeholder rendered for now.
-     */
-    private function getDealsOverTime(object $user): array
-    {
-        return Deal::where('owner_id', $user->id)
-            ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
-            ->select(
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
-                DB::raw('COUNT(*) as count'),
-                DB::raw('SUM(amount) as value')
-            )
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->map(fn ($r) => [
-                'month' => $r->month,
-                'count' => (int) $r->count,
-                'value' => (float) $r->value,
-            ])
-            ->toArray();
-    }
-
-    /**
-     * Group deals into won, lost, and open for the doughnut chart.
-     */
-    private function getDealStages(object $user): array
-    {
-        $deals = Deal::where('owner_id', $user->id)
-            ->select('sales_stage', DB::raw('COUNT(*) as total'))
-            ->groupBy('sales_stage')
-            ->pluck('total', 'sales_stage');
-
-        $won = $deals->get('closed_won', 0);
-        $lost = $deals->get('closed_lost', 0);
-        
-        // Sum of all other stages represents "open"
-        $open = $deals->except(['Closed Won', 'Closed Lost'])->sum();
-
-        return [
-            'won'  => (int) $won,
-            'lost' => (int) $lost,
-            'open' => (int) $open,
-        ];
-    }
-
-    private static function getItemforValue(Array $list, String $value): Array
-    {
-      foreach ($list as $item) {
-        if($item['value'] === $value){
-          return $item;
+        if (!$module) {
+            abort(422, 'Module not found or inactive.');
         }
-      }
-      return [];
+
+        $config = $request->input('config');
+        $user   = Auth::user();
+
+        // Scope non-admin, non-org-wide users to their own records by default.
+        // Widgets can opt out via config.showAllRecords — module-level access
+        // already governs what the user can see, this is just a default filter.
+        if (!$user->isAdmin() && !in_array($user->type ?? '', config('dashboard.org_wide_types')) && $module->has_owner && !($config['showAllRecords'] ?? false)) {
+            $hasOwnerFilter = collect($config['filters'] ?? [])
+                ->contains(fn ($f) => ($f['field'] ?? null) === 'owner_id');
+
+            if (!$hasOwnerFilter) {
+                $config['filters'][] = [
+                    'field'    => 'owner_id',
+                    'operator' => 'equals',
+                    'value'    => $user->id,
+                ];
+            }
+        }
+
+        $result = match ($request->input('type')) {
+            'time-series' => AggregationService::timeSeries($module, $config),
+            'metric'      => AggregationService::metric($module, $config),
+            'breakdown'   => AggregationService::breakdown($module, $config),
+            'record-list' => AggregationService::recordList($module, $config),
+        };
+
+        return response()->json($result);
+    }
+
+    public function moduleFields(string $slug): JsonResponse
+    {
+        $module = Module::where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $fields = $module->allFields()->map(fn ($f) => [
+            'name'  => $f->name,
+            'label' => $f->label,
+            'type'  => $f->type,
+        ]);
+
+        return response()->json($fields->values());
+    }
+
+    public function filterableFields(string $slug): JsonResponse
+    {
+        $module = Module::where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $fields = collect(FilterQueryBuilder::allowedFieldsMap($module))
+            ->map(fn ($f) => [
+                'name'          => $f->name,
+                'label'         => $f->label,
+                'type'          => $f->type,
+                'dropdown_list' => $f->dropdown_list
+                    ? ['values' => array_values($f->dropdown_list->values ?? [])]
+                    : null,
+            ])
+            ->values();
+
+        return response()->json($fields);
+    }
+
+    public function saveLayout(Request $request): JsonResponse
+    {
+        $request->validate([
+            'layout' => 'required|array',
+        ]);
+
+        $user = Auth::user();
+
+        Dashboard::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'layout'     => $request->layout,
+                'slug'       => 'dashboard_' . $user->id,
+                'name'       => 'My Dashboard',
+                'is_default' => true,
+            ]
+        );
+
+        return response()->json(['ok' => true]);
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private function getOwnedRecords(object $user): Collection
+    {
+        return app(OwnershipService::class)->getRecordsByUser($user->id);
+    }
+
+    private function getActiveModules(): array
+    {
+        return Module::where('is_active', true)
+            ->orderBy('name')
+            ->get(['slug', 'name', 'icon'])
+            ->toArray();
     }
 }

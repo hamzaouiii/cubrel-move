@@ -280,6 +280,32 @@ const highlightMatch = (text) => {
       </transition>
     </div>
   </div>
+  <div v-else-if="mode === 'dashboard'" class="df-select" ref="root">
+    <div class="df-select__control" :class="{ 'is-open': isOpen }" @click="toggle">
+      <span class="df-select__value">
+        <span v-if="selectedOption?.label" >{{ $t(selectedOption.label) }}</span>
+        <span v-else class="df-select__placeholder">{{ $t('settings.select') }}</span>
+      </span>
+      <span class="df-select__icons">
+        <i v-if="modelValue !== null && modelValue !== '' && !disabled" class="fa-solid fa-xmark df-select__clear" @click.stop="clearSelection"></i>
+        <i class="fa-solid" :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      </span>
+    </div>
+    <transition name="dropdown-fade">
+      <div v-if="isOpen" class="select-field__menu" role="listbox" @click.stop>
+        <div v-if="searchable" class="select-field__search-wrapper">
+          <input ref="searchInput" v-model="search" type="text" class="select-field__search-input" :placeholder="$t('settings.search_in_drop_down')" @keydown.stop />
+        </div>
+        <ul class="select-field__list">
+          <li v-for="option in filteredOptions" :key="option.value" class="select-field__option" :class="{ 'is-active': option.value === modelValue }" role="option" @click="selectOption(option.value)">
+            <div class="select-field__option-label">{{ $t(option.label) }}</div>
+          </li>
+          <li v-if="filteredOptions.length === 0" class="select-field__no-results">{{ $t('settings.dropdown_no_results') }}</li>
+        </ul>
+      </div>
+    </transition>
+  </div>
+
   <span v-else-if="mode === 'profile-header'">
     {{ $t(selectedOption?.label) }}
   </span>

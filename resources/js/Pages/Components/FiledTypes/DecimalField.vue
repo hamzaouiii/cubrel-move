@@ -124,7 +124,7 @@ const handleInputChange = (event) => {
 </script>
 
 <template>
-  <div v-if="mode === 'edit'">
+  <div v-if="mode === 'edit' || mode === 'dashboard'">
     <span
       class="decimal-field decimal-field--edit"
       :class="{
