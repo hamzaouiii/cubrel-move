@@ -28,7 +28,7 @@ $input-bg: #f9fafb;
       top: 15px;
       left: 15px;
       img {
-        width: 250px;
+        width: 340px;
         height: 100px;
       }
     }
@@ -39,18 +39,25 @@ $input-bg: #f9fafb;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    box-sizing: border-box;
+
+    &__logo {
+      display: none;
+    }
 
     &__form {
       width: 100%;
       padding: 0 20%;
-      margin: 0 auto; // and this
+      margin: 0 auto;
+      box-sizing: border-box;
     }
     &__header {
-      font-size: 3rem;
+      font-size: 2rem;
       font-weight: 700;
       color: #323450;
       margin-bottom: 0;
       font-family: "Fira Sans", sans-serif;
+      text-align: center;
     }
     &__links {
       display: flex;
@@ -69,29 +76,97 @@ $input-bg: #f9fafb;
     }
   }
 }
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+
+// Tablet and below: drop the mural, let the card take the full viewport.
+@media (max-width: 960px) {
+  .login {
+    &__mural {
+      display: none;
+    }
+    &__card {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 24px;
+
+      &__logo {
+        display: block;
+        width: 160px;
+        height: auto;
+        margin-bottom: 124px;
+      }
+
+      &__form {
+        padding: 0;
+      }
+    }
+  }
+}
+
+// Phones: tighten spacing and shrink type that was sized for a wide card.
+@media (max-width: 480px) {
+  .login {
+    height: 100%;
+    min-height: 100vh;
+
+    &__card {
+      padding: 0 16px;
+
+      &__logo {
+        width: 130px;
+        margin-bottom: 16px;
+        margin-bottom: 124px;
+      }
+
+      &__header {
+        font-size: 1.75rem;
+      }
+
+      &__links {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+      }
+    }
+  }
+
+  .global-error {
+    min-width: 0;
+    width: 100%;
+  }
+}
 .reset {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
   &__card {
     width: 100%;
+    max-width: 480px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    box-sizing: border-box;
 
     &__form {
-      width: 80%;
-      padding: 0 20%;
-      margin: 0 auto; // and this
+      width: 100%;
+      padding: 0;
+      margin: 0 auto;
+      box-sizing: border-box;
     }
     &__header {
-      font-size: 3rem;
+      font-size: 2.25rem;
       font-weight: 700;
       color: #323450;
-      margin-bottom: 0;
+      margin-bottom: 1.5rem;
       font-family: "Fira Sans", sans-serif;
+      text-align: center;
     }
     &__links {
       display: flex;
@@ -108,6 +183,12 @@ $input-bg: #f9fafb;
         }
       }
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .reset__card__header {
+    font-size: 1.6rem;
   }
 }
 .remember-me {
