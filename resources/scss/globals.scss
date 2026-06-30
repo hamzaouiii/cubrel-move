@@ -617,7 +617,9 @@
       border-color: rgba(220, 53, 69, 0.4);
       color: #842029;
 
-      > i { color: #dc3545; }
+      > i {
+        color: #dc3545;
+      }
     }
 
     // SUCCESS
@@ -630,7 +632,9 @@
       border-color: rgba(25, 135, 84, 0.4);
       color: #0f5132;
 
-      > i { color: #198754; }
+      > i {
+        color: #198754;
+      }
     }
 
     // WARNING
@@ -643,7 +647,9 @@
       border-color: rgba(255, 193, 7, 0.45);
       color: #664d03;
 
-      > i { color: #d39e00; }
+      > i {
+        color: #d39e00;
+      }
     }
 
     // INFO
@@ -656,7 +662,9 @@
       border-color: rgba(13, 110, 253, 0.4);
       color: #084298;
 
-      > i { color: #0d6efd; }
+      > i {
+        color: #0d6efd;
+      }
     }
   }
 }

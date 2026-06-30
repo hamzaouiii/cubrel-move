@@ -137,6 +137,10 @@ const handleInputChange = (event) => {
     </span>
   </div>
 
+  <div v-else-if="mode === 'dashboard'" class="df-field">
+    <input v-model="localValue" inputmode="numeric" @input="clearErrors(); handleInputChange($event)" />
+  </div>
+
   <div v-else-if="mode === 'detail'">
     <div
       :class="[

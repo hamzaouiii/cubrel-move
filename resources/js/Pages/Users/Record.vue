@@ -377,7 +377,7 @@ useUnsavedChangesGuard({
           </div>
           <div class="record-layout__header__details__info__text">
             <div class="record-layout__header__details__info__text__name">
-              {{ record.username }}
+              {{ record.name }}
             </div>
             <div
               class="record-layout__header__details__info__text__description"
@@ -466,7 +466,7 @@ useUnsavedChangesGuard({
           v-for="s in overviewLayout.sections"
         >
           <div class="record-layout__sections__item__title">
-            {{ s.username }}
+            {{ s.name }}
           </div>
           <div class="record-layout__sections__item__layout">
             <div

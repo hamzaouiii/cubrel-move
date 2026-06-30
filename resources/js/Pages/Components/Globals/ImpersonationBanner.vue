@@ -30,7 +30,7 @@ const leaveImpersonation = () => {
     </div>
 
     <button class="impersonation-banner__button" @click="leaveImpersonation">
-      {{ $t("globals.impersonate.return_to_original_session") }}
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
     </button>
   </div>
 </template>
@@ -38,13 +38,13 @@ const leaveImpersonation = () => {
 <style scoped lang="scss">
 .impersonation-banner {
   position: fixed;
-  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   z-index: 1001;
-  padding: 10px 16px;
+  padding: 2px 10px;
   background-color: var(--primary-color); // yellow
   color: whitesmoke;
 
@@ -53,10 +53,11 @@ const leaveImpersonation = () => {
   &__content {
     display: flex;
     align-items: center;
+    padding: 0 50px;
   }
 
   &__text {
-    font-size: 14px;
+    font-size: 0.8rem;
 
     .user {
       font-weight: 600;
@@ -66,10 +67,13 @@ const leaveImpersonation = () => {
   }
 
   &__button {
+    i {
+      transform: rotate(180deg);
+    }
     background-color: #111827;
     color: #ffffff;
 
-    padding: 6px 12px;
+    padding: 6px;
     font-size: 13px;
 
     border: none;

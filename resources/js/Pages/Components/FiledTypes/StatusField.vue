@@ -294,7 +294,6 @@ const highlightMatch = (text) => {
 </script>
 
 <template>
-  <!-- Edit Mode -->
   <div
     v-if="mode === 'edit' || mode === 'settings' || mode === 'module-builder'"
   >
@@ -427,7 +426,40 @@ const highlightMatch = (text) => {
     </div>
   </div>
 
-  <!-- Detail Mode -->
+  <div v-else-if="mode === 'dashboard'" class="df-select" ref="root">
+    <div class="df-select__control" :class="{ 'is-open': isOpen }" @click="toggle">
+      <span class="df-select__value">
+        <div v-if="selectedOption && selectedOption.value !== null" class="status-badge status-badge--pill" :style="getStatusStyle(selectedOption)">
+          <i v-if="showIcon && selectedOption.icon" :class="[selectedOption.icon, 'status-icon']" :style="{ color: selectedOption.color }"></i>
+          <span class="status-label">{{ t(selectedOption.label) }}</span>
+        </div>
+        <span v-else class="df-select__placeholder">{{ t('settings.select') }}</span>
+      </span>
+      <span class="df-select__icons">
+        <i v-if="modelValue !== null && modelValue !== ''" class="fa-solid fa-xmark df-select__clear" @click.stop="clearSelection"></i>
+        <i class="fa-solid" :class="isOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      </span>
+    </div>
+    <transition name="dropdown-fade">
+      <div v-if="isOpen" class="status-field__menu" role="listbox" @click.stop>
+        <div v-if="searchable" class="status-field__search-wrapper">
+          <input ref="searchInput" v-model="search" type="text" class="status-field__search-input" :placeholder="t('settings.search_in_drop_down')" @keydown.stop />
+        </div>
+        <ul class="status-field__list">
+          <li v-for="option in filteredOptions" :key="option.value" class="status-field__option" :class="{ 'is-active': option.value === modelValue }" role="option" @click="selectOption(option.value)">
+            <div class="status-option-preview" :style="{ backgroundColor: option.bgColor || statusStyles.default.bgColor, borderLeftColor: option.color || statusStyles.default.color }">
+              <div class="status-option-badge status-option-badge--pill" :style="{ color: option.color || statusStyles.default.color, backgroundColor: option.bgColor || statusStyles.default.bgColor }">
+                <i v-if="showIcon && option.icon" :class="[option.icon, 'status-option-icon']"></i>
+                <span>{{ t(option.label) }}</span>
+              </div>
+            </div>
+          </li>
+          <li v-if="filteredOptions.length === 0" class="status-field__no-results">{{ t('settings.dropdown_no_results') }}</li>
+        </ul>
+      </div>
+    </transition>
+  </div>
+
   <div v-else-if="mode === 'detail'">
     <div class="status-field status-field--detail display-field">
       <i class="status-detail-icon fa-solid fa-tag"></i>
@@ -463,7 +495,6 @@ const highlightMatch = (text) => {
     </div>
   </div>
 
-  <!-- Table Mode - Original styling restored -->
   <div v-else-if="mode === 'table'">
     <div class="status-field status-field--table">
       <div
@@ -486,7 +517,6 @@ const highlightMatch = (text) => {
     </div>
   </div>
 
-  <!-- Related Panel / Linking Panel Mode -->
   <div v-else-if="mode === 'related-panel' || mode === 'linkingPanel'">
     <div class="status-field status-field--related">
       <div
@@ -505,7 +535,6 @@ const highlightMatch = (text) => {
     </div>
   </div>
 
-  <!-- Profile Header Mode -->
   <div v-else-if="mode === 'profile-header'">
     <div
       v-if="selectedOption && selectedOption.value !== null"

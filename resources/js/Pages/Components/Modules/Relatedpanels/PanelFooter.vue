@@ -5,7 +5,7 @@
       class="panel-footer__pagination"
     >
       <div v-if="isLoading" class="panel-footer__loader">
-        <i class="fa-solid fa-spinner fa-spin"></i>
+        <i class="fa-solid fa-atom fa-spin"></i>
       </div>
 
       <button

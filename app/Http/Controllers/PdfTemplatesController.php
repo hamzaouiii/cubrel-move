@@ -97,7 +97,6 @@ class PdfTemplatesController extends Controller
         }
 
         return Inertia::render('Settings/PdfTemplates/Create', [
-            'modules' => $modules,
             'selectedModule' => $selectedModule,
             'fields' => $fields,
             'relationships' => $relationships,

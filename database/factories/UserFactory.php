@@ -27,6 +27,15 @@ class UserFactory extends Factory
     $first_name = fake()->firstName();
     $last_name = fake()->lastName();
     $name = $first_name." ".$last_name;
+    $types = [
+      'admin',
+      'executive',
+      'sales_rep',
+      'sales_manager',
+      'support_agent',
+      'marketing_user',
+      'read_only',
+    ];
     return [
       'id' => Str::uuid(), // Generate UUID since model uses HasUuids and $incrementing = false
       'first_name' =>  $first_name,
@@ -40,6 +49,7 @@ class UserFactory extends Factory
       'remember_token' => Str::random(10),
       'is_admin' => false,
       'is_root' => false,
+      'type' => fake()->randomElement($types),
     ];
   }
 

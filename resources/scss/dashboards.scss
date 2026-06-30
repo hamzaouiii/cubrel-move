@@ -1,566 +1,1747 @@
+// =============================================================================
+//  Dashboard — single source of truth for all dashboard styles
+//  All component <style> blocks have been removed; everything lives here.
+// =============================================================================
+
+// ─── Dashboard page layout ────────────────────────────────────────────────────
+
 .dashboard {
-  &__actions {
-    padding: 15px 20px;
+  padding: 24px 32px;
+  min-height: 100vh;
+
+  &__header {
     display: flex;
-    justify-content: flex-end;
-    button {
-      all: unset;
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-      color: #ffffff;
-      padding: 5px 8px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-      &:hover {
-        background-color: color-mix(in srgb, var(--primary-color) 85%, #ffffff);
-      }
-    }
-  }
-  &__main {
-    display: grid;
-    grid-template-columns: 210px 1fr 230px;
-    grid-template-rows: auto;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    border: 1px solid;
+    padding: 24px;
     gap: 16px;
-    padding: 20px;
-    background: #f4f5f7;
-    min-height: 100vh;
-    align-items: start;
-
-    &__left {
-      grid-column: 1;
-    }
-    &__center {
-      grid-column: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    &__right {
-      grid-column: 3;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    @media (max-width: 1100px) {
-      grid-template-columns: 1fr 1fr;
-      &__left {
-        grid-column: 1 / 3;
-      }
-      &__center {
-        grid-column: 1 / 2;
-      }
-      &__right {
-        grid-column: 2 / 3;
-      }
-    }
-
-    @media (max-width: 720px) {
-      grid-template-columns: 1fr;
-      &__left,
-      &__center,
-      &__right {
-        grid-column: 1;
-      }
-    }
-  }
-
-  // ─── Card ─────────────────────────────────────────────────────────────────────
-  &__card {
-    font-family: "Heebo", sans-serif;
-    border-radius: 8px;
-    background-color: #ffffff;
-    box-shadow:
-      0 2px 5px rgba(0, 0, 0, 0.08),
-      0 2px 5px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease-in-out;
-    margin-top: 15px;
-    &:hover {
-      transform: scale(1.02);
-    }
-    &__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    &__title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #111827;
-      letter-spacing: -0.01em;
-    }
-
-    &__body {
-      padding: 16px;
-    }
-  }
-
-  // ─── Badges / toggle ─────────────────────────────────────────────────────────
-  .badge-group {
-    display: flex;
-    gap: 6px;
-  }
-
-  .badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    border: none;
-    transition: all 0.18s ease;
-    line-height: 1.4;
-
-    &--active {
-      background: var(--primary-color);
-      color: #ffffff;
-    }
-
-    &--outline {
-      background: transparent;
-      border: 1px solid #e5e7eb;
-      color: #6b7280;
-      &:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-      }
-    }
-  }
-
-  // ─── Misc utils ───────────────────────────────────────────────────────────────
-  .text--muted {
-    font-size: 12px;
-    color: #6b7280;
-  }
-  .icon--muted {
-    color: #6b7280;
-    opacity: 0.55;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .divider {
-    border: none;
-    border-top: 1px solid #e5e7eb;
-    margin: 14px 0;
-  }
-  .big-num {
-    font-size: 34px;
-    font-weight: 300;
-    color: #111827;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  // ─── Module list ─────────────────────────────────────────────────────────────
-  .mod-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    &__link {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-    &__item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #f3f4f6;
-      font-size: 0.81rem;
-      color: var(--mod-color-dash);
-
-      &:last-child {
-        border-bottom: none;
-      }
-      a {
-        all: unset;
-        font-weight: 600;
-        color: #111827;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-      i {
-        width: 25px;
-      }
-    }
-
-    &__left {
-      display: flex;
+    button {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-    }
-
-    &__dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    &__icon {
+      padding: 8px 18px;
+      border-radius: 10px;
       font-size: 13px;
-      width: 14px;
-      text-align: center;
-    }
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
 
-    &__count {
-      font-weight: 600;
-      font-size: 13px;
-      color: #6b7280;
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      &.primary {
+        background: var(--primary-color);
+        color: #ffffff;
+        &:hover {
+          background: color-mix(
+            in srgb,
+            var(--primary-color, #3b8bff) 85%,
+            #ffffff
+          );
+        }
+      }
+
+      i {
+        font-size: 13px;
+      }
     }
   }
 
-  // ─── Chart ───────────────────────────────────────────────────────────────────
-  .chart-wrap {
-    position: relative;
-    width: 100%;
-    height: 180px;
+  &__header-left {
+    flex: 1;
   }
 
-  .chart-empty {
-    position: absolute;
-    inset: 0;
+  &__title {
+    font-size: 28px;
+    font-weight: 900;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    opacity: 0.7;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 8px;
+    column-gap: 20px;
+    align-items: start;
+
+    @media (max-width: 1280px) {
+      grid-template-columns: repeat(2, 1fr);
+      .w-cell {
+        grid-column: span 2 !important;
+      }
+      .w-cell[data-cols="1"] {
+        grid-column: span 1 !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      .w-cell {
+        grid-column: span 1 !important;
+      }
+    }
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #f4f5f7;
-    border-radius: 8px;
-    gap: 8px;
+    gap: 12px;
+    padding: 80px 24px;
+    color: #94a3b8;
+    font-size: 14px;
 
-    &--sm {
-      position: static;
-      padding: 24px 0;
+    i {
+      font-size: 40px;
+      opacity: 0.3;
     }
-
-    &__icon {
-      font-size: 24px;
-      color: #6b7280;
-      opacity: 0.35;
-    }
-
-    &__label {
-      font-size: 12px;
-      color: #6b7280;
-      opacity: 0.8;
+    p {
+      margin: 0;
     }
   }
 
-  // ─── Stages / donut ──────────────────────────────────────────────────────────
+  // page-level button
+}
 
-  .donut-block {
+// ─── Widget grid cell ─────────────────────────────────────────────────────────
+
+.w-cell {
+  position: relative;
+  padding-bottom: 20px; // row separation (no grid row-gap; rows are 8px units)
+
+  &__inner {
+    position: relative;
+    height: 100%;
+  }
+
+  // Shared button styles
+  %action-button {
+    position: absolute;
+    top: 10px;
+    width: 26px;
+    height: 26px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    font-size: 11px;
+    color: #64748b;
+    z-index: 10;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
   }
 
-  .donut-wrap {
-    position: relative;
-    width: 110px;
-    height: 110px;
+  &__remove {
+    @extend %action-button;
+    right: 10px;
+    opacity: 0;
+    transition:
+      opacity 0.15s ease,
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    &--editing {
+      opacity: 1 !important;
+    }
+  }
+
+  &__edit {
+    @extend %action-button;
+    right: 44px;
+    margin-right: 5px;
+    opacity: 1;
+
+    &:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #2563eb;
+    }
+  }
+
+  &__handle {
+    position: absolute;
+    top: 5px;
+    left: 0px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #94a3b8;
+    cursor: move;
+    z-index: 10;
+    opacity: 0.6;
+    transition:
+      opacity 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      opacity: 1;
+      color: #475569;
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &--placeholder &__inner {
+    border: 2px dashed var(--primary-color, #3b8bff);
+    border-radius: 12px;
+    background: color-mix(
+      in srgb,
+      var(--primary-color, #3b8bff) 6%,
+      transparent
+    );
+  }
+
+  &__drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 100px;
+    height: 100%;
+    color: var(--primary-color, #3b8bff);
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.7;
+    padding: 20px;
+
+    i {
+      font-size: 18px;
+    }
+  }
+}
+
+// ─── Widget reorder transitions ───────────────────────────────────────────────
+
+.w-move-move {
+  transition: transform 0.22s ease;
+}
+
+.w-move-enter-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.w-move-enter-from {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+// ─── Drag ghost ───────────────────────────────────────────────────────────────
+
+.dashboard__ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  height: 48px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0a0f1e;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 320px;
+
+  &__handle {
+    color: #94a3b8;
+    font-size: 11px;
     flex-shrink: 0;
   }
 
-  .donut-center {
-    position: absolute;
-    inset: 0;
+  &__label {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+// ─── Shared widget card ───────────────────────────────────────────────────────
+
+.dashboard__card {
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+  overflow: hidden;
+  height: 100%;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-color: #e2e8f0;
+  }
+  &__header-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0a0f1e;
+    display: block;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+  }
+  &__header {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    font-family: "Heebo";
+
+    justify-content: space-between;
+    padding: 16px 20px 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  &__title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 5px;
+  }
+
+  &__body {
+    padding: 20px;
+  }
+}
+
+// ─── Shared utilities ─────────────────────────────────────────────────────────
+
+.icon--muted {
+  color: #94a3b8;
+  opacity: 0.7;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    color: #475569;
+  }
+}
+
+.text--muted {
+  font-size: 12px;
+  font-family: "Heebo";
+  color: #64748b;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 14px 0;
+}
+
+.big-num {
+  font-size: 34px;
+  font-weight: 300;
+  color: #111827;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+// ─── Badge toggles ────────────────────────────────────────────────────────────
+
+.badge-group {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  line-height: 1.5;
+  background: transparent;
+  color: #64748b;
+
+  &:hover {
+    color: #0a0f1e;
+  }
+
+  &--active {
+    background: #ffffff;
+    color: #0a0f1e;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: #94a3b8;
+
+  &__icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.3;
+  }
+  &__text {
+    font-size: 13px;
+    margin: 0;
+    color: #94a3b8;
+  }
+}
+
+// ─── Status pill ──────────────────────────────────────────────────────────────
+
+.status-pill {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+
+  &--success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  &--warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  &--danger {
+    background: #fce4e4;
+    color: #991b1b;
+  }
+  &--info {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  &--default {
+    background: #f1f5f9;
+    color: #475569;
+  }
+}
+
+// ─── Chart wrapper ────────────────────────────────────────────────────────────
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.chart-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 8px;
+  gap: 8px;
+
+  &__icon {
+    font-size: 28px;
+    color: #94a3b8;
+    opacity: 0.4;
+  }
+  &__label {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+}
+
+// ─── Module list (MyRecords) ──────────────────────────────────────────────────
+
+.mod-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--mod-color-dash);
+    transition: background 0.15s ease;
+    cursor: default;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    a {
+      all: unset;
+      font-weight: 500;
+      color: #0a0f1e;
+      cursor: pointer;
+      transition: color 0.15s ease;
+      &:hover {
+        color: var(--mod-color-dash, var(--primary-color));
+      }
+    }
+
+    i {
+      width: 18px;
+      font-size: 14px;
+      color: var(--mod-color-dash);
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__count {
+    font-weight: 600;
+    font-size: 12px;
+    color: #0a0f1e;
+    background: #f1f5f9;
+    padding: 1px 10px;
+    border-radius: 12px;
+  }
+}
+
+// ─── Orders list (NewRecords, RecentOrders) ───────────────────────────────────
+
+.orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 12px;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
-
-    &__num {
-      font-size: 22px;
-      font-weight: 500;
-      color: #111827;
-      line-height: 1;
-    }
-    &__sub {
-      font-size: 10px;
-      color: #6b7280;
-    }
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--module-color-dash, #3b8bff);
   }
 
-  .stage-legend {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  &__detail {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    min-width: 0;
+    gap: 2px;
+  }
 
-    &__item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-    }
-
-    &__dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      &--won {
-        background: #1d9e75;
-      }
-      &--open {
-        background: var(--primary-color);
-      }
-      &--lost {
-        background: #d85a30;
-      }
-    }
-
-    &__val {
-      margin-left: auto;
-      font-weight: 600;
-      font-size: 12px;
-      color: #111827;
-      padding-left: 12px;
+  &__num {
+    font-size: 13px;
+    font-weight: 500;
+    color: #0a0f1e;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.15s ease;
+    &:hover {
+      color: var(--module-color-dash, var(--primary-color));
     }
   }
 
-  // ─── Invoice bars ─────────────────────────────────────────────────────────────
-  .invoice-block {
+  &__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  &__amt {
+    font-size: 13px;
+    font-weight: 600;
+    color: #10b981;
+    &--cancelled {
+      color: #ef4444;
+      text-decoration: line-through;
+    }
+  }
+}
+
+// ─── Donut / Deal stages (DealStages) ────────────────────────────────────────
+
+.donut-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 4px 0;
+}
+
+.donut-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  &__num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0a0f1e;
+    line-height: 1.1;
+  }
+  &__sub {
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.stage-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 100px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &--won {
+      background: #10b981;
+    }
+    &--open {
+      background: var(--primary-color, #3b8bff);
+    }
+    &--lost {
+      background: #ef4444;
+    }
+  }
+
+  &__val {
+    margin-left: auto;
+    font-weight: 600;
+    font-size: 13px;
+    color: #0a0f1e;
+    padding-left: 16px;
+  }
+}
+
+// ─── Stat card (StatWidget) ───────────────────────────────────────────────────
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+    display: block;
+  }
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0a0f1e;
+    display: block;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+
+  &__change {
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+
+    i {
+      font-size: 10px;
+    }
+    &--up {
+      color: #10b981;
+    }
+    &--down {
+      color: #ef4444;
+    }
+  }
+}
+
+// ─── Metric card (MetricWidget) ───────────────────────────────────────────────
+
+.metric-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+    display: block;
+    text-transform: capitalize;
+  }
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0a0f1e;
+    display: block;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+
+    &--loading,
+    &--error {
+      font-size: 18px;
+      color: #94a3b8;
+    }
+  }
+}
+
+// ─── Record list widget (RecordListWidget) ────────────────────────────────────
+
+.rl-card {
+  &__body {
+    padding: 0 8px 8px;
+  }
+
+  &__state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 0;
+    color: #94a3b8;
+    font-size: 13px;
+  }
+}
+
+.rl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.12s;
+
+    &:hover {
+      background: #f8fafc;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  &__name {
+    font-size: 13px;
+    color: #0a0f1e;
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     flex: 1;
     min-width: 0;
 
-    &__title {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 12px;
-      font-weight: 500;
+    &:hover {
+      color: var(--primary-color, #3b8bff);
+    }
+  }
+}
+
+// ─── Widget refresh buttons ───────────────────────────────────────────────────
+
+.ts-refresh,
+.bk-refresh,
+.rl-refresh {
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+// ─── Widget customize modal (AddWidgetPanel) ─────────────────────────────────
+
+.wp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 15, 30, 0.45);
+    backdrop-filter: blur(3px);
+    animation: wp-fade 0.18s ease;
+  }
+  &__close {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1010;
+    backdrop-filter: blur(4px);
+    padding: 0;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(90deg);
+      border-color: rgba(255, 255, 255, 0.3);
     }
   }
 
-  .invoice-list {
-    list-style: none;
-    padding: 0;
+  &__container {
+    position: relative;
+    z-index: 901;
+    width: 100%;
+    max-width: 780px;
+    padding: 0 20px;
+    animation: wp-fade 0.2s ease;
+  }
+}
+
+.wp {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 80px);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    padding: 24px 24px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0a0f1e;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__back {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #475569;
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    &:hover {
+      background: #e2e8f0;
+    }
+  }
+
+  &__subtitle {
+    font-size: 13px;
+    color: #94a3b8;
     margin: 0;
+  }
+
+  &__body {
+    flex: 1;
+    padding: 20px 24px;
+    min-height: 400px;
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #e2e8f0;
+      border-radius: 4px;
+    }
+  }
+
+  &__section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #94a3b8;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__count {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  &__list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
+  }
 
-    &__item {
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    border: 1px solid #f1f5f9;
+    background: #fafbfc;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+
+    &--active {
+      border-color: #dbeafe;
+      background: #eff6ff;
     }
 
-    &__meta {
+    &-icon {
+      width: 34px;
+      height: 34px;
+      background: #f1f5f9;
+      border-radius: 8px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 5px;
+      justify-content: center;
+      font-size: 13px;
+      color: #475569;
+      flex-shrink: 0;
     }
 
-    &__right {
+    &-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0a0f1e;
+      margin-bottom: 2px;
+    }
+
+    &-desc {
+      display: block;
+      font-size: 11px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      transition: all 0.15s;
+
+      &--add {
+        background: #dcfce7;
+        color: #16a34a;
+        &:hover {
+          background: #16a34a;
+          color: #fff;
+        }
+      }
+      &--remove {
+        background: #fee2e2;
+        color: #dc2626;
+        &:hover {
+          background: #dc2626;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    padding: 32px 0;
+  }
+}
+
+// ─── Config forms (shared by all *ConfigForm components) ─────────────────────
+
+.tsf {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+  }
+
+  &__opt {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #94a3b8;
+  }
+
+  &__checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+
+  &__check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #0a0f1e;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: var(--primary-color, #3b8bff);
+    }
+  }
+
+  &__row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    &--2col .tsf__field {
+      flex: 1;
+    }
+  }
+
+  &__col {
+    &--narrow {
+      flex: 0 0 140px;
+    }
+    &--fill {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &__hint {
+    font-size: 12px;
+    color: #94a3b8;
+    &--warn {
+      color: #f59e0b;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 4px;
+  }
+
+  &__btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &--primary {
+      background: var(--primary-color, #3b8bff);
+      color: #fff;
+      &:hover:not(:disabled) {
+        filter: brightness(1.08);
+      }
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+    }
+
+    &--secondary {
+      background: #f1f5f9;
+      color: #475569;
+      &:hover {
+        background: #e2e8f0;
+      }
+    }
+  }
+}
+
+// ─── Dashboard Filter Builder (.dfb) ─────────────────────────────────────────
+
+.dfb {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+
+  &__scope {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  &__scope-toggle {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    cursor: pointer;
+
+    input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+
+      &:checked + .dfb__scope-slider {
+        background: var(--primary-color, #3b8bff);
+      }
+      &:checked + .dfb__scope-slider::before {
+        transform: translateX(14px);
+      }
+    }
+  }
+
+  &__scope-slider {
+    position: absolute;
+    inset: 0;
+    background: #cbd5e1;
+    border-radius: 999px;
+    transition: background 0.15s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s ease;
+    }
+  }
+
+  &__scope-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__scope-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  &__scope-hint {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.4;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  &__title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__add-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--primary-color, #3b8bff);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px 0;
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.75;
+    }
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+  }
+
+  &__empty {
+    font-size: 12px;
+    color: #94a3b8;
+    padding: 8px 0;
+    margin: 0;
+  }
+
+  &__conditions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__cell {
+    min-width: 0;
+
+    &--field {
+      flex: 2;
+      min-width: 120px;
+    }
+    &--op {
+      flex: 1.5;
+      min-width: 100px;
+    }
+    &--val {
+      flex: 2;
+      min-width: 100px;
       display: flex;
       align-items: center;
       gap: 4px;
     }
 
-    &__count {
-      font-size: 12px;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    &__sep {
-      opacity: 0.4;
-      font-size: 11px;
-    }
-
-    &__amt {
-      font-size: 12px;
-      color: #6b7280;
+    &--between {
+      flex: 3;
     }
   }
 
-  .bar-track {
-    height: 7px;
-    border-radius: 4px;
-    background: #f0f1f3;
+  &__sep {
+    font-size: 13px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  &__remove {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 10px;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease,
+      background 0.15s ease;
+
+    &:hover {
+      color: #dc2626;
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+  }
+
+  &__match {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+
+  &__match-label {
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  &__match-btns {
+    display: flex;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
     overflow: hidden;
   }
 
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.4s ease;
-  }
+  &__match-btn {
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
 
-  // ─── Metric cards ─────────────────────────────────────────────────────────────
-  .metric-card {
-    &__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
+    & + & {
+      border-left: 1px solid #e2e8f0;
     }
 
-    &__label {
-      font-size: 12px;
-      color: #6b7280;
+    &--active {
+      background: var(--primary-color, #3b8bff);
+      color: #fff;
     }
 
-    &__value {
-      font-size: 28px;
-      font-weight: 300;
-      color: #111827;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    &__change {
-      font-size: 11px;
-      font-weight: 600;
-      &--pos {
-        color: #1d9e75;
-      }
-      &--neg {
-        color: #d85a30;
-      }
-      &--neut {
-        color: #6b7280;
-      }
+    &:not(&--active):hover {
+      background: #f8fafc;
     }
   }
+}
 
-  // ─── Orders list ─────────────────────────────────────────────────────────────
-  .orders-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+// ─── Dashboard field atoms ────────────────────────────────────────────────────
+// Used by field components when mode="dashboard". All interactive fields share
+// the same height, border, radius and font so the config/filter forms look uniform.
 
-    &__item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 0;
-      border-bottom: 1px solid #f3f4f6;
-      gap: 8px;
-      &:last-child {
-        border-bottom: none;
-      }
-    }
+.df-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #0f172a;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
 
-    &__left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
-    }
+  &:focus-within { border-color: var(--primary-color, #3b8bff); }
 
-    &__icon-wrap {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: #e6f1fb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 13px;
-      color: var(--module-color-dash);
-    }
+  input {
+    all: unset;
+    flex: 1;
+    font-size: 13px;
+    color: #0f172a;
+    width: 100%;
+    &::placeholder { color: #94a3b8; }
+  }
+}
 
-    &__detail {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      gap: 2px;
-    }
+// Dropdown wrapper shared by Select + Status in dashboard mode
+.df-select {
+  position: relative;
+  width: 100%;
 
-    &__num {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--module-color-dash);
-      text-decoration: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      &:hover {
-        text-decoration: underline;
-      }
-    }
+  &__control {
+    @extend .df-field;
+    cursor: pointer;
+    user-select: none;
 
-    &__right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 3px;
-      flex-shrink: 0;
-    }
-
-    &__amt {
-      font-size: 12px;
-      font-weight: 700;
-      color: #1d9e75;
-      &--cancelled {
-        color: #d85a30;
-        text-decoration: line-through;
-      }
-    }
+    &.is-open { border-color: var(--primary-color, #3b8bff); }
   }
 
-  // ─── Status pill ──────────────────────────────────────────────────────────────
-  .status-pill {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 2px 7px;
-    border-radius: 4px;
-
-    &--success {
-      background: #1d9e75;
-      color: color-mix(in srgb, #1d9e75 5%, #ffffff);
-    }
-    &--warning {
-      background: #faeeda;
-      color: #8a5c16;
-    }
-    &--danger {
-      background: #fcebeb;
-      color: #d85a30;
-    }
-    &--info {
-      background: #e6f1fb;
-      color: #1c5c8a;
-    }
-    &--default {
-      background: #f3f4f6;
-      color: #6b7280;
-    }
-  }
-
-  // ─── Empty state ──────────────────────────────────────────────────────────────
-  .empty-state {
+  &__value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: #6b7280;
+    font-size: 13px;
+    color: #0f172a;
+  }
 
-    &__icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      opacity: 0.35;
+  &__placeholder { color: #94a3b8; }
+
+  &__icons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-left: 6px;
+  }
+
+  &__clear {
+    cursor: pointer;
+    transition: color 0.15s;
+    &:hover { color: #475569; }
+  }
+
+  // Re-anchor the shared dropdown menus below the 36px trigger
+  .select-field__menu,
+  .status-field__menu {
+    top: 40px;
+    left: 0;
+    width: 100%;
+  }
+}
+
+// ─── Width Picker ─────────────────────────────────────────────────────────────
+
+.wip {
+  display: inline-flex;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  width: fit-content;
+
+  &__btn {
+    min-width: 30px;
+    padding: 5px 0;
+    font-size: 12px;
+    font-weight: 500;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    & + & {
+      border-left: 1px solid #e2e8f0;
     }
-    &__text {
-      font-size: 0.875rem;
+
+    &--active {
+      background: var(--primary-color, #3b8bff);
+      color: #fff;
+    }
+
+    &:hover:not(&--active) {
+      background: #f1f5f9;
+    }
+  }
+}
+
+// ─── Palette Editor ───────────────────────────────────────────────────────────
+
+.pe {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  &__item {
+    position: relative;
+
+    // Compact the ColorPicker control to just the color circle
+    :deep(.color-picker__control) {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      padding: 0;
+      justify-content: center;
+      gap: 0;
+    }
+    :deep(.color-picker__preview-wrapper) { justify-content: center; }
+    :deep(.color-picker__preview-circle) {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
       margin: 0;
     }
+    :deep(.color-picker__value),
+    :deep(.color-picker__icon) { display: none; }
+  }
+
+  &__remove {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #475569;
+    color: #fff;
+    border: none;
+    font-size: 7px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+
+    .pe__item:hover & { display: flex; }
+  }
+
+  &__add {
+    width: 32px;
+    height: 32px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover { border-color: #94a3b8; color: #475569; }
+  }
+
+  &__reset {
+    font-size: 11px;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover { color: #475569; text-decoration: underline; }
+  }
+}
+
+// ─── Animations ───────────────────────────────────────────────────────────────
+
+@keyframes wp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

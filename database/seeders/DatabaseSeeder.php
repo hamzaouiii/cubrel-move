@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -28,5 +27,6 @@ class DatabaseSeeder extends Seeder
     $this->call(DevSeeder::class);
     $this->call(RelationshipPopulationSeeder::class);
     $this->call(OwnerAssignmentSeeder::class);
+    $this->call(DashboardPresetSeeder::class);
   }
 }

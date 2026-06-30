@@ -410,7 +410,7 @@ const isEmpty = computed(() => !selectedDate.value);
 </script>
 
 <template>
-  <div v-if="mode === 'edit'">
+  <div v-if="mode === 'edit' || mode === 'dashboard'">
     <div v-if="readOnly">
       <span class="datetime-readonly">
         {{

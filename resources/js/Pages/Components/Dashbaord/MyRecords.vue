@@ -32,7 +32,9 @@ const getModuleBySlug = (slug) => {
       }}</span>
     </div>
     <div class="dashboard__card__body">
-      <div class="big-num">{{ total.toLocaleString() }}</div>
+      <div class="dashboard__card__header-value">
+        {{ total.toLocaleString() }}
+      </div>
       <p class="text--muted">{{ $t("globals.dashboard.total_records") }}</p>
       <hr class="divider" />
       <ul class="mod-list">

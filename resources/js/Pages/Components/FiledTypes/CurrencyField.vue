@@ -112,7 +112,7 @@ const highlightMatch = (text) => {
 <template>
   <!-- Edit / Settings Mode -->
   <div
-    v-if="mode === 'edit' || mode === 'settings'"
+    v-if="mode === 'edit' || mode === 'settings' || mode === 'dashboard'"
     class="currency-field currency-field--edit edit-field"
     :class="{
       'currency-field--error': showError,

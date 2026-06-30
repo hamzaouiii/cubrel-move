@@ -41,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Independent routes
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/layout', [DashboardController::class, 'saveLayout'])->name('dashboard.layout.save');
+    Route::post('/dashboard/widget-data', [DashboardController::class, 'widgetData'])->name('dashboard.widget-data');
+    Route::get('/dashboard/module-fields/{slug}', [DashboardController::class, 'moduleFields'])->name('dashboard.module-fields');
+    Route::get('/dashboard/filterable-fields/{slug}', [DashboardController::class, 'filterableFields'])->name('dashboard.filterable-fields');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');

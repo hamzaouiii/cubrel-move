@@ -113,7 +113,7 @@ const handleInputChange = (event) => {
     <i class="percentage-detail-icon fa-solid fa-percent"></i>
     <span class="percentage-value">{{ formatPercentage(modelValue) }}</span>
   </div>
-  <div v-else-if="mode === 'edit'">
+  <div v-else-if="mode === 'edit' || mode === 'dashboard'">
     <span
       class="percentage-field percentage-field--edit edit-field"
       :class="{
