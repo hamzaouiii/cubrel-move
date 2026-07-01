@@ -12,6 +12,15 @@ class ProfileTest extends TestCase
     use RefreshDatabase;
     use InteractsWithDashboardFixtures;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // /profile sits behind the 'onboarded' middleware, which redirects to
+        // /onboarding unless this setting is truthy.
+        $this->completeOnboarding();
+    }
+
     public function test_profile_page_is_displayed(): void
     {
         // UserProfileController::index() looks up the 'users' Module

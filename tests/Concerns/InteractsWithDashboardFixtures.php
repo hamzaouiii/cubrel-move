@@ -4,10 +4,20 @@ namespace Tests\Concerns;
 
 use App\Models\Field;
 use App\Models\Module;
+use App\Models\Settings\SettingValue;
 use App\Models\User;
 
 trait InteractsWithDashboardFixtures
 {
+    /**
+     * Marks onboarding as complete so routes behind the 'onboarded'
+     * middleware (EnsureOnboardingComplete) don't redirect to /onboarding.
+     */
+    protected function completeOnboarding(): void
+    {
+        SettingValue::create(['setting_item' => 'system', 'key' => 'onboarding_completed', 'value' => '1']);
+    }
+
     /**
      * BaseModule::booted() auto-fills owner_id on every model — including User
      * itself, since User extends BaseModule. On a fully empty test database

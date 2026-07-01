@@ -18,6 +18,15 @@ class DashboardControllerTest extends TestCase
     use RefreshDatabase;
     use InteractsWithDashboardFixtures;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Routes under this controller sit behind the 'onboarded' middleware,
+        // which redirects to /onboarding unless this setting is truthy.
+        $this->completeOnboarding();
+    }
+
     protected function makeLeadsModule(array $overrides = []): Module
     {
         return $this->makeModule(array_merge(['model_class' => Lead::class], $overrides));
