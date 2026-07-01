@@ -16,6 +16,14 @@ return [
         'no_action' => 'If you did not request a password reset, no further action is required.',
     ],
 
+    'set_password' => [
+        'subject' => 'Set your password',
+        'intro' => 'An account has been created for you. Click the button below to set your password and get started.',
+        'action' => 'Set Password',
+        'expires' => 'This link will expire in :count minutes.',
+        'no_action' => 'If you were not expecting this email, you can safely ignore it.',
+    ],
+
     'invitation' => [
         'subject' => "You've been invited to :app",
         'title' => "You've been invited to :app",

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->char('id', 36)->primary();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('number')->unique();
+            $table->string('number')->nullable()->unique();
             $table->string('status')->default('draft');
             $table->date('issue_date')->nullable();
             $table->date('due_date')->nullable();

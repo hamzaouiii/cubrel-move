@@ -9,6 +9,7 @@ import {
   computed,
 } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useConfirm } from "@/Composables/useConfirm";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import FieldRenderer from "../Components/Globals/FieldRenderer.vue";
 
@@ -28,6 +29,7 @@ const props = defineProps({
 
 const { validateFieldTypes } = useFieldValidation(props);
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
+const { confirm } = useConfirm();
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -41,6 +43,9 @@ const buildInitialForm = () => {
       section.layout.forEach((field) => {
         if (!(field.name === "created_at" || field.name === "updated_at")) {
           data[field.name] = null;
+        }
+        if (field.name === "is_admin") {
+          data[field.name] = false;
         }
       });
     });
@@ -57,6 +62,20 @@ const validationErrors = ref([]);
 
 const hasError = computed(() => (field) => {
   return validationErrors.value.some((item) => item.field === field.name);
+});
+
+const avatarField = computed(() => {
+  return props.fields?.find((field) => field.name === "avatar") || null;
+});
+
+// Drives ImageField's initials fallback while the user is still typing,
+// before an avatar has been uploaded.
+const fullName = computed(() => {
+  return (
+    [form.first_name, form.last_name].filter(Boolean).join(" ") ||
+    form.username ||
+    ""
+  );
 });
 
 const handleClickOutsideActionDropDown = (event) => {
@@ -163,16 +182,50 @@ const saveRecord = () => {
   form
     .transform((data) => ({ ...data }))
     .post(url, {
-      onSuccess: () => {
+      onSuccess: (page) => {
         clearAllAlerts();
         success(t("modules.actions.save_success"));
+        confirmSendSetPasswordEmail(page.props.record?.id);
       },
       onError: () => {
         clearAllAlerts();
-        error(t("modules.actions.save_error") + form.errors);
+        Object.entries(form.errors).forEach(([field, message]) => {
+          error(message);
+        });
         console.error(form.errors);
       },
     });
+};
+
+// The user is created with no usable password (see UserController::store),
+// so once the record exists we ask the admin whether to email them a link
+// to set one. Create-only - editing an existing user never re-prompts.
+const confirmSendSetPasswordEmail = async (userId) => {
+  if (!userId) return;
+
+  const ok = await confirm({
+    title: t("modules.users.actions.send_set_password_title"),
+    message: t("modules.users.actions.send_set_password_confirm"),
+    confirmText: t("modules.users.actions.send_set_password_yes"),
+    cancelText: t("modules.users.actions.send_set_password_no"),
+  });
+
+  if (!ok) return;
+
+  router.post(
+    `/users/${userId}/send-set-password`,
+    {},
+    {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("modules.users.actions.set_password_email_success"));
+      },
+      onError: () => {
+        clearAllAlerts();
+        error(t("modules.users.actions.set_password_email_error"));
+      },
+    },
+  );
 };
 
 const cancelCreate = () => {
@@ -226,12 +279,18 @@ const getField = (f) => {
     <div class="record-layout__header">
       <div class="record-layout__header__details">
         <div class="record-layout__header__details__info">
-          <div class="record-layout__header__details__info__avatar">
-            <i class="fa-solid fa-plus"></i>
-          </div>
+          <FieldRenderer
+            v-if="avatarField"
+            :field="avatarField"
+            v-model="form.avatar"
+            mode="edit"
+            :module-color="module_color"
+            :related_label="fullName"
+          />
           <div class="record-layout__header__details__info__text">
             <div class="record-layout__header__details__info__text__name">
               <!-- {{ $t("modules.actions.create_new") }} -->
+              {{ `${form.first_name ?? ""} ${form.last_name ?? ""}` }}
             </div>
             <div
               class="record-layout__header__details__info__text__description"

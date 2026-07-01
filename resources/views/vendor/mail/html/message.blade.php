@@ -1,7 +1,7 @@
 @component('mail::layout')
     {{-- Header --}}
     @slot('header')
-        @component('mail::header', ['url' => config('app.url')])
+        @component('mail::header', ['url' => config('app.url'), 'message' => $message])
             {{-- The header content is fully controlled in header.blade.php --}}
         @endcomponent
     @endslot

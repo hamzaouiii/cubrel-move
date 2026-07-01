@@ -67,6 +67,15 @@ const avatarField = computed(() => {
   return props.fields?.find((field) => field.name === "avatar") || null;
 });
 
+const currentUser = computed(() => usePage().props?.auth?.user);
+const isRoot = computed(() => usePage().props?.auth?.user?.is_root);
+
+const canImpersonate = computed(() => {
+  if (!isRoot.value) return false;
+  if (currentUser.value?.id === props.record?.id) return false;
+  return props.record?.status === "active";
+});
+
 const mode = computed(() => {
   return isEditing.value === true ? "edit" : "detail";
 });
@@ -269,6 +278,41 @@ const deleteRecord = async () => {
   });
 };
 
+const sendPasswordReset = () => {
+  showActionDropDown.value = false;
+  info(t("modules.users.actions.sending_reset_password"));
+
+  router.post(
+    `/users/${props.record.id}/reset-password`,
+    {},
+    {
+      onSuccess: () => {
+        clearAllAlerts();
+        success(t("modules.users.actions.reset_password_success"));
+      },
+      onError: () => {
+        clearAllAlerts();
+        error(t("modules.users.actions.reset_password_error"));
+      },
+    },
+  );
+};
+
+const loginAsUser = () => {
+  showActionDropDown.value = false;
+
+  router.post(
+    `/users/${props.record.id}/impersonate`,
+    {},
+    {
+      onError: () => {
+        clearAllAlerts();
+        error(t("modules.users.actions.login_as_error"));
+      },
+    },
+  );
+};
+
 const enableEditing = () => {
   isEditing.value = true;
 };
@@ -435,33 +479,25 @@ useUnsavedChangesGuard({
                 class="record-layout__header__details__actions__edit__dropdown show"
               >
                 <li
-                  class="record-layout__header__details__actions__edit__dropdown__item disabled"
-                >
-                  <i class="fa-solid fa-share-from-square"></i>
-                  <span>{{ $t("modules.actions.share") }}</span>
-                </li>
-                <li
-                  class="record-layout__header__details__actions__edit__dropdown__item disabled"
-                >
-                  <i class="fa-solid fa-download"></i>
-                  <span>{{ $t("modules.actions.export") }}</span>
-                </li>
-                <li
+                  @click="sendPasswordReset()"
                   class="record-layout__header__details__actions__edit__dropdown__item"
                 >
-                  <i class="fa-solid fa-hourglass-end"></i>
-                  <span>{{ $t("modules.actions.placeholder") }}</span>
+                  <i class="fa-solid fa-key"></i>
+                  <span>{{
+                    $t("modules.users.actions.send_reset_password_email")
+                  }}</span>
                 </li>
                 <li
+                  v-if="canImpersonate"
+                  @click="loginAsUser()"
                   class="record-layout__header__details__actions__edit__dropdown__item"
                 >
-                  <i class="fa-solid fa-file-pdf"></i>
-                  <span>{{ $t("modules.actions.bulk_action") }}</span>
+                  <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                  <span>{{ $t("modules.users.actions.login_as") }}</span>
                 </li>
                 <li
                   @click="deleteRecord()"
-                  class="record-layout__header__details__actions__edit__dropdown__item"
-                  style="color: salmon"
+                  class="record-layout__header__details__actions__edit__dropdown__item record-layout__header__details__actions__edit__dropdown__item--delete"
                 >
                   <i class="fa-solid fa-trash-can"></i>
                   <span>{{ $t("modules.actions.delete") }}</span>

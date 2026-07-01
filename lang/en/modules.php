@@ -456,6 +456,17 @@ return [
         'single_label' => 'User',
         'actions' => [
             'login_as' => 'Login as',
+            'send_reset_password_email' => 'Send reset password email',
+            'sending_reset_password' => 'Sending reset password email...',
+            'reset_password_success' => 'Reset password email sent',
+            'reset_password_error' => 'Failed to send reset password email',
+            'login_as_error' => 'Failed to login as this user',
+            'send_set_password_title' => 'Send set password email?',
+            'send_set_password_confirm' => 'The user was created without a password. Do you want to send them an email so they can set one now?',
+            'send_set_password_yes' => 'Send email',
+            'send_set_password_no' => 'Not now',
+            'set_password_email_success' => 'Set password email sent',
+            'set_password_email_error' => 'Failed to send set password email',
         ],
         'modal' => [
             'title' => 'Invite New Users',

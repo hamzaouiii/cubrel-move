@@ -83,6 +83,8 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
         Route::put('/users/{user_id}', [UserController::class, 'update'])->name('users.update');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::post('/users/{user}/impersonate', [UserController::class, 'impersonate'])->name('impersonate');
+        Route::post('/users/{user}/reset-password', [UserController::class, 'sendPasswordResetEmail'])->name('users.reset-password');
+        Route::post('/users/{user}/send-set-password', [UserController::class, 'sendSetPasswordEmail'])->name('users.send-set-password');
         // invites
         Route::post('/invites', [InviteController::class, 'store']);
         Route::post('/invites/bulk', [InviteController::class, 'bulkStore'])->name('invites.bulk');

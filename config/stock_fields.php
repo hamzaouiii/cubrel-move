@@ -339,11 +339,13 @@ return [
             'type' => 'email',
             'searchable' => true,
             'filterable' => true,
+            'required'  => true,
         ],
         'status' => [
             'name' => 'status',
             'type' => 'status',
             'filterable' => true,
+            'required'  => true,
         ],
         'is_admin' => [
             'name' => 'is_admin',

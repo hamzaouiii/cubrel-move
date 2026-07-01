@@ -16,6 +16,14 @@ return [
         'no_action' => 'Falls du keine Zurücksetzung des Passworts angefordert hast, ist keine weitere Aktion erforderlich.',
     ],
 
+    'set_password' => [
+        'subject' => 'Lege dein Passwort fest',
+        'intro' => 'Für dich wurde ein Konto erstellt. Klicke auf den Button unten, um dein Passwort festzulegen und loszulegen.',
+        'action' => 'Passwort festlegen',
+        'expires' => 'Dieser Link läuft in :count Minuten ab.',
+        'no_action' => 'Falls du diese E-Mail nicht erwartet hast, kannst du sie ignorieren.',
+    ],
+
     'invitation' => [
         'subject' => 'Du wurdest zu :app eingeladen',
         'title' => 'Du wurdest zu :app eingeladen',

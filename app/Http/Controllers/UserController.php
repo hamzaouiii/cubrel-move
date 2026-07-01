@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Handlers\Modules\UserModuleHandler;
+use App\Notifications\SetPasswordNotification;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use Inertia\Inertia;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 
@@ -215,6 +217,36 @@ class UserController extends Controller
       // login as target user
       Auth::login($user);
       return redirect()->route('dashboard');
+  }
+
+  public function sendPasswordResetEmail(User $user)
+  {
+      if (!$user->email) {
+          return back()->with('error', 'This user has no email address on file.');
+      }
+
+      Password::sendResetLink(['email' => $user->email]);
+
+      return back()->with('success', 'Password reset email sent.');
+  }
+
+  /**
+   * Used right after admin-creating a user (no password set yet), as
+   * opposed to sendPasswordResetEmail() which is for existing users who
+   * already have a working password.
+   */
+  public function sendSetPasswordEmail(User $user)
+  {
+      if (!$user->email) {
+          return back()->with('error', 'This user has no email address on file.');
+      }
+
+      Password::sendResetLink(
+          ['email' => $user->email],
+          fn ($user, $token) => $user->notify(new SetPasswordNotification($token))
+      );
+
+      return back()->with('success', 'Set password email sent.');
   }
   public function leaveImpersonation()
   {

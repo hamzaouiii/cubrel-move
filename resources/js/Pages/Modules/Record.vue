@@ -540,8 +540,7 @@ const handleTotalsUpdated = (totals) => {
                 </li>
                 <li
                   @click="deleteRecord()"
-                  class="record-layout__header__details__actions__edit__dropdown__item"
-                  style="color: salmon"
+                  class="record-layout__header__details__actions__edit__dropdown__item record-layout__header__details__actions__edit__dropdown__item--delete"
                 >
                   <i class="fa-solid fa-trash-can"></i>
                   <span>{{ $t("modules.actions.delete") }}</span>

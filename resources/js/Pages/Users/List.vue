@@ -176,6 +176,10 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
+const handleRowClick = (id) => {
+  router.visit(`/${props.module.slug}/${id}`);
+};
+
 const handleImpersonate = (user) => {
   if (!user?.id) return;
   router.post(
@@ -323,7 +327,12 @@ const hidePagination = computed(() => {
 
         <tbody>
           <template v-if="meta && meta.total != 0">
-            <tr v-for="item in items" :key="item.id" class="clickable-row">
+            <tr
+              v-for="item in items"
+              :key="item.id"
+              class="clickable-row"
+              @click="handleRowClick(item.id)"
+            >
               <td v-for="col in listLayoutColumns || []" :key="col.name">
                 <FieldRenderer
                   :field="getField(col)"

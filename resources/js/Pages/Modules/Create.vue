@@ -61,6 +61,22 @@ const hasError = computed(() => (field) => {
   return validationErrors.value.some((item) => item.field === field.name);
 });
 
+// No module currently has an avatar field, so the header shows initials
+// only, derived live from the name field as it's typed.
+const avatar = computed(() => {
+  const name = form.name?.trim();
+  if (!name) return "";
+
+  const cleaned = name.replace(/\d+/g, "");
+  const words = cleaned.split(/\s+/).filter(Boolean);
+
+  if (words.length >= 2) {
+    return ((words[0][0] ?? "") + (words[1][0] ?? "")).toUpperCase();
+  }
+
+  return (words[0]?.slice(0, 2) ?? "").toUpperCase();
+});
+
 const openFieldOverlay = (field) => {
   activeField.value = field;
   fieldOverlayOpen.value = true;
@@ -261,7 +277,13 @@ const getLinkingLayout = (slug) => {
     <div class="record-layout__header">
       <div class="record-layout__header__details">
         <div class="record-layout__header__details__info">
-          <div class="record-layout__header__details__info__avatar">
+          <div
+            class="record-layout__header__details__info__avatar-text"
+            v-if="avatar"
+          >
+            {{ avatar }}
+          </div>
+          <div class="record-layout__header__details__info__avatar" v-else>
             <i class="fa-solid fa-plus"></i>
           </div>
           <div class="record-layout__header__details__info__text">

@@ -454,6 +454,17 @@ return [
         'single_label' => 'Benutzer',
         'actions' => [
             'login_as' => 'Anmelden als',
+            'send_reset_password_email' => 'E-Mail zum Zurücksetzen des Passworts senden',
+            'sending_reset_password' => 'E-Mail zum Zurücksetzen des Passworts wird gesendet...',
+            'reset_password_success' => 'E-Mail zum Zurücksetzen des Passworts gesendet',
+            'reset_password_error' => 'E-Mail zum Zurücksetzen des Passworts konnte nicht gesendet werden',
+            'login_as_error' => 'Anmeldung als dieser Benutzer fehlgeschlagen',
+            'send_set_password_title' => 'E-Mail zum Festlegen des Passworts senden?',
+            'send_set_password_confirm' => 'Der Benutzer wurde ohne Passwort erstellt. Möchtest du ihm eine E-Mail senden, damit er jetzt eines festlegen kann?',
+            'send_set_password_yes' => 'E-Mail senden',
+            'send_set_password_no' => 'Nicht jetzt',
+            'set_password_email_success' => 'E-Mail zum Festlegen des Passworts gesendet',
+            'set_password_email_error' => 'E-Mail zum Festlegen des Passworts konnte nicht gesendet werden',
         ],
         'modal' => [
             'title' => 'Neue Benutzer einladen',
