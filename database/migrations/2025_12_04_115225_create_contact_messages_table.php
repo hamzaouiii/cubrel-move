@@ -19,7 +19,7 @@ return new class extends Migration
       $table->string('phone', 50)->nullable();
       $table->text('message')->nullable();
       $table->text('description')->nullable();
-      $table->string('status', 20)->default('new')->index();
+      $table->string('status', 20)->nullable()->default('new')->index();
       $table->string('ip', 45)->nullable();
       $table->string('user_agent')->nullable();
       $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();

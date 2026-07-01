@@ -14,17 +14,18 @@ return new class extends Migration
             $table->string('slug')->nullable();
             $table->string('label')->nullable();
             $table->string('name');
-            $table->uuid('user_id')->nullable();
+            $table->foreignUuid('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('is_shared')->default(false);
             $table->boolean('is_system')->default(false);
             $table->boolean('is_global')->default(false);
             $table->json('conditions');
-            $table->string('match_type')->default('all');
+            $table->string('match_type')->nullable()->default('all');
             $table->dateTime('last_used')->nullable();
             $table->timestamps();
 
             $table->index(['module_slug', 'slug']);
             $table->index(['module_slug', 'user_id']);
+            $table->index('user_id');
             $table->index('is_global');
         });
     }

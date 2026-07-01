@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('setup_tokens', function (Blueprint $table) {
             $table->id();
             $table->string('token_hash')->unique();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->index();
             $table->timestamp('used_at')->nullable();
             $table->timestamps();
         });

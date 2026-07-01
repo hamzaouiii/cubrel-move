@@ -19,7 +19,7 @@ class Product extends BaseModule
 
   public function getCasts(): array
   {
-    return [...parent::getCasts(), 'price' => 'decimal:2'];
+    return [...parent::getCasts(), 'price' => 'decimal:2', 'is_active' => 'boolean'];
   }
 
   public function toSearchResult(): array

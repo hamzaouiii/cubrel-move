@@ -30,7 +30,7 @@ return new class extends Migration
       $table->string('last_login_ip', 45)->nullable();
 
       // Status & access control
-      $table->string('status')->default('active')->index();
+      $table->string('status')->nullable()->default('active')->index();
       $table->boolean('is_admin')->default(false)->index();
       $table->boolean('is_root')->default(false)->index();
       $table->timestamp('password_changed_at')->nullable();

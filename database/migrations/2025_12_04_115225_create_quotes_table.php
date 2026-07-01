@@ -15,8 +15,8 @@ return new class extends Migration
             $table->char('id', 36)->primary();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('number')->nullable()->unique();
-            $table->string('status')->default('draft');
+            $table->string('number')->nullable();
+            $table->string('status')->nullable()->default('draft');
             $table->date('valid_until')->nullable();
             $table->decimal('subtotal', 15, 2)->nullable();
             $table->decimal('discount_amount', 15, 2)->nullable();

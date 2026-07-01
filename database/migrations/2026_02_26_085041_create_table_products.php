@@ -21,7 +21,7 @@ return new class extends Migration
       $table->string('unit')->nullable();
       $table->string('tax_rate')->nullable();
       
-      $table->boolean('is_active')->nullable()->index();
+      $table->boolean('is_active')->default(true)->index();
       $table->json('custom_fields')->default(DB::raw("(JSON_OBJECT())"));
 
       $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();

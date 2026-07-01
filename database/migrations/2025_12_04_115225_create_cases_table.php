@@ -16,8 +16,8 @@ return new class extends Migration
       $table->string('name');
       $table->string('subject');
       $table->text('description')->nullable();
-      $table->string('status')->default('open');
-      $table->string('priority')->default('normal');
+      $table->string('status')->nullable()->default('open');
+      $table->string('priority')->nullable()->default('normal');
       $table->timestamp('opened_at')->nullable();
       $table->timestamp('closed_at')->nullable();
       $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();

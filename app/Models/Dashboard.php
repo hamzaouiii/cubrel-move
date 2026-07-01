@@ -11,14 +11,12 @@ class Dashboard extends Model
         'user_id',
         'name',
         'slug',
-        'is_default',
         'layout',
         'sort_order',
     ];
 
     protected $casts = [
-        'is_default' => 'boolean',
-        'layout'     => 'array',
+        'layout' => 'array',
     ];
 
     public function user(): BelongsTo

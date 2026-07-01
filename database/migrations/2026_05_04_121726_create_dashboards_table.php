@@ -15,7 +15,6 @@ return new class extends Migration
 
     $table->string('name')->nullable();
     $table->string('slug')->unique();
-    $table->boolean('is_default')->default(false);
     $table->json('layout')->nullable();
     $table->integer('sort_order')->default(0);
     $table->timestamps();
@@ -25,7 +24,7 @@ return new class extends Migration
         ->on('users')
         ->nullOnDelete();
 
-    $table->index(['user_id', 'is_default']);
+    $table->index('user_id');
 });
     }
 

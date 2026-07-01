@@ -12,17 +12,17 @@ return new class extends Migration
   public function up(): void
   {
     Schema::create('userinvites', function (Blueprint $table) {
-      $table->uuid('id');
+      $table->uuid('id')->primary();
       $table->string('email')->unique();
       $table->string('description')->nullable();
       $table->string('name')->nullable();
-      $table->string('status')->default("pending");
+      $table->string('status')->nullable()->default("pending");
       $table->string('token_hash', 64)->unique();
       $table->uuid('invited_by');
       $table->foreign('invited_by')->references('id')->on('users');
       $table->boolean('is_admin')->default(false);
       $table->timestamp('accepted_at')->nullable();
-      $table->timestamp('expires_at');
+      $table->timestamp('expires_at')->index();
             $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
       $table->index('owner_id');
       $table->timestamps();

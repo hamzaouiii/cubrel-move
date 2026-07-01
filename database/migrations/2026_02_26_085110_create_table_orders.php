@@ -29,7 +29,6 @@ return new class extends Migration
             $table->date('order_date')->nullable();
             $table->date('due_date')->nullable();
 
-            $table->uuid('assigned_user_id')->nullable()->index();
             $table->json('custom_fields')->default(DB::raw('(JSON_OBJECT())'));
             $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->index('owner_id');
