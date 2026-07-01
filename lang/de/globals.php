@@ -56,6 +56,10 @@ return [
         'invalid_credentials' => 'Benutzername oder Passwort falsch.',
         'invalid_email' => 'E-Mail-Adresse ist falsch.',
         'user_inactive' => 'Benutzer ist nicht aktiv. Bitte kontaktieren Sie Ihren Administrator',
+        'setup_title' => 'Instanz einrichten',
+        'setup_subtitle' => 'Erstellen Sie das Root-Konto, um die Einrichtung von Cubrel abzuschließen.',
+        'setup_invalid' => 'Dieser Einrichtungslink ist ungültig, abgelaufen oder wurde bereits verwendet.',
+        'setup_button' => 'Root-Konto erstellen',
     ],
     'confirm' => [
         'confirm_text' => 'Bestätigen',

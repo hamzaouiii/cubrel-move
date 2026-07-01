@@ -13,7 +13,7 @@ class InvitationMail extends Mailable
 {
   use Queueable, SerializesModels;
 
-  public function __construct(public UserInvite $invite)
+  public function __construct(public UserInvite $invite, public string $token)
   {
     $this->locale = \App\Support\Settings::locale();
   }
@@ -28,7 +28,7 @@ class InvitationMail extends Mailable
     return new Content(
       view: 'emails.invitation',
       with: [
-        'inviteUrl'    => route('invites.show', $this->invite->token),
+        'inviteUrl'    => route('invites.show', $this->token),
         'expiresAt'    => $this->invite->expires_at->format('M j, Y'),
         'primaryColor' => \App\Support\Settings::get('primary_color', '#3498db'),
         'appName'      => config('app.name', 'Cubrel'),

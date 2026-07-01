@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\UserInvite;
+use App\Services\Users\InviteService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class InviteAcceptanceTest extends TestCase
@@ -21,17 +21,13 @@ class InviteAcceptanceTest extends TestCase
      */
     public function test_invite_can_be_accepted_and_creates_a_real_user(): void
     {
+        Mail::fake();
+
         $admin = User::factory()->create(['is_admin' => true]);
 
-        $invite = UserInvite::create([
-            'email'      => 'newhire@example.com',
-            'token'      => Str::random(64),
-            'invited_by' => $admin->id,
-            'is_admin'   => false,
-            'expires_at' => now()->addDays(7),
-        ]);
+        $invite = (new InviteService())->create('newhire@example.com', $admin->id);
 
-        $response = $this->post("/invites/{$invite->token}/accept", [
+        $response = $this->post("/invites/{$invite->plainToken}/accept", [
             'first_name'            => 'New',
             'last_name'             => 'Hire',
             'username'              => 'new.hire',

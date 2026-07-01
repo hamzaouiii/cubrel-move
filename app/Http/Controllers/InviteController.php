@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Rules\NoPendingInvite;
 use App\Models\Module;
 use App\Handlers\Modules\UserInviteModuleHandler;
+use App\Support\Users\AccountRules;
 
 class InviteController extends Controller
 {
@@ -24,26 +25,28 @@ class InviteController extends Controller
     $data = $request->validate(
       [
         'email' => ['required', 'email', 'unique:users,email', new NoPendingInvite()],
-        'is_Admin'  => 'sometimes|boolean',
+        'is_admin'  => 'sometimes|boolean',
       ],
       [
         'email.required' => __('modules.users.modal.email_required'),
         'email.email' => __('modules.users.modal.email_invalid'),
         'email.unique' => __('modules.users.modal.email_exists'),
-        'is_Admin.boolean' => __('modules.users.modal.is_admin_bool'),
+        'is_admin.boolean' => __('modules.users.modal.is_admin_bool'),
       ]
     );
 
     $invite = $this->invites->create($data['email'], $request->user()->id, $data['role'] ?? 'user');
 
     return response()->json([
-      'invite_url' => route('invites.show', $invite->token),
+      'invite_url' => route('invites.show', $invite->plainToken),
     ]);
   }
 
   public function show(string $token): InertiaResponse
   {
-    $invite = UserInvite::where('token', $token)->firstOrFail();
+    $invite = $this->invites->findByToken($token);
+    abort_if($invite === null, 404);
+
     return Inertia::render('Users/AcceptInvite', [
       'email' => $invite->email,
       'token' => $token,
@@ -54,12 +57,7 @@ class InviteController extends Controller
 
   public function accept(string $token, Request $request): RedirectResponse
   {
-    $data = $request->validate([
-      'first_name'                  => 'required|string|max:255',
-      'last_name'                  => 'required|string|max:255',
-      'username'                  => 'required|string|max:255|unique:users',
-      'password'              => 'required|confirmed|min:8',
-    ]);
+    $data = $request->validate(AccountRules::newAccount());
 
     $user = $this->invites->accept($token, $data);
 
@@ -88,7 +86,7 @@ class InviteController extends Controller
 
       $results[] = [
         'email'      => $invite->email,
-        'invite_url' => route('invites.show', $invite->token),
+        'invite_url' => route('invites.show', $invite->plainToken),
       ];
     }
 

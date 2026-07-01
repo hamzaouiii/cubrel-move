@@ -20,14 +20,14 @@ class DevSeeder extends Seeder
    */
   public function run(): void
   {
-    Account::factory(80)->create();
-    Contact::factory(180)->create();
-    Lead::factory(100)->create();
-    Quote::factory(130)->create();
-    Invoice::factory(100)->create();
-    SupportCase::factory(125)->create();
-    Product::factory()->count(150)->create();
-    Deal::factory()->count(150)->create();
-    Order::factory()->count(150)->create();
+    Account::factory(10)->create();
+    Contact::factory(20)->create();
+    Lead::factory(10)->create();
+    Quote::factory(10)->create();
+    Invoice::factory(10)->create();
+    SupportCase::factory(12)->create();
+    Product::factory()->count(20)->create();
+    Deal::factory()->count(10)->create();
+    Order::factory()->count(10)->create();
   }
 }

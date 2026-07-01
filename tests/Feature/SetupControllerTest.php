@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Settings\SettingValue;
 use App\Models\User;
 use App\Services\Users\SetupTokenService;
+use App\Support\Settings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -47,6 +49,33 @@ class SetupControllerTest extends TestCase
         );
     }
 
+    public function test_show_passes_valid_locale_query_param_and_sets_app_locale(): void
+    {
+        $token = (new SetupTokenService())->generate();
+
+        $response = $this->get("/setup/{$token}?locale=de");
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Setup')
+            ->where('locale', 'de')
+        );
+        $this->assertSame('de', app()->getLocale());
+    }
+
+    public function test_show_ignores_unsupported_locale_query_param(): void
+    {
+        $token = (new SetupTokenService())->generate();
+
+        $response = $this->get("/setup/{$token}?locale=fr");
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Setup')
+            ->where('locale', null)
+        );
+    }
+
     public function test_store_redirects_to_login_when_users_already_exist(): void
     {
         User::factory()->create();
@@ -81,6 +110,28 @@ class SetupControllerTest extends TestCase
         $this->assertTrue($user->is_root);
         $this->assertSame('root.user', $user->username);
         $this->assertSame('root@example.com', $user->email);
+    }
+
+    public function test_store_persists_app_locale_setting_when_locale_given(): void
+    {
+        // Mirrors a real fresh instance, where SettingValuesSeeder has
+        // already seeded 'app_locale' (with 'en') before setup ever runs.
+        SettingValue::create(['setting_item' => 'locale', 'key' => 'app_locale', 'value' => 'en']);
+        $token = (new SetupTokenService())->generate();
+
+        $this->post("/setup/{$token}", array_merge($this->validPayload(), ['locale' => 'de']));
+
+        $this->assertSame('de', Settings::get('app_locale'));
+    }
+
+    public function test_store_leaves_app_locale_setting_untouched_when_locale_omitted(): void
+    {
+        SettingValue::create(['setting_item' => 'locale', 'key' => 'app_locale', 'value' => 'en']);
+        $token = (new SetupTokenService())->generate();
+
+        $this->post("/setup/{$token}", $this->validPayload());
+
+        $this->assertSame('en', Settings::get('app_locale'));
     }
 
     public function test_store_consumes_token_so_it_cannot_be_reused(): void
