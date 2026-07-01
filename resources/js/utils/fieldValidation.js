@@ -1,4 +1,4 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isPossiblePhoneNumber } from "libphonenumber-js";
 
 const defaultValidate = () => true; // no validation all values are accepted
 
@@ -10,10 +10,23 @@ const emailValidate = (value) => {
   return emailRegex.test(value.toString());
 };
 
-// Uses libphonenumber to validate phone number
-// DE is the default localisation but that should be handed down dynamically in the future
-const phoneValidate = (value) => {
-  return isValidPhoneNumber(String(value), "DE");
+// Maps the app locale (config/app.php: available_locales) to a default
+// ISO country code for phone number parsing. Falls back to DE.
+const localeToCountryCode = {
+  de: "DE",
+  en: "GB",
+};
+
+// Lenient phone check: only rejects strings that can't plausibly be a
+// phone number (wrong characters, wrong length), not ones that merely
+// don't match the assumed country's national dialing plan. The locale
+// only supplies a default country for numbers with no country code -
+// numbers with their own country code (e.g. "+1 555 ...") are judged
+// on their own terms, so foreign numbers aren't penalized.
+const phoneValidate = (value, locale) => {
+  if (!value) return true;
+  const countryCode = localeToCountryCode[locale] || "DE";
+  return isPossiblePhoneNumber(String(value), countryCode);
 };
 
 //url format validation

@@ -155,7 +155,6 @@ const getEmailLocalPart = (email) => {
           type="email"
           @input="clearErrors()"
           :disabled="readOnly"
-          placeholder="email@example.com"
         />
       </div>
       <span v-if="showError" class="error-icon-container">

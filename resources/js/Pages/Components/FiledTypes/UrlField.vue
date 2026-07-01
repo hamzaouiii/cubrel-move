@@ -101,13 +101,7 @@ const openUrl = (url) => {
       <div class="url-input-wrapper">
         <i class="url-icon fa-solid fa-link"></i>
         <span v-if="readOnly">{{ localValue || "—" }}</span>
-        <input
-          v-else
-          v-model="localValue"
-          @input="clearErrors()"
-          placeholder="https://example.com"
-          type="url"
-        />
+        <input v-else v-model="localValue" @input="clearErrors()" type="url" />
       </div>
       <span v-if="showError" class="error-icon-container">
         <i class="error-icon fa-solid fa-circle-exclamation"></i>
@@ -202,7 +196,6 @@ const openUrl = (url) => {
           type="url"
           @input="clearErrors()"
           :disabled="readOnly"
-          placeholder="https://example.com"
         />
       </div>
       <span v-if="showError" class="error-icon-container">
