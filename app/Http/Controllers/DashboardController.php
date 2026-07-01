@@ -72,6 +72,7 @@ class DashboardController extends Controller
             'metric'      => AggregationService::metric($module, $config),
             'breakdown'   => AggregationService::breakdown($module, $config),
             'record-list' => AggregationService::recordList($module, $config),
+            'people'      => AggregationService::people($module, $config),
         };
 
         return response()->json($result);
@@ -84,12 +85,28 @@ class DashboardController extends Controller
             ->firstOrFail();
 
         $fields = $module->allFields()->map(fn ($f) => [
-            'name'  => $f->name,
-            'label' => $f->label,
-            'type'  => $f->type,
+            'name'           => $f->name,
+            'label'          => $f->label,
+            'type'           => $f->type,
+            'related_module' => $f->related_module,
         ]);
 
         return response()->json($fields->values());
+    }
+
+    public function moduleRelationships(string $slug): JsonResponse
+    {
+        $module = Module::where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $relationships = $module->relationships()->map(fn ($r) => [
+            'name'         => $r->name,
+            'label'        => $r->label,
+            'related_slug' => $r->related_slug,
+        ]);
+
+        return response()->json($relationships->values());
     }
 
     public function filterableFields(string $slug): JsonResponse

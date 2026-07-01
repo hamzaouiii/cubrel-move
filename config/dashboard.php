@@ -14,7 +14,7 @@
 
 return [
 
-    'widget_types'              => ['time-series', 'metric', 'breakdown', 'record-list'],
+    'widget_types'              => ['time-series', 'metric', 'breakdown', 'record-list', 'people'],
     'org_wide_types'            => ['sales_manager'],
 
     'allowed_intervals'         => ['day', 'week', 'month'],

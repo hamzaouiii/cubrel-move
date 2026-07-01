@@ -6,6 +6,8 @@ import BreakdownWidget from "./widgets/BreakdownWidget.vue";
 import BreakdownConfigForm from "./BreakdownConfigForm.vue";
 import RecordListWidget from "./widgets/RecordListWidget.vue";
 import RecordListConfigForm from "./RecordListConfigForm.vue";
+import PeopleWidget from "./widgets/PeopleWidget.vue";
+import PeopleConfigForm from "./PeopleConfigForm.vue";
 import MyRecords from "./MyRecords.vue";
 
 export const WIDGET_REGISTRY = {
@@ -55,5 +57,13 @@ export const WIDGET_TYPES = {
     defaultCols: 1,
     component: RecordListWidget,
     configComponent: RecordListConfigForm,
+  },
+  people: {
+    label: "People",
+    description: "A leaderboard of people ranked by a sum, count, or average",
+    icon: "fa-solid fa-ranking-star",
+    defaultCols: 2,
+    component: PeopleWidget,
+    configComponent: PeopleConfigForm,
   },
 };
