@@ -1,16 +1,17 @@
 @component('mail::message')
-# New Lead from the Contact form
+# {{ __('emails.contact_admin.heading') }}
 
-**Name:** {{ $msg->name }}  
-**E-Mail:** {{ $msg->email }}  
+**{{ __('emails.contact_admin.label_name') }}:** {{ $msg->name }}
+**{{ __('emails.contact_admin.label_email') }}:** {{ $msg->email }}
 @isset($msg->phone)
-**Phone:** {{ $msg->phone }}  
+**{{ __('emails.contact_admin.label_phone') }}:** {{ $msg->phone }}
 @endisset
 
-**Message:**
 @component('mail::panel')
+**{{ __('emails.contact_admin.label_message') }}:**
+
 {{ $msg->message }}
 @endcomponent
 
-_Sent On {{ $msg->created_at->format('d.m.Y H:i') }}_
+_{{ __('emails.contact_admin.sent_on', ['date' => $msg->created_at->format('d.m.Y H:i')]) }}_
 @endcomponent

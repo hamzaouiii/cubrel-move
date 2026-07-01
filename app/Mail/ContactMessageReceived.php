@@ -2,47 +2,60 @@
 
 namespace App\Mail;
 
+use App\Models\Modules\ContactMessage;
+use App\Models\Modules\Email;
+use App\Support\Settings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Modules\ContactMessage;
-use App\Models\Modules\Email;
 
 class ContactMessageReceived extends Mailable implements ShouldQueue
 {
-  use Queueable, SerializesModels;
-  protected ?int $sentEmailId = null;
-  public ContactMessage $msg;
+    use Queueable, SerializesModels;
 
-  public function __construct(ContactMessage $msg)
-  {
-    $this->msg = $msg;
-  }
+    protected ?int $sentEmailId = null;
 
-  public function build()
-  {
-    return $this->subject('Automatisierung Regensburg: New Lead from Contact form')
-      ->replyTo($this->msg->email, $this->msg->name)
-      ->markdown('emails.contact.adminNotification');
-  }
-  public function withSentEmailId(int $id): static
-  {
-    $this->sentEmailId = $id;
-    return $this;
-  }
-  public function __destruct()
-  {
-    if ($this->sentEmailId) {
-      Email::where('id', $this->sentEmailId)
-        ->update(['status' => 'sent']);
+    public function __construct(public ContactMessage $msg)
+    {
+        $this->locale = Settings::locale();
     }
-  }
-  public function failed(\Throwable $e): void
-  {
-    if ($this->sentEmailId) {
-      Email::where('id', $this->sentEmailId)
-        ->update(['status' => 'failed']);
+
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject:  __('emails.contact_admin.subject', ['app' => config('app.name', 'Cubrel')]),
+            replyTo: [new \Illuminate\Mail\Mailables\Address($this->msg->email, $this->msg->name)],
+        );
     }
-  }
+
+    public function content(): Content
+    {
+        return new Content(
+            markdown: 'emails.contact.adminNotification',
+            with: ['msg' => $this->msg],
+        );
+    }
+
+    public function withSentEmailId(int $id): static
+    {
+        $this->sentEmailId = $id;
+        return $this;
+    }
+
+    public function __destruct()
+    {
+        if ($this->sentEmailId) {
+            Email::where('id', $this->sentEmailId)->update(['status' => 'sent']);
+        }
+    }
+
+    public function failed(\Throwable $e): void
+    {
+        if ($this->sentEmailId) {
+            Email::where('id', $this->sentEmailId)->update(['status' => 'failed']);
+        }
+    }
 }

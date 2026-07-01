@@ -1,17 +1,17 @@
 @component('mail::message')
-# Vielen Dank für Ihre Nachricht
+# {{ __('emails.contact_confirmation.heading') }}
 
-Hallo {{ $contactMessage->name }},
+{{ __('emails.contact_confirmation.greeting', ['name' => $contactMessage->name]) }}
 
-wir haben Ihre Nachricht erhalten und melden uns so bald wie möglich bei Ihnen.
+{{ __('emails.contact_confirmation.body') }}
 
 @component('mail::panel')
-**Ihre Nachricht:**
+**{{ __('emails.contact_confirmation.label') }}**
 
 {{ $contactMessage->message }}
 @endcomponent
 
-Mit freundlichen Grüßen  
-**{{ config('app.name') }}**  
+{{ __('emails.contact_confirmation.regards') }}
+**{{ config('app.name') }}**
 [{{ config('app.url') }}]({{ config('app.url') }})
 @endcomponent
