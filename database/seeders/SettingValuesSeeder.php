@@ -355,7 +355,7 @@ class SettingValuesSeeder extends Seeder
                 'key' => 'company_logo_url',
                 'setting_item' => 'company-info',
                 'label' => 'settings.fields.company_logo_url',
-                'type' => 'string',
+                'type' => 'image',
                 'sort_order' => 6,
                 'value' => 'https://i.ibb.co/Gfnzq5cw/cover.png',
                 'autoload' => 1,

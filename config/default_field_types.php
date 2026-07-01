@@ -18,6 +18,7 @@ return [
   'record',
   'status',
   'address',
+  'image',
 ];
 
 // for reference

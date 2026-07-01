@@ -72,6 +72,10 @@ return [
         [
         'value' => 'address',
         'icon'  => 'fa-solid fa-location-dot'
-        
+
+    ],
+    [
+        'value' => 'image',
+        'icon'  => 'fa-solid fa-image'
     ],
 ];

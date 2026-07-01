@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 
 class UserController extends Controller
@@ -100,6 +101,62 @@ class UserController extends Controller
       'relatedLayout'  => $relatedLayout,
       'fields'         => $fields,
     ], $props));
+  }
+
+  /**
+   * Store a newly created user record (admin "create user" page).
+   * There's no password field on this form — real onboarding goes through
+   * the invite flow, so we just seed a random password here to satisfy the
+   * NOT NULL column; the admin fields (avatar/type/status/is_admin) go
+   * through forceFill like User::createFromAccountForm does.
+   */
+  public function store(Request $request)
+  {
+    $validated = $request->validate([
+      'username'    => ['required', 'string', 'max:64', 'unique:users,username'],
+      'first_name'  => ['nullable', 'string'],
+      'last_name'   => ['nullable', 'string'],
+      'email'       => ['nullable', 'email', 'unique:users,email'],
+      'phone'       => ['nullable', 'string'],
+      'mobile'      => ['nullable', 'string'],
+      'title'       => ['nullable', 'string'],
+      'description' => ['nullable', 'string'],
+      'avatar'      => ['nullable', 'string'],
+      'type'        => ['nullable', 'string'],
+      'status'      => ['nullable', 'string'],
+      'is_admin'    => ['boolean'],
+    ]);
+
+    $user = User::createFromAccountForm(
+      array_merge($validated, ['password' => Str::random(32)]),
+      collect($validated)->only(['avatar', 'phone', 'mobile', 'title', 'description', 'type', 'status', 'is_admin'])->all()
+    );
+
+    return redirect("/users/{$user->id}")->with('success', 'Record created successfully.');
+  }
+
+  public function update(Request $request, string $user_id)
+  {
+    $user = User::findOrFail($user_id);
+
+    $validated = $request->validate([
+      'username'    => ['required', 'string', 'max:64', 'unique:users,username,' . $user->id],
+      'first_name'  => ['nullable', 'string'],
+      'last_name'   => ['nullable', 'string'],
+      'email'       => ['nullable', 'email', 'unique:users,email,' . $user->id],
+      'phone'       => ['nullable', 'string'],
+      'mobile'      => ['nullable', 'string'],
+      'title'       => ['nullable', 'string'],
+      'description' => ['nullable', 'string'],
+      'avatar'      => ['nullable', 'string'],
+      'type'        => ['nullable', 'string'],
+      'status'      => ['nullable', 'string'],
+      'is_admin'    => ['boolean'],
+    ]);
+
+    $user->forceFill($validated)->save();
+
+    return back()->with('success', 'Record updated successfully.');
   }
 
   public function getUsersForLinking()

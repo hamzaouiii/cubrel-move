@@ -369,7 +369,7 @@ return [
         ],
         'avatar' => [
             'name' => 'avatar',
-            'type' => 'url',
+            'type' => 'image',
         ],
         'locale' => [
             'name' => 'locale',

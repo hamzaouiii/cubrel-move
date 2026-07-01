@@ -34,6 +34,7 @@ return [
     'record' => 'Datensatz',
     'status' => 'Status',
     'address' => 'Addresse',
+    'image' => 'Bild',
 
   ],
   'metadata' => [
@@ -58,6 +59,13 @@ return [
     'is_required_several' => "Mehrere Pflichtfelder sind noch leer!",
     'invalid_format'  => 'hat ein ungültiges Format',
     'invalid_several' => 'Einige Felder haben ein ungültiges Format',
+    'image_invalid_type' => 'Bitte wählen Sie ein JPEG-, PNG-, WEBP- oder GIF-Bild',
+    'image_too_large' => 'Das Bild darf höchstens 2 MB groß sein',
+    'image_upload_failed' => 'Bild-Upload fehlgeschlagen, bitte versuchen Sie es erneut',
+  ],
+  'image' => [
+    'upload' => 'Bild hochladen',
+    'change' => 'Bild ändern',
   ],
   'checkbox_yes' => "Ja",
   'checkbox_no' => "Nein",

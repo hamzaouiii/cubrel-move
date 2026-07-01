@@ -145,6 +145,12 @@ const currencyValidate = (value) => {
   return !isNaN(num) && num >= 0;
 };
 
+// Image: value is the uploaded file's URL/path, set by ImageField after a successful upload
+const imageValidate = (value) => {
+  if (!value) return true;
+  return typeof value === "string";
+};
+
 export function fieldValidation() {
   return {
     emailValidate,
@@ -158,5 +164,6 @@ export function fieldValidation() {
     relatedValidate,
     addressValidate,
     currencyValidate,
+    imageValidate,
   };
 }
