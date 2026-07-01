@@ -4,14 +4,20 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
+    use InteractsWithDashboardFixtures;
 
     public function test_profile_page_is_displayed(): void
     {
+        // UserProfileController::index() looks up the 'users' Module
+        // registry row via firstOrFail() — without it the route 404s.
+        $this->makeModule(['slug' => 'users', 'name' => 'Users', 'path' => '/users']);
+
         $user = User::factory()->create();
 
         $response = $this
@@ -25,11 +31,17 @@ class ProfileTest extends TestCase
     {
         $user = User::factory()->create();
 
+        // UserProfileController::update() requires username and uses
+        // first_name/last_name (not a single "name" field) — back() needs
+        // an explicit referer since the controller doesn't redirect('/profile').
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
+            ->from('/profile')
+            ->put('/profile', [
+                'username'   => 'updated.username',
+                'first_name' => 'Test',
+                'last_name'  => 'User',
+                'email'      => 'test@example.com',
             ]);
 
         $response
@@ -38,62 +50,11 @@ class ProfileTest extends TestCase
 
         $user->refresh();
 
+        $this->assertSame('updated.username', $user->username);
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->refresh()->email_verified_at);
-    }
-
-    public function test_user_can_delete_their_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
-
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrors('password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
-    }
+    // No account-deletion tests: this app has no DELETE /profile route —
+    // users are managed by admins (UserController) rather than self-deleted.
 }

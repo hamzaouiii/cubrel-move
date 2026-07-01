@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>{{ __('emails.invitation.title', ['app' => $appName]) }}</title>
+    <title>{{ __('emails.setup.title', ['app' => $appName]) }}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f3f4f6;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;color:#1f2937;">
 
@@ -50,19 +50,20 @@
                                             <tr>
                                                 <td align="center"
                                                     style="width:56px;height:56px;border-radius:14px;background-color:{{ $primaryColor }}1a;">
-                                                    <span style="font-size:24px;line-height:56px;display:block;text-align:center;">✉️</span>
+                                                    <img src="{{ $message->embed(public_path('android-chrome-192x192.png')) }}" alt="" width="32" height="32"
+                                                         style="display:block;margin:12px auto;border:0;outline:none;text-decoration:none;" />
                                                 </td>
                                             </tr>
                                         </table>
 
                                         {{-- Heading --}}
                                         <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;text-align:center;letter-spacing:-0.02em;">
-                                            {{ __('emails.invitation.heading') }}
+                                            {{ __('emails.setup.heading' , ['app' => $appName]) }}
                                         </p>
 
                                         {{-- Subheading --}}
                                         <p style="margin:0 0 32px;font-size:15px;color:#6b7280;text-align:center;line-height:1.6;">
-                                            {{ __('emails.invitation.body', ['app' => $appName]) }}
+                                            {{ __('emails.setup.body', ['app' => $appName]) }}
                                         </p>
 
                                         {{-- CTA button --}}
@@ -70,9 +71,9 @@
                                                style="margin-bottom:32px;">
                                             <tr>
                                                 <td align="center">
-                                                    <a href="{{ $inviteUrl }}" target="_blank"
+                                                    <a href="{{ $setupUrl }}" target="_blank"
                                                        style="display:inline-block;background-color:{{ $primaryColor }};color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 32px;border-radius:10px;letter-spacing:0.01em;">
-                                                        {{ __('emails.invitation.cta') }}
+                                                        {{ __('emails.setup.cta') }}
                                                     </a>
                                                 </td>
                                             </tr>
@@ -88,13 +89,13 @@
 
                                         {{-- Expiry notice --}}
                                         <p style="margin:0 0 16px;font-size:13px;color:#6b7280;text-align:center;line-height:1.5;">
-                                            ⏱ {{ __('emails.invitation.expires', ['date' => $expiresAt]) }}
+                                            ⏱ {{ __('emails.setup.expires', ['date' => $expiresAt]) }}
                                         </p>
 
                                         {{-- Fallback URL --}}
                                         <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;line-height:1.5;">
-                                            {{ __('emails.invitation.fallback') }}<br />
-                                            <a href="{{ $inviteUrl }}" style="color:{{ $primaryColor }};word-break:break-all;">{{ $inviteUrl }}</a>
+                                            {{ __('emails.setup.fallback') }}<br />
+                                            <a href="{{ $setupUrl }}" style="color:{{ $primaryColor }};word-break:break-all;">{{ $setupUrl }}</a>
                                         </p>
 
                                     </td>
@@ -104,7 +105,7 @@
                                 <tr>
                                     <td style="padding:20px 40px;background-color:#f9fafb;border-top:1px solid #e5e7eb;">
                                         <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;line-height:1.5;">
-                                            {{ __('emails.invitation.disclaimer') }}
+                                            {{ __('emails.setup.disclaimer') }}
                                         </p>
                                     </td>
                                 </tr>

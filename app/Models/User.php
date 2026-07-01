@@ -6,6 +6,7 @@ namespace App\Models;
 // By Manually importing Authenticatable's contracts and traits I can extend BaseModule while keeping User as an Authenticatable
 
 // Auth Interfaces (Contracts)
+use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -70,6 +71,7 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_root' => 'boolean',
         ];
     }
 
@@ -96,9 +98,14 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
         return $query->orderBy('name')->paginate($perPage);
     }
 
+    /**
+     * Deliberately skips BaseModule::booted() — that hook auto-fills owner_id
+     * on every model, but `users` has no owner_id column (a user can't own
+     * itself the way a Lead/Deal/etc. is owned by a user). Calling it here
+     * crashes every User::create() with "Unknown column 'owner_id'".
+     */
     protected static function booted(): void
     {
-        parent::booted();
         static::saving(function ($user) {
             if ($user->isDirty('first_name') || $user->isDirty('last_name')) {
                 $user->name = $user->first_name.' '.$user->last_name;
@@ -114,5 +121,33 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
     public function canBeImpersonated(): bool
     {
         return ! $this->is_root && $this->status === 'active';
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
+
+    /**
+     * Build a User from a self-service account form (invite acceptance,
+     * setup bootstrap, etc.) — shared so those flows don't duplicate the
+     * field mapping. $overrides goes through forceFill so privileged flags
+     * like is_admin/is_root can be set regardless of $fillable, without
+     * making them mass-assignable from arbitrary form input.
+     */
+    public static function createFromAccountForm(array $data, array $overrides = []): self
+    {
+        $user = new self([
+            'username'   => $data['username'],
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+            'email'      => $data['email'] ?? null,
+            'password'   => $data['password'],
+        ]);
+
+        $user->forceFill($overrides);
+        $user->save();
+
+        return $user;
     }
 }

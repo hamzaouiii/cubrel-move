@@ -20,6 +20,7 @@ use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SetupController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
@@ -35,6 +36,8 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
     Route::get('/invites/{token}', [InviteController::class, 'show'])->name('invites.show');
     Route::post('/invites/{token}/accept', [InviteController::class, 'accept'])->name('invites.accept');
+    Route::get('/setup/{token}', [SetupController::class, 'show'])->name('setup.show');
+    Route::post('/setup/{token}', [SetupController::class, 'store'])->name('setup.store');
 });
 
 Route::middleware(['auth'])->group(function () {

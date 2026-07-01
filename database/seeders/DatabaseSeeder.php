@@ -15,18 +15,19 @@ class DatabaseSeeder extends Seeder
   public function run(): void
   {
     $this->call(ModulesTableSeeder::class);
-    $this->call(ContactMessagesTableSeeder::class);
     $this->call(IconsTableSeeder::class);
-    $this->call(UsersTableSeeder::class);
     $this->call(dropdownListSeeder::class);
     $this->call(StockFieldsSeeder::class);
     $this->call(DefaultFiltersSeeder::class);
     $this->call(SettingValuesSeeder::class);
     $this->call(RelationshipDropdownSeeder::class);
     $this->call(RelationshipSeeder::class);
-    $this->call(DevSeeder::class);
-    $this->call(RelationshipPopulationSeeder::class);
-    $this->call(OwnerAssignmentSeeder::class);
-    $this->call(DashboardPresetSeeder::class);
+
+    // demo seeders
+    // $this->call(UsersTableSeeder::class);
+    // $this->call(DevSeeder::class);
+    // $this->call(RelationshipPopulationSeeder::class);
+    // $this->call(OwnerAssignmentSeeder::class);
+    // $this->call(DashboardPresetSeeder::class);
   }
 }

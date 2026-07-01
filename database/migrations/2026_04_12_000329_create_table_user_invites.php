@@ -17,7 +17,7 @@ return new class extends Migration
       $table->string('description')->nullable();
       $table->string('name')->nullable();
       $table->string('status')->default("pending");
-      $table->string('token', 64)->unique();
+      $table->string('token_hash', 64)->unique();
       $table->uuid('invited_by');
       $table->foreign('invited_by')->references('id')->on('users');
       $table->boolean('is_admin')->default(false);

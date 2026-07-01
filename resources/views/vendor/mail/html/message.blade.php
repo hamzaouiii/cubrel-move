@@ -18,10 +18,9 @@
         @endslot
     @endisset
 
-    {{-- Footer --}}
+    {{-- Footer (content lives in footer.blade.php — this slot wires it in) --}}
     @slot('footer')
         @component('mail::footer')
-            © {{ date('Y') }} <a href="https://automatisierung-regensburg.de" style="color:#0d6efd; text-decoration:none;">automatisierung-regensburg.de</a>. Alle Rechte vorbehalten.
         @endcomponent
     @endslot
 @endcomponent

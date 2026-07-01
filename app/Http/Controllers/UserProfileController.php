@@ -50,15 +50,14 @@ class UserProfileController extends Controller
     ]);
 
 
-    $user->name = $validated['first_name'] . " " . $validated['last_name'];
     $user->username = $validated['username'];
-    $user->first_name = $validated['first_name'];
-    $user->last_name  = $validated['last_name'];
-    $user->email      = $validated['email'];
-    $user->phone      = $validated['phone'];
-    $user->mobile      = $validated['mobile'];
-    $user->title      = $validated['title'];
-    $user->description      = $validated['description'];
+    $user->first_name = $validated['first_name'] ?? null;
+    $user->last_name  = $validated['last_name'] ?? null;
+    $user->email      = $validated['email'] ?? null;
+    $user->phone      = $validated['phone'] ?? null;
+    $user->mobile      = $validated['mobile'] ?? null;
+    $user->title      = $validated['title'] ?? null;
+    $user->description      = $validated['description'] ?? null;
 
     $user->save();
 

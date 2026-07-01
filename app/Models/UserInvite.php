@@ -11,7 +11,7 @@ class UserInvite extends BaseModule
   protected $fillable = [
     'email',
     'invited_by',
-    'token',
+    'token_hash',
     'is_admin',
     'expires_at',
     'accepted_at',
@@ -19,6 +19,13 @@ class UserInvite extends BaseModule
     'owner_id'
   ];
   protected $casts = ['accepted_at' => 'datetime', 'expires_at' => 'datetime'];
+
+  /**
+   * The raw, unhashed token — only ever populated in memory right after
+   * InviteService::create() issues a new invite, never persisted. Only
+   * token_hash is stored in the DB, mirroring SetupToken.
+   */
+  public ?string $plainToken = null;
 
   public function isExpired(): bool
   {
