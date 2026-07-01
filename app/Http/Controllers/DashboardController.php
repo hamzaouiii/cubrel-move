@@ -143,7 +143,6 @@ class DashboardController extends Controller
                 'layout'     => $request->layout,
                 'slug'       => 'dashboard_' . $user->id,
                 'name'       => 'My Dashboard',
-                'is_default' => true,
             ]
         );
 
