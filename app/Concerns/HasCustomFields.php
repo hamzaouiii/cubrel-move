@@ -9,6 +9,18 @@ trait HasCustomFields
 {
   protected static array $customFieldCache = [];
   protected static array $moduleCache = [];
+
+  /**
+   * Both caches key on module_id/table name, which stay stable across a test
+   * run (RefreshDatabase rolls back rows but not these static arrays), so a
+   * module/field looked up in one test can leak stale data into the next.
+   */
+  public static function clearCustomFieldCache(): void
+  {
+    self::$customFieldCache = [];
+    self::$moduleCache = [];
+  }
+
   public function __set($key, $value)
   {
     if (
