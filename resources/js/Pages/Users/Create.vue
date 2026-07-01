@@ -32,14 +32,15 @@ const { success, error, info, warning, clearAllAlerts } = useAlerts();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
+console.log(props.recordLayout);
+
 const buildInitialForm = () => {
   const data = {};
-
   if (props.recordLayout && props.recordLayout.sections) {
     props.recordLayout.sections.forEach((section) => {
       section.layout.forEach((field) => {
         if (!(field.name === "created_at" || field.name === "updated_at")) {
-          data[field.name] = "";
+          data[field.name] = null;
         }
       });
     });
@@ -169,6 +170,7 @@ const saveRecord = () => {
       onError: () => {
         clearAllAlerts();
         error(t("modules.actions.save_error") + form.errors);
+        console.error(form.errors);
       },
     });
 };
