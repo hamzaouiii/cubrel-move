@@ -101,7 +101,7 @@ class SetupControllerTest extends TestCase
 
         $response = $this->post("/setup/{$token}", $this->validPayload());
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('onboarding.show'));
         $this->assertAuthenticated();
 
         $user = User::first();

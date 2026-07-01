@@ -82,6 +82,7 @@ return [
         'company_name'       => 'Firmenname',
         'company_address'    => 'Firmenadresse',
         'company_phone'      => 'Firmentelefon',
+        'company_email'      => 'Firmen-E-Mail',
         'company_website'    => 'Firmenwebseite',
         'company_logo_url'   => 'Firmenlogo-URL',
     ],

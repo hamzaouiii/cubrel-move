@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\EnsureOnboardingComplete;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\LocalAutoLogin;
 use App\Http\Middleware\SetLocaleFromSettings;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'admin' => AdminMiddleware::class,
+            'onboarded' => EnsureOnboardingComplete::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

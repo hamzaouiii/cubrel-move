@@ -124,7 +124,7 @@ class UserController extends Controller
       'avatar'      => ['nullable', 'string'],
       'type'        => ['nullable', 'string'],
       'status'      => ['nullable', 'string'],
-      'is_admin'    => ['boolean'],
+      'is_admin'    => ['required'],
     ]);
 
     $user = User::createFromAccountForm(

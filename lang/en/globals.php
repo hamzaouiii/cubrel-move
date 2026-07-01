@@ -61,6 +61,21 @@ return [
         'setup_button' => 'Create root account',
 
     ],
+    'onboarding' => [
+        'title' => 'Get started with Cubrel',
+        'org_title' => 'Tell us about your organisation',
+        'org_subtitle' => 'This shows up on your invoices, quotes, and other documents.',
+        'continue' => 'Continue',
+        'demo_title' => 'Populate with demo data?',
+        'demo_subtitle' => 'Add sample accounts, contacts, deals, and more so you can explore Cubrel with realistic data. You can always start from scratch instead.',
+        'demo_yes' => 'Yes, add demo data',
+        'demo_no' => 'No, start from scratch',
+        'demo_seeding' => 'Setting up demo data...',
+        'demo_data_failed' => 'Something went wrong while adding demo data. You can continue and try again later from Settings.',
+        'invite_title' => 'Invite your team',
+        'invite_subtitle' => 'Cubrel is more useful with your team on board. You can always invite people later from Users.',
+        'invite_skip' => 'Skip, go to dashboard',
+    ],
     'confirm' => [
         'confirm_text' => 'Confirm',
         'cancel_text' => 'Cancel',
