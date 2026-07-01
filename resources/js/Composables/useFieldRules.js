@@ -30,6 +30,9 @@ export const fieldTypeRules = {
     // Explicitly surfaces fields hidden by default
     show: ["related_module"],
   },
+  image: {
+    hide: ["regex", "min_length", "max_length"],
+  },
 };
 
 export function useFieldRules(form, metadata) {

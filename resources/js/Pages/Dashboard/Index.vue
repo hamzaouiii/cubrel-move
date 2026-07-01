@@ -19,7 +19,7 @@ const props = defineProps({
   dashboardModules: { type: Array, default: () => [] },
 });
 
-const user = usePage().props?.auth?.user || {};
+const user = computed(() => usePage().props?.auth?.user || {});
 const layout = ref([...props.dashboardLayout]);
 const showPanel = ref(false);
 const editMode = ref(false);

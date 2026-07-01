@@ -26,6 +26,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
 use App\Http\Controllers\PdfTemplatesController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ImageUploadController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -51,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::post('/uploads/image', [ImageUploadController::class, 'store'])->name('uploads.image');
     Route::get('/search', SearchController::class)->name('search');
     Route::get('/line-items', [LineItemController::class, 'index'])->name('line-items.index');
     Route::post('/line-items', [LineItemController::class, 'store'])->name('line-items.store');

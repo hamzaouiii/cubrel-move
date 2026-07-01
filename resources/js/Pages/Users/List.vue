@@ -120,7 +120,7 @@ const closeInviteModal = () => {
   });
 };
 
-const isSortable = (col) => col?.sortable === true;
+const isSortable = (col) => col?.sortable === true && col?.type !== "image";
 const isSorted = (col) => sortKey.value === col.name;
 
 const sortIcon = (col) => {
@@ -305,13 +305,13 @@ const hidePagination = computed(() => {
               v-for="col in listLayoutColumns || []"
               :key="col?.name"
               scope="col"
-              :class="{ sortable: getField(col)?.sortable }"
+              :class="{ sortable: isSortable(getField(col)) }"
               @click="sortBy(getField(col))"
             >
               <span class="th-label">
-                {{ $t(col.label) }}
+                {{ getField(col)?.type !== "image" ? $t(col.label) : "" }}
                 <i
-                  v-if="getField(col)?.sortable"
+                  v-if="isSortable(getField(col))"
                   :class="sortIcon(getField(col))"
                   class="sort-icon"
                 ></i>
@@ -332,6 +332,7 @@ const hidePagination = computed(() => {
                   :module-color="module_color"
                   :highlight="search"
                   :searchable="getField(col)?.searchable"
+                  :related_label="item.name"
                 />
               </td>
               <td class="row-actions" @click.stop v-if="isRoot">

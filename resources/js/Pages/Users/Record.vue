@@ -63,6 +63,10 @@ const avatar = computed(() => {
   return (words[0]?.slice(0, 2) ?? "").toUpperCase();
 });
 
+const avatarField = computed(() => {
+  return props.fields?.find((field) => field.name === "avatar") || null;
+});
+
 const mode = computed(() => {
   return isEditing.value === true ? "edit" : "detail";
 });
@@ -363,18 +367,27 @@ useUnsavedChangesGuard({
     <div class="record-layout__header">
       <div class="record-layout__header__details">
         <div class="record-layout__header__details__info">
-          <div
-            class="record-layout__header__details__info__avatar"
-            v-if="record.avatar"
-          >
-            {{ record.avatar }}
-          </div>
-          <div
-            class="record-layout__header__details__info__avatar"
-            v-else="record.avatar"
-          >
-            {{ avatar }}
-          </div>
+          <FieldRenderer
+            v-if="isEditing && avatarField"
+            :field="avatarField"
+            v-model="form.avatar"
+            mode="edit"
+            :module-color="module_color"
+          />
+          <template v-else>
+            <div
+              class="record-layout__header__details__info__avatar-img"
+              v-if="record.avatar"
+            >
+              <img :src="record.avatar" alt="" />
+            </div>
+            <div
+              class="record-layout__header__details__info__avatar-text"
+              v-else
+            >
+              {{ avatar }}
+            </div>
+          </template>
           <div class="record-layout__header__details__info__text">
             <div class="record-layout__header__details__info__text__name">
               {{ record.name }}

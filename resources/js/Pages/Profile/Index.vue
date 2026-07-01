@@ -336,18 +336,27 @@ useUnsavedChangesGuard({
     <div class="record-layout__header">
       <div class="record-layout__header__details">
         <div class="record-layout__header__details__info">
-          <div
-            class="record-layout__header__details__info__avatar"
-            v-if="record.avatar"
-          >
-            {{ record.avatar }}
-          </div>
-          <div
-            class="record-layout__header__details__info__avatar"
-            v-else="record.avatar"
-          >
-            {{ avatar }}
-          </div>
+          <FieldRenderer
+            v-if="isEditing && getFieldByName('avatar')"
+            :field="getFieldByName('avatar')"
+            v-model="form.avatar"
+            mode="edit"
+            :module-color="module_color"
+          />
+          <template v-else>
+            <div
+              class="record-layout__header__details__info__avatar-img"
+              v-if="record.avatar"
+            >
+              <img :src="record.avatar" alt="" />
+            </div>
+            <div
+              class="record-layout__header__details__info__avatar-text"
+              v-else
+            >
+              {{ avatar }}
+            </div>
+          </template>
           <div class="record-layout__header__details__info__text">
             <div class="record-layout__header__details__info__text__name">
               <FieldRenderer

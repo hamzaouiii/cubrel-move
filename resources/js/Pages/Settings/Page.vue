@@ -9,6 +9,7 @@ import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
 import SettingsLink from "../Components/Settings/SettingsLink.vue";
 import ExplainTip from "../Components/Globals/ExplainTip.vue";
+import ImageField from "../Components/FiledTypes/ImageField.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -50,6 +51,7 @@ const inputTypeFor = (type) => {
   if (type === "datetime") return "datetime";
   if (type === "timezone") return "timezone";
   if (type === "currency") return "currency";
+  if (type === "image") return "image";
   return "text";
 };
 
@@ -154,6 +156,9 @@ const isDirty = () => form.isDirty;
             </template>
             <template v-else-if="inputTypeFor(i.type) === 'color'">
               <ColorPicker v-model="form.values[index].value"></ColorPicker>
+            </template>
+            <template v-else-if="inputTypeFor(i.type) === 'image'">
+              <ImageField v-model="form.values[index].value" mode="edit" size="lg" />
             </template>
             <template v-else>
               <input

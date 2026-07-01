@@ -18,4 +18,5 @@ return [
   'record'  => 'string',
   'address' => 'json',
   'currency' => 'decimal',
+  'image' => 'string',
 ];

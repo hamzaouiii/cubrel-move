@@ -84,6 +84,7 @@ return [
         'default_currency'  => 'Currency',
         'company_name'      => 'Company Name',
         'company_address'   => 'Company Address',
+        'company_email'     => 'Company Email',
         'company_phone'     => 'Company Phone',
         'company_website'   => 'Company Website',
         'company_logo_url'  => 'Company Logo URL',

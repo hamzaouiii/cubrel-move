@@ -35,6 +35,7 @@ return [
     'record' => 'Related Record',
     'status' => 'Status',
     'address' => 'Address',
+    'image' => 'Image',
   ],
   'metadata' => [
     'name' => 'System Name',
@@ -59,6 +60,13 @@ return [
     'is_required_several' => "Multiple required fields are still empty!",
     'invalid_format'  => 'has an invalid format',
     'invalid_several' => 'Some fields have invalid formats',
+    'image_invalid_type' => 'Please choose a JPEG, PNG, WEBP or GIF image',
+    'image_too_large' => 'Image must be smaller than 2 MB',
+    'image_upload_failed' => 'Image upload failed, please try again',
+  ],
+  'image' => [
+    'upload' => 'Upload image',
+    'change' => 'Change image',
   ],
   'checkbox_yes' => "Yes",
   'checkbox_no' => "No",

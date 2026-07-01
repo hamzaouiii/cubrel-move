@@ -8,40 +8,46 @@ return array(
     array(
       0 =>
       array(
+        'name' => 'avatar',
+        'type' => 'image',
+        'label' => 'modules.users.fields.avatar',
+      ),
+      1 =>
+      array(
         'name' => 'name',
         'type' => 'text',
         'label' => 'modules.defaults.name',
       ),
-      1 =>
+      2 =>
       array(
         'name' => 'username',
         'type' => 'text',
         'label' => 'modules.users.fields.username',
       ),
-      2 =>
+      3 =>
       array(
         'name' => 'is_admin',
         'type' => 'checkbox',
         'label' => 'modules.users.fields.is_admin',
       ),
-      3 =>  array(
+      4 =>  array(
             'name' => 'type',
             'type' => 'select',
             'label' => 'modules.users.fields.type',
           ),
-          4=>
+          5=>
       array(
         'name' => 'status',
         'type' => 'select',
         'label' => 'modules.users.fields.status',
       ),
-      5 =>
+      6 =>
       array(
         'name' => 'email',
         'type' => 'email',
         'label' => 'modules.users.fields.email',
       ),
-      6 =>
+      7 =>
       array(
         'name' => 'created_at',
         'type' => 'datetime',
@@ -66,7 +72,8 @@ return array(
             'readonly' => false,
             'required' => true,
           ),
-          1 =>           array(
+          1 =>
+          array(
             'name' => 'title',
             'type' => 'text',
             'label' => 'modules.users.fields.title',

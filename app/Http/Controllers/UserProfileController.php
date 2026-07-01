@@ -47,6 +47,7 @@ class UserProfileController extends Controller
       'email'    => ['nullable', 'email', 'unique:users,email,' . $user->id],
       'title'    => ['nullable', 'string'],
       'description'    => ['nullable', 'string'],
+      'avatar'    => ['nullable', 'string'],
     ]);
 
 
@@ -58,6 +59,7 @@ class UserProfileController extends Controller
     $user->mobile      = $validated['mobile'] ?? null;
     $user->title      = $validated['title'] ?? null;
     $user->description      = $validated['description'] ?? null;
+    $user->avatar      = $validated['avatar'] ?? null;
 
     $user->save();
 

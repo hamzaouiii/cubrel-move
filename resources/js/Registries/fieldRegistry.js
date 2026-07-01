@@ -13,6 +13,7 @@ import RelatedRecord from "@/Pages/Components/FiledTypes/RelatedRecord.vue";
 import StatusField from "@/Pages/Components/FiledTypes/StatusField.vue";
 import AddressField from "@/Pages/Components/FiledTypes/AddressField.vue";
 import CurrencyField from "@/Pages/Components/FiledTypes/CurrencyField.vue";
+import ImageField from "@/Pages/Components/FiledTypes/ImageField.vue";
 
 import { fieldValidation } from "@/utils/fieldValidation";
 const {
@@ -26,6 +27,7 @@ const {
   relatedValidate,
   addressValidate,
   currencyValidate,
+  imageValidate,
 } = fieldValidation();
 
 export const fieldRegistry = {
@@ -101,5 +103,9 @@ export const fieldRegistry = {
   currency: {
     component: CurrencyField,
     validate: currencyValidate,
+  },
+  image: {
+    component: ImageField,
+    validate: imageValidate,
   },
 };

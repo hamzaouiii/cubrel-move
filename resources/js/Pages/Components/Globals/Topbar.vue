@@ -45,16 +45,11 @@ const user = computed(() => page.props.auth?.user || {});
       <div class="topbar__actions__icons">
         <div
           class="topbar__actions__icons__item profile"
+          :class="{ 'profile--open': showProfile }"
           ref="profileRef"
           @click="toggleProfile"
         >
-          <img
-            src="\img\profile\20.png"
-            class="rounded-circle"
-            width="36"
-            height="36"
-            alt="avatar"
-          />
+          <img :src="user.avatar || '/img/profile/20.png'" alt="avatar" />
           <i
             :class="
               showProfile
