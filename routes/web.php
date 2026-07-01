@@ -13,6 +13,7 @@ use App\Http\Controllers\ListFilterController;
 use App\Http\Controllers\ModuleBuilderController;
 use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\ModuleManagerController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\RelatedFieldController;
@@ -42,6 +43,14 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding.show');
+    Route::post('/onboarding/demo-data', [OnboardingController::class, 'seedDemoData'])->name('onboarding.demo-data');
+    Route::post('/onboarding/finish', [OnboardingController::class, 'finish'])->name('onboarding.finish');
+    // Not gated behind 'onboarded' — the organisation-info step's logo field needs this mid-tour.
+    Route::post('/uploads/image', [ImageUploadController::class, 'store'])->name('uploads.image');
+});
+
+Route::middleware(['auth', 'onboarded'])->group(function () {
 
     // Independent routes
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -53,7 +62,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
-    Route::post('/uploads/image', [ImageUploadController::class, 'store'])->name('uploads.image');
     Route::get('/search', SearchController::class)->name('search');
     Route::get('/line-items', [LineItemController::class, 'index'])->name('line-items.index');
     Route::post('/line-items', [LineItemController::class, 'store'])->name('line-items.store');
