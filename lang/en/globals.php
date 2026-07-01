@@ -142,6 +142,7 @@ return [
         'field_date_field'     => 'Date field',
         'field_metric'         => 'Metric',
         'field_group_by'       => 'Group by',
+        'field_relation_field' => 'Person field',
         'field_chart_type'     => 'Chart type',
         'field_date_range'     => 'Date range',
         'field_aggregate'      => 'Aggregate',
@@ -163,6 +164,8 @@ return [
         'widget_breakdown_desc'         => 'Donut or bar chart grouped by any field',
         'widget_record_list_label'      => 'Record list',
         'widget_record_list_desc'       => 'A compact list of records from any module',
+        'widget_people_label'           => 'People',
+        'widget_people_desc'            => 'A leaderboard of people ranked by a sum, count, or average',
 
         // Add widget panel
         'customize_title'      => 'Customize Dashboard',

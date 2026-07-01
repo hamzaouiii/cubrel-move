@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/layout', [DashboardController::class, 'saveLayout'])->name('dashboard.layout.save');
     Route::post('/dashboard/widget-data', [DashboardController::class, 'widgetData'])->name('dashboard.widget-data');
     Route::get('/dashboard/module-fields/{slug}', [DashboardController::class, 'moduleFields'])->name('dashboard.module-fields');
+    Route::get('/dashboard/module-relationships/{slug}', [DashboardController::class, 'moduleRelationships'])->name('dashboard.module-relationships');
     Route::get('/dashboard/filterable-fields/{slug}', [DashboardController::class, 'filterableFields'])->name('dashboard.filterable-fields');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');

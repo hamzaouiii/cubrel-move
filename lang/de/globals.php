@@ -138,6 +138,7 @@ return [
         'field_date_field'     => 'Datumsfeld',
         'field_metric'         => 'Metrik',
         'field_group_by'       => 'Gruppieren nach',
+        'field_relation_field' => 'Personenfeld',
         'field_chart_type'     => 'Diagrammtyp',
         'field_date_range'     => 'Zeitraum',
         'field_aggregate'      => 'Aggregat',
@@ -159,6 +160,8 @@ return [
         'widget_breakdown_desc'         => 'Donut- oder Balkendiagramm, gruppiert nach einem beliebigen Feld',
         'widget_record_list_label'      => 'Eintrags-Liste',
         'widget_record_list_desc'       => 'Eine kompakte Liste von Einträgen aus einem beliebigen Modul',
+        'widget_people_label'           => 'Personen',
+        'widget_people_desc'            => 'Eine Rangliste von Personen nach Summe, Anzahl oder Durchschnitt',
 
         // Add widget panel
         'customize_title'      => 'Dashboard anpassen',

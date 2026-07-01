@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Dashboard;
 use App\Models\Module;
 use App\Models\Modules\Lead;
+use App\Models\Relationship;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -215,5 +217,48 @@ class DashboardControllerTest extends TestCase
         $response = $this->actingAs($user)->postJson('/dashboard/layout', ['layout' => 'not-an-array']);
 
         $response->assertStatus(422);
+    }
+
+    public function test_people_widget_returns_leaderboard_via_http(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
+        $this->makeModule([
+            'slug' => 'users', 'name' => 'Users', 'path' => '/users',
+            'has_owner' => false, 'model_class' => User::class,
+        ]);
+
+        $rep = $this->makeUser(['is_admin' => false, 'type' => 'sales_rep']);
+        Lead::factory()->count(2)->create(['owner_id' => $rep->id]);
+
+        $response = $this->actingAs($rep)->postJson('/dashboard/widget-data', [
+            'type'   => 'people',
+            'config' => ['module' => 'leads', 'relationField' => 'owner_id', 'aggregate' => 'count'],
+        ]);
+
+        $response->assertOk();
+        $response->assertJson(['peopleModuleSlug' => 'users', 'aggregate' => 'count']);
+        $response->assertJsonFragment(['id' => $rep->id, 'value' => 2.0]);
+    }
+
+    public function test_module_relationships_returns_relationship_metadata(): void
+    {
+        $this->makeModule(['slug' => 'contacts', 'name' => 'Contacts', 'path' => '/contacts']);
+        $this->makeModule(['slug' => 'invoices', 'name' => 'Invoices', 'path' => '/invoices', 'has_owner' => false]);
+
+        Relationship::create([
+            'name'         => 'contacts_invoices',
+            'label'        => 'relationships.contacts_invoices',
+            'left_module'  => 'contacts',
+            'right_module' => 'invoices',
+            'type'         => 'one-to-many',
+        ]);
+
+        $user = $this->makeUser(['is_admin' => false, 'type' => 'sales_rep']);
+
+        $response = $this->actingAs($user)->getJson('/dashboard/module-relationships/invoices');
+
+        $response->assertOk();
+        $response->assertJsonFragment(['name' => 'contacts_invoices', 'related_slug' => 'contacts']);
     }
 }

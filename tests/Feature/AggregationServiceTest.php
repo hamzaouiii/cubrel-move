@@ -2,8 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Modules\Contact;
 use App\Models\Modules\Deal;
+use App\Models\Modules\Invoice;
 use App\Models\Modules\Lead;
+use App\Models\Relationship;
+use App\Models\RelationshipLink;
+use App\Models\User;
 use App\Services\Aggregation\AggregationService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,6 +31,30 @@ class AggregationServiceTest extends TestCase
         return $this->makeModule([
             'slug' => 'deals', 'name' => 'Deals', 'path' => '/deals', 'model_class' => Deal::class,
         ]);
+    }
+
+    protected function makeUsersModule(array $overrides = [])
+    {
+        return $this->makeModule(array_merge([
+            'slug' => 'users', 'name' => 'Users', 'path' => '/users',
+            'has_owner' => false, 'model_class' => User::class,
+        ], $overrides));
+    }
+
+    protected function makeContactsModule(array $overrides = [])
+    {
+        return $this->makeModule(array_merge([
+            'slug' => 'contacts', 'name' => 'Contacts', 'path' => '/contacts',
+            'has_owner' => false, 'model_class' => Contact::class,
+        ], $overrides));
+    }
+
+    protected function makeInvoicesModule(array $overrides = [])
+    {
+        return $this->makeModule(array_merge([
+            'slug' => 'invoices', 'name' => 'Invoices', 'path' => '/invoices',
+            'has_owner' => false, 'model_class' => Invoice::class,
+        ], $overrides));
     }
 
     // ── metric() ─────────────────────────────────────────────────────────────
@@ -204,5 +233,276 @@ class AggregationServiceTest extends TestCase
 
         $this->assertCount(2, $result['rows']);
         $this->assertSame('leads', $result['moduleSlug']);
+    }
+
+    // ── people() — via record-type field (e.g. owner_id) ────────────────────────
+    //
+    // None of these tests call actingAs(), so Auth::check() is false the whole
+    // time — meaning AdminOnlyModuleScope would normally hide the 'users'
+    // module from every query here. Every test below that resolves 'users' as
+    // the people module is therefore also a regression check for the
+    // Module::withoutGlobalScope(AdminOnlyModuleScope::class) fix in
+    // resolvePeopleModule() — without it, these would all fail with
+    // "Related people module not found or inactive."
+
+    public function test_people_via_field_ranks_by_count_desc(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
+        $this->makeUsersModule();
+
+        $topOwner   = $this->makeUser();
+        $otherOwner = $this->makeUser();
+
+        Lead::factory()->count(3)->create(['owner_id' => $topOwner->id]);
+        Lead::factory()->count(1)->create(['owner_id' => $otherOwner->id]);
+
+        $result = AggregationService::people($leads, [
+            'relationField' => 'owner_id',
+            'aggregate'     => 'count',
+        ]);
+
+        $this->assertSame('users', $result['peopleModuleSlug']);
+        $this->assertSame('count', $result['aggregate']);
+        $this->assertCount(2, $result['rows']);
+        $this->assertSame((string) $topOwner->id, $result['rows'][0]['id']);
+        $this->assertSame(3.0, $result['rows'][0]['value']);
+        $this->assertSame((string) $otherOwner->id, $result['rows'][1]['id']);
+        $this->assertSame(1.0, $result['rows'][1]['value']);
+    }
+
+    public function test_people_via_field_sum_aggregate(): void
+    {
+        $deals = $this->makeDealsModule();
+        $this->makeField($deals, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
+        $this->makeField($deals, ['name' => 'amount', 'type' => 'currency']);
+        $this->makeUsersModule();
+
+        $owner = $this->makeUser();
+        Deal::factory()->create(['owner_id' => $owner->id, 'amount' => 100]);
+        Deal::factory()->create(['owner_id' => $owner->id, 'amount' => 250]);
+
+        $result = AggregationService::people($deals, [
+            'relationField' => 'owner_id',
+            'aggregate'     => 'sum',
+            'field'         => 'amount',
+        ]);
+
+        $this->assertCount(1, $result['rows']);
+        $this->assertSame((string) $owner->id, $result['rows'][0]['id']);
+        $this->assertSame(350.0, $result['rows'][0]['value']);
+    }
+
+    public function test_people_via_field_resolves_avatar_when_present(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
+        $usersModule = $this->makeUsersModule();
+        $this->makeField($usersModule, ['name' => 'avatar', 'type' => 'image']);
+
+        $withAvatar    = $this->makeUser(['avatar' => '/storage/uploads/images/ada.jpg']);
+        $withoutAvatar = $this->makeUser();
+
+        Lead::factory()->create(['owner_id' => $withAvatar->id]);
+        Lead::factory()->create(['owner_id' => $withoutAvatar->id]);
+
+        $result = AggregationService::people($leads, [
+            'relationField' => 'owner_id',
+            'aggregate'     => 'count',
+        ]);
+
+        $rowsById = collect($result['rows'])->keyBy('id');
+        $this->assertSame('/storage/uploads/images/ada.jpg', $rowsById[(string) $withAvatar->id]['avatar']);
+        $this->assertNull($rowsById[(string) $withoutAvatar->id]['avatar']);
+    }
+
+    public function test_people_via_field_respects_limit(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
+        $this->makeUsersModule();
+
+        foreach (range(1, 3) as $i) {
+            Lead::factory()->create(['owner_id' => $this->makeUser()->id]);
+        }
+
+        $result = AggregationService::people($leads, [
+            'relationField' => 'owner_id',
+            'aggregate'     => 'count',
+            'limit'         => 2,
+        ]);
+
+        $this->assertCount(2, $result['rows']);
+    }
+
+    public function test_people_rejects_missing_relation_field(): void
+    {
+        $leads = $this->makeLeadsModule();
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($leads, ['aggregate' => 'count']);
+    }
+
+    public function test_people_rejects_non_record_relation_field(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'company', 'type' => 'text']);
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($leads, ['relationField' => 'company', 'aggregate' => 'count']);
+    }
+
+    public function test_people_rejects_relation_field_pointing_to_missing_module(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'ghost_module']);
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($leads, ['relationField' => 'owner_id', 'aggregate' => 'count']);
+    }
+
+    public function test_people_via_field_rejects_invalid_aggregate(): void
+    {
+        $leads = $this->makeLeadsModule();
+        $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
+        $this->makeUsersModule();
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($leads, ['relationField' => 'owner_id', 'aggregate' => 'median']);
+    }
+
+    // ── people() — via named Relationship (relationships/relationship_links) ───
+
+    public function test_people_via_relationship_ranks_by_count_desc(): void
+    {
+        $invoices = $this->makeInvoicesModule();
+        $this->makeContactsModule();
+
+        $relationship = Relationship::create([
+            'name'         => 'contacts_invoices',
+            'label'        => 'relationships.contacts_invoices',
+            'left_module'  => 'contacts',
+            'right_module' => 'invoices',
+            'type'         => 'one-to-many',
+        ]);
+
+        // BaseModule::booted() auto-fills owner_id on create when none is given,
+        // falling back to the first user in the DB — there must be one already.
+        $this->makeUser();
+
+        $topContact   = Contact::factory()->create();
+        $otherContact = Contact::factory()->create();
+
+        $topInvoices  = Invoice::factory()->count(2)->create();
+        $otherInvoice = Invoice::factory()->create();
+
+        foreach ($topInvoices as $invoice) {
+            RelationshipLink::create([
+                'relationship_id' => $relationship->id,
+                'left_id'         => $topContact->id,
+                'right_id'        => $invoice->id,
+            ]);
+        }
+
+        RelationshipLink::create([
+            'relationship_id' => $relationship->id,
+            'left_id'         => $otherContact->id,
+            'right_id'        => $otherInvoice->id,
+        ]);
+
+        $result = AggregationService::people($invoices, [
+            'relationshipName' => 'contacts_invoices',
+            'aggregate'        => 'count',
+        ]);
+
+        $this->assertSame('contacts', $result['peopleModuleSlug']);
+        $this->assertCount(2, $result['rows']);
+        $this->assertSame((string) $topContact->id, $result['rows'][0]['id']);
+        $this->assertSame(2.0, $result['rows'][0]['value']);
+        $this->assertSame((string) $otherContact->id, $result['rows'][1]['id']);
+        $this->assertSame(1.0, $result['rows'][1]['value']);
+    }
+
+    public function test_people_via_relationship_sum_aggregate(): void
+    {
+        $invoices = $this->makeInvoicesModule();
+        $this->makeContactsModule();
+        $this->makeField($invoices, ['name' => 'total', 'type' => 'currency']);
+
+        $relationship = Relationship::create([
+            'name'         => 'contacts_invoices',
+            'label'        => 'relationships.contacts_invoices',
+            'left_module'  => 'contacts',
+            'right_module' => 'invoices',
+            'type'         => 'one-to-many',
+        ]);
+
+        // BaseModule::booted() auto-fills owner_id on create when none is given,
+        // falling back to the first user in the DB — there must be one already.
+        $this->makeUser();
+
+        $contact  = Contact::factory()->create();
+        $invoiceA = Invoice::factory()->create(['total' => 100]);
+        $invoiceB = Invoice::factory()->create(['total' => 250]);
+
+        RelationshipLink::create(['relationship_id' => $relationship->id, 'left_id' => $contact->id, 'right_id' => $invoiceA->id]);
+        RelationshipLink::create(['relationship_id' => $relationship->id, 'left_id' => $contact->id, 'right_id' => $invoiceB->id]);
+
+        $result = AggregationService::people($invoices, [
+            'relationshipName' => 'contacts_invoices',
+            'aggregate'        => 'sum',
+            'field'            => 'total',
+        ]);
+
+        $this->assertCount(1, $result['rows']);
+        $this->assertSame((string) $contact->id, $result['rows'][0]['id']);
+        $this->assertSame(350.0, $result['rows'][0]['value']);
+    }
+
+    public function test_people_rejects_unknown_relationship_name(): void
+    {
+        $invoices = $this->makeInvoicesModule();
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($invoices, ['relationshipName' => 'does-not-exist', 'aggregate' => 'count']);
+    }
+
+    public function test_people_rejects_relationship_not_involving_module(): void
+    {
+        $invoices = $this->makeInvoicesModule();
+        $this->makeContactsModule();
+        $this->makeDealsModule();
+
+        Relationship::create([
+            'name'         => 'deals_contacts',
+            'label'        => 'relationships.deals_contacts',
+            'left_module'  => 'deals',
+            'right_module' => 'contacts',
+            'type'         => 'many-to-many',
+        ]);
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($invoices, ['relationshipName' => 'deals_contacts', 'aggregate' => 'count']);
+    }
+
+    public function test_people_via_relationship_rejects_disallowed_filter(): void
+    {
+        $invoices = $this->makeInvoicesModule();
+        $this->makeContactsModule();
+
+        Relationship::create([
+            'name'         => 'contacts_invoices',
+            'label'        => 'relationships.contacts_invoices',
+            'left_module'  => 'contacts',
+            'right_module' => 'invoices',
+            'type'         => 'one-to-many',
+        ]);
+
+        $this->expectException(HttpException::class);
+        AggregationService::people($invoices, [
+            'relationshipName' => 'contacts_invoices',
+            'aggregate'        => 'count',
+            'filters'          => [['field' => 'notes', 'operator' => 'equals', 'value' => 'x']],
+        ]);
     }
 }
