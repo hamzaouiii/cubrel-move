@@ -202,6 +202,11 @@ const clearAllValidationErrors = () => {
   validationErrors.value = [];
 };
 
+const draftStorageKey = () => {
+  const moduleSlug = props.module.slug ?? props.module;
+  return `cubrel:draft:${moduleSlug}:${props.record.id}`;
+};
+
 const saveRecord = () => {
   clearAllValidationErrors();
   info(t("modules.actions.updating"));
@@ -242,7 +247,42 @@ const saveRecord = () => {
       return { ...data };
     })
     .put(url, {
-      onSuccess: () => {
+      // A save (and its potential 419 recovery redirect, or a forced reload if
+      // Inertia detects a stale asset version mid-flight) is a known, in-progress
+      // write, the unsaved-changes guard shouldn't second-guess it with a "leave
+      // page?" prompt while it's settling.
+      onBefore: () => {
+        unsavedGuardActive.value = false;
+      },
+      onFinish: () => {
+        // Delayed re-arm: if Inertia falls back to a hard `window.location`
+        // reload (e.g. stale asset version), that navigation is processed by the
+        // browser after this microtask, so flipping the guard back on immediately
+        // would still let it catch (and block) that in-flight reload.
+        setTimeout(() => {
+          unsavedGuardActive.value = true;
+        }, 100);
+      },
+      onSuccess: (page) => {
+        // A 419 bounce redirects back here (still-authenticated branch, same
+        // component, no remount) or to Login (logged-out branch) instead of the
+        // controller ever running, either way flash.warning is set instead of
+        // flash.success, so the write never actually happened. Don't report success,
+        // and don't clear alerts (the flash-toast watcher owns showing the warning).
+        if (page.props.flash?.warning) {
+          if (page.component === "Login") {
+            sessionStorage.setItem(
+              draftStorageKey(),
+              JSON.stringify(form.data()),
+            );
+          }
+          // Inertia always resets the form's dirty baseline to the current data
+          // after any successful visit, which would disable Save even though
+          // nothing was persisted. form.defaults() with no real change suppresses
+          // that auto-reset so isDirty (and the Save button) stays accurate.
+          form.defaults({});
+          return;
+        }
         isEditing.value = false;
         clearAllAlerts();
         success(t("modules.actions.update_success"));
@@ -381,6 +421,18 @@ const showRelatedTab = computed(() => {
 onMounted(() => {
   document.addEventListener("click", handleClickOutsideActionDropDown);
   window.addEventListener("keydown", handleKeydown);
+
+  const key = draftStorageKey();
+  const stashed = sessionStorage.getItem(key);
+  if (stashed) {
+    sessionStorage.removeItem(key);
+    try {
+      Object.assign(form, JSON.parse(stashed));
+      isEditing.value = true;
+    } catch {
+      // malformed draft, ignore
+    }
+  }
 });
 
 onBeforeUnmount(() => {
@@ -388,7 +440,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeydown);
 });
 
-useUnsavedChangesGuard({
+const { isActive: unsavedGuardActive } = useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
 });
 

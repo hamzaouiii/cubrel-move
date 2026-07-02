@@ -45,6 +45,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $status = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
+            if ($status === 419) {
+                // 303 (not 302): the request that hit this may have been a PUT/PATCH/DELETE
+                // (e.g. a record save), and only 303 forces the browser to follow up with GET.
+                // Auto-retry-with-token-refresh seam: this is where a silent replay of the
+                // original request would go before falling back to the flash+redirect below.
+                if ($request->user()) {
+                    return back(303)->with('warning', __('globals.session.token_refreshed'));
+                }
+
+                return redirect()->guest(route('login'), 303)
+                    ->with('warning', __('globals.session.expired'));
+            }
+
             if (in_array($status, [404, 403, 405, 500, 503])) {
                 return Inertia::render('Error', [
                     'error' => $status,

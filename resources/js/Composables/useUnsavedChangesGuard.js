@@ -93,6 +93,7 @@ export function useUnsavedChangesGuard(options = {}) {
   navigationGuardCleanup = router.on("before", handleNavigationGuard);
 
   const handleBeforeUnload = (event) => {
+    if (!isActive.value) return;
     if (getIsDirty()) {
       const currentUrl = window.location.pathname;
       let isSaveAction = false;

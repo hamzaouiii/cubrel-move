@@ -4,8 +4,10 @@ import { useForm, usePage, Head } from "@inertiajs/vue3";
 import Selectbox from "./Components/FiledTypes/Selectbox.vue";
 import Alerts from "./Components/Globals/Alerts.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useFlashToasts } from "@/Composables/useFlashToasts";
 
 const { alerts, success, error, info } = useAlerts();
+useFlashToasts();
 
 const showPassword = ref(false);
 const pageProps = usePage().props;

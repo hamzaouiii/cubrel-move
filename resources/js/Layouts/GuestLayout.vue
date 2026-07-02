@@ -4,8 +4,10 @@ import { usePage } from "@inertiajs/vue3";
 import { computed, provide } from "vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
+import { useFlashToasts } from "@/Composables/useFlashToasts";
 
 const { alerts, info, error, warning, success } = useAlerts();
+useFlashToasts();
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;
