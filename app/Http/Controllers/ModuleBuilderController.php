@@ -185,10 +185,15 @@ class ModuleBuilderController extends Controller
       ]);
     } else {
       // CREATE
+      // Not is_custom: this field gets a real column from
+      // ModuleScaffolder::createTable() (keyed by draftFields()), unlike
+      // fields added later via FieldsManagerController::store() on an
+      // already-deployed module, which have no backing column and rely on
+      // is_custom routing their value into the custom_fields JSON blob
+      // (see HasCustomFields::isCustomField() / RecordController::updateMany()).
       $module->fields()->create([
         ...$data,
         'dropdown_list_id' => $dropdown_list,
-        'is_custom' => 1,
         'is_draft' => 1,
       ]);
     }
