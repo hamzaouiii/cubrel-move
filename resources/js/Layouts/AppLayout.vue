@@ -7,8 +7,12 @@ import { usePage } from "@inertiajs/vue3";
 import { computed, provide } from "vue";
 import ImpersonationBanner from "@/Pages/Components/Globals/ImpersonationBanner.vue";
 import { useAlerts } from "@/Composables/useAlerts";
+import { useFlashToasts } from "@/Composables/useFlashToasts";
+import { useKeepAlive } from "@/Composables/useKeepAlive";
 
 const { alerts, info, error, warning, success } = useAlerts();
+useFlashToasts();
+useKeepAlive();
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;

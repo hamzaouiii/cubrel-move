@@ -28,6 +28,7 @@ use App\Http\Controllers\LineItemController;
 use App\Http\Controllers\PdfTemplatesController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\SessionController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -48,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/onboarding/finish', [OnboardingController::class, 'finish'])->name('onboarding.finish');
     // Not gated behind 'onboarded' — the organisation-info step's logo field needs this mid-tour.
     Route::post('/uploads/image', [ImageUploadController::class, 'store'])->name('uploads.image');
+    Route::get('/keep-alive', [SessionController::class, 'keepAlive'])->name('keep-alive');
 });
 
 Route::middleware(['auth', 'onboarded'])->group(function () {

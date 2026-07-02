@@ -40,7 +40,7 @@ class AuthController extends Controller
       return back()->withErrors(['general' =>  __('globals.login.user_inactive')]);
     }
     $request->session()->regenerate();
-    return redirect()->to('/');
+    return redirect()->intended('/');
   }
 
   public function logout(Request $request)
