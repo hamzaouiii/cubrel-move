@@ -95,12 +95,6 @@ return [
             'searchable' => true,
             'filterable' => true,
         ],
-        'company' => [
-            'name' => 'company',
-            'type' => 'text',
-            'searchable' => true,
-            'filterable' => true,
-        ],
         'address' => [
             'name' => 'address',
             'type' => 'address',
