@@ -16,7 +16,6 @@ class LeadFactory extends Factory
     $lastName  = $this->faker->lastName();
     $companyTypes = ['LLC', 'Inc.', 'Corp.', 'Ltd.', 'Group', 'Partners', 'Solutions'];
 
-    $companyName = $faker->company() . ' ' . $faker->randomElement($companyTypes);
 
     return [
       'id' => Str::orderedUuid(), // Generates sequential UUIDs
@@ -25,7 +24,6 @@ class LeadFactory extends Factory
       'last_name' => $lastName,
       'email' => $faker->optional(0.9)->safeEmail(),
       'phone' => $faker->optional(0.9)->phoneNumber(),
-      'company' => $companyName,
       'address' => $faker->boolean(90) ? [
         'street'      => $faker->streetAddress(),
         'postal_code' => $faker->postcode(),

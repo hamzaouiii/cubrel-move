@@ -4,8 +4,8 @@ return [
     'unsupported_device_title' => 'Larger screen required',
     'unsupported_device_message' => 'This application is optimized for use on a desktop or laptop computer.',
     'unsupported_device_action_request' => 'Please switch to a device with a larger screen to continue.',
-    'unsaved_changes_title' => 'Unsaved Changes',
-    'unsaved_changes_message' => 'You have unsaved changes, are you sure you want to leave this page and discard changes ?',
+    'unsaved_changes_title' => 'You have unsaved changes',
+    'unsaved_changes_message' => 'Are you sure you want to leave this page and discard changes ?',
     'unsaved_changes_leave' => 'Discard Changes',
     'unsaved_changes_stay' => 'Stay',
     'changes_discarded' => 'Your changes have been discarded.',
@@ -22,6 +22,10 @@ return [
     ],
     'copied' => 'Copied',
     'copy_failed' => 'Copy Failed',
+    'session' => [
+        'token_refreshed' => 'Your session was refreshed. Please save again.',
+        'expired' => 'Your session has expired. Please sign in again.',
+    ],
     'login' => [
         'welcome_back' => 'Welcome Back',
         'subtitle' => 'Login to continue to your dashboard',

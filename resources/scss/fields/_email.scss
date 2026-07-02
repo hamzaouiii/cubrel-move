@@ -1,0 +1,127 @@
+@use "shell";
+
+.email-field {
+  @include shell.field-base;
+  position: relative;
+
+  // ===== EDIT MODE =====
+  &--edit {
+    @include shell.field-edit-shell;
+
+    .email-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .email-icon {
+        font-size: 1rem;
+        transition: color 0.2s ease;
+      }
+
+      input {
+        all: unset;
+        width: 100%;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+
+        &::placeholder {
+          color: #d1d5db;
+          font-family: inherit;
+          font-style: italic;
+        }
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    @include shell.field-focus-within(".email-icon");
+    @include shell.field-error-state("email-field", ".email-icon");
+    @include shell.field-readonly-state("email-field", ".email-icon");
+  }
+
+  // ===== DETAIL MODE =====
+  &--detail {
+    .email-detail-icon {
+      color: var(--module-color);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .email-detail-content {
+      flex: 1;
+      font-family: "SF Mono", "Monaco", "Cascadia Code", monospace;
+
+      .email-local-part {
+        color: #1e293b;
+        font-weight: 500;
+      }
+
+      .email-at-sign {
+        color: #94a3b8;
+        margin: 0 0.125rem;
+        font-weight: 400;
+      }
+
+      .email-domain {
+        color: var(--module-color);
+        font-weight: 600;
+        background: rgba(59, 130, 246, 0.1);
+        padding: 0.125rem 0.375rem;
+        border-radius: 4px;
+      }
+    }
+  }
+
+  // ===== TABLE MODE =====
+  &--table {
+    @include shell.field-table-shell;
+
+    .email-table-icon {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  }
+
+  // ===== SETTINGS MODE =====
+  &--settings {
+    @include shell.field-settings-shell;
+
+    .email-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .email-icon {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      input {
+        all: unset;
+        width: 100%;
+        padding: 0.5rem 0;
+        font-size: 0.875rem;
+
+        &:disabled {
+          background: transparent;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .error-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  // Error icon container
+  .error-icon-container {
+    @include shell.field-error-icon-container;
+  }
+}

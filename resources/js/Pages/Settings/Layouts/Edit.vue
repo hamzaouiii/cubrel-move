@@ -14,7 +14,7 @@ import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
-const { success, error, info, clearAllAlerts, warning } = useAlerts();
+const { error, info, clearAllAlerts, warning } = useAlerts();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
@@ -269,7 +269,6 @@ const availableRecordFields = computed(() => {
   return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
 
-
 const isDirty = computed(() => {
   if (props.type === "list" || props.type === "linkingPanel") {
     const current = JSON.stringify(cleanedListColumns.value);
@@ -358,18 +357,11 @@ const saveLayout = () => {
     preserveScroll: true,
     onSuccess: () => {
       form.clearErrors();
-      clearAllAlerts();
-      const flash = usePage().props.flash;
-      if (flash?.success) {
-        success(flash.success);
-      } else {
-        success(t("layouts.layout_update_success"));
-      }
     },
     onError: (errors) => {
       clearAllAlerts();
       const firstError = Object.values(errors)[0];
-      error(firstError || "An error occurred while saving the layout.");
+      error(firstError || t("layouts.general_error"));
     },
   });
 };

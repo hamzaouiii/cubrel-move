@@ -12,7 +12,6 @@ class Lead extends BaseModule
     'last_name',
     'email',
     'phone',
-    'company',
     'address',
     'description',
     'owner_id',

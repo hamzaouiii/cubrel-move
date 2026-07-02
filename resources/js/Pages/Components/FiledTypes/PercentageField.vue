@@ -115,7 +115,7 @@ const handleInputChange = (event) => {
   </div>
   <div v-else-if="mode === 'edit' || mode === 'dashboard'">
     <span
-      class="percentage-field percentage-field--edit edit-field"
+      class="percentage-field percentage-field--edit"
       :class="{
         'percentage-field--error': showError,
         'percentage-field--readonly': readOnly,

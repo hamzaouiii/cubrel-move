@@ -65,7 +65,7 @@ const hasError = computed(() => (field) => {
 // only, derived live from the name field as it's typed.
 const avatar = computed(() => {
   const name = form.name?.trim();
-  if (!name) return "";
+  if (!name) return "+";
 
   const cleaned = name.replace(/\d+/g, "");
   const words = cleaned.split(/\s+/).filter(Boolean);
@@ -283,12 +283,10 @@ const getLinkingLayout = (slug) => {
           >
             {{ avatar }}
           </div>
-          <div class="record-layout__header__details__info__avatar" v-else>
-            <i class="fa-solid fa-plus"></i>
-          </div>
+
           <div class="record-layout__header__details__info__text">
             <div class="record-layout__header__details__info__text__name">
-              <!-- {{ $t("modules.actions.create_new") }} -->
+              {{ form.name ?? "" }}
             </div>
             <div
               class="record-layout__header__details__info__text__description"

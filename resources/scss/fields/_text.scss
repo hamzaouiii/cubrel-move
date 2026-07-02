@@ -1,0 +1,118 @@
+@use "shell";
+
+.text-field {
+  @include shell.field-base;
+  font-size: 1rem;
+  min-height: 2.5rem;
+
+  // ===== EDIT MODE =====
+  &--edit {
+    @include shell.field-edit-shell;
+
+    .text-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .text-icon {
+        color: #9ca3af;
+        font-size: 1rem;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      input {
+        all: unset;
+        width: 100%;
+        letter-spacing: 0.3px;
+        font-family: inherit;
+
+        &::placeholder {
+          color: #d1d5db;
+          font-family: inherit;
+          font-style: italic;
+        }
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    @include shell.field-focus-within(".text-icon");
+    @include shell.field-error-state("text-field", ".text-icon");
+    @include shell.field-readonly-state("text-field", ".text-icon");
+  }
+
+  // ===== DETAIL MODE =====
+  &--detail {
+    .text-detail-icon {
+      color: var(--module-color);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .text-detail-content {
+      flex: 1;
+
+      .text-value {
+        line-height: 1.5;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+    }
+  }
+
+  // ===== TABLE MODE =====
+  &--table {
+    @include shell.field-table-shell;
+
+    .text-table-icon {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  }
+
+  // ===== SETTINGS MODE =====
+  &--settings {
+    @include shell.field-settings-shell;
+
+    .text-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .text-icon {
+        color: #6b7280;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      input {
+        all: unset;
+        width: 100%;
+        padding: 0.5rem 0;
+        font-size: 0.875rem;
+        font-family: inherit;
+
+        &:disabled {
+          background: transparent;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .error-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  // Error icon container
+  .error-icon-container {
+    @include shell.field-error-icon-container;
+  }
+}

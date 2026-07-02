@@ -22,6 +22,7 @@ return [
     ],
     'list' => 'List',
     'record_overview' => 'Record Overview',
+    'general_error' => 'An error occurred while saving the layout.',
     'remove_section' => 'Remove Section',
     'confirm_remove_section' => 'Confrim',
     'available_relationships' => 'Available Relationships',

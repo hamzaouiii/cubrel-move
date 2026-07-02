@@ -6,6 +6,7 @@ return [
     'list' => 'Liste',
     'related' => 'Zugehörige Panels',
     'record_overview' => 'Datensatzübersicht',
+    'general_error' => 'Beim Speichern des Layouts ist ein Fehler aufgetreten.',
     'remove_section' => 'Abschnitt entfernen',
     'confirm_remove_section' => 'Bestätigen',
     'create_list_tooltip' => 'Listenlayout erstellen für ',

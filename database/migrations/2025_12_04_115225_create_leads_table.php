@@ -18,7 +18,6 @@ return new class extends Migration
       $table->string('last_name')->nullable();
       $table->string('email')->nullable();
       $table->string('phone')->nullable();
-      $table->string('company')->nullable();
       $table->json('address')->nullable();
       $table->text('description')->nullable();
       $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();

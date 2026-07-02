@@ -19,21 +19,16 @@ return [
                 'label' => 'modules.leads.fields.phone',
             ],
             3 => [
-                'name' => 'company',
-                'type' => 'text',
-                'label' => 'modules.leads.fields.company',
-            ],
-            4 => [
                 'name' => 'owner_id',
                 'type' => 'record',
                 'label' => 'modules.defaults.owner_id',
             ],
-            5 => [
+            4 => [
                 'name' => 'created_at',
                 'type' => 'datetime',
                 'label' => 'modules.defaults.created_at',
             ],
-            6 => [
+            5 => [
                 'name' => 'updated_at',
                 'type' => 'datetime',
                 'label' => 'modules.defaults.updated_at',

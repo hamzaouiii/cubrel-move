@@ -23,6 +23,10 @@ return [
     ],
     'copied' => 'kopiert!',
     'copy_failed' => 'Kopieren fehlgeschlagen',
+    'session' => [
+        'token_refreshed' => 'Ihre Sitzung wurde aktualisiert. Bitte speichern Sie erneut.',
+        'expired' => 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
+    ],
     'login' => [
         'welcome_back' => 'Willkommen zurück',
         'subtitle' => 'Melden Sie sich an, um fortzufahren',
