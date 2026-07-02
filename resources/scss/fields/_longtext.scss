@@ -1,0 +1,154 @@
+@use "shell";
+
+.long-text-field {
+  min-height: 2.5rem;
+  display: flex;
+  align-items: flex-start;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  position: relative;
+
+  // ===== EDIT MODE =====
+  &--edit {
+    @include shell.field-edit-shell;
+
+    .long-text-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+
+      textarea {
+        all: unset;
+        width: 100%;
+        padding: 0;
+        letter-spacing: 0.3px;
+        resize: vertical;
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    @include shell.field-focus-within(".long-text-icon");
+    @include shell.field-error-state("long-text-field", ".long-text-icon");
+    @include shell.field-readonly-state("long-text-field", ".long-text-icon", "textarea");
+  }
+
+  // ===== DETAIL MODE =====
+  &--detail {
+    font-size: 1rem;
+
+    &:hover {
+      background: linear-gradient(135deg, #f1f5f9 0%, #e9eef3 100%);
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .long-text-detail-content {
+      flex: 1;
+      min-width: 0;
+
+      .long-text-value {
+        line-height: 1.6;
+        word-break: break-word;
+        white-space: pre-wrap;
+        font-family: inherit;
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    .long-text-copy-btn {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.375rem 0.625rem;
+      cursor: pointer;
+      color: #64748b;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      align-self: flex-start;
+
+      &:hover {
+        background: var(--module-color);
+        border-color: var(--module-color);
+        color: white;
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  // ===== TABLE MODE =====
+  &--table {
+    @include shell.field-table-shell;
+
+    .long-text-table-icon {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+  }
+
+  // ===== SETTINGS MODE =====
+  &--settings {
+    max-width: 450px;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+
+    .long-text-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+
+      .long-text-icon {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-top: 0.375rem;
+        flex-shrink: 0;
+      }
+
+      textarea {
+        all: unset;
+        width: 100%;
+        padding: 0;
+        font-size: 0.875rem;
+        font-family: inherit;
+        line-height: 1.5;
+        resize: vertical;
+
+        &:disabled {
+          background: transparent;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .error-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  // Error icon container
+  .error-icon-container {
+    display: flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+
+    .error-icon {
+      color: var(--danger-color);
+      font-size: 1rem;
+      animation: pulse 1s ease-in-out;
+    }
+  }
+}

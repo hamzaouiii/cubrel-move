@@ -1,0 +1,491 @@
+@use "shell";
+
+// ----------------------------------------------------- date & time fields
+
+.datetime-field {
+  border-radius: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  // ===== EDIT MODE =====
+  &--edit {
+    @include shell.field-edit-shell;
+    position: relative;
+    transition: all 0.2s ease;
+
+    .datetime-wrapper {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .datetime-icon-wrapper {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .datetime-icon {
+        font-size: 1rem;
+        color: #94a3b8;
+        transition: color 0.2s ease;
+      }
+    }
+
+    .datetime-inputs {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .datetime-row {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+      &--split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+
+        @media (max-width: 480px) {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+      }
+    }
+
+    .input-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      width: 100%;
+      .input-label {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #94a3b8;
+        transition: color 0.2s ease;
+      }
+      &--error {
+        .input-icon {
+          color: var(--danger-color) !important;
+        }
+      }
+    }
+
+    .date-input-wrapper,
+    .time-input-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      gap: 0.7rem;
+      .datetime-input {
+        all: unset;
+        width: 100%;
+        font-family: inherit;
+        transition: all 0.2s ease;
+        background: transparent;
+        cursor: pointer;
+
+        &::placeholder {
+          color: #cbd5e1;
+        }
+
+        &:focus {
+          border-bottom-color: var(--module-color);
+          outline: none;
+        }
+      }
+
+      .input-icon {
+        position: relative;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        pointer-events: none;
+        transition: color 0.2s ease;
+      }
+
+      .clear-btn {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.8rem;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: var(--danger-color);
+        }
+      }
+
+      &:hover .datetime-input:not(:disabled) {
+        border-bottom-color: #cbd5e1;
+      }
+    }
+
+    &:hover {
+      border-color: #cbd5e1;
+      background: white;
+    }
+
+    &:focus-within {
+      border-color: var(--module-color);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+
+      .input-label {
+        color: var(--module-color);
+      }
+
+      .datetime-icon {
+        color: var(--module-color);
+      }
+    }
+
+    // Error state
+    &.datetime-field--error {
+      border-color: var(--danger-color);
+      background: #fef2f2;
+
+      .input-label {
+        color: var(--danger-color);
+      }
+
+      .datetime-icon {
+        color: var(--danger-color);
+      }
+
+      .datetime-input {
+        border-bottom-color: var(--danger-color);
+      }
+    }
+
+    // Has value state
+    &.datetime-field--has-value {
+      .datetime-input {
+        font-weight: 500;
+      }
+    }
+  }
+
+  // ===== DETAIL MODE =====
+  &--detail {
+    .datetime-detail-icon {
+      color: var(--module-color);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .datetime-detail-content {
+      flex: 1;
+
+      .datetime-detail-line {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        line-height: 1.4;
+
+        i {
+          width: 20px;
+          color: #94a3b8;
+          font-size: 0.8rem;
+          flex-shrink: 0;
+        }
+
+        span {
+          flex: 1;
+        }
+      }
+    }
+
+    .datetime-empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94a3b8;
+    }
+  }
+
+  // ===== TABLE MODE =====
+  &--table {
+    @include shell.field-table-shell;
+
+    .datetime-table-icon {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+  }
+
+  // Error icon container
+  .error-icon-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 1rem;
+    right: 0.75rem;
+
+    .error-icon {
+      color: var(--danger-color);
+      font-size: 1rem;
+      animation: pulse 1s ease-in-out;
+    }
+  }
+}
+
+// Picker Popup Styles
+.picker-popup {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + 4px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  min-width: 280px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.date-popup {
+  .picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      color: #64748b;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: var(--module-color);
+      }
+    }
+
+    .current-month {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.875rem;
+    }
+  }
+
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+
+    .weekday {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      padding: 0.25rem;
+    }
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+
+    .day {
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      color: #94a3b8;
+
+      &.current-month {
+        color: #1e293b;
+      }
+
+      &.today {
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-weight: 600;
+      }
+
+      &.selected {
+        background: var(--module-color);
+        color: white;
+      }
+
+      &:hover:not(.disabled) {
+        background: #f1f5f9;
+      }
+
+      &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+
+    .quick-btn {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.5rem;
+      font-size: 0.75rem;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: var(--module-color);
+      }
+    }
+  }
+}
+
+.time-popup {
+  .time-header {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+    font-size: 0.875rem;
+  }
+
+  .time-selector {
+    display: flex;
+    gap: 1rem;
+
+    .hour-selector,
+    .minute-selector,
+    .ampm-selector {
+      flex: 1;
+
+      .time-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+      }
+
+      .time-scroll {
+        max-height: 200px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        &::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 2px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 2px;
+        }
+      }
+
+      .time-option {
+        background: #f8fafc;
+        border: 1px solid transparent;
+        padding: 0.5rem;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        color: #64748b;
+
+        &:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+        }
+
+        &.selected {
+          background: var(--module-color);
+          color: white;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .ampm-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .ampm-btn {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        text-align: center;
+
+        &:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+        }
+
+        &.selected {
+          background: var(--module-color);
+          color: white;
+          border-color: var(--module-color);
+        }
+      }
+    }
+  }
+}
+
+.datetime-readonly {
+  color: #6b7280;
+  padding: 0.55rem 0;
+  display: inline-block;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+//------------------end of date & time

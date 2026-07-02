@@ -87,7 +87,7 @@ const highlightMatch = (text) => {
   </div>
   <div v-else-if="mode === 'edit'">
     <span
-      class="text-field text-field--edit edit-field"
+      class="text-field text-field--edit"
       :class="{
         'text-field--error': showError,
         'text-field--readonly': readOnly,

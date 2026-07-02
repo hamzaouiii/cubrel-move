@@ -197,7 +197,7 @@ const highlightMatch = (text) => {
   >
     <div class="select-field" ref="root">
       <div
-        class="select-field__control edit-field"
+        class="select-field__control"
         :class="{
           'is-open': isOpen,
           'is-invalid': showError,

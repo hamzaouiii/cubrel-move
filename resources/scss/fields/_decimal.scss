@@ -1,0 +1,108 @@
+@use "shell";
+
+.decimal-field {
+  @include shell.field-base;
+  position: relative;
+
+  // ===== EDIT MODE =====
+  &--edit {
+    @include shell.field-edit-shell;
+
+    .decimal-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .decimal-icon {
+        font-size: 1rem;
+        transition: color 0.2s ease;
+        color: #6b7280;
+      }
+
+      input {
+        all: unset;
+        width: 100%;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+          opacity: 0.5;
+        }
+
+        &::placeholder {
+          color: #d1d5db;
+          font-family: inherit;
+          font-style: italic;
+        }
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    @include shell.field-focus-within(".decimal-icon");
+    @include shell.field-error-state("decimal-field", ".decimal-icon");
+    @include shell.field-readonly-state("decimal-field", ".decimal-icon");
+  }
+
+  // ===== DETAIL MODE =====
+  &--detail {
+    .decimal-detail-icon {
+      color: var(--module-color);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .decimal-detail-content {
+      flex: 1;
+    }
+  }
+
+  // ===== TABLE MODE =====
+  &--table {
+    @include shell.field-table-shell;
+  }
+
+  // ===== SETTINGS MODE =====
+  &--settings {
+    @include shell.field-settings-shell;
+
+    .decimal-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .decimal-icon {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      input {
+        all: unset;
+        width: 100%;
+        padding: 0.5rem 0;
+        font-size: 0.875rem;
+        font-family: "SF Mono", "Monaco", monospace;
+
+        &:disabled {
+          background: transparent;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .error-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  // Error icon container
+  .error-icon-container {
+    @include shell.field-error-icon-container;
+  }
+}

@@ -113,7 +113,7 @@ const highlightMatch = (text) => {
   <!-- Edit / Settings Mode -->
   <div
     v-if="mode === 'edit' || mode === 'settings' || mode === 'dashboard'"
-    class="currency-field currency-field--edit edit-field"
+    class="currency-field currency-field--edit"
     :class="{
       'currency-field--error': showError,
       'currency-field--readonly': readOnly,
