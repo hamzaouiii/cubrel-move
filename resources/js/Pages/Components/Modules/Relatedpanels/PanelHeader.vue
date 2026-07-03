@@ -50,7 +50,7 @@ const countPhrase = computed(() => {
         {{ $t(type != "parent" ? single_label : label) }}
       </div>
       <div
-        v-if="isOpen && totalCount > 0"
+        v-if="isOpen && totalCount > 0 && type === 'parent'"
         class="relatedpanels__item__header__details__count"
       >
         {{ totalCount }}
