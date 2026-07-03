@@ -26,6 +26,8 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->index('owner_id');
+            $table->json('custom_fields')->default(DB::raw('(JSON_OBJECT())'));
+
             $table->timestamps();
         });
     }

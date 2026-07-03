@@ -5,7 +5,6 @@ namespace Tests\Feature\Modules;
 use App\Models\Module;
 use App\Models\Modules\Account;
 use App\Models\Modules\Contact;
-use App\Models\Modules\ContactMessage;
 use App\Models\Modules\Deal;
 use App\Models\Modules\Invoice;
 use App\Models\Modules\Lead;
@@ -56,7 +55,6 @@ class ModuleCrudTest extends TestCase
             'invoices'  => ['invoices', Invoice::class, true],
             'products'  => ['products', Product::class, true],
             'cases'     => ['cases', SupportCase::class, true],
-            'inquiries' => ['inquiries', ContactMessage::class, false],
         ];
     }
 

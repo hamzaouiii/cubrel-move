@@ -75,7 +75,6 @@ class CustomFieldCrudTest extends TestCase
             'has_owner' => $hasOwner,
             'model_class' => $modelClass,
             // HasCustomFields looks up the module by table_name, which for
-            // 'inquiries' differs from the slug (backed by 'contact_messages').
             'table_name' => (new $modelClass)->getTable(),
         ]);
 

@@ -137,18 +137,6 @@ return [
     ],
   ],
 
-  'inquiries_unresolved' => [
-    'module_slug' => 'inquiries',
-    'name' => 'Unresolved Inquiries',
-    'label' => 'modules.filters.inquiries_unresolved',
-    'is_shared' => true,
-    'is_system' => true,
-    'match_type' => 'all',
-    'conditions' => [
-      ['field' => 'status', 'operator' => 'in', 'value' => ['new', 'acknowledged', 'in_progress', 'waiting_response']],
-    ],
-  ],
-
   'products_active' => [
     'module_slug' => 'products',
     'name' => 'Active Products',

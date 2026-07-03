@@ -183,40 +183,6 @@ return [
             'filterable' => true,
         ],
     ],
-    'inquiries' => [
-        'message' => [
-            'name' => 'message',
-            'type' => 'longtext',
-            'searchable' => true,
-        ],
-        'email' => [
-            'name' => 'email',
-            'type' => 'email',
-            'searchable' => true,
-            'filterable' => true,
-        ],
-        'phone' => [
-            'name' => 'phone',
-            'type' => 'phone',
-            'searchable' => true,
-            'filterable' => true,
-        ],
-        'status' => [
-            'name' => 'status',
-            'type' => 'status',
-            'required' => true,
-            'filterable' => true,
-        ],
-        'ip' => [
-            'name' => 'ip',
-            'type' => 'text',
-            'searchable' => true,
-        ],
-        'user_agent' => [
-            'name' => 'user_agent',
-            'type' => 'longtext',
-        ],
-    ],
     'deals' => [
         'amount' => [
             'name' => 'amount',

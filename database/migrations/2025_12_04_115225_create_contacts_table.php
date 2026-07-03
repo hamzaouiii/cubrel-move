@@ -6,32 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  /**
-   * Run the migrations.
-   */
-  public function up(): void
-  {
-    Schema::create('contacts', function (Blueprint $table) {
-      $table->char('id', 36)->primary();
-      $table->string('name');
-      $table->text('description')->nullable();
-      $table->string('first_name')->nullable();
-      $table->string('last_name')->nullable();
-      $table->string('email')->nullable();
-      $table->string('phone')->nullable();
-      $table->string('position')->nullable();
-      $table->text('notes')->nullable();
-      $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
-      $table->index('owner_id');
-      $table->timestamps();
-    });
-  }
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('contacts', function (Blueprint $table) {
+            $table->char('id', 36)->primary();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('position')->nullable();
+            $table->text('notes')->nullable();
+            $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->index('owner_id');
+            $table->json('custom_fields')->default(DB::raw('(JSON_OBJECT())'));
 
-  /**
-   * Reverse the migrations.
-   */
-  public function down(): void
-  {
-    Schema::dropIfExists('contacts');
-  }
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('contacts');
+    }
 };

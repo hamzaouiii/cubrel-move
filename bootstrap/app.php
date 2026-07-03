@@ -28,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             SetLocaleFromSettings::class,
             AddLinkHeadersForPreloadedAssets::class,
-            // LocalAutoLogin::class,
+            LocalAutoLogin::class,
         ]);
         $middleware->alias([
             'admin' => AdminMiddleware::class,

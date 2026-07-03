@@ -223,32 +223,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | COMMUNICATION
-    |--------------------------------------------------------------------------
-    */
-
-    [
-        'name' => 'Inquiries',
-        'slug' => 'inquiries',
-        'label' => 'modules.inquiries.label',
-        'single_label' => 'modules.inquiries.single_label',
-        'icon' => 'fa-solid fa-mail-bulk',
-        'color' => '#FECACA',
-        'path' => '/inquiries',
-        'sort_order' => 110,
-        'category' => 'communication',
-        'is_active' => true,
-        'show_in_sidebar' => 1,
-        'handler_class' => 'App\\Handlers\\Modules\\InquiriesModuleHandler',
-        'description' => 'Manage messages from the contact form.',
-        'has_owner' => false,
-        'model_class' => 'App\\Models\\Modules\\ContactMessage',
-        'table_name' => 'contact_messages',
-        'is_custom' => 0,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | SYSTEM
     |--------------------------------------------------------------------------
     */
@@ -310,7 +284,7 @@ return [
         'is_custom' => 0,
         'has_owner' => false,
     ],
-        [
+    [
         'name' => 'Pdf Template',
         'slug' => 'pdf_templates',
         'label' => 'modules.pdf_templates.label',

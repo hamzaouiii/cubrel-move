@@ -56,13 +56,6 @@ return [
         'type' => 'one-to-many',
     ],
 
-    [
-        'name' => 'accounts_inquiries',
-        'label' => 'relationships.accounts_inquiries',
-        'left_module' => 'accounts',
-        'right_module' => 'inquiries',
-        'type' => 'one-to-many',
-    ],
 
     /*
     |--------------------------------------------------------------------------

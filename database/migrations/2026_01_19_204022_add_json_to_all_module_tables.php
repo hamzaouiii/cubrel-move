@@ -21,7 +21,6 @@ return new class extends Migration
         'invoices',
         'quotes',
         'cases',
-        'inquiries'
       ];
   }
 

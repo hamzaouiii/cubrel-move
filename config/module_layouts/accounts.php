@@ -226,34 +226,7 @@ return [
                                 'label' => 'modules.cases.fields.closed_at',
                             ],
                         ],
-                    ],
-                    3 => [
-                        'name' => 'accounts_inquiries',
-                        'type' => 'one-to-many',
-                        'label' => 'relationships.accounts_inquiries',
-                        'fields' => [
-                            0 => [
-                                'name' => 'name',
-                                'type' => 'text',
-                                'label' => 'modules.inquiries.fields.name',
-                            ],
-                            1 => [
-                                'name' => 'email',
-                                'type' => 'email',
-                                'label' => 'modules.inquiries.fields.email',
-                            ],
-                            2 => [
-                                'name' => 'phone',
-                                'type' => 'phone',
-                                'label' => 'modules.inquiries.fields.phone',
-                            ],
-                            3 => [
-                                'name' => 'status',
-                                'type' => 'select',
-                                'label' => 'modules.inquiries.fields.status',
-                            ],
-                        ],
-                    ],
+                    ]
                 ],
             ],
             1 => [

@@ -205,38 +205,7 @@ return [
             'status' => 'danger',
         ],
     ],
-    'inquiries_status_list' => [
-        0 => [
-            'label' => 'dropdowns.inquiries_status_list.new',
-            'value' => 'new',
-            'status' => 'info',
-        ],
-        1 => [
-            'label' => 'dropdowns.inquiries_status_list.acknowledged',
-            'value' => 'acknowledged',
-            'status' => 'info',
-        ],
-        2 => [
-            'label' => 'dropdowns.inquiries_status_list.in_progress',
-            'value' => 'in_progress',
-            'status' => 'warning',
-        ],
-        3 => [
-            'label' => 'dropdowns.inquiries_status_list.waiting_response',
-            'value' => 'waiting_response',
-            'status' => 'warning',
-        ],
-        4 => [
-            'label' => 'dropdowns.inquiries_status_list.resolved',
-            'value' => 'resolved',
-            'status' => 'success',
-        ],
-        5 => [
-            'label' => 'dropdowns.inquiries_status_list.closed',
-            'value' => 'closed',
-            'status' => 'success',
-        ],
-    ],
+
     'products_category_list' => [
         0 => [
             'label' => 'dropdowns.product_category_list.electronics',
