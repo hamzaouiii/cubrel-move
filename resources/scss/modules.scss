@@ -2378,8 +2378,7 @@
         transition: all 0.2s ease;
         border: 1px solid transparent;
 
-        // "Close" should feel secondary
-        &:first-child {
+        &--cancel {
           background-color: #f1f5f9;
           color: #475569;
           &:hover {
@@ -2387,19 +2386,27 @@
           }
         }
 
-        &:last-child {
+        &--close {
           background-color: var(--related-color);
           color: white;
+
           &:hover {
-            filter: brightness(0.9); // Subtle darken on hover
+            filter: brightness(0.9) !important;
           }
         }
 
-        &--close {
-          background-color: var(--related-color);
+        // Sits between Close/Save without disturbing their first/last-child styling
+        &--create {
+          background-color: transparent;
+          border-color: var(--related-color);
+          color: var(--related-color);
+
           &:hover {
-            filter: brightness(0.9) !important;
-            color: white;
+            background-color: color-mix(
+              in srgb,
+              var(--related-color) 10%,
+              white
+            );
           }
         }
       }
@@ -2598,12 +2605,252 @@
       margin: 0 15px;
     }
   }
+
+  // Compact "Link existing records" redesign — scoped to this modifier so the
+  // shared .related-links__* classes used by RecordSelectorDrawer stay untouched.
+  &--compact {
+    .related-links__header {
+      border-bottom: 1px solid #f1f5f9;
+
+      &__title {
+        font-size: 1.05rem;
+      }
+
+      &__close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        color: #94a3b8;
+        padding: 4px;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+
+        &:hover {
+          color: #475569;
+          background-color: #f1f5f9;
+        }
+      }
+    }
+
+    .related-links__toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      background-color: #f8fafc;
+      border-bottom: 1px solid #f1f5f9;
+
+      &__info {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      &__search {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 2px 12px;
+
+        input {
+          all: unset;
+          padding: 6px 0;
+          font-size: 0.9rem;
+          width: 100%;
+        }
+
+        &__clear {
+          margin-left: auto;
+          cursor: pointer;
+          color: #94a3b8;
+
+          &:hover {
+            color: #64748b;
+          }
+        }
+      }
+
+      &__create {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        border-radius: 6px;
+        padding: 8px 14px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border: 1px solid var(--related-color);
+        background-color: transparent;
+        color: var(--related-color);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: color-mix(in srgb, var(--related-color) 10%, white);
+        }
+      }
+    }
+
+    .related-links__footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 24px;
+      background-color: white;
+      border-top: 1px solid #f1f5f9;
+
+      &__btn {
+        border-radius: 6px;
+        padding: 8px 18px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &--cancel {
+          background-color: #f1f5f9;
+          color: #475569;
+
+          &:hover {
+            background-color: #e2e8f0;
+          }
+        }
+
+        &--primary {
+          background-color: var(--related-color);
+          color: white;
+
+          &:hover:not(:disabled) {
+            filter: brightness(0.9);
+          }
+
+          &:disabled {
+            background: rgb(197, 197, 197);
+
+            opacity: 0.7;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
 }
 .related-links__record-title {
   font-weight: 600;
 }
 .record-selected i {
   color: var(--related-color);
+}
+
+.quick-create-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; // above .record-overlay (z-index: 100), so it layers over both linking overlays
+
+  background: radial-gradient(
+    circle at 20% 30%,
+    color-mix(in srgb, var(--module-color) 12%, transparent),
+    rgba(15, 23, 42, 0.7)
+  );
+  backdrop-filter: blur(6px);
+
+  &__container {
+    background: white;
+    border-radius: 12px;
+    width: min(720px, 90vw);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.15),
+      0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    padding: 20px 24px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+
+    &__title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+
+      i {
+        color: var(--module-color);
+      }
+    }
+
+    &__actions {
+      display: flex;
+      gap: 12px;
+
+      &__btn {
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+
+        &:disabled {
+          opacity: 0.6;
+          background: rgb(197, 197, 197);
+          cursor: not-allowed;
+        }
+
+        &:first-child {
+          background-color: #f1f5f9;
+          color: #475569;
+
+          &:hover:not(:disabled) {
+            background-color: #e2e8f0;
+          }
+        }
+
+        &--primary {
+          background-color: var(--module-color);
+          color: white;
+
+          &:hover:not(:disabled) {
+            filter: brightness(0.9);
+          }
+        }
+      }
+    }
+  }
+
+  &__body {
+    overflow-y: auto;
+    padding: 0 24px 24px;
+
+    .record-layout__sections {
+      margin: 0;
+    }
+  }
 }
 
 .actiondropdown-menu {
@@ -2739,7 +2986,6 @@
       }
 
       &.is-disabled {
-        cursor: not-allowed;
         opacity: 0.5;
         color: #cbd5e0;
         cursor: not-allowed;
