@@ -59,12 +59,21 @@ const highlightMatch = (text) => {
     .replace(regex, '<span class="search-highlight">$1</span>');
 };
 
+// Ensure the value is an absolute URL with a scheme.
+// "www.google.com" -> "https://www.google.com"
+// "https://example.com/page" -> unchanged
+const normalizeUrl = (url) => {
+  if (!url) return "";
+  const raw = url.toString().trim();
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return raw;
+  return "https://" + raw;
+};
+
 // Extract domain from URL for display
 const getDomain = (url) => {
   if (!url) return "";
   try {
-    const urlObj = new URL(url.toString());
-    return urlObj.hostname;
+    return new URL(normalizeUrl(url)).hostname;
   } catch {
     return url.toString().split("/")[0];
   }
@@ -74,8 +83,7 @@ const getDomain = (url) => {
 const getProtocol = (url) => {
   if (!url) return "";
   try {
-    const urlObj = new URL(url.toString());
-    return urlObj.protocol;
+    return new URL(normalizeUrl(url)).protocol;
   } catch {
     return "";
   }
@@ -84,7 +92,7 @@ const getProtocol = (url) => {
 // Open URL in new tab
 const openUrl = (url) => {
   if (url && !props.readOnly) {
-    window.open(url.toString(), "_blank", "noopener,noreferrer");
+    window.open(normalizeUrl(url), "_blank", "noopener,noreferrer");
   }
 };
 </script>
@@ -170,7 +178,7 @@ const openUrl = (url) => {
       </span>
       <a
         v-else
-        :href="modelValue"
+        :href="normalizeUrl(modelValue)"
         target="_blank"
         rel="noopener noreferrer"
         class="url-table-link"

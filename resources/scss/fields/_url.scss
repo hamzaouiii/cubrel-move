@@ -61,8 +61,6 @@
         display: inline-block;
 
         &:hover {
-          transform: translateX(2px);
-
           .url-domain {
             text-decoration: underline;
           }
