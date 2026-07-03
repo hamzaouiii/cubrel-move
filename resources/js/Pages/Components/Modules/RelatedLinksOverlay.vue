@@ -3,7 +3,6 @@ import { ref, onMounted, computed, watch, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
-import Radiobox from "../FiledTypes/Radiobox.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 
@@ -28,11 +27,6 @@ const cleanedLayout = computed(() => {
     : Object.values(props.layout);
 
   return values.filter((field) => field && field.name);
-});
-
-const isSingleSelect = computed(() => {
-  const role = props.relationship?.role;
-  return role === "child" || role === "sibling";
 });
 
 const emit = defineEmits(["close", "saved"]);
@@ -81,13 +75,8 @@ const loadRecords = async () => {
     error(t("modules.linking.error_missing_context"));
     return;
   }
-  let url;
+  const url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
   loading.value = true;
-  if (isSingleSelect.value) {
-    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single-link`;
-  } else {
-    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
-  }
   try {
     const response = await axios.get(url, {
       params: {
@@ -190,17 +179,6 @@ const displayedRecords = computed(() => {
 });
 
 const toggleRow = (id) => {
-  if (isSingleSelect.value) {
-    // Single select mode
-    if (selected.value.includes(id)) {
-      selected.value = [];
-    } else {
-      selected.value = [id];
-    }
-    return;
-  }
-
-  // Multi select mode (default behavior)
   const index = selected.value.indexOf(id);
   if (index === -1) {
     selected.value.push(id);
@@ -231,13 +209,6 @@ watch(
     }
   },
 );
-
-const selectedSingle = computed({
-  get: () => selected.value[0] ?? null,
-  set: (val) => {
-    selected.value = val ? [val] : [];
-  },
-});
 
 const allSelected = computed(() => {
   if (!displayedRecords.value.length) return false;
@@ -334,7 +305,6 @@ const clearSearch = () => {
                 <tr>
                   <th class="related-links__head__space">
                     <Selectbox
-                      v-if="!isSingleSelect"
                       :value="'all'"
                       :modelValue="allSelected ? ['all'] : []"
                       @update:modelValue="toggleSelectAll"
@@ -372,17 +342,8 @@ const clearSearch = () => {
                 >
                   <td class="related-links__record__checkbox">
                     <Selectbox
-                      v-if="!isSingleSelect"
                       :value="record.id"
                       v-model="selected"
-                      @update:modelValue="() => toggleRow(record.id)"
-                      :color="getRelatedColor(relationship.related_slug)"
-                    />
-
-                    <Radiobox
-                      v-else
-                      :value="record.id"
-                      v-model="selectedSingle"
                       @update:modelValue="() => toggleRow(record.id)"
                       :color="getRelatedColor(relationship.related_slug)"
                     />

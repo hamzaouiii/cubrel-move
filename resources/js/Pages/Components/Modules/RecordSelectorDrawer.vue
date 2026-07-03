@@ -1,7 +1,10 @@
 <script setup>
 import { ref, watch, nextTick, computed, getCurrentInstance } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
+import { useAlerts } from "@/Composables/useAlerts";
 import FieldRenderer from "../Globals/FieldRenderer.vue";
+const { success, error: showError, info, clearAllAlerts } = useAlerts();
 const props = defineProps({
   open: {
     type: Boolean,
@@ -33,11 +36,17 @@ const props = defineProps({
     type: String,
   },
   fields: Object,
+  relationshipName: {
+    type: String,
+    default: null,
+  },
 });
-const emit = defineEmits(["select", "close"]);
+const emit = defineEmits(["select", "close", "saved"]);
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+const page = usePage();
+const linking = ref(false);
 
 const query = ref("");
 const records = ref([]);
@@ -117,9 +126,35 @@ const getField = (f) => {
   return props.fields?.find((field) => field.name === f.name) ?? f;
 };
 
-const selectRecord = (record) => {
-  emit("select", record);
-  emit("close");
+const selectRecord = async (record) => {
+  if (!props.relationshipName) {
+    emit("select", record);
+    emit("close");
+    return;
+  }
+
+  if (linking.value) return;
+
+  linking.value = true;
+  try {
+    info(t("modules.linking.info_linking"));
+    await axios.post(
+      `/modules/${page.props.module.slug}/${page.props.record.id}/relationships/${props.relationshipName}`,
+      { related_ids: [record.id] },
+    );
+    clearAllAlerts();
+    success(t("modules.linking.success"));
+    emit("saved", props.relationshipName);
+  } catch (e) {
+    console.error(
+      "Failed saving related record:",
+      e.response?.data || e.message,
+    );
+    clearAllAlerts();
+    showError(e.response?.data?.message);
+  } finally {
+    linking.value = false;
+  }
 };
 
 const close = () => emit("close");

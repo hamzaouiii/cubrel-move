@@ -26,7 +26,7 @@ class RelationshipLinkController extends Controller
     $relationshipObj = RelationshipService::get($relationship);
     $limit = Settings::get('linking_panel_limit');
 
-    return RelationshipService::getRecordsForUpdateSingleLinking($relationshipObj, $module, $record_id, $limit, $request->get('search'));
+    return RelationshipService::getRecordsForUpdateSingleLinking($relationshipObj, $module, $record_id, $limit, $request->get('search', $request->get('q')));
   }
 
   public function linkRecords(Request $request, string $module, string $record_id, string $relationship)
