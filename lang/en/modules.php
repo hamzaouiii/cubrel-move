@@ -87,6 +87,9 @@ return [
         'error_missing_context' => 'Missing relationship context',
         'error_lodaing_related_records' => 'Failed loading available records',
         'info_linking' => 'Linking Records',
+        'create_record' => 'Create record',
+        'new_record' => 'New :label',
+        'link_count' => 'Link :count :label',
     ],
     'delete' => [
         'confirm_delete' => 'Confirm Delete',

@@ -53,7 +53,19 @@ const showActionDropDown = ref(false);
 const showPdfModal = ref(false);
 const showExportModal = ref(false);
 const actionDropDownref = ref(null);
-const currentTab = ref("overview");
+const getInitialTab = () => {
+  const params = new URLSearchParams(window.location.search);
+  const relatedAvailable =
+    !isEditing.value &&
+    props.record?.related &&
+    props.record.related.constructor === Object &&
+    Object.keys(props.record.related).length > 0;
+
+  return params.get("tab") === "related" && relatedAvailable
+    ? "related"
+    : "overview";
+};
+const currentTab = ref(getInitialTab());
 const overlayOpen = ref(false);
 const fieldOverlayOpen = ref(false);
 const activePanel = ref(null);
@@ -383,6 +395,14 @@ const getMode = (f) => {
 
 const switchTabs = (tab) => {
   currentTab.value = tab;
+
+  const url = new URL(window.location.href);
+  if (tab === "overview") {
+    url.searchParams.delete("tab");
+  } else {
+    url.searchParams.set("tab", tab);
+  }
+  window.history.replaceState(window.history.state, "", url);
 };
 
 const openOverlay = (panel, selected) => {
@@ -447,6 +467,23 @@ const { isActive: unsavedGuardActive } = useUnsavedChangesGuard({
 const relationship = (name) => {
   return props.record?.related?.[name] || null;
 };
+
+const isSingleSelectRelationship = computed(() => {
+  const role = relationship(activePanel.value?.name)?.role;
+  return role === "child" || role === "sibling";
+});
+
+const getRelatedColor = (slug) => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : allModules.value.find((m) => m.slug === slug)?.color;
+};
+
+const singleLinkSearchEndpoint = computed(() => {
+  const panelName = activePanel.value?.name;
+  if (!panelName) return "";
+  return `/modules/${props.module.slug}/${props.record.id}/relationships/${panelName}/single-link`;
+});
 
 const onFieldRecordSelect = (record) => {
   if (!activeField.value) return;
@@ -682,13 +719,26 @@ const handleTotalsUpdated = (totals) => {
           :expand-panel="expandPanel"
         ></PanelList>
         <RelatedLinksOverlay
-          v-if="overlayOpen"
+          v-if="overlayOpen && !isSingleSelectRelationship"
           :layout="activeLayout(activePanel)"
           :panel="activePanel"
           :relationship="relationship(activePanel.name)"
           @close="overlayOpen = false"
           @saved="handleSaved"
           :selected-parent="activeParentRecord"
+        />
+        <RecordSelectorDrawer
+          :open="overlayOpen && isSingleSelectRelationship"
+          :search-endpoint="singleLinkSearchEndpoint"
+          :related-module="relationship(activePanel?.name)?.related_slug"
+          :icon="getIcon(relationship(activePanel?.name)?.related_slug)"
+          :accent-color="getRelatedColor(relationship(activePanel?.name)?.related_slug)"
+          :selected-record="activeParentRecord?.id"
+          :layout="activeLayout(activePanel)"
+          :fields="Object.values(relationship(activePanel?.name)?.fields || {})"
+          :relationship-name="activePanel?.name"
+          @saved="handleSaved"
+          @close="overlayOpen = false"
         />
       </div>
       <PdfModal

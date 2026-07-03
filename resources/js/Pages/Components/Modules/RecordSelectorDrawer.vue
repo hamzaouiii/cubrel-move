@@ -1,7 +1,11 @@
 <script setup>
 import { ref, watch, nextTick, computed, getCurrentInstance } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
+import { useAlerts } from "@/Composables/useAlerts";
 import FieldRenderer from "../Globals/FieldRenderer.vue";
+import QuickCreateRecordModal from "./QuickCreateRecordModal.vue";
+const { success, error: showError, info, clearAllAlerts } = useAlerts();
 const props = defineProps({
   open: {
     type: Boolean,
@@ -33,11 +37,21 @@ const props = defineProps({
     type: String,
   },
   fields: Object,
+  relationshipName: {
+    type: String,
+    default: null,
+  },
+  allowCreate: {
+    type: Boolean,
+    default: false,
+  },
 });
-const emit = defineEmits(["select", "close"]);
+const emit = defineEmits(["select", "close", "saved"]);
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+const page = usePage();
+const linking = ref(false);
 
 const query = ref("");
 const records = ref([]);
@@ -117,12 +131,49 @@ const getField = (f) => {
   return props.fields?.find((field) => field.name === f.name) ?? f;
 };
 
-const selectRecord = (record) => {
-  emit("select", record);
-  emit("close");
+const selectRecord = async (record) => {
+  if (!props.relationshipName) {
+    emit("select", record);
+    emit("close");
+    return;
+  }
+
+  if (linking.value) return;
+
+  linking.value = true;
+  try {
+    info(t("modules.linking.info_linking"));
+    await axios.post(
+      `/modules/${page.props.module.slug}/${page.props.record.id}/relationships/${props.relationshipName}`,
+      { related_ids: [record.id] },
+    );
+    clearAllAlerts();
+    success(t("modules.linking.success"));
+    emit("saved", props.relationshipName);
+  } catch (e) {
+    console.error(
+      "Failed saving related record:",
+      e.response?.data || e.message,
+    );
+    clearAllAlerts();
+    showError(e.response?.data?.message);
+  } finally {
+    linking.value = false;
+  }
 };
 
 const close = () => emit("close");
+
+// Offered in relationship-linking mode (relationshipName set) and wherever a
+// caller explicitly opts in via allowCreate (e.g. the line-items product picker) —
+// not for the plain filter-value picker, which also reuses this drawer.
+const canCreate = computed(() => !!props.relationshipName || props.allowCreate);
+const quickCreateOpen = ref(false);
+
+const onQuickCreated = async (record) => {
+  quickCreateOpen.value = false;
+  await selectRecord(record);
+};
 </script>
 
 <template>
@@ -147,18 +198,21 @@ const close = () => emit("close");
             >
               {{ $t("modules.linking.close") }}
             </button>
+            <button
+              v-if="canCreate"
+              class="related-links__header__actions__close"
+              @click="quickCreateOpen = true"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </button>
           </div>
         </div>
 
         <div class="related-links__list">
           <div class="related-links__modifiers">
             <span class="related-links__modifiers__info">
-              {{
-                $t("modules.linking.showing_count", {
-                  count: records?.length ?? "0",
-                })
-              }}
-              {{ $t("modules.of") }} {{ total ?? "--" }}
+              {{ records?.length ?? "0" }}
+              {{ $t("modules.of") }} {{ total ?? "0" }}
             </span>
             <div class="related-links__modifiers__search">
               <input
@@ -273,6 +327,17 @@ const close = () => emit("close");
           </li>
         </ul>
       </div>
+
+      <QuickCreateRecordModal
+        v-if="canCreate"
+        :open="quickCreateOpen"
+        :module-slug="relatedModule"
+        :fields="fields"
+        :icon="icon"
+        :accent-color="accentColor"
+        @close="quickCreateOpen = false"
+        @created="onQuickCreated"
+      />
     </div>
   </Transition>
 </template>

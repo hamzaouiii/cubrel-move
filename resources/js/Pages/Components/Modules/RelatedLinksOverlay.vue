@@ -3,10 +3,9 @@ import { ref, onMounted, computed, watch, getCurrentInstance } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
-import Radiobox from "../FiledTypes/Radiobox.vue";
-import { formatDateTime, formatDate } from "@/utils/datetime";
 import { useAlerts } from "@/Composables/useAlerts";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
+import QuickCreateRecordModal from "./QuickCreateRecordModal.vue";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 const props = defineProps({
@@ -29,11 +28,6 @@ const cleanedLayout = computed(() => {
     : Object.values(props.layout);
 
   return values.filter((field) => field && field.name);
-});
-
-const isSingleSelect = computed(() => {
-  const role = props.relationship?.role;
-  return role === "child" || role === "sibling";
 });
 
 const emit = defineEmits(["close", "saved"]);
@@ -77,18 +71,44 @@ const getRelatedColor = (slug) => {
     : getModule(slug)?.color;
 };
 
+const getIcon = (slug) => {
+  if (!slug) return "fa-solid fa-user";
+  return getModule(slug)?.icon || "fa-solid fa-user";
+};
+
+const relatedFieldsArray = computed(() =>
+  Object.values(props.relationship?.fields || {}),
+);
+
+const quickCreateOpen = ref(false);
+
+// Purely presentational — drives the "New <label>" / "Link :count <label>" text.
+const singleLabel = computed(() =>
+  t("modules." + props.relationship.related_slug + ".single_label"),
+);
+const pluralLabel = computed(() =>
+  t("modules." + props.relationship.related_slug + ".label"),
+);
+const selectedLabel = computed(() =>
+  selected.value.length === 1 ? singleLabel.value : pluralLabel.value,
+);
+
+const onQuickCreated = (record) => {
+  quickCreateOpen.value = false;
+  records.value = [record, ...records.value.filter((r) => r.id !== record.id)];
+  if (!selected.value.includes(record.id)) {
+    selected.value = [record.id, ...selected.value];
+  }
+  total.value = (total.value ?? 0) + 1;
+};
+
 const loadRecords = async () => {
   if (!relationshipName || !currentModule || !currentRecordId) {
     error(t("modules.linking.error_missing_context"));
     return;
   }
-  let url;
+  const url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
   loading.value = true;
-  if (isSingleSelect.value) {
-    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/single-link`;
-  } else {
-    url = `/modules/${currentModule}/${currentRecordId}/relationships/${relationshipName}/available`;
-  }
   try {
     const response = await axios.get(url, {
       params: {
@@ -191,17 +211,6 @@ const displayedRecords = computed(() => {
 });
 
 const toggleRow = (id) => {
-  if (isSingleSelect.value) {
-    // Single select mode
-    if (selected.value.includes(id)) {
-      selected.value = [];
-    } else {
-      selected.value = [id];
-    }
-    return;
-  }
-
-  // Multi select mode (default behavior)
   const index = selected.value.indexOf(id);
   if (index === -1) {
     selected.value.push(id);
@@ -232,13 +241,6 @@ watch(
     }
   },
 );
-
-const selectedSingle = computed({
-  get: () => selected.value[0] ?? null,
-  set: (val) => {
-    selected.value = val ? [val] : [];
-  },
-});
 
 const allSelected = computed(() => {
   if (!displayedRecords.value.length) return false;
@@ -275,24 +277,21 @@ const clearSearch = () => {
         '--related-color': getRelatedColor(relationship.related_slug),
       }"
     >
-      <div class="related-links" ref="overlayRef">
+      <div class="related-links related-links--compact" ref="overlayRef">
         <div class="related-links__header">
           <div class="related-links__header__title">
             {{ $t("modules.linking.link_existing_records") }}
           </div>
 
-          <div class="related-links__header__actions">
-            <button
-              class="related-links__header__actions__btn"
-              @click="closeOverlay"
-            >
-              {{ $t("modules.linking.close") }}
-            </button>
-            <button class="related-links__header__actions__btn" @click="save">
-              {{ $t("modules.linking.save") }}
-            </button>
-          </div>
+          <button
+            class="related-links__header__close"
+            :aria-label="$t('modules.linking.close')"
+            @click="closeOverlay"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
+
         <template v-if="saveLoading">
           <div class="saving-loader">
             <div class="lds-ripple">
@@ -302,31 +301,36 @@ const clearSearch = () => {
           </div>
         </template>
         <template v-else>
-          <div class="related-links__list">
-            <div class="related-links__modifiers">
-              <span class="related-links__modifiers__info">
-                {{
-                  $t("modules.linking.showing_count", {
-                    count: records?.length ?? "0",
-                  })
-                }}
-                {{ $t("modules.of") }} {{ total ?? "--" }}
+          <div class="related-links__toolbar">
+            <span class="related-links__toolbar__info">
+              {{ records?.length ?? "0" }}
+              {{ $t("modules.of") }} {{ total ?? "0" }}
+            </span>
+
+            <div class="related-links__toolbar__search">
+              <input
+                v-model="search"
+                type="text"
+                :placeholder="$t('modules.linking.search')"
+              />
+              <span
+                class="related-links__toolbar__search__clear"
+                @click.stop="clearSearch"
+              >
+                <i class="fa-solid fa-xmark" v-if="search.length"></i>
               </span>
-              <div class="related-links__modifiers__search">
-                <input
-                  v-model="search"
-                  type="text"
-                  :placeholder="$t('modules.linking.search')"
-                />
-                <span
-                  class="related-links__modifiers__search__clear"
-                  @click.stop="clearSearch"
-                >
-                  <i class="fa-solid fa-xmark" v-if="search.length"></i>
-                </span>
-              </div>
             </div>
 
+            <button
+              class="related-links__toolbar__create"
+              @click="quickCreateOpen = true"
+            >
+              <i class="fa-solid fa-plus"></i>
+              {{ $t("modules.linking.new_record", { label: singleLabel }) }}
+            </button>
+          </div>
+
+          <div class="related-links__list">
             <table
               v-if="cleanedLayout && cleanedLayout.length"
               class="related-links__table"
@@ -335,7 +339,6 @@ const clearSearch = () => {
                 <tr>
                   <th class="related-links__head__space">
                     <Selectbox
-                      v-if="!isSingleSelect"
                       :value="'all'"
                       :modelValue="allSelected ? ['all'] : []"
                       @update:modelValue="toggleSelectAll"
@@ -373,17 +376,8 @@ const clearSearch = () => {
                 >
                   <td class="related-links__record__checkbox">
                     <Selectbox
-                      v-if="!isSingleSelect"
                       :value="record.id"
                       v-model="selected"
-                      @update:modelValue="() => toggleRow(record.id)"
-                      :color="getRelatedColor(relationship.related_slug)"
-                    />
-
-                    <Radiobox
-                      v-else
-                      :value="record.id"
-                      v-model="selectedSingle"
                       @update:modelValue="() => toggleRow(record.id)"
                       :color="getRelatedColor(relationship.related_slug)"
                     />
@@ -417,6 +411,7 @@ const clearSearch = () => {
               </tbody>
             </table>
           </div>
+
           <ul class="related-links__pagination" v-if="lastPage > 1">
             <li
               @click="prevPage"
@@ -443,7 +438,41 @@ const clearSearch = () => {
             </li>
           </ul>
         </template>
+
+        <div class="related-links__footer">
+          <button
+            class="related-links__footer__btn related-links__footer__btn--cancel"
+            @click="closeOverlay"
+          >
+            {{ $t("modules.actions.cancel") }}
+          </button>
+          <button
+            class="related-links__footer__btn related-links__footer__btn--primary"
+            :disabled="saveLoading || !selected.length"
+            @click="save"
+          >
+            <i v-if="saveLoading" class="fa-solid fa-atom fa-spin"></i>
+            {{
+              selected.length
+                ? $t("modules.linking.link_count", {
+                    count: selected.length,
+                    label: selectedLabel,
+                  })
+                : $t("modules.actions.link")
+            }}
+          </button>
+        </div>
       </div>
+
+      <QuickCreateRecordModal
+        :open="quickCreateOpen"
+        :module-slug="relationship.related_slug"
+        :fields="relatedFieldsArray"
+        :icon="getIcon(relationship.related_slug)"
+        :accent-color="getRelatedColor(relationship.related_slug)"
+        @close="quickCreateOpen = false"
+        @created="onQuickCreated"
+      />
     </div>
   </Transition>
 </template>

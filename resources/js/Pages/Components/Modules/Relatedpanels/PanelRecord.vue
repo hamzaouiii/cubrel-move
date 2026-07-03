@@ -53,6 +53,7 @@ const fieldResolver = (name) => {
         <button
           ref="triggerEl"
           class="related-records__actions__menu-btn"
+          :class="{ 'related-records__actions__menu-btn--open': isMenuOpen }"
           @click.stop="emit('toggleMenu', record.id)"
         >
           <i v-if="isUnlinking" class="fa-solid fa-atom fa-spin"></i>

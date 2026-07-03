@@ -39,7 +39,8 @@ const buildInitialForm = () => {
     props.recordLayout.sections.forEach((section) => {
       section.layout.forEach((field) => {
         if (!(field.name === "created_at" || field.name === "updated_at")) {
-          data[field.name] = "";
+          const meta = props.fields?.find((f) => f.name === field.name);
+          data[field.name] = meta?.type === "checkbox" ? false : "";
         }
       });
     });

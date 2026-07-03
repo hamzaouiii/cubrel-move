@@ -953,6 +953,7 @@ const productLinkingLayout = computed(() => {
       :accent-color="getColor('products')"
       :layout="productLinkingLayout"
       :fields="productFields"
+      :allow-create="true"
       @select="onProductSelect"
       @close="drawerOpen = false"
     />

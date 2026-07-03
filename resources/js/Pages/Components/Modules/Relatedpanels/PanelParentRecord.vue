@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from "vue";
 
-import { formatDateTime } from "@/utils/datetime";
 import { Link } from "@inertiajs/vue3";
 import FieldRenderer from "../../Globals/FieldRenderer.vue";
 const props = defineProps({
@@ -17,40 +16,8 @@ const props = defineProps({
   color: String,
 });
 
-const parentRecord = props.record;
+const parentRecord = computed(() => props.record ?? null);
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
-
-const formatField = (field, value) => {
-  if (value == null || value === "") return "";
-
-  const type = field?.type?.toLowerCase();
-
-  switch (type) {
-    case "text":
-      return value;
-
-    case "datetime":
-      return formatDateTime(value);
-
-    case "longtext":
-      return value.length > 32 ? value.slice(0, 32) + "…" : value;
-
-    default:
-      return value;
-  }
-};
-
-const titleField = computed(() => props.header.find((f) => f.name === "name"));
-
-const nonTitleFields = computed(() =>
-  props.header.filter((f) => f.name !== "name"),
-);
-
-// First 2 become meta line
-const metaFields = computed(() => nonTitleFields.value.slice(0, 2));
-
-// Rest go into detail grid
-const detailFields = computed(() => nonTitleFields.value.slice(2));
 </script>
 
 <template>
@@ -75,7 +42,7 @@ const detailFields = computed(() => nonTitleFields.value.slice(2));
       </div>
 
       <!-- Fields -->
-      <div class="parent-card__fields">
+      <div class="parent-card__fields" v-if="parentRecord">
         <div
           v-for="field in header"
           :key="field.name"

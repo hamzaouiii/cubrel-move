@@ -129,6 +129,10 @@ class RecordController extends Controller
             $request->except('_token')
         );
 
+        if ($request->wantsJson()) {
+            return response()->json($record);
+        }
+
         return redirect("/{$module}/{$record->id}")
             ->with('success', 'Record created successfully.');
     }
