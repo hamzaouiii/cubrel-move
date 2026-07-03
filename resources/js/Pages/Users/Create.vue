@@ -34,8 +34,6 @@ const { confirm } = useConfirm();
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-console.log(props.recordLayout);
-
 const buildInitialForm = () => {
   const data = {};
   if (props.recordLayout && props.recordLayout.sections) {

@@ -282,7 +282,6 @@ const openNewFilterBuilder = () => {
 
 const startEditFilter = (filter) => {
   if (!canManageFilter(filter)) return;
-  console.log(filter);
   editingFilter.value = filter;
   builderForm.name = filter.name;
   builderForm.is_shared = !!filter.is_shared;
