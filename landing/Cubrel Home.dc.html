@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  ::selection { background: #d6eaf8; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0c1420; background: #ffffff; -webkit-font-smoothing: antialiased; overflow-x: hidden;">
+
+  <!-- NAV -->
+  <header style="position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); border-bottom: 1px solid #eef2f6;">
+    <nav style="max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; align-items: center; gap: 40px;">
+      <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0c1420;">
+        <svg width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#3498db"><path d="M9.382 8.675h13.943v13.943L32 31.293V0H.707zM22.618 23.325H8.675V9.382L0 .707V32h31.293z"/></svg>
+        <span style="font-weight: 800; font-size: 19px; letter-spacing: -0.01em;">Cubrel</span>
+      </a>
+      <div style="display: flex; gap: 28px; margin-left: 8px;">
+        <a href="#features" style="text-decoration: none; color: #475569; font-size: 15px; font-weight: 500;">Product</a>
+        <a href="#modules" style="text-decoration: none; color: #475569; font-size: 15px; font-weight: 500;">Modules</a>
+        <a href="Cubrel Pricing.dc.html" style="text-decoration: none; color: #475569; font-size: 15px; font-weight: 500;">Pricing</a>
+        <a href="Cubrel Docs.dc.html" style="text-decoration: none; color: #475569; font-size: 15px; font-weight: 500;">Docs</a>
+      </div>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+        <a href="#signin" style="text-decoration: none; color: #0c1420; font-size: 15px; font-weight: 600;">Sign in</a>
+        <a href="#signup" style="text-decoration: none; background: #0c1420; color: #fff; font-size: 15px; font-weight: 600; padding: 10px 18px; border-radius: 9px;">Start free</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section id="top" style="max-width: 1200px; margin: 0 auto; padding: 96px 32px 64px; text-align: center;">
+    <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid #e2e8f0; border-radius: 999px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #475569; margin-bottom: 28px;">
+      <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15);"></span>
+      Custom modules · dynamic dashboards · branded PDFs
+    </div>
+    <h1 style="font-size: 64px; line-height: 1.06; letter-spacing: -0.02em; font-weight: 800; margin: 0 auto 24px; max-width: 880px; text-wrap: balance;">
+      Power without complexity
+    </h1>
+    <p style="font-size: 20px; line-height: 1.55; color: #475569; max-width: 640px; margin: 0 auto 36px; text-wrap: pretty;">
+      Cubrel connects leads, deals, quotes, orders, and invoices in one workspace — with a module builder, drag-and-drop layouts, and dashboards that are actually yours to arrange.
+    </p>
+    <div style="display: flex; gap: 14px; justify-content: center; margin-bottom: 20px;">
+      <a href="#signup" style="text-decoration: none; background: #3498db; color: #fff; font-size: 16px; font-weight: 600; padding: 14px 26px; border-radius: 11px; box-shadow: 0 8px 24px -8px rgba(52,152,219,0.55);">Start building free</a>
+      <a href="Cubrel Docs.dc.html" style="text-decoration: none; background: #fff; color: #0c1420; font-size: 16px; font-weight: 600; padding: 14px 26px; border-radius: 11px; border: 1px solid #e2e8f0;">Read the docs</a>
+    </div>
+    <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #94a3b8; margin: 0;">No credit card required · Free for up to 3 users</p>
+
+    <!-- Invoice / line-items mock card -->
+    <div style="margin: 56px auto 0; max-width: 720px; text-align: left; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 30px 60px -30px rgba(12,20,32,0.35);">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 13px 16px; background: #0c1420;">
+        <span style="width: 11px; height: 11px; border-radius: 50%; background: #ff5f57;"></span>
+        <span style="width: 11px; height: 11px; border-radius: 50%; background: #febc2e;"></span>
+        <span style="width: 11px; height: 11px; border-radius: 50%; background: #28c840;"></span>
+        <span style="margin-left: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #64748b;">Invoices / INV-1042</span>
+        <span style="margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: rgba(16,185,129,0.15); color: #34d399;">Paid</span>
+      </div>
+      <div style="padding: 24px 26px; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; gap: 16px; margin-bottom: 20px; font-size: 13.5px;">
+          <div><span style="color: #94a3b8;">Customer</span><br><span style="color: #0c1420; font-weight: 600;">Northwind Traders</span></div>
+          <div><span style="color: #94a3b8;">Issue date</span><br><span style="color: #0c1420; font-weight: 600;">Jul 2, 2026</span></div>
+          <div><span style="color: #94a3b8;">Due date</span><br><span style="color: #0c1420; font-weight: 600;">Jul 16, 2026</span></div>
+        </div>
+        <div style="border: 1px solid #eef2f6; border-radius: 10px; overflow: hidden;">
+          <div style="display: grid; grid-template-columns: 2.4fr 0.7fr 1fr 1fr; padding: 10px 14px; background: #f6f9fb; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #64748b;">
+            <span>Item</span><span style="text-align: center;">Qty</span><span style="text-align: right;">Price</span><span style="text-align: right;">Total</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 2.4fr 0.7fr 1fr 1fr; padding: 11px 14px; border-top: 1px solid #eef2f6; font-size: 13.5px; color: #334155;">
+            <span>Onboarding services</span><span style="text-align: center;">1</span><span style="text-align: right;">€1,200.00</span><span style="text-align: right; font-weight: 600;">€1,200.00</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 2.4fr 0.7fr 1fr 1fr; padding: 11px 14px; border-top: 1px solid #eef2f6; font-size: 13.5px; color: #334155;">
+            <span>Support retainer (monthly)</span><span style="text-align: center;">3</span><span style="text-align: right;">€450.00</span><span style="text-align: right; font-weight: 600;">€1,350.00</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+          <div style="min-width: 220px; font-size: 13.5px;">
+            <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #64748b;"><span>Subtotal</span><span>€2,550.00</span></div>
+            <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #64748b;"><span>Tax (19%)</span><span>€484.50</span></div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0 0; margin-top: 4px; border-top: 1px solid #eef2f6; font-weight: 700; color: #0c1420;"><span>Total</span><span>€3,034.50</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES STRIP -->
+  <section id="modules" style="max-width: 1000px; margin: 0 auto; padding: 24px 32px 72px; text-align: center;">
+    <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin: 0 0 24px;">Every module your team needs, connected out of the box</p>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px;">
+      <sc-for list="{{ moduleChips }}" as="m" hint-placeholder-count="10">
+        <span style="display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 999px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 600; color: #334155;">{{ m }}</span>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" style="max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px;">
+    <div style="max-width: 640px; margin-bottom: 48px;">
+      <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #3498db; margin: 0 0 14px;">Everything in one workspace</p>
+      <h2 style="font-size: 40px; line-height: 1.12; letter-spacing: -0.01em; font-weight: 800; margin: 0 0 16px;">One CRM. Shaped like your business.</h2>
+      <p style="font-size: 18px; line-height: 1.55; color: #475569; margin: 0;">Stop bending your process to fit someone else's CRM. Cubrel is a set of connected modules you can extend, rearrange, and rebrand — without a dev team.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+      <sc-for list="{{ features }}" as="f" hint-placeholder-count="6">
+        <div style="border: 1px solid #eef2f6; border-radius: 16px; padding: 28px; background: #ffffff;">
+          <div style="width: 42px; height: 42px; border-radius: 11px; background: {{ f.tint }}; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 20px;">{{ f.icon }}</div>
+          <h3 style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 8px;">{{ f.title }}</h3>
+          <p style="font-size: 15px; line-height: 1.6; color: #64748b; margin: 0;">{{ f.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" style="background: #f6f9fb; border-top: 1px solid #eef2f6; border-bottom: 1px solid #eef2f6;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 84px 32px;">
+      <div style="text-align: center; max-width: 640px; margin: 0 auto 56px;">
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #3498db; margin: 0 0 14px;">How it works</p>
+        <h2 style="font-size: 40px; line-height: 1.1; letter-spacing: -0.01em; font-weight: 800; margin: 0 0 16px;">From a blank workspace to your first invoice</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+          <div style="background: #fff; border: 1px solid #eef2f6; border-radius: 16px; padding: 30px;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: #3498db; margin-bottom: 16px;">{{ s.num }}</div>
+            <h3 style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 10px;">{{ s.title }}</h3>
+            <p style="font-size: 15px; line-height: 1.6; color: #64748b; margin: 0 0 18px;">{{ s.body }}</p>
+            <div style="background: #0f1729; border-radius: 10px; padding: 14px 16px;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <sc-for list="{{ s.chips }}" as="c" hint-placeholder-count="4">
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,0.06); color: #7aa2ff;">{{ c }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARDS -->
+  <section style="max-width: 1200px; margin: 0 auto; padding: 88px 32px;">
+    <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: center;">
+      <div>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #3498db; margin: 0 0 14px;">Dashboards, your way</p>
+        <h2 style="font-size: 38px; line-height: 1.14; letter-spacing: -0.01em; font-weight: 800; margin: 0 0 18px;">Drag, drop, and arrange the dashboard your team actually needs</h2>
+        <p style="font-size: 17px; line-height: 1.6; color: #475569; margin: 0 0 28px;">Add metric tiles, revenue charts, pipelines, and record lists — resize and rearrange them, and Cubrel remembers the layout for every person, every time they log in.</p>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; gap: 12px; align-items: flex-start;"><span style="color: #10b981; font-weight: 700;">✓</span><span style="font-size: 15px; color: #334155;">Five widget types: metrics, time series, breakdowns, record lists, people</span></div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;"><span style="color: #10b981; font-weight: 700;">✓</span><span style="font-size: 15px; color: #334155;">Drag-and-drop layout, saved per person automatically</span></div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;"><span style="color: #10b981; font-weight: 700;">✓</span><span style="font-size: 15px; color: #334155;">Every widget filterable with the same condition builder as your list views</span></div>
+        </div>
+      </div>
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 30px 60px -30px rgba(12,20,32,0.3); background: repeating-linear-gradient(135deg, #f1f5f9, #f1f5f9 12px, #eef2f6 12px, #eef2f6 24px); aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #94a3b8; background: #fff; padding: 8px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">[ dashboard preview ]</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="signup" style="max-width: 1200px; margin: 0 auto 88px; padding: 0 32px;">
+    <div style="background: #0c1420; border-radius: 24px; padding: 72px 40px; text-align: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; inset: 0; background: radial-gradient(600px 300px at 50% -10%, rgba(52,152,219,0.35), transparent 70%);"></div>
+      <div style="position: relative;">
+        <h2 style="font-size: 42px; line-height: 1.12; letter-spacing: -0.01em; font-weight: 800; color: #fff; margin: 0 0 16px;">Run your sales process without the busywork</h2>
+        <p style="font-size: 18px; color: #94a3b8; max-width: 520px; margin: 0 auto 32px;">Set up your modules, invite your team, and send your first quote — today.</p>
+        <div style="display: flex; gap: 14px; justify-content: center;">
+          <a href="#start" style="text-decoration: none; background: #3498db; color: #fff; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 11px;">Start free</a>
+          <a href="#sales" style="text-decoration: none; background: rgba(255,255,255,0.08); color: #fff; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 11px; border: 1px solid rgba(255,255,255,0.14);">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="border-top: 1px solid #eef2f6;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 40px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px;">
+      <div>
+        <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0c1420; margin-bottom: 14px;">
+          <svg width="22" height="22" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#3498db"><path d="M9.382 8.675h13.943v13.943L32 31.293V0H.707zM22.618 23.325H8.675V9.382L0 .707V32h31.293z"/></svg>
+          <span style="font-weight: 800; font-size: 18px; letter-spacing: -0.01em;">Cubrel</span>
+        </a>
+        <p style="font-size: 14px; color: #94a3b8; margin: 0; max-width: 240px; line-height: 1.6;">Power without complexity.</p>
+      </div>
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="3">
+        <div>
+          <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b; margin: 0 0 16px;">{{ col.title }}</p>
+          <div style="display: flex; flex-direction: column; gap: 11px;">
+            <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="4">
+              <a href="#" style="text-decoration: none; color: #475569; font-size: 14.5px;">{{ l }}</a>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="max-width: 1200px; margin: 0 auto; padding: 20px 32px 40px; border-top: 1px solid #eef2f6;">
+      <p style="font-size: 13px; color: #94a3b8; margin: 0;">© 2026 Cubrel, Inc. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      moduleChips: ["Leads", "Accounts", "Contacts", "Deals", "Quotes", "Orders", "Invoices", "Products", "Cases", "+ Custom modules"],
+      features: [
+        { icon: "⚙", tint: "#eaf5fc", title: "Custom modules", body: "Model any process — projects, tickets, assets — with the module builder. Add fields, choose types, and go live without writing code." },
+        { icon: "▤", tint: "#e6f9f3", title: "Drag-and-drop layouts", body: "Design list, record, related, and PDF views per module. Reorder fields, set required or read-only, and preview instantly." },
+        { icon: "✎", tint: "#eaf5fc", title: "Quotes, orders & invoices", body: "Line items with automatic subtotals, discounts, and tax — and any module, not just the built-in three, can turn them on." },
+        { icon: "⎘", tint: "#e6f9f3", title: "Branded PDF documents", body: "Section-based templates for every module — header, line items, totals — rendered with your logo and colors." },
+        { icon: "◫", tint: "#eaf5fc", title: "Dashboards that are yours", body: "Add, resize, and rearrange widgets. Metrics, charts, pipelines, and record lists — saved per person, automatically." },
+        { icon: "⚲", tint: "#e6f9f3", title: "Advanced filters & saved views", body: "Build multi-condition filters with AND/OR logic, then save and share them with your team — right down to 'my records'." },
+      ],
+      steps: [
+        { num: "01", title: "Tell us about your company", body: "Add your logo, name, and contact details — they carry through to every quote, invoice, and PDF you send.", chips: ["Logo", "Company info", "Locale"] },
+        { num: "02", title: "Start with sample data or your own", body: "Seed a working CRM with demo leads, deals, and orders, or bring in a clean slate and add your own records.", chips: ["Demo data", "Clean start"] },
+        { num: "03", title: "Invite your team", body: "Bring your team in by email. Everyone lands in a workspace that's already set up and ready to use.", chips: ["Email invites", "Bulk invite"] },
+      ],
+      footerCols: [
+        { title: "Product", links: ["Leads & Deals", "Quotes & Invoices", "Custom Modules", "Dashboards", "Pricing"] },
+        { title: "Resources", links: ["Documentation", "Guides", "Support"] },
+        { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
