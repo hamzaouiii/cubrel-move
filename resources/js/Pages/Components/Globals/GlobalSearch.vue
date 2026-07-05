@@ -15,7 +15,8 @@ const closeSearchOverlay = () => {
 };
 
 const handleKeydown = (e) => {
-  if (e.ctrlKey && e.key === "k") {
+  const modifierPressed = os.isMac ? e.metaKey : e.ctrlKey;
+  if (modifierPressed && e.key.toLowerCase() === "k") {
     e.preventDefault();
     open.value = true;
   }
@@ -40,7 +41,9 @@ onBeforeUnmount(() => {
       <span>{{ $t("globals.global_search.search") }}</span>
       <span class="search-trigger__box__shortcut">{{
         $t(
-          `globals.global_search.shortcut.${os.modifierSymbol?.toLowerCase() || "ctrl"}`,
+          `globals.global_search.shortcut.${
+            os.modifierSymbol?.toLowerCase() || "ctrl"
+          }`
         ) + " + K"
       }}</span>
     </div>

@@ -91,6 +91,12 @@
     max-height: 320px;
     display: flex;
     flex-direction: column;
+
+    // Opens upward instead when there isn't enough room below the control
+    &--flip-up {
+      top: auto;
+      bottom: calc(100% + 4px);
+    }
   }
 
   &__search-wrapper {

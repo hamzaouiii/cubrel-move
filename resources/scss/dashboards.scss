@@ -1682,6 +1682,13 @@
     top: 40px;
     left: 0;
     width: 100%;
+
+    // Flip above the 36px trigger instead when there's no room below
+    &.select-field__menu--flip-up,
+    &.status-field__menu--flip-up {
+      top: auto;
+      bottom: 40px;
+    }
   }
 }
 

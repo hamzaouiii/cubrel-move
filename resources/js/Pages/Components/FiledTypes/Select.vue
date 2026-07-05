@@ -18,6 +18,7 @@ import {
   watch,
   getCurrentInstance,
 } from "vue";
+import { useDropdownFlip } from "@/Composables/useDropdownFlip";
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -62,6 +63,7 @@ const options = computed(() => {
 });
 const isOpen = ref(false);
 const root = ref(null);
+const { flipUp, recalc } = useDropdownFlip(root);
 
 const search = ref("");
 const searchInput = ref(null);
@@ -109,7 +111,7 @@ const toggle = async () => {
   isOpen.value = !isOpen.value;
 
   if (isOpen.value) {
-    await nextTick();
+    await recalc();
     if (props.searchable) {
       searchInput.value?.focus();
     }
@@ -235,6 +237,7 @@ const highlightMatch = (text) => {
         <div
           v-if="isOpen"
           class="select-field__menu"
+          :class="{ 'select-field__menu--flip-up': flipUp }"
           role="listbox"
           @click.stop
         >
@@ -292,7 +295,7 @@ const highlightMatch = (text) => {
       </span>
     </div>
     <transition name="dropdown-fade">
-      <div v-if="isOpen" class="select-field__menu" role="listbox" @click.stop>
+      <div v-if="isOpen" class="select-field__menu" :class="{ 'select-field__menu--flip-up': flipUp }" role="listbox" @click.stop>
         <div v-if="searchable" class="select-field__search-wrapper">
           <input ref="searchInput" v-model="search" type="text" class="select-field__search-input" :placeholder="$t('settings.search_in_drop_down')" @keydown.stop />
         </div>

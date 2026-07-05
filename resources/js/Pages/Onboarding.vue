@@ -5,7 +5,10 @@ import ImageField from "@/Pages/Components/FiledTypes/ImageField.vue";
 import InviteTeamForm from "@/Pages/Components/Onboarding/InviteTeamForm.vue";
 
 const props = defineProps({
-  steps: { type: Array, default: () => ["organisation", "demo-data", "invite"] },
+  steps: {
+    type: Array,
+    default: () => ["organisation", "demo-data", "invite"],
+  },
 });
 
 const page = usePage();
@@ -76,7 +79,9 @@ const finish = (destination) => {
           v-for="(step, index) in steps"
           :key="step"
           class="accept-card__step-dot"
-          :class="{ 'accept-card__step-dot--active': index === currentStepIndex }"
+          :class="{
+            'accept-card__step-dot--active': index === currentStepIndex,
+          }"
         />
       </div>
 
@@ -100,7 +105,9 @@ const finish = (destination) => {
           </div>
           <div class="accept-card__body">
             <div class="field field--logo">
-              <label class="field__label">{{ $t("settings.fields.company_logo_url") }}</label>
+              <label class="field__label">{{
+                $t("settings.fields.company_logo_url")
+              }}</label>
               <ImageField
                 v-model="orgForm.company_logo_url"
                 mode="edit"
@@ -109,24 +116,54 @@ const finish = (destination) => {
               />
             </div>
             <div class="field">
-              <label class="field__label">{{ $t("settings.fields.company_name") }}</label>
-              <input v-model="orgForm.company_name" type="text" class="field__input" />
+              <label class="field__label">{{
+                $t("settings.fields.company_name")
+              }}</label>
+              <input
+                v-model="orgForm.company_name"
+                type="text"
+                class="field__input"
+              />
             </div>
             <div class="field">
-              <label class="field__label">{{ $t("settings.fields.company_address") }}</label>
-              <input v-model="orgForm.company_address" type="text" class="field__input" />
+              <label class="field__label">{{
+                $t("settings.fields.company_address")
+              }}</label>
+              <input
+                v-model="orgForm.company_address"
+                type="text"
+                class="field__input"
+              />
             </div>
             <div class="field">
-              <label class="field__label">{{ $t("settings.fields.company_phone") }}</label>
-              <input v-model="orgForm.company_phone" type="text" class="field__input" />
+              <label class="field__label">{{
+                $t("settings.fields.company_phone")
+              }}</label>
+              <input
+                v-model="orgForm.company_phone"
+                type="text"
+                class="field__input"
+              />
             </div>
             <div class="field">
-              <label class="field__label">{{ $t("settings.fields.company_email") }}</label>
-              <input v-model="orgForm.company_email" type="email" class="field__input" />
+              <label class="field__label">{{
+                $t("settings.fields.company_email")
+              }}</label>
+              <input
+                v-model="orgForm.company_email"
+                type="email"
+                class="field__input"
+              />
             </div>
             <div class="field">
-              <label class="field__label">{{ $t("settings.fields.company_website") }}</label>
-              <input v-model="orgForm.company_website" type="text" class="field__input" />
+              <label class="field__label">{{
+                $t("settings.fields.company_website")
+              }}</label>
+              <input
+                v-model="orgForm.company_website"
+                type="text"
+                class="field__input"
+              />
             </div>
 
             <button
@@ -155,7 +192,9 @@ const finish = (destination) => {
               :disabled="seedingDemoData"
               class="accept-card__submit"
             >
-              <span v-if="!seedingDemoData">{{ $t("globals.onboarding.demo_yes") }}</span>
+              <span v-if="!seedingDemoData">{{
+                $t("globals.onboarding.demo_yes")
+              }}</span>
               <span v-else class="submit-spinner">
                 <i class="fa-solid fa-atom fa-spin"></i>
                 {{ $t("globals.onboarding.demo_seeding") }}
@@ -184,14 +223,13 @@ const finish = (destination) => {
   --border-color: #e5e7eb;
   --bg-hover: #f9fafb;
 
-  position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: "Fira Sans", "Heebo", sans-serif;
   background-color: whitesmoke;
-
+  padding: 50px;
   &__container {
     position: relative;
     width: 100%;
@@ -199,7 +237,6 @@ const finish = (destination) => {
     margin: 0 24px;
     z-index: 10;
     animation: slide-up 0.4s ease-out;
-
     &--wide {
       max-width: 640px;
     }
