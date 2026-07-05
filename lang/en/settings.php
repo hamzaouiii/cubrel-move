@@ -50,10 +50,13 @@ return [
         'save_draft' => 'Save Draft',
         'publish_module' => 'Publish Module',
         'next' => 'Next',
-        'has_owner' => 'Has Owner',
         'has_line_items' => 'Has Line Items',
         'has_line_items_hint' => 'When enabled, this module will support line items, allowing records to include itemized entries such as products or services with quantities and prices. It will also add 4 fields to this module: Total, Subtotal, Tax Amount and Discount Amount',
-        'has_owner_hint' => 'When enabled, each record in this module will be assigned an owner',
+        'is_product_like' => 'Is Product-like',
+        'is_product_like_hint' => 'When enabled, this module becomes selectable as the source that other modules\' line items search and snapshot from (e.g. Products, Services).',
+        'line_item_source_module' => 'Line Item Source Module',
+        'line_item_source_module_hint' => 'Which module line items on this module search and snapshot from. Only available while this module has no line items yet.',
+        'line_item_source_locked' => 'This can no longer be changed because line items already exist for this module.',
 
     ],
     // Note: Changing this to 'system_fields' is a good idea to avoid conflicts with modules.fields

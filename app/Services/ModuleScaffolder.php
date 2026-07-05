@@ -123,6 +123,7 @@ class ModuleScaffolder
             $tableBlueprint->text('description')->nullable();
             foreach ($fields as $field) {
                 $key = $field['key'] ?? null;
+                $name = $field['name'] ?? null;
 
                 if (! $key || str_starts_with($key, 'default.')) {
                     continue;
@@ -132,7 +133,7 @@ class ModuleScaffolder
 
                 $blueprintMethod = $typeMapper[$fieldType] ?? 'string';
 
-                $column = $tableBlueprint->{$blueprintMethod}($key);
+                $column = $tableBlueprint->{$blueprintMethod}($name);
                 $column->nullable();
             }
 
@@ -156,7 +157,6 @@ class ModuleScaffolder
         $label_key = 'modules.'.$module->slug.'.label';
         $single_label_key = 'modules.'.$module->slug.'.single_label';
 
-        // updateOrCreate takes two arrays: [Search attributes], [Values to update/insert]
         Label::updateOrCreate(
             [
                 'key' => $label_key,
@@ -182,7 +182,6 @@ class ModuleScaffolder
 
     public function activateFields(Module $module): void
     {
-        // 1. Get fields for module.
         $fields = $module->draftFields();
 
         foreach ($fields as $field) {
@@ -194,7 +193,6 @@ class ModuleScaffolder
             if ($field->type === 'select' && $field->dropdown_list_id) {
                 $dropdown = $field->dropdown_list;
 
-                // Assuming you want to un-draft the dropdown to activate it alongside the field
                 if ($dropdown && $dropdown->is_draft) {
                     $dropdown->is_draft = false;
                     $dropdown->save();
@@ -232,7 +230,6 @@ class ModuleScaffolder
 
         Label::where('module_id', $module->id)->delete();
 
-        // 4. Reset Module State
         $module->update([
             'is_active' => false,
             'is_draft' => true,
