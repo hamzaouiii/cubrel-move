@@ -165,6 +165,10 @@ class RecordController extends Controller
         $record = $modelClass::findOrFail($id);
         $record->fill($request->except('_token', '_method', 'related', 'owner_id__label'))->save();
 
+        if ($request->wantsJson()) {
+            return response()->json($record);
+        }
+
         return back()->with('success', 'Record updated successfully.');
     }
 

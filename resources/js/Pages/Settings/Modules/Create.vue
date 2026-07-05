@@ -26,6 +26,7 @@ const props = defineProps({
   fields: Array,
   field_types: Array,
   metadata: Object,
+  moduleOptions: { type: Array, default: () => [] },
 });
 
 const { proxy } = getCurrentInstance();
@@ -231,6 +232,7 @@ const handleUpdateList = () => {
           @is-form-dirty="handleIsFormDirty"
           :color="currentColor"
           :errors="form.errors"
+          :module-options="moduleOptions"
         />
 
         <FieldSettings

@@ -65,6 +65,8 @@ return [
     'line_items_mapping_auto' => 'Auto',
     'line_items_columns_search' => 'Felder zum Hinzufügen suchen...',
     'line_items_columns_empty' => 'Noch keine Spalten hinzugefügt',
+    'no_matching_fields' => 'Keine Felder entsprechen deiner Suche',
+    'close' => 'Schließen',
     'resetting' => 'Wird zurückgesetzt...',
     'back_to_list' => 'Zurück zu Layouts',
     'required_field' => 'Pflichtfeld',

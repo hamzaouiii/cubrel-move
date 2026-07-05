@@ -99,6 +99,8 @@ return [
     'line_items_mapping_auto' => 'Auto',
     'line_items_columns_search' => 'Search fields to add...',
     'line_items_columns_empty' => 'No columns added yet',
+    'no_matching_fields' => 'No fields match your search',
+    'close' => 'Close',
     'section_name_placeholder' => 'Section name',
     'pdf_sections' => 'Blocks',
     'field_section' => 'Field Section',

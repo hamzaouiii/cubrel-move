@@ -11,7 +11,7 @@ import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
 import Select from "@/Pages/Components/FiledTypes/Select.vue";
 import ExplainTip from "@/Pages/Components/Globals/ExplainTip.vue";
-
+import LongText from "@/Pages/Components/FiledTypes/LongText.vue";
 const appSettings = usePage().props.appSettings;
 
 const { proxy } = getCurrentInstance();
@@ -25,6 +25,8 @@ defineOptions({
 const props = defineProps({
   settingModule: Object,
   categoryList: Object,
+  moduleOptions: { type: Array, default: () => [] },
+  lineItemSourceLocked: { type: Boolean, default: false },
 });
 const form = useForm({ ...props.settingModule });
 const editableModule = reactive({
@@ -33,7 +35,13 @@ const editableModule = reactive({
   ...props.settingModule,
 });
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
-editableModule.has_owner = Boolean(editableModule.has_owner);
+editableModule.is_product_like = Boolean(editableModule.is_product_like);
+
+const lineItemSourceOptions = computed(() => ({ values: props.moduleOptions }));
+
+const noHintFields = ["description", "show_in_sidebar"];
+const hintFor = (key) =>
+  noHintFields.includes(key) ? null : `settings.modules.${key}_hint`;
 const editableFields = computed(() => {
   const ignore = [
     "name",
@@ -57,6 +65,9 @@ const editableFields = computed(() => {
     "locked_by",
     "locked_until",
     "has_line_items",
+    "line_item_source_module",
+    "has_owner",
+    "show_in_module_manager",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),
@@ -72,7 +83,7 @@ const inputTypeFor = (key, value) => {
   if (typeof value === "number") return "number";
   if (key === "color") return "color";
   if (key === "description") return "textarea";
-  if (key === "has_owner") return "checkbox";
+  if (key === "is_product_like") return "checkbox";
   return "text";
 };
 
@@ -81,7 +92,7 @@ const disableThis = (key) => {
   return false;
 };
 const isDirty = computed(() => {
-  return editableFields.value.some(([key, value]) => {
+  const fieldsDirty = editableFields.value.some(([key, value]) => {
     if (key === "display_label") {
       if (typeof value === "string") {
         return value.trim() !== "";
@@ -98,6 +109,14 @@ const isDirty = computed(() => {
 
     return original !== current;
   });
+
+  // Excluded from editableFields (rendered separately above), so it needs its
+  // own dirty check to keep Save enabled when only this value changes.
+  const sourceModuleDirty =
+    editableModule.line_item_source_module !==
+    props.settingModule.line_item_source_module;
+
+  return fieldsDirty || sourceModuleDirty;
 });
 
 const saveRecord = () => {
@@ -164,18 +183,13 @@ useUnsavedChangesGuard({
             :key="key"
             class="settings__module__edit__element"
           >
-            <label
-              class="settings__module__edit__element__label"
-              v-if="key === 'has_owner'"
-            >
+            <label class="settings__module__edit__element__label">
               {{ $t("settings.modules." + key) }}
               <ExplainTip
-                :text="t('settings.modules.has_owner_hint')"
+                v-if="hintFor(key)"
+                :text="t(hintFor(key))"
                 :color="settingModule.color"
               />
-            </label>
-            <label v-else>
-              {{ $t("settings.modules." + key) }}
             </label>
             <div class="settings__module__edit__element__content">
               <Checkbox
@@ -208,10 +222,11 @@ useUnsavedChangesGuard({
                 v-model="editableModule[key]"
                 mode="module-builder"
               />
-              <textarea
+              <LongText
                 v-else-if="inputTypeFor(key, value) === 'textarea'"
                 v-model="editableModule[key]"
-              ></textarea>
+                mode="settings"
+              ></LongText>
               <ColorPicker
                 v-else-if="inputTypeFor(key, value) === 'color'"
                 v-model="editableModule[key]"
@@ -220,6 +235,33 @@ useUnsavedChangesGuard({
                 v-else
                 :type="inputTypeFor(key, value)"
                 v-model="editableModule[key]"
+              />
+            </div>
+          </div>
+
+          <div
+            v-if="settingModule.has_line_items"
+            class="settings__module__edit__element"
+          >
+            <label class="settings__module__edit__element__label">
+              {{ $t("settings.modules.line_item_source_module") }}
+              <ExplainTip
+                :text="
+                  t(
+                    lineItemSourceLocked
+                      ? 'settings.modules.line_item_source_locked'
+                      : 'settings.modules.line_item_source_module_hint',
+                  )
+                "
+                :color="settingModule.color"
+              />
+            </label>
+            <div class="settings__module__edit__element__content">
+              <Select
+                :dropdown_list="lineItemSourceOptions"
+                v-model="editableModule.line_item_source_module"
+                :disabled="lineItemSourceLocked"
+                mode="module-builder"
               />
             </div>
           </div>

@@ -84,7 +84,9 @@ class LayoutManagerController extends Controller
             ->where('slug', 'line_items')
             ->firstOrFail();
 
-        $lineItemFields = $line_itemsModel->allFields();
+        $lineItemFields = $line_itemsModel->allFields()
+            ->whereNotIn('name', ['parent_id', 'parent_type'])
+            ->values();
 
         $relationships = RelationshipService::getRelationshipForModule($module->slug);
 

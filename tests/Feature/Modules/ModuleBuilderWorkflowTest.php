@@ -132,7 +132,12 @@ class ModuleBuilderWorkflowTest extends TestCase
             'has_owner' => true,
         ])->assertRedirect();
 
-        // Step 2: define fields on the draft before deploying.
+        // Step 2: define fields on the draft before deploying. Real key
+        // generation is client-side only (CreateFieldModal.vue's
+        // `generatedKey` computed: `"draft_" + name`) — the backend accepts
+        // whatever key the request sends, so we must reproduce that exact
+        // convention here rather than hand-picking an already-"final"-looking
+        // key, or this test stops exercising the real draft->activation path.
         foreach ($draftFields as $fieldDef) {
             $this->post("/settings/modulebuilder/{$draft->id}/field", array_merge([
                 'dropdown_list' => null,
@@ -143,6 +148,7 @@ class ModuleBuilderWorkflowTest extends TestCase
                 'min_length' => null,
                 'max_length' => null,
                 'regex' => null,
+                'key' => 'draft_'.$fieldDef['name'],
             ], $fieldDef))->assertRedirect();
         }
 
@@ -181,7 +187,6 @@ class ModuleBuilderWorkflowTest extends TestCase
         $module = $this->deployCustomModule($slug, [[
             'label' => 'Budget',
             'name' => 'budget',
-            'key' => "cstm_test_{$slug}_budget",
             'type' => 'number',
         ]]);
 
@@ -195,13 +200,21 @@ class ModuleBuilderWorkflowTest extends TestCase
         $this->assertTrue(class_exists($module->handler_class));
 
         $this->assertTrue(Schema::hasTable($module->table_name));
-        $this->assertTrue(Schema::hasColumn($module->table_name, "cstm_test_{$slug}_budget"));
+        // The real column is named after the field's stable `name`, not its
+        // `key` — `key` only exists to keep field rows unique within a module
+        // (and, before activation, to flag defaults via a "default." prefix).
+        $this->assertTrue(Schema::hasColumn($module->table_name, 'budget'));
+        $this->assertFalse(Schema::hasColumn($module->table_name, 'draft_budget'));
 
         $field = Field::where('module_id', $module->id)->where('name', 'budget')->firstOrFail();
         // Not is_custom: this field got a real column from createTable(), so
         // it must NOT be routed through HasCustomFields' JSON-blob handling.
         $this->assertFalse((bool) $field->is_custom);
         $this->assertFalse((bool) $field->is_draft);
+        // activateFields() should still have renamed the *metadata* key away
+        // from its draft form — this is unrelated to the column-naming bug
+        // and must keep working exactly as before.
+        $this->assertSame("{$module->slug}_budget", $field->key);
         $this->assertTrue((bool) $field->is_active);
     }
 
@@ -214,7 +227,9 @@ class ModuleBuilderWorkflowTest extends TestCase
         $response = $this->post("/settings/modules/{$module->id}/fields/create", [
             'label' => 'Favourite Colour',
             'name' => 'favourite_colour',
-            'key' => "{$module->slug}.favourite_colour",
+            // FieldSettings.vue reuses the same CreateFieldModal.vue used during
+            // the builder draft phase, so it sends the same "draft_" + name key.
+            'key' => 'draft_favourite_colour',
             'type' => 'text',
             'dropdown_list' => null,
             'readonly' => false,
@@ -239,12 +254,10 @@ class ModuleBuilderWorkflowTest extends TestCase
     {
         $this->makeAdmin();
         $slug = 'widgets_'.Str::random(6);
-        $definedColumn = "cstm_test_{$slug}_budget";
 
         $module = $this->deployCustomModule($slug, [[
             'label' => 'Budget',
             'name' => 'budget',
-            'key' => $definedColumn,
             'type' => 'number',
         ]]);
 
@@ -252,7 +265,7 @@ class ModuleBuilderWorkflowTest extends TestCase
         $this->post("/settings/modules/{$module->id}/fields/create", [
             'label' => 'Favourite Colour',
             'name' => 'favourite_colour',
-            'key' => "{$module->slug}.favourite_colour",
+            'key' => 'draft_favourite_colour',
             'type' => 'text',
             'dropdown_list' => null,
             'readonly' => false,
@@ -277,13 +290,12 @@ class ModuleBuilderWorkflowTest extends TestCase
         }
 
         // CREATE, setting both the definition-time column and the custom field.
-        // The definition-time field's real physical column is named after its
-        // *key* (createTable() builds columns from field.key), not its name —
-        // that's the identifier a real form has to submit under for it to
-        // land in the actual column rather than being silently dropped.
+        // Real record forms submit `v-model="form[f.name]"` — every field,
+        // definition-time or post-deploy custom, is addressed by its `name`,
+        // never its `key`.
         $this->post("/{$module->slug}", [
             'name' => 'First Widget',
-            $definedColumn => 500,
+            'budget' => 500,
             'favourite_colour' => 'Blue',
         ])->assertRedirect();
 
@@ -291,7 +303,7 @@ class ModuleBuilderWorkflowTest extends TestCase
         $record = $modelClass::where('name', 'First Widget')->firstOrFail();
 
         $raw = $modelClass::where('name', 'First Widget')->toBase()->first();
-        $this->assertEquals(500, $raw->{$definedColumn} ?? null, "Real column {$definedColumn} should hold the definition-time field's value.");
+        $this->assertEquals(500, $raw->budget ?? null, 'Real column `budget` should hold the definition-time field\'s value.');
         $this->assertSame('Blue', $record->favourite_colour);
 
         // INDEX
@@ -303,13 +315,13 @@ class ModuleBuilderWorkflowTest extends TestCase
         // UPDATE
         $this->put("/{$module->slug}/{$record->id}", [
             'name' => 'First Widget',
-            $definedColumn => 750,
+            'budget' => 750,
             'favourite_colour' => 'Green',
         ])->assertRedirect();
 
         $record->refresh();
         $this->assertSame('Green', $record->favourite_colour);
-        $this->assertEquals(750, $modelClass::where('id', $record->id)->toBase()->first()->{$definedColumn});
+        $this->assertEquals(750, $modelClass::where('id', $record->id)->toBase()->first()->budget);
 
         // DESTROY
         $this->delete("/{$module->slug}/{$record->id}")->assertRedirect();
