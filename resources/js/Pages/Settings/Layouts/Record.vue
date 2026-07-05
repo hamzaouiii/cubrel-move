@@ -75,6 +75,18 @@ const t = proxy.$t;
             {{ $t("layouts.linkingPanel") }}
           </span>
         </Link>
+        <Link
+          v-if="module.has_line_items"
+          class="settings__modules__card"
+          :href="currentPath + '/lineItemsSnapshot'"
+        >
+          <div class="settings__modules__card__icon">
+            <i class="fa-solid fa-list-ol"></i>
+          </div>
+          <span class="settings__modules__card__label">
+            {{ $t("layouts.lineItemsSnapshot") }}
+          </span>
+        </Link>
       </div>
     </div>
   </div>

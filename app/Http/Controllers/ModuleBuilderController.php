@@ -31,9 +31,28 @@ class ModuleBuilderController extends Controller
       'categoryList'  => $category_list,
       'fields'        => $module->builderFields(),
       'field_types' => config("default_field_types"),
-      'metadata' => $field->getEmptyMetadata()
+      'metadata' => $field->getEmptyMetadata(),
+      'moduleOptions' => $this->lineItemSourceOptions($module),
 
     ]);
+  }
+
+  /**
+   * Modules eligible to be picked as a "line item source" — i.e. flagged
+   * is_product_like, excluding the module currently being built/edited and
+   * the internal line_items module itself.
+   */
+  protected function lineItemSourceOptions(Module $module): array
+  {
+    return Module::query()
+      ->where('is_product_like', true)
+      ->where('is_active', true)
+      ->where('id', '!=', $module->id)
+      ->orderBy('name')
+      ->get(['slug', 'name'])
+      ->map(fn ($m) => ['value' => $m->slug, 'label' => $m->name])
+      ->values()
+      ->all();
   }
 
   public function update(Request $request, Module $module)
@@ -55,7 +74,14 @@ class ModuleBuilderController extends Controller
       'category'     => ['required', 'string'],
       'show_in_sidebar' => ['boolean'],
       'has_line_items' => ['required', 'boolean'],
-      'has_owner' => ['required', 'boolean']
+      'is_product_like' => ['boolean'],
+      'line_item_source_module' => [
+        'nullable',
+        'string',
+        'exists:modules,slug',
+        Rule::notIn([$module->slug, 'line_items']),
+        Rule::requiredIf($request->boolean('has_line_items')),
+      ],
     ]);
     $baseName = $validated['display_label'];
     $module->update([
@@ -75,7 +101,12 @@ class ModuleBuilderController extends Controller
       'table_name'      => Str::snake($validated['slug']) . "_cstm",
       'path'            => '/' . $validated['slug'],
       'has_line_items' => $validated['has_line_items'],
-      'has_owner' => $validated['has_owner']
+      'has_owner' => true,
+      'show_in_module_manager' => true,
+      'is_product_like' => $validated['is_product_like'] ?? false,
+      'line_item_source_module' => $validated['has_line_items']
+        ? $validated['line_item_source_module']
+        : null,
 
     ]);
     return back();
@@ -114,6 +145,7 @@ class ModuleBuilderController extends Controller
       'color'           => $validated['color'] ?? '#000000',
       'description'     => $validated['description'] ?? '',
       'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
+      'show_in_module_manager' => true,
       'category'        => $validated['category'],
       'sort_order'      => $DEFAULT_SORT_ORDER,
       'is_draft'        => false,
@@ -124,13 +156,10 @@ class ModuleBuilderController extends Controller
       'path'            => '/' . $validated['slug'],
     ]);
 
-    // NOW scaffold the tables/files since the user has had time to define Fields and Layouts
+    // magic
     app(ModuleScaffolder::class)->scaffold($module, $validated['display_label'], $validated['single_label']);
 
     return back();
-    // return redirect()
-    //   ->route('settings.modules.show', $module->id)
-    //   ->with('success', __('settings.module_publish_success'));
   }
 
   public function saveDraftField(Request $request, Module $module)
@@ -178,7 +207,6 @@ class ModuleBuilderController extends Controller
     $field = $module->fields()->find($data['id'] ?? null);
 
     if ($field) {
-      // UPDATE
       $field->update([
         ...$data,
         'dropdown_list_id' => $dropdown_list,
@@ -245,6 +273,8 @@ class ModuleBuilderController extends Controller
           'table_name' => 'draft_cstm',
           'path' => '/' . $draftId,
           'show_in_sidebar' => false,
+          'show_in_module_manager' => false,
+
           'locked_by' => $userId,
           'locked_until' => now()->addHours(2),
         ]);

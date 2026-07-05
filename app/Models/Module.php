@@ -47,6 +47,9 @@ class Module extends Model
         'locked_until',
         'has_line_items',
         'has_owner',
+        'is_product_like',
+        'line_item_source_module',
+        'show_in_module_manager',
     ];
 
     protected $casts = [
@@ -131,6 +134,11 @@ class Module extends Model
     public function linkingPanelLayout(): array
     {
         return $this->resolveLayout('linkingPanel');
+    }
+
+    public function lineItemsSnapshotLayout(): array
+    {
+        return $this->resolveLayout('lineItemsSnapshot');
     }
 
     public function getDataForPanel(): array
@@ -397,6 +405,29 @@ class Module extends Model
     public function relationships(): Collection
     {
         return RelationshipService::getRelationshipForModule($this->slug);
+    }
+
+    /**
+     * The module line items should snapshot/search from when has_line_items is true.
+     * Falls back to 'products' as default.
+     */
+    public function lineItemSourceModuleSlug(): ?string
+    {
+        if (! $this->has_line_items) {
+            return null;
+        }
+
+        return $this->line_item_source_module ?? 'products';
+    }
+
+    /**
+     * The source module can only be (re)configured while no line items have been
+     * created yet for this module — changing it afterward would silently orphan
+     * existing rows' product_id references and invalidate any snapshot mapping.
+     */
+    public function canChangeLineItemSourceModule(): bool
+    {
+        return ! \App\Models\Modules\LineItem::where('parent_type', $this->slug)->exists();
     }
 
     /**

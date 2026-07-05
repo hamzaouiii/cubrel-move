@@ -26,6 +26,15 @@ class LayoutManagerController extends Controller
                 'definition' => 'required|array',
                 'definition.columns' => 'required|array',
             ]);
+        } elseif ($layoutType == 'lineItemsSnapshot') {
+            $validated = $request->validate([
+                'definition' => 'required|array',
+                'definition.fields' => 'required|array',
+                'definition.fields.*.name' => 'required|string',
+                'definition.fields.*.source_field' => 'nullable|string',
+            ]);
+        } else {
+            abort(422, "Unknown layout type [{$layoutType}].");
         }
 
         $layout = \App\Models\Layout::firstOrNew([
@@ -59,6 +68,10 @@ class LayoutManagerController extends Controller
 
     public function edit(string $id, string $type)
     {
+              if (!in_array($type ,['list', 'linkingPanel', 'record', 'related', 'lineItemsSnapshot'])) {
+                abort(404);
+              }
+
         $module = Module::query()->where('id', $id)
             ->with([
                 'layouts' => function ($q) {
@@ -71,9 +84,19 @@ class LayoutManagerController extends Controller
             ->where('slug', 'line_items')
             ->firstOrFail();
 
-        $lineItemFields = $line_itemsModel->allFields();
+        $lineItemFields = $line_itemsModel->allFields()
+            ->whereNotIn('name', ['parent_id', 'parent_type'])
+            ->values();
 
         $relationships = RelationshipService::getRelationshipForModule($module->slug);
+
+        $sourceModuleFields = collect();
+        if ($type === 'lineItemsSnapshot' && $module->lineItemSourceModuleSlug()) {
+            $sourceModule = Module::query()
+                ->where('slug', $module->lineItemSourceModuleSlug())
+                ->first();
+            $sourceModuleFields = $sourceModule?->allFields() ?? collect();
+        }
 
         return Inertia::render('Settings/Layouts/Edit', [
             'module' => $module,
@@ -82,6 +105,7 @@ class LayoutManagerController extends Controller
             'fields' => $fields,
             'relationships' => $relationships,
             'lineItemFields' => $lineItemFields,
+            'sourceModuleFields' => $sourceModuleFields,
 
         ]);
     }

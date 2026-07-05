@@ -9,6 +9,7 @@ import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecord
 import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelatedEditor.vue";
 import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubpanelEditor.vue";
 import LayoutLinkingPanelEditor from "@/Pages/Components/Settings/Layouts/LayoutLinkingPanelEditor.vue";
+import LayoutLineItemMappingEditor from "@/Pages/Components/Settings/Layouts/LayoutLineItemMappingEditor.vue";
 import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
@@ -29,6 +30,7 @@ const props = defineProps({
   fields: Object,
   relationships: Object,
   lineItemFields: Array,
+  sourceModuleFields: Array,
 });
 
 const page = usePage();
@@ -36,6 +38,7 @@ const appSettings = page.props.appSettings;
 const listColumns = ref([]);
 const relatedColumns = ref([]);
 const recordSections = ref([]);
+const lineItemsMappingFields = ref([]);
 const emptyColumns = ref(new Set());
 
 // setup layouts + record + related
@@ -210,6 +213,14 @@ const recordLayoutSectionConfigs = computed(() => {
 const recordLayoutFromDB = computed(() => {
   if (props.type !== "record") return [];
   return recordLayoutSectionConfigs.value.map((section) => {
+    // The line-items placeholder section's columns come from the shared
+    // line_items module's field pool, not this module's own fields — don't
+    // run them through the host-module fieldByName lookup below or they'd
+    // all silently get filtered out as "unknown".
+    if (section.has_line_items) {
+      return { ...section, layout: section.layout || [] };
+    }
+
     const layout = (section.layout || [])
       .map((col) => {
         if (!col?.name) return null;
@@ -261,6 +272,9 @@ const availableRecordFields = computed(() => {
 
   const usedFields = new Set();
   recordSections.value.forEach((section) => {
+    // Line-item columns belong to a separate field pool (line_items), not this
+    // module's own fields — they must not count as "used" here.
+    if (section.has_line_items) return;
     (section.layout || []).forEach((col) => {
       if (col?.name) usedFields.add(col.name);
     });
@@ -268,6 +282,72 @@ const availableRecordFields = computed(() => {
 
   return moduleFields.value.filter((field) => !usedFields.has(field.name));
 });
+
+// line items snapshot mapping
+const lineItemFieldByName = computed(() => {
+  const map = {};
+  for (const field of props.lineItemFields ?? []) {
+    if (field?.name) map[field.name] = field;
+  }
+  return map;
+});
+
+const lineItemsMappingFieldsFromDb = computed(() => {
+  if (props.type !== "lineItemsSnapshot") return [];
+  return (currentLayout?.value?.fields || [])
+    .map((col) => {
+      if (!col?.name) return null;
+      const field = lineItemFieldByName.value[col.name];
+      return {
+        ...col,
+        label: field?.label ?? col.name,
+        type: field?.type,
+      };
+    })
+    .filter(Boolean);
+});
+
+watch(
+  lineItemsMappingFieldsFromDb,
+  (val) => {
+    lineItemsMappingFields.value = [...val];
+  },
+  { immediate: true },
+);
+
+const availableLineItemsMappingFields = computed(() => {
+  if (props.type !== "lineItemsSnapshot") return [];
+
+  const usedKeys = new Set(
+    lineItemsMappingFields.value.map((col) => col?.name).filter(Boolean),
+  );
+
+  return (props.lineItemFields ?? [])
+    .filter((field) => field.name !== "product_id" && !usedKeys.has(field.name))
+    .map((field) => ({
+      name: field.name,
+      label: field.label ?? field.name,
+      type: field.type,
+    }));
+});
+
+// Only `name`/`source_field` are ever part of the persisted definition —
+// `label`/`type` on lineItemsMappingFields are display-only enrichment added
+// by lineItemsMappingFieldsFromDb above, and must be stripped from both sides
+// here or the dirty check (and the saved payload) would carry them too,
+// making this look dirty even when nothing actually changed.
+const cleanMappingEntry = (col) => ({
+  name: col?.name,
+  source_field: col?.source_field ?? null,
+});
+
+const cleanedLineItemsMappingFields = computed(() =>
+  lineItemsMappingFields.value.map(cleanMappingEntry),
+);
+
+const cleanedLineItemsMappingFromDb = computed(() =>
+  (currentLayout?.value?.fields || []).map(cleanMappingEntry),
+);
 
 const isDirty = computed(() => {
   if (props.type === "list" || props.type === "linkingPanel") {
@@ -291,6 +371,10 @@ const isDirty = computed(() => {
     const original = JSON.stringify(originalCleaned);
 
     return current !== original;
+  } else if (props.type === "lineItemsSnapshot") {
+    const current = JSON.stringify(cleanedLineItemsMappingFields.value);
+    const original = JSON.stringify(cleanedLineItemsMappingFromDb.value);
+    return current !== original;
   }
   return false;
 });
@@ -300,6 +384,7 @@ const typeDefinitionKey = {
   linkingPanel: "columns",
   record: "sections",
   related: "columns",
+  lineItemsSnapshot: "fields",
 };
 const form = useForm({
   module_id: props.module.id,
@@ -316,6 +401,8 @@ const resetToDatabaseValue = () => {
     recordSections.value = cloneRecordSectionsFromDb(recordLayoutFromDB.value);
   } else if (props.type === "related") {
     relatedColumns.value = cloneRelatedColumnsFromDb(relatedLayoutFromDB.value);
+  } else if (props.type === "lineItemsSnapshot") {
+    lineItemsMappingFields.value = [...lineItemsMappingFieldsFromDb.value];
   }
   form.definition = currentLayout.value || {};
   clearAllAlerts();
@@ -349,6 +436,8 @@ const saveLayout = () => {
     }
     emptyColumns.value = new Set();
     definition.columns = cleanedRelatedColumns.value;
+  } else if (props.type === "lineItemsSnapshot") {
+    definition.fields = cleanedLineItemsMappingFields.value;
   }
   form.definition = definition;
   const url = page.url;
@@ -431,6 +520,7 @@ const moduleColor = computed(() =>
           :available-fields="availableRecordFields"
           :field-by-key="fieldByName"
           :has-line-items="!!module.has_line_items"
+          :line-item-fields="lineItemFields"
         />
       </div>
       <div v-else-if="type === 'related'">
@@ -454,6 +544,14 @@ const moduleColor = computed(() =>
         <LayoutLinkingPanelEditor
           v-model:columns="listColumns"
           :available-fields="availableListFields"
+        />
+      </div>
+
+      <div v-else-if="type === 'lineItemsSnapshot'">
+        <LayoutLineItemMappingEditor
+          v-model:columns="lineItemsMappingFields"
+          :available-fields="availableLineItemsMappingFields"
+          :source-fields="sourceModuleFields ?? []"
         />
       </div>
 

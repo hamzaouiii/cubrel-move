@@ -159,7 +159,6 @@ const highlightMatch = (text) => {
       }"
     >
       <div class="long-text-input-wrapper">
-        <i class="long-text-icon fa-regular fa-rectangle-adjust"></i>
         <textarea
           v-model="localValue"
           @input="clearErrors()"

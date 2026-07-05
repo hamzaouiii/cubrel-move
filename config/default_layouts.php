@@ -34,9 +34,8 @@ return [
         "label" => "modules.defaults.updated_at",
         "sortable" => true
       ],
-      "defaultSort" =>
-      null
-    ]
+    ],
+    "defaultSort" => null,
   ],
   'record' => [
     'sections' => [
@@ -123,8 +122,21 @@ return [
         "label" => "modules.defaults.updated_at",
         "sortable" => true
       ],
-      "defaultSort" =>
-      null
-    ]
+    ],
+    "defaultSort" => null,
+  ],
+  // Governs the create/edit line-item sheet: which of the shared line_items
+  // module's fields appear (in order), and which field on the configured
+  // line_item_source_module (falls back to 'products') autofills each one.
+  'lineItemsSnapshot' => [
+    'fields' => [
+      ['name' => 'name', 'source_field' => 'name'],
+      ['name' => 'quantity', 'source_field' => null],
+      ['name' => 'unit', 'source_field' => 'unit'],
+      ['name' => 'unit_price', 'source_field' => 'price'],
+      ['name' => 'discount', 'source_field' => null],
+      ['name' => 'tax_rate', 'source_field' => 'tax_rate'],
+      ['name' => 'note', 'source_field' => null],
+    ],
   ],
 ];

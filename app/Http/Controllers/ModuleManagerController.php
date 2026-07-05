@@ -21,8 +21,7 @@ class ModuleManagerController extends Controller
     $item = Settings::getItem('customisation', 'modules');
 
     $modules = Module::query()
-      ->where('is_active', 1)
-      ->where('is_draft', 0)
+      ->where('show_in_module_manager', 1)
       ->with([
         'layouts' => function ($q) {
           $q->orderBy('type')->orderBy('name');
@@ -46,7 +45,16 @@ class ModuleManagerController extends Controller
     $module = Module::where('id', $id)->firstOrFail();
     return Inertia::render('Settings/Modules/Record', [
       'settingModule' => $module,
-      'categoryList'  => $category_list
+      'categoryList'  => $category_list,
+      'moduleOptions' => Module::query()
+        ->where('is_product_like', true)
+        ->where('is_active', true)
+        ->where('id', '!=', $module->id)
+        ->orderBy('name')
+        ->get(['slug', 'name'])
+        ->map(fn ($m) => ['value' => $m->slug, 'label' => $m->name])
+        ->values(),
+      'lineItemSourceLocked' => ! $module->canChangeLineItemSourceModule(),
 
     ]);
   }
@@ -68,6 +76,21 @@ class ModuleManagerController extends Controller
       'updated_at',
       'id'
     ]);
+
+    // The source module (and its associated snapshot mapping) may only be
+    // changed while no line items exist yet for this module — otherwise
+    // existing rows' product_id references and any configured field mapping
+    // would silently be left pointing at the wrong module.
+    if (
+      array_key_exists('line_item_source_module', $data)
+      && $data['line_item_source_module'] !== $module->line_item_source_module
+      && ! $module->canChangeLineItemSourceModule()
+    ) {
+      return back()->withErrors([
+        'line_item_source_module' => __('settings.modules.line_item_source_locked'),
+      ]);
+    }
+
     $module->fill($data)->save();
 
     return redirect()->to('/settings/modules');

@@ -53,24 +53,41 @@ class RecordController extends Controller
         // current module's fields definitions
         $fields = $moduleModel->allFields();
 
-        // I am getting a bit away from fully dynamic module resolution here, the reason is that line item needs products to snapshot the current data there
-        // and to provide a proper UX we need to show products as they would appear on the front end
-        // since we know we are dealing with line items and products here then we can hard call them here,
-        // which rises the risk of fatal failures if either of these modules are removed or adjusted in a way that disables this call.
+        // Line items are only relevant for modules that actually have them enabled —
+        // everything below is skipped entirely otherwise, instead of the previous
+        // unconditional lookup that ran (and could fatal) on every single module.
+        $lineItemFields = collect();
+        $sourceFields = collect();
+        $sourceModuleSlug = null;
+        $lineItemsListColumns = [];
+        $lineItemsSnapshotLayout = [];
 
-        // line item fields definitions - needed to attach line items for modules that have line items enabled, such as orders, invoices and quotes
-        $line_itemsModel = Module::query()
-            ->where('slug', 'line_items')
-            ->firstOrFail();
+        if ($moduleModel->has_line_items) {
+            $line_itemsModel = Module::query()
+                ->where('slug', 'line_items')
+                ->firstOrFail();
+            $lineItemFields = $line_itemsModel->allFields();
 
-        $lineItemFields = $line_itemsModel->allFields();
+            // The module line items snapshot/search from is configurable per host
+            // module (see Module::lineItemSourceModuleSlug()); it falls back to
+            // 'products' for modules that predate this setting. Resolved leniently
+            // (not firstOrFail) so a since-deactivated source module degrades to an
+            // empty picker instead of a hard 500 on every record view.
+            $sourceModuleSlug = $moduleModel->lineItemSourceModuleSlug();
+            $sourceModel = Module::query()
+                ->where('slug', $sourceModuleSlug)
+                ->where('is_active', true)
+                ->first();
+            $sourceFields = $sourceModel?->allFields() ?? collect();
 
-        // product fields definitions - needed to attach line items for modules that have line items enabled
-        $productModel = Module::query()
-            ->where('slug', 'products')
-            ->where('is_active', true)
-            ->firstOrFail();
-        $productFields = $productModel->allFields();
+            // The line-items table's columns live inside the record layout's own
+            // "has_line_items" placeholder section (configured via the Layouts editor).
+            $lineItemsSection = collect($recordLayout['sections'] ?? [])
+                ->first(fn ($section) => ($section['has_line_items'] ?? false) === true);
+            $lineItemsListColumns = $lineItemsSection['layout'] ?? [];
+
+            $lineItemsSnapshotLayout = $moduleModel->lineItemsSnapshotLayout();
+        }
 
         $pdfTemplates = PdfTemplate::where('module_slug', $moduleModel->slug)
             ->orderByDesc('is_default')
@@ -85,7 +102,10 @@ class RecordController extends Controller
             'relatedLayout' => $relatedLayout,
             'fields' => $fields,
             'lineItemFields' => $lineItemFields,
-            'productFields' => $productFields,
+            'productFields' => $sourceFields,
+            'lineItemSourceModule' => $sourceModuleSlug,
+            'lineItemsListColumns' => $lineItemsListColumns,
+            'lineItemsSnapshotLayout' => $lineItemsSnapshotLayout,
             'pdfTemplates' => $pdfTemplates,
         ], $props));
 
@@ -144,6 +164,10 @@ class RecordController extends Controller
 
         $record = $modelClass::findOrFail($id);
         $record->fill($request->except('_token', '_method', 'related', 'owner_id__label'))->save();
+
+        if ($request->wantsJson()) {
+            return response()->json($record);
+        }
 
         return back()->with('success', 'Record updated successfully.');
     }

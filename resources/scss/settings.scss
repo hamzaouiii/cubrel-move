@@ -166,7 +166,6 @@
       }
     }
   }
-
   &__list {
     display: grid;
     grid-template-columns: repeat(2, 2fr);
@@ -1819,10 +1818,11 @@
           display: flex;
           text-align: right;
           .remove-section {
-            padding: 6px;
             display: flex;
             flex-direction: row;
             align-items: center;
+            padding: 6px;
+            justify-content: space-between;
             border-radius: 8px;
             text-align: center;
             color: transparent;
@@ -1831,9 +1831,9 @@
             transition: all 0.1s ease-in-out;
             user-select: none;
             background-color: white;
+            font-size: 0.84rem;
 
             i {
-              padding: 0 5px;
             }
           }
           .show-remove {
@@ -2044,6 +2044,7 @@
         justify-content: flex-end;
         .remove-section {
           padding: 6px;
+          justify-content: baseline;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -2055,10 +2056,6 @@
           transition: all 0.1s ease-in-out;
           user-select: none;
           background-color: white;
-
-          i {
-            padding: 0 5px;
-          }
         }
         .show-remove {
           color: var(--danger-color);
