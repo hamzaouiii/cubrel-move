@@ -25,7 +25,10 @@ body {
 ul {
   list-style: none;
 }
-
+a {
+  all: unset;
+  cursor: pointer;
+}
 .root {
   min-height: 100vh;
   background: #f5f6fa;
@@ -66,34 +69,55 @@ ul {
   border-top-color: var(--primary-color) !important;
   border-left-color: var(--primary-color) !important;
 }
+
 .unsupported-device {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.849);
+  color: aliceblue;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 4px;
+
+  h3 {
+    color: aliceblue;
+  }
+
+  p {
+    font-family: "Fira Sans", "Heebo", sans-serif;
+  }
+
+  &__dismiss {
+    margin-top: 20px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid aliceblue;
+    border-radius: 6px;
+    font-family: "Fira Sans", "Heebo", sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    background: aliceblue;
+    color: #111;
+
+    transition: all 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-color, #3b8bff);
+      outline-offset: 2px;
+    }
+  }
 }
-// @media (max-width: 650px) {
-//   .unsupported-device {
-//     display: flex;
-//     flex-direction: column;
-//     position: fixed;
-//     inset: 0;
-//     z-index: 101;
-//     place-items: center;
-//     padding: 24px;
-//     background: rgba(0, 0, 0, 0.849);
-//     color: aliceblue;
-//     align-items: center;
-//     justify-content: center;
-//     justify-items: center;
-//     h3 {
-//       color: aliceblue;
-//     }
-//     p {
-//       font-family: "Fira Sans", "Heebo", sans-serif;
-//     }
-//   }
-//   .root {
-//     display: none;
-//   }
-// }
 
 button,
 input,

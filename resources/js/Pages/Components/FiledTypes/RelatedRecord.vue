@@ -101,7 +101,7 @@ const emitOpenOverlay = () => {
 
 <template>
   <!-- Edit Mode -->
-  <div v-if="mode === 'edit'">
+  <div v-if="mode === 'edit' || mode === 'dashboard'">
     <div
       class="related-field related-field--edit"
       :class="{ 'related-field--error': showError }"

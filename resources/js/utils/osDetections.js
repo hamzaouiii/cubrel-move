@@ -45,7 +45,7 @@ export const detectOS = () => {
     os.name = "macOS";
     os.isMac = true;
     os.modifierKey = "Meta";
-    os.modifierSymbol = "⌘";
+    os.modifierSymbol = "cmd";
   }
   // iOS detection (iPhone/iPad)
   else if (
@@ -57,7 +57,7 @@ export const detectOS = () => {
     os.isIOS = true;
     os.isMobile = true;
     os.modifierKey = "Meta";
-    os.modifierSymbol = "⌘";
+    os.modifierSymbol = "cmd";
   }
   // Windows detection
   else if (platform.includes("win") || userAgent.includes("windows")) {
