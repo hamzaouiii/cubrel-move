@@ -25,7 +25,10 @@ body {
 ul {
   list-style: none;
 }
-
+a {
+  all: unset;
+  cursor: pointer;
+}
 .root {
   min-height: 100vh;
   background: #f5f6fa;

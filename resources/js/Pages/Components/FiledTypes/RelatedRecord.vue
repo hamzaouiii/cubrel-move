@@ -100,7 +100,6 @@ const emitOpenOverlay = () => {
 </script>
 
 <template>
-  {{ mode }}
   <!-- Edit Mode -->
   <div v-if="mode === 'edit' || mode === 'dashboard'">
     <div
