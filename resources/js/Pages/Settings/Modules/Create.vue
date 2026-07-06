@@ -12,13 +12,14 @@ import FieldSettings from "@/Pages/Components/Settings/Builder/FieldSettings.vue
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
 import { Head, usePage, useForm, router, Link } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 const props = defineProps({
   settingModule: Object,

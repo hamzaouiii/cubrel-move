@@ -7,7 +7,7 @@ const props = defineProps({
 const baseUrl = `/settings/modules/${props.settingModule?.id}`;
 
 const getUrl = (page) => {
-  return page === "edit" ? baseUrl : `${baseUrl}/${page}`;
+  return page === "edit" ? `${baseUrl}/module-settings` : `${baseUrl}/${page}`;
 };
 const appSettings = usePage().props.appSettings;
 </script>
@@ -23,7 +23,6 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('edit')"
       class="settings__module__tabs__item"
-      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{ 'settings__module__tabs__item--active': activeKey === 'edit' }"
     >
       {{ $t("settings.tabs.module_settings") }}
@@ -31,7 +30,6 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('layouts')"
       class="settings__module__tabs__item"
-      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
         'settings__module__tabs__item--active': activeKey === 'layouts',
       }"
@@ -40,7 +38,6 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('fields')"
       class="settings__module__tabs__item"
-      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
         'settings__module__tabs__item--active': activeKey === 'fields',
       }"
@@ -49,7 +46,6 @@ const appSettings = usePage().props.appSettings;
     <Link
       :href="getUrl('relationships')"
       class="settings__module__tabs__item"
-      @click="activeKey === 'edit' && $event.preventDefault()"
       :class="{
         'settings__module__tabs__item--active': activeKey === 'relationships',
       }"

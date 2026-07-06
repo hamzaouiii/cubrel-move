@@ -1,13 +1,14 @@
 <script setup>
 import { computed } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import ModuleManager from "@/Pages/Components/Settings/Modules/ModuleManager.vue";
 
 const appSettings = usePage().props.appSettings;
 
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({

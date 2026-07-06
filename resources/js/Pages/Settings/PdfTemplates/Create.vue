@@ -2,12 +2,13 @@
 import { ref, computed, watch, getCurrentInstance } from "vue";
 import { Head, Link, router, useForm, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import LayoutPdfEditor from "@/Pages/Components/Settings/Layouts/LayoutPdfEditor.vue";
 import PdfPreviewPanel from "@/Pages/Components/Settings/Layouts/PdfPreviewPanel.vue";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
-defineOptions({ layout: AppLayout });
+defineOptions({ layout: [AppLayout, SettingsLayout] });
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;

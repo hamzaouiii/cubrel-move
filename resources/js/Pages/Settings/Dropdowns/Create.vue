@@ -8,12 +8,14 @@ import {
 } from "vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 
 const { error, info, success, clearAllAlerts } = useAlerts();
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const generatedSystemKey = computed(() => {
@@ -49,6 +51,12 @@ const generatedSystemvalue = (label) => {
 };
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.dropdowns"), href: "/settings/dropdowns" },
+  { label: t("settings.dropdown.create") },
+];
 
 const props = defineProps({
   item: Object,
@@ -157,6 +165,9 @@ useUnsavedChangesGuard({
       '--module-color': appSettings.primary_color,
     }"
   >
+    <div class="settings__module__header">
+      <SettingsBreadcrumb :crumbs="crumbs" />
+    </div>
     <div class="settings__dropdown">
       <div class="settings__dropdown__edit">
         <form class="dropdown-form" action="" method="post" @submit.prevent>

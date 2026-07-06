@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Support\Settings;
+use App\Models\Module;
+use App\Models\Settings\Settings as SettingsNav;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 
@@ -46,7 +48,15 @@ class HandleInertiaRequests extends Middleware
         'error'   => fn() => $request->session()->get('error'),
         'warning' => fn() => $request->session()->get('warning'),
       ],
-     
+      'settingsNav' => fn() => $request->is('settings*') ? [
+        'categories' => SettingsNav::allActive(),
+        'modules'    => Module::query()
+          ->where('show_in_module_manager', 1)
+          ->orderBy('sort_order')
+          ->orderBy('name')
+          ->get(['id', 'slug', 'name', 'label', 'icon', 'color'])
+          ->values(),
+      ] : null,
     ];
   }
 }

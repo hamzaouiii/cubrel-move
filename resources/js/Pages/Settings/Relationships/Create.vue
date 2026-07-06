@@ -1,14 +1,15 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import { ref, computed, getCurrentInstance, watch } from "vue";
 
-import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({
@@ -128,10 +129,10 @@ const getList = (field) => {
     ]"
   >
     <div class="settings__module">
-      <ModuleSettingTabs
+      <ModuleSettingsHeader
         :setting-module="module"
         active-key="relationships"
-      ></ModuleSettingTabs>
+      ></ModuleSettingsHeader>
       <div class="settings__module__header">
         <Link :href="relationshipUrl()">
           <i class="fa-solid fa-arrow-left"></i>

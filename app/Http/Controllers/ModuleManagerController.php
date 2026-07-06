@@ -18,28 +18,35 @@ class ModuleManagerController extends Controller
 {
   public function index(Request $request)
   {
-    $item = Settings::getItem('customisation', 'modules');
-
-    $modules = Module::query()
+    // The module grid is superseded by the persistent settings rail, which
+    // already lists every module. Land on the first one instead of a
+    // dead-end grid; only fall back to the grid if there's nothing to jump to.
+    $firstModule = Module::query()
       ->where('show_in_module_manager', 1)
-      ->with([
-        'layouts' => function ($q) {
-          $q->orderBy('type')->orderBy('name');
-        },
-      ])
-      ->orderBy('id')
-      ->get();
+      ->orderBy('sort_order')
+      ->orderBy('name')
+      ->first();
 
+    if ($firstModule) {
+      return redirect()->route('settings.modules.module-settings', $firstModule->id);
+    }
+
+    $item = Settings::getItem('customisation', 'modules');
 
     return Inertia::render('Settings/Modules/List', [
       'item'     => $item,
-      'setting_modules' => $modules
+      'setting_modules' => collect(),
     ]);
+  }
+
+  public function redirectToSettings(Request $request)
+  {
+    return redirect()->route('settings.modules.module-settings', $request->route('module'));
   }
 
   public function show(Request $request)
   {
-    $id = last($request->segments());
+    $id = $request->route('module');
     $category_list = DropdownList::get('module_category_list');
 
     $module = Module::where('id', $id)->firstOrFail();
@@ -93,7 +100,7 @@ class ModuleManagerController extends Controller
 
     $module->fill($data)->save();
 
-    return redirect()->to('/settings/modules');
+    return redirect()->route('settings.modules.module-settings', $module->id);
   }
 
   public function create()
@@ -150,7 +157,7 @@ class ModuleManagerController extends Controller
 
     app(ModuleScaffolder::class)->scaffold($module, $validated['display_label']);
     return redirect()
-      ->route('settings.modules.show', $module->id)
+      ->route('settings.modules.module-settings', $module->id)
       ->with('success', __('settings.module_save_success'));
   }
 

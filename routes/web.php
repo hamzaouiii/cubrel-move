@@ -98,11 +98,21 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
 
             // Module manager
             Route::resource('modules', ModuleManagerController::class)
+                ->except(['show'])
                 ->names('modules');
+
+            // The bare module URL redirects into the Module Settings tab, so
+            // every tab (module-settings/layouts/fields/relationships) has an
+            // equally real, deep-linkable URL segment.
+            Route::get('modules/{module}', [ModuleManagerController::class, 'redirectToSettings'])
+                ->name('modules.show');
 
             // Module scoped resources
             Route::prefix('modules/{module}')
                 ->group(function () {
+
+                    Route::get('module-settings', [ModuleManagerController::class, 'show'])
+                        ->name('modules.module-settings');
 
                     // Fields
                     Route::get('fields', [FieldsManagerController::class, 'show'])

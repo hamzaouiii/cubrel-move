@@ -26,6 +26,8 @@ return [
     'dropdown_list_fetch_failed' => 'Failed to fetch dropdown lists:',
     'back_to_modules' => 'Module List',
     'back_to_settings' => 'Settings',
+    'collapse_menu' => 'Collapse menu',
+    'expand_menu' => 'Expand menu',
     'search_placeholder' => 'Search settings...',
     'no_results' => 'No settings found',
     'currency_hint' => 'You can add to this list by editing the dropdown list \'currency_list\' in Settings->Dropdown Editor',

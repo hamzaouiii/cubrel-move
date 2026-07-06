@@ -8,12 +8,14 @@ import {
   onMounted,
 } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useAlerts } from "@/Composables/useAlerts";
 
 const { error, warning, success, info, clearAllAlerts } = useAlerts();
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({
@@ -23,6 +25,12 @@ const props = defineProps({
 const appSettings = usePage().props.appSettings;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.dropdowns"), href: "/settings/dropdowns" },
+  { label: props.dropdown?.key },
+];
 const newItem = useForm({
   label: "",
   value: "",
@@ -138,6 +146,9 @@ useUnsavedChangesGuard({
       '--module-color': appSettings.primary_color,
     }"
   >
+    <div class="settings__module__header">
+      <SettingsBreadcrumb :crumbs="crumbs" />
+    </div>
     <div class="settings__dropdown">
       <div class="settings__dropdown__edit">
         <div class="settings__dropdown__edit__header">
