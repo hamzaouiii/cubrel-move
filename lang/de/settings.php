@@ -25,6 +25,8 @@ return [
     'dropdown_list_fetch_failed' => 'Dropdown-Listen konnten nicht abgerufen werden:',
     'back_to_modules' => 'Zurück zur Modul-Liste',
     'back_to_settings' => 'Zurück zu Einstellungen',
+    'collapse_menu' => 'Menü einklappen',
+    'expand_menu' => 'Menü ausklappen',
     'currency_hint' => 'Sie können diese Liste erweitern, indem Sie die Dropdown-Liste \'currency_list\' unter Einstellungen → Dropdown-Editor bearbeiten.',
     'search_placeholder' => 'In dieser Liste suchen...',
     'no_results' => 'Keine Einstellungen gefunden',

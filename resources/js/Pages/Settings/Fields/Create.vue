@@ -1,5 +1,6 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import axios from "axios";
 
 import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
@@ -16,7 +17,7 @@ import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import { useFieldRules } from "@/Composables/useFieldRules";
 
-import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
 
@@ -27,7 +28,7 @@ import EditDropdownListModal from "@/Pages/Components/Settings/Dropdowns/EditDro
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({
@@ -261,10 +262,10 @@ const moduleColor = computed(() =>
     "
   >
     <div class="settings__module">
-      <ModuleSettingTabs
+      <ModuleSettingsHeader
         :setting-module="module"
         active-key="fields"
-      ></ModuleSettingTabs>
+      ></ModuleSettingsHeader>
 
       <div class="settings__module__header">
         <Link :href="fieldsUrl()">

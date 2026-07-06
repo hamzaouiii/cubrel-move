@@ -27,7 +27,7 @@ const module = computed(() => page.props.receivedItem || page.props);
           ? { '--module-color': appSettings.primary_color }
           : { '--module-color': m.color }
       "
-      :href="currentPath + '/' + m.id"
+      :href="currentPath + '/' + m.id + '/module-settings'"
       class="settings__modules__card"
     >
       <div class="settings__modules__card__icon">

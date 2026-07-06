@@ -3,6 +3,7 @@ import { computed, ref, watch, getCurrentInstance } from "vue";
 import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
 
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 
 import LayoutListEditor from "@/Pages/Components/Settings/Layouts/LayoutListEditor.vue";
 import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecordEditor.vue";
@@ -10,7 +11,7 @@ import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelat
 import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubpanelEditor.vue";
 import LayoutLinkingPanelEditor from "@/Pages/Components/Settings/Layouts/LayoutLinkingPanelEditor.vue";
 import LayoutLineItemMappingEditor from "@/Pages/Components/Settings/Layouts/LayoutLineItemMappingEditor.vue";
-import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
@@ -20,7 +21,7 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({
@@ -494,16 +495,10 @@ const moduleColor = computed(() =>
     }"
   >
     <div class="settings__module">
-      <ModuleSettingTabs
+      <ModuleSettingsHeader
         :setting-module="module"
         active-key="layouts"
-      ></ModuleSettingTabs>
-    </div>
-    <div class="settings__module__header">
-      <Link :href="layoutsUrl()">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("layouts.back_to_list") }}</Link
-      >
+      ></ModuleSettingsHeader>
     </div>
 
     <div class="layouts__editor">

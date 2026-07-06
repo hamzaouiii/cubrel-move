@@ -1,12 +1,13 @@
 <script setup>
 import { computed, ref, nextTick, getCurrentInstance } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
 
-defineOptions({ layout: AppLayout });
+defineOptions({ layout: [AppLayout, SettingsLayout] });
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;

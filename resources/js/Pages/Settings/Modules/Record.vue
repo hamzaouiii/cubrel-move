@@ -1,11 +1,12 @@
 <script setup>
 import { reactive, computed, getCurrentInstance } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
+import { Head, usePage, useForm } from "@inertiajs/vue3";
 import IconPicker from "@/Pages/Components/Settings/Modules/IconPicker.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
-import ModuleSettingTabs from "@/Pages/Components/Settings/ModuleSettingTabs.vue";
+import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
 
 import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 import ColorPicker from "@/Pages/Components/FiledTypes/ColorPicker.vue";
@@ -19,7 +20,7 @@ const t = proxy.$t;
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({
@@ -166,16 +167,10 @@ useUnsavedChangesGuard({
     ]"
   >
     <div class="settings__module">
-      <ModuleSettingTabs
+      <ModuleSettingsHeader
         :setting-module="settingModule"
         active-key="edit"
-      ></ModuleSettingTabs>
-      <div class="settings__module__header">
-        <Link href="/settings/modules">
-          <i class="fa-solid fa-arrow-left"></i>
-          {{ $t("settings.back_to_modules") }}
-        </Link>
-      </div>
+      ></ModuleSettingsHeader>
       <div class="settings__module__edit">
         <form class="settings__module__edit__form" @submit.prevent="saveRecord">
           <div

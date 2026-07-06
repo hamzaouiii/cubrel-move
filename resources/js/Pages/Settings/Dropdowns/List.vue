@@ -1,12 +1,22 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, getCurrentInstance } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
+
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.dropdowns") },
+];
 
 const appSettings = usePage().props.appSettings;
 
 defineOptions({
-  layout: AppLayout,
+  layout: [AppLayout, SettingsLayout],
 });
 
 const props = defineProps({
@@ -50,10 +60,7 @@ const editUrl = (f) => {
     }"
   >
     <div class="settings__module__header">
-      <Link href="/settings">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("settings.back_to_settings") }}
-      </Link>
+      <SettingsBreadcrumb :crumbs="crumbs" />
     </div>
     <div class="dropdowns__toolbar">
       <div class="dropdowns__search">
