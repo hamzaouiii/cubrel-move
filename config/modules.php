@@ -22,7 +22,7 @@ return [
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\LeadsModuleHandler',
         'description' => 'Prospective customers with interest.',
-
+        'show_in_module_manager' => true,
         'model_class' => 'App\\Models\\Modules\\Lead',
         'table_name' => 'leads',
         'is_custom' => 0,
@@ -42,7 +42,7 @@ return [
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\AccountsModuleHandler',
         'description' => 'Company records and organizations.',
-
+        'show_in_module_manager' => true,
         'model_class' => 'App\\Models\\Modules\\Account',
         'table_name' => 'accounts',
         'is_custom' => 0,
@@ -62,7 +62,7 @@ return [
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\ContactsModuleHandler',
         'description' => 'People assigned to accounts or leads.',
-
+        'show_in_module_manager' => true,
         'model_class' => 'App\\Models\\Modules\\Contact',
         'table_name' => 'contacts',
         'is_custom' => 0,
@@ -82,7 +82,7 @@ return [
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\DealsModuleHandler',
         'description' => 'Sales deals and revenue deals.',
-
+        'show_in_module_manager' => true,
         'model_class' => 'App\\Models\\Modules\\Deal',
         'table_name' => 'deals',
         'is_custom' => 0,
@@ -109,9 +109,12 @@ return [
         'handler_class' => 'App\\Handlers\\Modules\\QuotesModuleHandler',
         'description' => 'Sales proposals and quotes.',
         'has_line_items' => true,
+        'line_item_source_module' => 'products',
         'model_class' => 'App\\Models\\Modules\\Quote',
         'table_name' => 'quotes',
         'is_custom' => 0,
+        'show_in_module_manager' => true,
+
     ],
 
     [
@@ -129,9 +132,12 @@ return [
         'handler_class' => 'App\\Handlers\\Modules\\OrdersModuleHandler',
         'description' => 'Customer orders and confirmations.',
         'has_line_items' => true,
+        'line_item_source_module' => 'products',
         'model_class' => 'App\\Models\\Modules\\Order',
         'table_name' => 'orders',
         'is_custom' => 0,
+        'show_in_module_manager' => true,
+
     ],
 
     [
@@ -149,9 +155,12 @@ return [
         'handler_class' => 'App\\Handlers\\Modules\\InvoicesModuleHandler',
         'description' => 'Customer invoices and billing.',
         'has_line_items' => true,
+        'line_item_source_module' => 'products',
         'model_class' => 'App\\Models\\Modules\\Invoice',
         'table_name' => 'invoices',
         'is_custom' => 0,
+        'show_in_module_manager' => true,
+
     ],
 
     [
@@ -172,6 +181,7 @@ return [
         'table_name' => 'line_items',
         'is_custom' => 0,
         'has_owner' => false,
+        'show_in_module_manager' => false,
 
     ],
 
@@ -189,7 +199,8 @@ return [
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\ProductsModuleHandler',
         'description' => 'Product and service catalog.',
-
+        'is_product_like' => true,
+        'show_in_module_manager' => true,
         'model_class' => 'App\\Models\\Modules\\Product',
         'table_name' => 'products',
         'is_custom' => 0,
@@ -215,6 +226,7 @@ return [
         'show_in_sidebar' => 1,
         'handler_class' => 'App\\Handlers\\Modules\\CasesModuleHandler',
         'description' => 'Support requests, bugs, tickets.',
+        'show_in_module_manager' => true,
 
         'model_class' => 'App\\Models\\Modules\\SupportCase',
         'table_name' => 'cases',
@@ -245,6 +257,8 @@ return [
         'model_class' => 'App\\Models\\Modules\\Settings',
         'table_name' => 'settings',
         'is_custom' => 0,
+        'show_in_module_manager' => false,
+
     ],
     [
         'name' => 'Users',
@@ -264,6 +278,8 @@ return [
         'model_class' => 'App\\Models\\User',
         'table_name' => 'users',
         'is_custom' => 0,
+        'show_in_module_manager' => false,
+
     ],
     [
         'name' => 'User Invites',
@@ -283,6 +299,8 @@ return [
         'table_name' => 'userinvites',
         'is_custom' => 0,
         'has_owner' => false,
+        'show_in_module_manager' => false,
+
     ],
     [
         'name' => 'Pdf Template',
@@ -302,6 +320,8 @@ return [
         'table_name' => 'pdf_templates',
         'is_custom' => 0,
         'has_owner' => false,
+        'show_in_module_manager' => false,
+
     ],
 
 ];

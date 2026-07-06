@@ -360,7 +360,7 @@ const getField = (f) => {
 };
 
 const getMode = (f) => {
-  if (f.readonly) return "detail";
+  if (getField(f)?.readonly) return "detail";
   return mode.value;
 };
 

@@ -86,6 +86,19 @@ return [
                 ],
             ],
             1 => [
+                'name' => 'Line Items',
+                'has_line_items' => true,
+                'layout' => [
+                    0 => ['name' => 'name', 'type' => 'text', 'label' => 'modules.line_items.fields.name'],
+                    1 => ['name' => 'quantity', 'type' => 'decimal', 'label' => 'modules.line_items.fields.quantity'],
+                    2 => ['name' => 'unit', 'type' => 'select', 'label' => 'modules.line_items.fields.unit'],
+                    3 => ['name' => 'unit_price', 'type' => 'currency', 'label' => 'modules.line_items.fields.unit_price'],
+                    4 => ['name' => 'discount', 'type' => 'percentage', 'label' => 'modules.line_items.fields.discount'],
+                    5 => ['name' => 'tax_rate', 'type' => 'percentage', 'label' => 'modules.line_items.fields.tax_rate'],
+                    6 => ['name' => 'total', 'type' => 'currency', 'label' => 'modules.line_items.fields.total'],
+                ],
+            ],
+            2 => [
                 'name' => 'Dates',
                 'layout' => [
                     0 => [

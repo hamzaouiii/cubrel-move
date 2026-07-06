@@ -7,6 +7,7 @@ import {
   getCurrentInstance,
   onBeforeUnmount,
 } from "vue";
+import LayoutLineItemColumnsEditor from "./LayoutLineItemColumnsEditor.vue";
 
 const props = defineProps({
   sections: {
@@ -22,6 +23,10 @@ const props = defineProps({
     default: () => ({}),
   },
   hasLineItems: Boolean,
+  lineItemFields: {
+    type: Array,
+    default: () => [],
+  },
 });
 
 const emit = defineEmits(["update:sections"]);
@@ -455,6 +460,23 @@ const updateSectionName = (sectionIndex, name) => {
   emitUpdatedSections();
 };
 
+// The "Line Items" placeholder section picks its columns from the shared
+// line_items module's own fields — a separate pool from this module's own
+// availableFields/fieldByKey, so it gets its own independent picker instance.
+const lineItemsAvailableFields = (sectionIndex) => {
+  const chosen = new Set(
+    (internalSections.value[sectionIndex]?.layout || [])
+      .map((col) => col?.name)
+      .filter(Boolean),
+  );
+  return props.lineItemFields.filter((field) => !chosen.has(field.name));
+};
+
+const updateLineItemsColumns = (sectionIndex, columns) => {
+  internalSections.value[sectionIndex].layout = columns;
+  emitUpdatedSections();
+};
+
 onBeforeUnmount(() => {
   stopGhostAnimation();
 });
@@ -619,8 +641,17 @@ onBeforeUnmount(() => {
               </div>
 
               <div class="editor__sections__item__content">
-                <div v-if="section.has_line_items">
-                  {{ $t("layouts.line_items_message") }}
+                <div v-if="section.has_line_items" class="rle-line-items">
+                  <p class="rle-line-items__hint">
+                    {{ $t("layouts.line_items_message") }}
+                  </p>
+                  <LayoutLineItemColumnsEditor
+                    :columns="section.layout || []"
+                    :available-fields="lineItemsAvailableFields(sectionIndex)"
+                    @update:columns="
+                      (cols) => updateLineItemsColumns(sectionIndex, cols)
+                    "
+                  />
                 </div>
 
                 <div

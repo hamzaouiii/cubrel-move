@@ -1,4 +1,5 @@
 <script setup>
+import axios from "axios";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
@@ -36,6 +37,9 @@ const props = defineProps({
   fields: Object,
   lineItemFields: Array,
   productFields: Array,
+  lineItemSourceModule: String,
+  lineItemsListColumns: { type: Array, default: () => [] },
+  lineItemsSnapshotLayout: Object,
   pdfTemplates: { type: Array, default: () => [] },
 });
 const { proxy } = getCurrentInstance();
@@ -389,7 +393,7 @@ const getField = (f) => {
 };
 
 const getMode = (f) => {
-  if (f.readonly) return "detail";
+  if (getField(f)?.readonly) return "detail";
   return mode.value;
 };
 
@@ -517,7 +521,21 @@ const getLinkingLayout = (slug) => {
   return l?.layouts?.linkingPanel?.columns || null;
 };
 
+const totalsDiffer = (a, b) =>
+  Math.abs(parseFloat(a || 0) - parseFloat(b || 0)) > 0.005;
+
 const handleTotalsUpdated = (totals) => {
+  // Line items recompute this on every mount just by loading their rows; most
+  // of the time it matches what's already stored, so only write back (and only
+  // via a plain background request, never an Inertia visit, since a full-page
+  // refresh with no user action to attribute it to reads as a glitch) when the
+  // recalculated totals actually drifted from what's on the record.
+  const changed =
+    totalsDiffer(totals.subtotal, form.subtotal) ||
+    totalsDiffer(totals.tax_amount, form.tax_amount) ||
+    totalsDiffer(totals.discount_amount, form.discount_amount) ||
+    totalsDiffer(totals.total, form.total);
+
   form.subtotal = totals.subtotal;
   form.tax_amount = totals.tax_amount;
   form.discount_amount = totals.discount_amount;
@@ -530,10 +548,11 @@ const handleTotalsUpdated = (totals) => {
     total: totals.total,
   });
 
+  if (!changed) return;
+
   const moduleSlug = props.module.slug ?? props.module;
-  router.put(`/${moduleSlug}/${props.record.id}`, totals, {
-    preserveScroll: true,
-    preserveState: true,
+  axios.put(`/${moduleSlug}/${props.record.id}`, totals).catch((e) => {
+    console.error("Failed to sync recalculated totals", e);
   });
 };
 </script>
@@ -676,6 +695,9 @@ const handleTotalsUpdated = (totals) => {
               :module-color="module_color"
               :product-fields="productFields"
               :line-item-fields="lineItemFields"
+              :source-module="lineItemSourceModule"
+              :list-columns="lineItemsListColumns"
+              :snapshot-layout="lineItemsSnapshotLayout"
               @totals-updated="handleTotalsUpdated"
             />
           </template>

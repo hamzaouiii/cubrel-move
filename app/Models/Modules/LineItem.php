@@ -3,8 +3,6 @@
 namespace App\Models\Modules;
 
 use App\Models\BaseModule;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class LineItem extends BaseModule
 {
@@ -42,16 +40,6 @@ class LineItem extends BaseModule
         ];
     }
 
-
-    public function parent(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(\App\Models\Modules\Product::class);
-    }
 
     public function calculateTotals(): static
     {

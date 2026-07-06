@@ -14,6 +14,9 @@ const props = defineProps({
   moduleColor: { type: String, default: "var(--module-color)" },
   productFields: { type: Array, default: () => [] },
   lineItemFields: { type: Array, default: () => [] },
+  sourceModule: { type: String, default: "products" },
+  listColumns: { type: Array, default: () => [] },
+  snapshotLayout: { type: Object, default: () => ({ fields: [] }) },
 });
 
 const emit = defineEmits(["totals-updated"]);
@@ -24,7 +27,6 @@ const { error, clearAllAlerts, success } = useAlerts();
 const { confirm } = useConfirm();
 
 const rowErrors = ref({});
-const lastEdited = ref("percent");
 
 const validateRow = () => {
   const errors = {};
@@ -164,46 +166,22 @@ const recalcRow = () => {
   const up = parseFloat(row.value.unit_price || 0);
   const qty = parseFloat(row.value.quantity || 0);
   const tax = parseFloat(row.value.tax_rate || 0);
+  const dis = parseFloat(row.value.discount || 0);
   const subtotal = up * qty;
 
-  let da;
-  if (lastEdited.value === "amount") {
-    da =
-      Math.round(
-        Math.min(
-          Math.max(parseFloat(row.value.discount_amount || 0), 0),
-          subtotal,
-        ) * 100,
-      ) / 100;
-    row.value.discount_amount = da;
-    row.value.discount =
-      subtotal > 0 ? Math.round((da / subtotal) * 10000) / 100 : 0;
-  } else {
-    const dis = parseFloat(row.value.discount || 0);
-    da = Math.round(subtotal * (dis / 100) * 100) / 100;
-    row.value.discount_amount = da;
-  }
-
+  const da = Math.round(subtotal * (dis / 100) * 100) / 100;
   const tax_amount = (subtotal - da) * (tax / 100);
+
+  row.value.discount_amount = da;
   row.value.subtotal = subtotal;
   row.value.tax_amount = tax_amount;
   row.value.total = subtotal - da + tax_amount;
 };
 
-watch(
-  () => [row.value.unit_price, row.value.quantity, row.value.tax_rate],
-  recalcRow,
-);
-
-const onDiscountPercentChange = (val) => {
-  lastEdited.value = "percent";
-  row.value.discount = parseFloat(val) || 0;
-  recalcRow();
-};
-
-const onDiscountAmountChange = (val) => {
-  lastEdited.value = "amount";
-  row.value.discount_amount = parseFloat(val) || 0;
+// Every sheet field (product-picker aside) is bound generically, so a single
+// handler recalculates totals regardless of which configured field changed.
+const updateRowField = (name, value) => {
+  row.value[name] = value;
   recalcRow();
 };
 
@@ -211,11 +189,17 @@ const onDiscountAmountChange = (val) => {
 
 const onProductSelect = (product) => {
   row.value.product_id = product.id;
-  row.value.product__label = product.name;
-  row.value.name = product.name ?? row.value.name;
-  row.value.unit_price = product.price ?? row.value.unit_price;
-  row.value.unit = product.unit ?? row.value.unit;
-  row.value.tax_rate = product.tax_rate ?? row.value.tax_rate;
+  row.value.product__label = product.name ?? product.id;
+
+  (props.snapshotLayout?.fields || []).forEach((entry) => {
+    if (!entry.source_field) return;
+    const value = product[entry.source_field];
+    if (value !== undefined && value !== null) {
+      row.value[entry.name] = value;
+    }
+  });
+
+  recalcRow();
   drawerOpen.value = false;
 };
 
@@ -227,7 +211,6 @@ const openNewRow = () => {
   editingItem.value = null;
   row.value = emptyRow();
   rowErrors.value = {};
-  lastEdited.value = "percent";
   sheetOpen.value = true;
 };
 
@@ -236,7 +219,6 @@ const openEditRow = (item) => {
   editingItem.value = item;
   row.value = { ...item, product__label: item.product__label ?? "" };
   rowErrors.value = {};
-  lastEdited.value = "percent";
   sheetOpen.value = true;
 };
 
@@ -444,9 +426,17 @@ const getColor = (slug) =>
     : getModule(slug)?.color;
 
 const productLinkingLayout = computed(() => {
-  const layout = allLayouts.value.find((l) => l.module === "products");
+  const layout = allLayouts.value.find((l) => l.module === props.sourceModule);
   return layout?.layouts?.linkingPanel?.columns || null;
 });
+
+// Same "Select <label>" idiom RecordSelectorDrawer's own drawerTitle uses.
+const sourceModuleLabel = computed(() =>
+  t("modules." + props.sourceModule + ".single_label"),
+);
+const productPickerPlaceholder = computed(
+  () => `${t("modules.selectdrawer.select")} ${sourceModuleLabel.value}`,
+);
 </script>
 
 <template>
@@ -470,26 +460,8 @@ const productLinkingLayout = computed(() => {
             <tr>
               <th class="col-drag"></th>
               <th class="col-pos">#</th>
-              <th class="col-name">
-                {{ $t("modules.line_items.fields.name") }}
-              </th>
-              <th class="col-qty">
-                {{ $t("modules.line_items.fields.quantity") }}
-              </th>
-              <th class="col-unit">
-                {{ $t("modules.line_items.fields.unit") }}
-              </th>
-              <th class="col-price">
-                {{ $t("modules.line_items.fields.unit_price") }}
-              </th>
-              <th class="col-disc">
-                {{ $t("modules.line_items.fields.discount") }}
-              </th>
-              <th class="col-tax">
-                {{ $t("modules.line_items.fields.tax_rate") }}
-              </th>
-              <th class="col-total">
-                {{ $t("modules.line_items.fields.total") }}
+              <th v-for="col in listColumns" :key="col.name">
+                {{ $t(col.label) }}
               </th>
               <th class="col-actions"></th>
             </tr>
@@ -498,13 +470,9 @@ const productLinkingLayout = computed(() => {
             <tr v-for="i in 4" :key="i" class="li-sk-row">
               <td class="col-drag"><div class="sk sk--icon"></div></td>
               <td class="col-pos"><div class="sk sk--xs"></div></td>
-              <td class="col-name"><div class="sk sk--name"></div></td>
-              <td class="col-qty"><div class="sk sk--sm"></div></td>
-              <td class="col-unit"><div class="sk sk--sm"></div></td>
-              <td class="col-price"><div class="sk sk--md"></div></td>
-              <td class="col-disc"><div class="sk sk--sm"></div></td>
-              <td class="col-tax"><div class="sk sk--sm"></div></td>
-              <td class="col-total"><div class="sk sk--md sk--right"></div></td>
+              <td v-for="col in listColumns" :key="col.name">
+                <div class="sk sk--sm"></div>
+              </td>
               <td class="col-actions"></td>
             </tr>
           </tbody>
@@ -536,26 +504,8 @@ const productLinkingLayout = computed(() => {
             <tr>
               <th class="col-drag"></th>
               <th class="col-pos">#</th>
-              <th class="col-name">
-                {{ $t("modules.line_items.fields.name") }}
-              </th>
-              <th class="col-qty">
-                {{ $t("modules.line_items.fields.quantity") }}
-              </th>
-              <th class="col-unit">
-                {{ $t("modules.line_items.fields.unit") }}
-              </th>
-              <th class="col-price">
-                {{ $t("modules.line_items.fields.unit_price") }}
-              </th>
-              <th class="col-disc">
-                {{ $t("modules.line_items.fields.discount") }}
-              </th>
-              <th class="col-tax">
-                {{ $t("modules.line_items.fields.tax_rate") }}
-              </th>
-              <th class="col-total">
-                {{ $t("modules.line_items.fields.total") }}
+              <th v-for="col in listColumns" :key="col.name">
+                {{ $t(col.label) }}
               </th>
               <th class="col-actions"></th>
             </tr>
@@ -567,7 +517,7 @@ const productLinkingLayout = computed(() => {
               @dragover="setDragOver(0, $event)"
               @drop="onDrop(0, $event)"
             >
-              <td colspan="10" class="li-drop-zone__cell"></td>
+              <td :colspan="listColumns.length + 3" class="li-drop-zone__cell"></td>
             </tr>
 
             <template v-for="(item, index) in items" :key="item.id">
@@ -583,71 +533,19 @@ const productLinkingLayout = computed(() => {
                   <i class="fa-solid fa-grip-vertical drag-handle"></i>
                 </td>
                 <td class="col-pos">{{ index + 1 }}</td>
-                <td class="col-name">
+                <td v-for="col in listColumns" :key="col.name">
                   <FieldRenderer
-                    :field="getLineItemField('name')"
-                    v-model="item.name"
+                    :field="getLineItemField(col.name)"
+                    v-model="item[col.name]"
                     mode="table"
                     :module-color="moduleColor"
                     :read-only="true"
                   />
-                  <span v-if="item.note" class="item-note">{{
-                    item.note
-                  }}</span>
-                </td>
-                <td class="col-qty">
-                  <FieldRenderer
-                    :field="getLineItemField('quantity')"
-                    v-model="item.quantity"
-                    mode="table"
-                    :module-color="moduleColor"
-                    :read-only="true"
-                  />
-                </td>
-                <td class="col-unit">
-                  <FieldRenderer
-                    :field="getLineItemField('unit')"
-                    v-model="item.unit"
-                    mode="table"
-                    :module-color="moduleColor"
-                    :read-only="true"
-                  />
-                </td>
-                <td class="col-price">
-                  <FieldRenderer
-                    :field="getLineItemField('unit_price')"
-                    v-model="item.unit_price"
-                    mode="table"
-                    :module-color="moduleColor"
-                    :read-only="true"
-                  />
-                </td>
-                <td class="col-disc">
-                  <FieldRenderer
-                    :field="getLineItemField('discount')"
-                    v-model="item.discount"
-                    mode="table"
-                    :module-color="moduleColor"
-                    :read-only="true"
-                  />
-                </td>
-                <td class="col-tax">
-                  <FieldRenderer
-                    :field="getLineItemField('tax_rate')"
-                    v-model="item.tax_rate"
-                    mode="table"
-                    :module-color="moduleColor"
-                    :read-only="true"
-                  />
-                </td>
-                <td class="col-total">
-                  <FieldRenderer
-                    :field="getLineItemField('total')"
-                    v-model="item.total"
-                    mode="table"
-                    :module-color="moduleColor"
-                    :read-only="true"
-                  />
+                  <span
+                    v-if="col.name === 'name' && item.note"
+                    class="item-note"
+                    >{{ item.note }}</span
+                  >
                 </td>
                 <td class="col-actions" @click.stop>
                   <button class="btn-delete" @click="deleteRow(item)">
@@ -662,7 +560,7 @@ const productLinkingLayout = computed(() => {
                 @dragover="setDragOver(index + 1, $event)"
                 @drop="onDrop(index + 1, $event)"
               >
-                <td colspan="10" class="li-drop-zone__cell"></td>
+                <td :colspan="listColumns.length + 3" class="li-drop-zone__cell"></td>
               </tr>
             </template>
           </tbody>
@@ -757,146 +655,34 @@ const productLinkingLayout = computed(() => {
                 @click="drawerOpen = true"
               >
                 <span :class="{ placeholder: !row.product__label }">
-                  {{
-                    row.product__label ||
-                    $t("modules.line_items.select_product")
-                  }}
+                  {{ row.product__label || productPickerPlaceholder }}
                 </span>
                 <i class="fa-solid fa-chevron-right"></i>
               </div>
             </div>
 
-            <!-- Name -->
-            <div class="sheet-field">
+            <!-- Configured line-item fields (order/inclusion driven by the
+                 Line Items snapshot layout) -->
+            <div
+              v-for="fieldEntry in snapshotLayout?.fields || []"
+              :key="fieldEntry.name"
+              class="sheet-field"
+            >
               <label
                 class="sheet-field__label"
-                :class="{ 'sheet-field__label--error': rowErrors.name }"
+                :class="{ 'sheet-field__label--error': rowErrors[fieldEntry.name] }"
               >
-                {{ $t("modules.line_items.fields.name") }}
+                {{ $t(getLineItemField(fieldEntry.name).label) }}
               </label>
               <FieldRenderer
-                :field="getLineItemField('name')"
-                v-model="row.name"
+                :field="getLineItemField(fieldEntry.name)"
+                :model-value="row[fieldEntry.name]"
                 mode="edit"
                 :module-color="moduleColor"
-                :has-error="!!rowErrors.name"
-              />
-            </div>
-
-            <!-- Qty + Unit -->
-            <div class="sheet-field-row">
-              <div class="sheet-field">
-                <label
-                  class="sheet-field__label"
-                  :class="{ 'sheet-field__label--error': rowErrors.quantity }"
-                >
-                  {{ $t("modules.line_items.fields.quantity") }}
-                </label>
-                <FieldRenderer
-                  :field="getLineItemField('quantity')"
-                  v-model="row.quantity"
-                  mode="edit"
-                  :module-color="moduleColor"
-                  :has-error="!!rowErrors.quantity"
-                />
-              </div>
-              <div class="sheet-field">
-                <label
-                  class="sheet-field__label"
-                  :class="{ 'sheet-field__label--error': rowErrors.unit }"
-                >
-                  {{ $t("modules.line_items.fields.unit") }}
-                </label>
-                <FieldRenderer
-                  :field="getLineItemField('unit')"
-                  v-model="row.unit"
-                  mode="edit"
-                  :module-color="moduleColor"
-                  :has-error="!!rowErrors.unit"
-                />
-              </div>
-            </div>
-
-            <!-- Unit price -->
-            <div class="sheet-field">
-              <label
-                class="sheet-field__label"
-                :class="{ 'sheet-field__label--error': rowErrors.unit_price }"
-              >
-                {{ $t("modules.line_items.fields.unit_price") }}
-              </label>
-              <FieldRenderer
-                :field="getLineItemField('unit_price')"
-                v-model="row.unit_price"
-                mode="edit"
-                :module-color="moduleColor"
-                :has-error="!!rowErrors.unit_price"
-              />
-            </div>
-
-            <div class="sheet-field-row sheet-field-row--3">
-              <div class="sheet-field">
-                <label
-                  class="sheet-field__label"
-                  :class="{ 'sheet-field__label--error': rowErrors.discount }"
-                >
-                  {{ $t("modules.line_items.fields.discount") }}
-                </label>
-                <FieldRenderer
-                  :field="getLineItemField('discount')"
-                  :modelValue="row.discount"
-                  @update:modelValue="onDiscountPercentChange"
-                  mode="edit"
-                  :module-color="moduleColor"
-                  :has-error="!!rowErrors.discount"
-                />
-              </div>
-              <div class="sheet-field">
-                <label class="sheet-field__label">
-                  {{ $t("modules.line_items.fields.discount_amount") }}
-                </label>
-                <FieldRenderer
-                  :field="{
-                    ...getLineItemField('notes'),
-                    name: 'discount_amount',
-                  }"
-                  :modelValue="row.discount_amount"
-                  @update:modelValue="onDiscountAmountChange"
-                  mode="edit"
-                  :module-color="moduleColor"
-                />
-              </div>
-              <div class="sheet-field">
-                <label
-                  class="sheet-field__label"
-                  :class="{ 'sheet-field__label--error': rowErrors.tax_rate }"
-                >
-                  {{ $t("modules.line_items.fields.tax_rate") }}
-                </label>
-                <FieldRenderer
-                  :field="getLineItemField('tax_rate')"
-                  v-model="row.tax_rate"
-                  mode="edit"
-                  :module-color="moduleColor"
-                  :has-error="!!rowErrors.tax_rate"
-                />
-              </div>
-            </div>
-
-            <!-- Note -->
-            <div class="sheet-field">
-              <label
-                class="sheet-field__label"
-                :class="{ 'sheet-field__label--error': rowErrors.note }"
-              >
-                {{ $t("modules.line_items.fields.note") }}
-              </label>
-              <FieldRenderer
-                :field="getLineItemField('note')"
-                v-model="row.note"
-                mode="edit"
-                :module-color="moduleColor"
-                :has-error="!!rowErrors.note"
+                :has-error="!!rowErrors[fieldEntry.name]"
+                @update:model-value="
+                  (val) => updateRowField(fieldEntry.name, val)
+                "
               />
             </div>
 
@@ -944,13 +730,13 @@ const productLinkingLayout = computed(() => {
       <span class="li-ghost__label">{{ ghostLabel }}</span>
     </div>
 
-    <!-- Product selector drawer (nested, reuses your existing component) -->
+    <!-- Related-record selector drawer (nested, reuses your existing component) -->
     <RecordSelectorDrawer
       :open="drawerOpen"
-      search-endpoint="/relatedfield/search/products"
-      related-module="products"
-      :icon="getIcon('products')"
-      :accent-color="getColor('products')"
+      :search-endpoint="`/relatedfield/search/${sourceModule}`"
+      :related-module="sourceModule"
+      :icon="getIcon(sourceModule)"
+      :accent-color="getColor(sourceModule)"
       :layout="productLinkingLayout"
       :fields="productFields"
       :allow-create="true"

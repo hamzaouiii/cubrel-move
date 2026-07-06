@@ -13,6 +13,7 @@ const props = defineProps({
   categoryList: Object,
   color: String,
   errors: Object,
+  moduleOptions: { type: Array, default: () => [] },
 });
 
 const { proxy } = getCurrentInstance();
@@ -25,7 +26,7 @@ const editableModule = reactive({
 });
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
 editableModule.has_line_items = Boolean(editableModule.has_line_items);
-editableModule.has_owner = Boolean(editableModule.has_owner);
+editableModule.is_product_like = Boolean(editableModule.is_product_like);
 const editableFields = computed(() => {
   const ignore = [
     "name",
@@ -47,11 +48,22 @@ const editableFields = computed(() => {
     "is_draft",
     "locked_by",
     "locked_until",
+    "line_item_source_module",
+    "has_owner",
+    "show_in_module_manager",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),
   );
 });
+
+const lineItemSourceOptions = computed(() => ({
+  values: props.moduleOptions,
+}));
+
+const noHintFields = ["description", "show_in_sidebar"];
+const hintFor = (key) =>
+  noHintFields.includes(key) ? null : `settings.modules.${key}_hint`;
 
 const slug = computed(() => {
   const label = editableModule?.display_label || "";
@@ -77,8 +89,8 @@ const inputTypeFor = (key, value) => {
   if (key === "color") return "color";
   if (key === "category") return "select";
   if (key === "description") return "textarea";
-  if (key === "has_owner") return "checkbox";
   if (key === "has_line_items") return "checkbox";
+  if (key === "is_product_like") return "checkbox";
   return "text";
 };
 const emit = defineEmits([
@@ -87,7 +99,12 @@ const emit = defineEmits([
   "missing-fields",
   "is-form-dirty",
 ]);
-const requiredFields = ["display_label", "single_label", "category"];
+const requiredFields = [
+  "display_label",
+  "single_label",
+  "category",
+  "line_item_source_module",
+];
 // 1. Validation: Checks if required fields are empty
 const hasMissingRequired = computed(() => {
   return requiredFields.some((field) => {
@@ -151,28 +168,13 @@ watch(
         :key="key"
         class="settings__module__edit__element"
       >
-        <label
-          class="settings__module__edit__element__label"
-          v-if="key === 'has_line_items'"
-        >
+        <label class="settings__module__edit__element__label">
           {{ $t("settings.modules." + key) }}
           <ExplainTip
-            :text="t('settings.modules.has_line_items_hint')"
+            v-if="hintFor(key)"
+            :text="t(hintFor(key))"
             :color="color"
           />
-        </label>
-        <label
-          class="settings__module__edit__element__label"
-          v-else-if="key === 'has_owner'"
-        >
-          {{ $t("settings.modules." + key) }}
-          <ExplainTip
-            :text="t('settings.modules.has_owner_hint')"
-            :color="color"
-          />
-        </label>
-        <label v-else>
-          {{ $t("settings.modules." + key) }}
         </label>
         <div class="settings__module__edit__element__content">
           <Checkbox
@@ -220,6 +222,25 @@ watch(
             v-model="editableModule[key]"
             mode="settings"
             :has-error="errors[key]"
+          />
+        </div>
+      </div>
+      <div
+        v-if="editableModule.has_line_items"
+        class="settings__module__edit__element"
+      >
+        <label class="settings__module__edit__element__label">
+          {{ $t("settings.modules.line_item_source_module") }}
+          <ExplainTip
+            :text="t('settings.modules.line_item_source_module_hint')"
+            :color="color"
+          />
+        </label>
+        <div class="settings__module__edit__element__content">
+          <Select
+            :dropdown_list="lineItemSourceOptions"
+            v-model="editableModule.line_item_source_module"
+            mode="module-builder"
           />
         </div>
       </div>
