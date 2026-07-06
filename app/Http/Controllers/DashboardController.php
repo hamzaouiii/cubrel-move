@@ -117,10 +117,11 @@ class DashboardController extends Controller
 
         $fields = collect(FilterQueryBuilder::allowedFieldsMap($module))
             ->map(fn ($f) => [
-                'name'          => $f->name,
-                'label'         => $f->label,
-                'type'          => $f->type,
-                'dropdown_list' => $f->dropdown_list
+                'name'           => $f->name,
+                'label'          => $f->label,
+                'type'           => $f->type,
+                'related_module' => $f->related_module,
+                'dropdown_list'  => $f->dropdown_list
                     ? ['values' => array_values($f->dropdown_list->values ?? [])]
                     : null,
             ])
