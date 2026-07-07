@@ -104,6 +104,7 @@ return [
         'customisations' => 'Anpassungen',
         'company' => 'Unternehmen',
         'pdf_templates' => 'PDF-Vorlagen',
+        'audit' => 'Audit',
         'description' => [
             'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
@@ -111,10 +112,13 @@ return [
             'customisations' => 'Erstelle und verwalte Module, Layouts, Felder und Beziehungen.',
             'pdf_templates' => 'Erstellen und verwalten Sie die PDF-Layouts, die beim Generieren von Dokumenten für Ihre Datensätze verwendet werden.',
             'company' => 'Verwalten Sie die Identität Ihres Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
+            'audit' => 'Überprüfen Sie den Änderungsverlauf von Datensätzen und Impersonation-Sitzungen.',
         ],
     ],
     'items' => [
         'pdf_templates' => 'PDF-Vorlagen',
+        'audit_trail' => 'Audit-Verlauf',
+        'impersonation_sessions' => 'Impersonation-Sitzungen',
         'role_management' => 'Rollenverwaltung',
         'inbound_email' => 'Eingehende E-Mails',
         'currencies' => 'Währungen',

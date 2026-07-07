@@ -8,7 +8,7 @@ import Switcher from "../Components/FiledTypes/Switcher.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
-import SettingsLink from "../Components/Settings/SettingsLink.vue";
+import SettingsBreadcrumb from "../Components/Settings/SettingsBreadcrumb.vue";
 import ExplainTip from "../Components/Globals/ExplainTip.vue";
 import ImageField from "../Components/FiledTypes/ImageField.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
@@ -30,6 +30,11 @@ const props = defineProps({
 });
 
 const appSettings = usePage().props.appSettings;
+
+const crumbs = computed(() => [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t(props.item.label) },
+]);
 
 const normalizedValues = props.values.map((v) => ({
   ...v,
@@ -91,7 +96,9 @@ const isDirty = () => form.isDirty;
   </Head>
 
   <div class="settings" :style="{ '--primary-color': getColorModel }">
-    <SettingsLink :color="getColorModel" />
+    <div class="settings__module__header">
+      <SettingsBreadcrumb :crumbs="crumbs" />
+    </div>
     <div class="settings__system">
       <form @submit.prevent="saveSetting" class="settings__system__form">
         <div

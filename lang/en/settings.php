@@ -107,6 +107,7 @@ return [
         'company'        => 'Company',
         'customisations' => 'Customisations',
                 'pdf_templates' => 'PDF Templates',
+        'audit' => 'Audit',
         'description' => [
             'email' => 'Manage outbound and inbound emails. The email settings must be configured in order to enable users to send out email and newsletter campaigns.',
             'system' => 'Configure the system-wide settings according to the specifications of your organization.',
@@ -114,11 +115,14 @@ return [
             'customisations' => 'Create and manage Modules, Layouts, Fields, and Relationships.',
                         'pdf_templates' => 'Create and manage the PDF layouts used when generating documents for your records.',
             'company'        => 'Manage your organization\'s identity shown on generated documents.',
+            'audit' => 'Review record change history and impersonation sessions.',
         ],
     ],
     'items' => [
         'role_management' => 'Role Management',
          'pdf_templates' => 'PDF Templates',
+        'audit_trail' => 'Audit Trail',
+        'impersonation_sessions' => 'Impersonation Sessions',
         'inbound_email' => 'Inbound Email',
         'currencies' => 'Currencies',
         'create_user' => 'Create A User',

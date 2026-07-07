@@ -1378,6 +1378,216 @@
   }
 }
 
+@mixin settings-list-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+
+    &__title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #1e293b;
+      line-height: 1;
+      font-family: "Fira Sans", sans-serif;
+    }
+
+    &__meta {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #64748b;
+      margin-top: 4px;
+    }
+  }
+}
+
+@mixin settings-list-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0 20px 16px;
+
+  &__field {
+    flex: 0 0 200px;
+    min-width: 200px;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 0 0 200px;
+    min-width: 200px;
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .audit-trail__filters__field,
+    .impersonation-sessions__filters__field {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+}
+
+.audit-trail {
+  &__header {
+    @include settings-list-header;
+  }
+
+  &__filters {
+    @include settings-list-filters;
+  }
+
+  &__module-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--module-color) 12%, transparent);
+    color: var(--module-color);
+  }
+
+  &__action-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    color: #475569;
+
+    &--created {
+      background: color-mix(in srgb, #10b981 15%, transparent);
+      color: #059669;
+    }
+
+    &--updated {
+      background: color-mix(in srgb, var(--module-color) 15%, transparent);
+      color: var(--module-color);
+    }
+
+    &--deleted {
+      background: color-mix(in srgb, var(--danger-color) 15%, transparent);
+      color: var(--danger-color);
+    }
+
+    &--linked {
+      background: color-mix(in srgb, #0ea5e9 15%, transparent);
+      color: #0369a1;
+    }
+
+    &--unlinked {
+      background: color-mix(in srgb, #f59e0b 15%, transparent);
+      color: #b45309;
+    }
+  }
+
+  &__actor {
+    font-weight: 500;
+    color: #1e293b;
+  }
+
+  &__cell-when {
+    white-space: nowrap;
+    color: #64748b;
+    font-size: 0.85rem;
+  }
+
+  &__cell-changes {
+    color: #64748b;
+    font-size: 0.85rem;
+    max-width: 360px;
+  }
+
+  &__row--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--module-color) 6%, #f8fafc);
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #94a3b8;
+  }
+}
+
+.impersonation-sessions {
+  &__header {
+    @include settings-list-header;
+  }
+
+  &__filters {
+    @include settings-list-filters;
+  }
+
+  &__cell-ip {
+    font-family: "Fira Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  &__duration {
+    font-variant-numeric: tabular-nums;
+    color: #1e293b;
+  }
+
+  &__badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+
+    &--ongoing {
+      background: color-mix(in srgb, #10b981 15%, transparent);
+      color: #059669;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #94a3b8;
+  }
+}
+
+.impersonation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, #f59e0b 18%, transparent);
+  color: #b45309;
+}
+
+.audit-trail,
+.impersonation-sessions {
+  > .settings__module__header {
+    padding: 20px 20px 0;
+  }
+}
+
 .settings__optional-label {
   font-weight: 400;
   color: #9ca3af;
@@ -4788,6 +4998,37 @@ textarea {
 
       &--open {
         transform: rotate(90deg);
+      }
+    }
+
+    &--expandable {
+      padding: 0 6px 0 10px;
+
+      .settings-rail__item__link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+        padding: 8px 0;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .settings-rail__item__toggle {
+        all: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        margin-left: 4px;
+        border-radius: 6px;
+        cursor: pointer;
+        box-sizing: border-box;
+
+        &:hover {
+          background: rgba(79, 110, 247, 0.12);
+        }
       }
     }
   }

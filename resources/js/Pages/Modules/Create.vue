@@ -26,11 +26,14 @@ const props = defineProps({
   dropdownLists: Object,
   fields: Object,
 });
+
 const { validateFieldTypes } = useFieldValidation(props);
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
+const currentUser = usePage().props.auth?.user ?? null;
 
 const buildInitialForm = () => {
   const data = {};
@@ -44,6 +47,11 @@ const buildInitialForm = () => {
         }
       });
     });
+  }
+
+  if ("owner_id" in data && currentUser) {
+    data.owner_id = currentUser.id;
+    data.owner_id__label = currentUser.name;
   }
 
   return data;
@@ -62,8 +70,6 @@ const hasError = computed(() => (field) => {
   return validationErrors.value.some((item) => item.field === field.name);
 });
 
-// No module currently has an avatar field, so the header shows initials
-// only, derived live from the name field as it's typed.
 const avatar = computed(() => {
   const name = form.name?.trim();
   if (!name) return "+";
@@ -335,6 +341,7 @@ const getLinkingLayout = (slug) => {
               <span class="record-layout__sections__item__layout__field__label">
                 {{ $t(f.label) }}:
               </span>
+
               <FieldRenderer
                 :field="getField(f)"
                 v-model="form[f.name]"

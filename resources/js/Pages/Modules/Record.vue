@@ -21,6 +21,7 @@ import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawe
 import LineItemsPanel from "../Components/Modules/LineItemsPanel.vue";
 import PdfModal from "@/Pages/Components/Modules/PdfModal.vue";
 import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
+import HistoryModal from "@/Pages/Components/Modules/HistoryModal.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -56,6 +57,7 @@ const validationErrors = ref([]);
 const showActionDropDown = ref(false);
 const showPdfModal = ref(false);
 const showExportModal = ref(false);
+const showHistoryModal = ref(false);
 const actionDropDownref = ref(null);
 const getInitialTab = () => {
   const params = new URLSearchParams(window.location.search);
@@ -318,6 +320,11 @@ const openPdf = () => {
 const openExport = () => {
   showActionDropDown.value = false;
   showExportModal.value = true;
+};
+
+const openHistory = () => {
+  showActionDropDown.value = false;
+  showHistoryModal.value = true;
 };
 
 const deleteRecord = async () => {
@@ -647,6 +654,13 @@ const handleTotalsUpdated = (totals) => {
                   <span>{{ $t("modules.actions.pdf") }}</span>
                 </li>
                 <li
+                  @click="openHistory()"
+                  class="record-layout__header__details__actions__edit__dropdown__item"
+                >
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  <span>{{ $t("modules.actions.history") }}</span>
+                </li>
+                <li
                   @click="deleteRecord()"
                   class="record-layout__header__details__actions__edit__dropdown__item record-layout__header__details__actions__edit__dropdown__item--delete"
                 >
@@ -678,7 +692,7 @@ const handleTotalsUpdated = (totals) => {
       </div>
     </div>
     <div class="record-layout__scroll">
-      <div v-show="currentTab !== 'related'" class="record-layout__sections">
+      <div v-show="currentTab === 'overview'" class="record-layout__sections">
         <div
           class="record-layout__sections__item"
           v-for="s in overviewLayout.sections"
@@ -763,6 +777,7 @@ const handleTotalsUpdated = (totals) => {
           @close="overlayOpen = false"
         />
       </div>
+
       <PdfModal
         v-if="showPdfModal"
         :module-slug="module.slug"
@@ -778,6 +793,14 @@ const handleTotalsUpdated = (totals) => {
         :record-id="record.id"
         :record-name="record.name ?? record.number ?? record.id"
         @close="showExportModal = false"
+      />
+
+      <HistoryModal
+        v-if="showHistoryModal"
+        :module-slug="module.slug"
+        :record-id="record.id"
+        :fields="fields"
+        @close="showHistoryModal = false"
       />
 
       <RecordSelectorDrawer

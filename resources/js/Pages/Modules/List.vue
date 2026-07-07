@@ -370,6 +370,10 @@ const goToCreateView = () => {
   router.visit(`/${moduleName}/create`);
 };
 
+const goToLink = (path) => {
+  router.visit(path);
+};
+
 const resetActionZone = () => {
   showDeleteZone.value = false;
   showMassUpdateZone.value = false;
@@ -635,13 +639,16 @@ const isAdmin = computed(() => {
               class="list-layout__header__actions__list__dropdown show"
             >
               <li v-if="isAdmin">
-                <Link
+                <span
                   class="list-layout__header__actions__list__dropdown__item"
-                  :href="editModuleUrl"
+                  @click="goToLink(editModuleUrl)"
                 >
                   <i class="fa-solid fa-wrench"></i>
                   {{ $t("modules.actions.edit_module") }}
-                </Link>
+                  <i
+                    class="list-layout__header__actions__list__dropdown__item--link-icon fa-solid fa-arrow-up-right-from-square"
+                  ></i>
+                </span>
               </li>
               <li>
                 <span

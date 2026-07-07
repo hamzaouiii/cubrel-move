@@ -179,5 +179,27 @@ return [
         'icon' => 'fa-solid fa-file-pdf'
       ]
     ]
+  ],
+  'audit' => [
+    'label' => 'settings.groups.audit',
+    'description' => 'settings.groups.description.audit',
+    'items' => [
+      'audit-trail' => [
+        'name' => 'Audit Trail',
+        'slug' => 'audit-trail',
+        'label' => 'settings.items.audit_trail',
+        'path' => '/settings/audit-trail',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-clock-rotate-left'
+      ],
+      'impersonation-sessions' => [
+        'name' => 'Impersonation Sessions',
+        'slug' => 'impersonation-sessions',
+        'label' => 'settings.items.impersonation_sessions',
+        'path' => '/settings/impersonation-sessions',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-user-secret'
+      ]
+    ]
   ]
 ];

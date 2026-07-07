@@ -41,6 +41,7 @@ return [
         'share' => 'Teilen',
         'export' => 'Exportieren',
         'pdf'   => 'Als PDF Drucken',
+        'history' => 'Verlauf anzeigen',
         'apply' => 'Anwenden',
         'clear' => 'Leeren',
         'filter_list' => 'Liste filtern',

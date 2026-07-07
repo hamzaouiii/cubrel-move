@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use App\Models\PdfTemplate;
+use App\Services\Audit\AuditService;
 
 class RecordController extends Controller
 {
@@ -254,11 +255,25 @@ class RecordController extends Controller
                 });
             });
 
+            AuditService::log('deleted', $moduleModel->slug, null, ['mode' => 'all_matching', 'count' => $count]);
+
             return back()->with('success', "{$count} records deleted.");
         }
 
-        // Explicit list mode
+        // Explicit list mode, we need to capture labels before deleting, since they're
+        // unrecoverable afterward (see AuditObserver::deleted() for the
+        // single-record equivalent).
+
+        // TODO: Offer recovering deleted records (Bin system)
+        $recordLabels = $modelClass::whereIn('id', $selectedIds)->pluck('name', 'id');
         $deleted = $modelClass::whereIn('id', $selectedIds)->delete();
+
+        AuditService::log('deleted', $moduleModel->slug, null, [
+            'mode' => 'explicit',
+            'count' => $deleted,
+            'affected_ids' => $selectedIds,
+            'record_labels' => $recordLabels,
+        ]);
 
         return back()->with('success', "{$deleted} records deleted.");
     }
@@ -344,6 +359,13 @@ class RecordController extends Controller
                 });
             });
 
+            AuditService::log('updated', $moduleModel->slug, null, [
+                'mode' => 'all_matching',
+                'field' => $field_name,
+                'value' => $value,
+                'count' => $count,
+            ]);
+
             return back()->with('success', "{$count} records updated.");
         }
 
@@ -355,6 +377,14 @@ class RecordController extends Controller
             $updatedCount = $modelClass::whereIn('id', $selectedIds)
                 ->update([$field_name => $this->castValueForColumn($modelClass, $field_name, $newValue)]);
         }
+
+        AuditService::log('updated', $moduleModel->slug, null, [
+            'mode' => 'explicit',
+            'field' => $field_name,
+            'value' => $newValue,
+            'count' => $updatedCount,
+            'affected_ids' => $selectedIds,
+        ]);
 
         return back()->with('success', "{$updatedCount} records updated.");
     }

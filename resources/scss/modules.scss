@@ -366,7 +366,6 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.12s ease;
-
             i {
               width: 30px;
               flex-shrink: 0;
@@ -410,6 +409,11 @@
               &:hover i {
                 color: var(--danger-color);
               }
+            }
+            &--link-icon {
+              font-size: 0.7rem !important;
+              position: absolute;
+              right: 5px;
             }
           }
         }

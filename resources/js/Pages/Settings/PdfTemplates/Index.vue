@@ -6,6 +6,7 @@ import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import Pagination from "@/Pages/Components/Globals/Pagination.vue";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
 
 defineOptions({ layout: [AppLayout, SettingsLayout] });
 
@@ -21,6 +22,11 @@ const props = defineProps({
   meta: Object,
   filters: Object,
 });
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.pdf_templates") },
+];
 
 const search = ref(props.filters?.search ?? "");
 const showSearch = ref(!!props.filters?.search);
@@ -110,10 +116,7 @@ const metaSentence = computed(() => {
     }"
   >
     <div class="settings__module__header">
-      <Link href="/settings">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("settings.back_to_settings") }}
-      </Link>
+      <SettingsBreadcrumb :crumbs="crumbs" />
     </div>
 
     <div class="pdf-templates__header">

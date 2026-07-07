@@ -111,6 +111,8 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
                 $user->name = $user->first_name.' '.$user->last_name;
             }
         });
+
+        static::bootAuditObserver();
     }
 
     public function isRoot(): bool

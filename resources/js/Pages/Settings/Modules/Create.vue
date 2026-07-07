@@ -14,7 +14,8 @@ import { useAlerts } from "@/Composables/useAlerts";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
-import { Head, usePage, useForm, router, Link } from "@inertiajs/vue3";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
+import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
 
@@ -32,6 +33,12 @@ const props = defineProps({
 
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.modules"), href: "/settings/modules" },
+  { label: t("settings.create_new_module") },
+];
 
 const childFormData = ref({});
 const hasMissingFields = ref(false);
@@ -206,10 +213,7 @@ const handleUpdateList = () => {
   >
     <div class="settings__module">
       <div class="settings__module__header">
-        <Link href="/settings">
-          <i class="fa-solid fa-arrow-left"></i>
-          {{ $t("settings.back_to_settings") }}
-        </Link>
+        <SettingsBreadcrumb :crumbs="crumbs" />
       </div>
       <div
         class="settings__module__edit"

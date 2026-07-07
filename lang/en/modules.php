@@ -28,6 +28,7 @@ return [
         'share' => 'Share',
         'export' => 'Export',
         'pdf' => 'Print As PDF',
+        'history' => 'View History',
         'apply' => 'Apply',
         'clear' => 'Clear',
         'placeholder' => 'Something here...',
