@@ -29,6 +29,9 @@ use App\Http\Controllers\PdfTemplatesController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\ImpersonationSessionController;
+use App\Http\Controllers\RecordHistoryController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -47,7 +50,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding.show');
     Route::post('/onboarding/demo-data', [OnboardingController::class, 'seedDemoData'])->name('onboarding.demo-data');
     Route::post('/onboarding/finish', [OnboardingController::class, 'finish'])->name('onboarding.finish');
-    // Not gated behind 'onboarded' — the organisation-info step's logo field needs this mid-tour.
     Route::post('/uploads/image', [ImageUploadController::class, 'store'])->name('uploads.image');
     Route::get('/keep-alive', [SessionController::class, 'keepAlive'])->name('keep-alive');
 });
@@ -188,6 +190,16 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
                 Route::delete('/{pdfTemplate}', [PdfTemplatesController::class, 'destroy'])->name('destroy');
                 Route::post('/{pdfTemplate}/default', [PdfTemplatesController::class, 'setDefault'])->name('default');
             });
+
+            // Audit Trail
+            Route::prefix('audit-trail')->name('audit-trail.')->group(function () {
+                Route::get('/', [AuditLogController::class, 'index'])->name('index');
+            });
+
+            // Impersonation Sessions
+            Route::prefix('impersonation-sessions')->name('impersonation-sessions.')->group(function () {
+                Route::get('/', [ImpersonationSessionController::class, 'index'])->name('index');
+            });
         });
 
         // System Settings
@@ -207,6 +219,7 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::get('{module}/create', [RecordController::class, 'create'])->name('record.create');
     Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/available', [RelationshipLinkController::class, 'getRecordsForLinking'])->name('relationships.available');
+    Route::get('/modules/{module}/{recordId}/history', [RecordHistoryController::class, 'index'])->name('modules.record.history');
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single-link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single-link');
     Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
