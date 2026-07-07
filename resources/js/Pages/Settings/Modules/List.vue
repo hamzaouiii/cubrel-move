@@ -1,15 +1,19 @@
 <script setup>
-import { computed } from "vue";
+import { computed, getCurrentInstance } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
-import { Head, usePage, Link } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import ModuleManager from "@/Pages/Components/Settings/Modules/ModuleManager.vue";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
 
 const appSettings = usePage().props.appSettings;
 
 defineOptions({
   layout: [AppLayout, SettingsLayout],
 });
+
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 const props = defineProps({
   item: Object,
@@ -20,6 +24,11 @@ const module = computed(() => page.props.item || page.props);
 const createUrl = computed(() => {
   return `${page.url.replace(/\/+$/, "")}/create`;
 });
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.modules") },
+];
 </script>
 <template>
   <Head>
@@ -31,10 +40,7 @@ const createUrl = computed(() => {
   >
     <div class="settings__items">
       <div class="settings__module__header">
-        <Link href="/settings">
-          <i class="fa-solid fa-arrow-left"></i>
-          {{ $t("settings.back_to_settings") }}
-        </Link>
+        <SettingsBreadcrumb :crumbs="crumbs" />
       </div>
       <ModuleManager v-if="setting_modules" :modules="setting_modules">
       </ModuleManager>

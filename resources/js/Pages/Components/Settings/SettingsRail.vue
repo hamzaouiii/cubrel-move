@@ -59,19 +59,30 @@ function toggle(groupKey, group) {
 
       <template v-for="(item, itemKey) in group.items" :key="itemKey">
         <div v-if="isModulesItem(item)" class="settings-rail__module-group">
-          <button
-            type="button"
+          <div
             class="settings-rail__item settings-rail__item--expandable"
             :class="{ 'settings-rail__item--active': isActiveItem(item) }"
-            @click="toggle(groupKey, group)"
           >
-            <i :class="item.icon"></i>
-            <span class="settings-rail__item__label">{{ $t(item.label) }}</span>
-            <i
-              class="fa-solid fa-chevron-right settings-rail__item__chevron"
-              :class="{ 'settings-rail__item__chevron--open': isExpanded(groupKey, group) }"
-            ></i>
-          </button>
+            <Link :href="item.path" class="settings-rail__item__link">
+              <i :class="item.icon"></i>
+              <span class="settings-rail__item__label">{{ $t(item.label) }}</span>
+            </Link>
+            <button
+              type="button"
+              class="settings-rail__item__toggle"
+              :aria-label="
+                isExpanded(groupKey, group)
+                  ? $t('settings.collapse_menu')
+                  : $t('settings.expand_menu')
+              "
+              @click="toggle(groupKey, group)"
+            >
+              <i
+                class="fa-solid fa-chevron-right settings-rail__item__chevron"
+                :class="{ 'settings-rail__item__chevron--open': isExpanded(groupKey, group) }"
+              ></i>
+            </button>
+          </div>
           <div v-show="isExpanded(groupKey, group)" class="settings-rail__submenu">
             <Link
               v-for="m in nav.modules"

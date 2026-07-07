@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed, getCurrentInstance } from "vue";
-import { Head, Link, router, useForm, usePage } from "@inertiajs/vue3";
+import { Head, router, useForm, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import LayoutPdfEditor from "@/Pages/Components/Settings/Layouts/LayoutPdfEditor.vue";
 import PdfPreviewPanel from "@/Pages/Components/Settings/Layouts/PdfPreviewPanel.vue";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
+import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 
 defineOptions({ layout: [AppLayout, SettingsLayout] });
@@ -35,6 +36,12 @@ function initSections(definition) {
     sections.push({ ...LOCKED_FOOTER });
   return sections;
 }
+
+const crumbs = [
+  { label: t("settings.label"), href: "/settings" },
+  { label: t("settings.items.pdf_templates"), href: "/settings/pdf-templates" },
+  { label: props.template?.name },
+];
 
 const pdfSections = ref(initSections(props.template.definition));
 
@@ -87,10 +94,7 @@ const submit = () => {
     }"
   >
     <div class="settings__module__header">
-      <Link href="/settings/pdf-templates">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("globals.pdf_templates.back") }}
-      </Link>
+      <SettingsBreadcrumb :crumbs="crumbs" />
     </div>
 
     <div class="settings__module__edit">

@@ -18,24 +18,17 @@ class ModuleManagerController extends Controller
 {
   public function index(Request $request)
   {
-    // The module grid is superseded by the persistent settings rail, which
-    // already lists every module. Land on the first one instead of a
-    // dead-end grid; only fall back to the grid if there's nothing to jump to.
-    $firstModule = Module::query()
+    $item = Settings::getItem('customisation', 'modules');
+
+    $modules = Module::query()
       ->where('show_in_module_manager', 1)
       ->orderBy('sort_order')
       ->orderBy('name')
-      ->first();
-
-    if ($firstModule) {
-      return redirect()->route('settings.modules.module-settings', $firstModule->id);
-    }
-
-    $item = Settings::getItem('customisation', 'modules');
+      ->get(['id', 'slug', 'name', 'label', 'icon', 'color']);
 
     return Inertia::render('Settings/Modules/List', [
       'item'     => $item,
-      'setting_modules' => collect(),
+      'setting_modules' => $modules,
     ]);
   }
 
