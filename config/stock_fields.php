@@ -439,21 +439,25 @@ return [
             'name' => 'subtotal',
             'type' => 'currency',
             'filterable' => true,
+            'is_calculated' => true,
         ],
         'discount_amount' => [
             'name' => 'discount_amount',
             'type' => 'currency',
             'filterable' => true,
+            'is_calculated' => true,
         ],
         'tax_amount' => [
             'name' => 'tax_amount',
             'type' => 'currency',
             'filterable' => true,
+            'is_calculated' => true,
         ],
         'total' => [
             'name' => 'total',
             'type' => 'currency',
             'filterable' => true,
+            'is_calculated' => true,
         ],
         'sort_order' => [
             'name' => 'sort_order',

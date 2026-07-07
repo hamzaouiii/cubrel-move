@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use App\Models\Relationship;
 use App\Models\RelationshipLink;
 use App\Models\Module;
+use App\Services\Audit\AuditService;
 use RuntimeException;
 use App\Support\Settings;
 
@@ -164,6 +165,8 @@ class RelationshipService
         'right_id'        => $rightId,
       ]);
     });
+
+    self::logLinkChange('linked', $relationship, $module_slug, $module_id, $related_id);
   }
 
   /**
@@ -179,6 +182,43 @@ class RelationshipService
       ->where('left_id', $relationship->left_id)
       ->where('right_id', $relationship->right_id)
       ->delete();
+
+    self::logLinkChange('unlinked', $relationship, $module_slug, $module_id, $related_id);
+  }
+
+ /**
+  * for Audit Trail
+  */
+  private static function logLinkChange(string $action, Relationship $relationship, string $moduleSlug, string $moduleId, string $relatedId): void
+  {
+    $relatedModuleSlug = $relationship->related_slug;
+
+    $thisLabel = self::resolveRecordLabel($moduleSlug, $moduleId);
+    $relatedLabel = self::resolveRecordLabel($relatedModuleSlug, $relatedId);
+
+    AuditService::log($action, $moduleSlug, $moduleId, [
+      'relationship' => $relationship->name,
+      'relationship_label' => $relationship->label,
+      'related_module' => $relatedModuleSlug,
+      'related_id' => $relatedId,
+      'related_label' => $relatedLabel,
+    ]);
+
+    AuditService::log($action, $relatedModuleSlug, $relatedId, [
+      'relationship' => $relationship->name,
+      'relationship_label' => $relationship->label,
+      'related_module' => $moduleSlug,
+      'related_id' => $moduleId,
+      'related_label' => $thisLabel,
+    ]);
+  }
+
+  private static function resolveRecordLabel(string $moduleSlug, string $id): ?string
+  {
+    $modelClass = self::resolveClassFromSlug($moduleSlug);
+    $record = $modelClass::find($id);
+
+    return $record ? ($record->name ?? $record->number ?? $id) : null;
   }
 
   /**

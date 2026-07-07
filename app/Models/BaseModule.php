@@ -57,6 +57,20 @@ abstract class BaseModule extends Model
                 $model->owner_id = static::getDefaultOwnerId();
             }
         });
+
+        static::bootAuditObserver();
+    }
+
+    /**
+     * Registered from booted() rather than AppServiceProvider so that
+     * static:: late-binds to each concrete module class — Laravel keys
+     * observer bindings to the literal class passed to observe(), so a
+     * single registration against BaseModule itself would never fire for
+     * Deal/Contact/etc.
+     */
+    protected static function bootAuditObserver(): void
+    {
+        static::observe(\App\Observers\AuditObserver::class);
     }
 
   public function toSearchableArray(): array
@@ -97,20 +111,33 @@ abstract class BaseModule extends Model
 
     /**
      * Retrieve the Module registry record that describes this model.
+     *
+     * Bypasses AdminOnlyModuleScope: this is an internal structural lookup
+     * (which Module row describes this model class), not a permission-gated
+     * listing — querying it as the acting user would silently hide the
+     * 'users'/'settings' module rows from non-admins.
+     * Note: This function is only referenced once in this same file in searchableFields()
+     * maybe there is a better way of doing it
      */
     public function moduleDefinition(): Module
     {
-        return Module::where('model_class', static::class)->firstOrFail();
+        return Module::withoutGlobalScope(\App\Scopes\AdminOnlyModuleScope::class)
+            ->where('model_class', static::class)
+            ->firstOrFail();
     }
 
     /**
      * returns current module slug
+     *
+     * Bypasses AdminOnlyModuleScope for the same reason as moduleDefinition()
+     * above — this must resolve regardless of the acting user's role.
      * @return string
      */
     public static function getModuleSlug(): string
     {
         return static::$moduleSlugCache[static::class] ??=
-          Module::where('model_class', static::class)->value('slug');
+          Module::withoutGlobalScope(\App\Scopes\AdminOnlyModuleScope::class)
+            ->where('model_class', static::class)->value('slug');
     }
 
     public static function getDefaultOwnerId(): string
@@ -120,7 +147,6 @@ abstract class BaseModule extends Model
             return auth()->id();
         }
 
-        // 2. Fallback: Return the admin user
         // 3. Last Resort: Use a the first user found in DB
         return User::query()->where('username', 'admin')->first() ?? User::first()?->id;
     }

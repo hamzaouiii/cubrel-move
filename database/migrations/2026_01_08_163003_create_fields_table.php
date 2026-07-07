@@ -24,6 +24,7 @@ return new class extends Migration
       $table->boolean('is_draft')->default(false);
       $table->boolean('is_custom')->default(false);
       $table->boolean('is_active')->default(false);
+      $table->boolean('is_calculated')->default(false);
       $table->boolean('readonly')->default(false);
       $table->boolean('hidden')->default(false);
       $table->boolean('required')->default(false);

@@ -34,6 +34,7 @@ class Field extends Model
     'is_custom',
     'is_active',
     'is_draft',
+    'is_calculated',
     'readonly',
     'hidden',
     'required',
@@ -60,7 +61,8 @@ class Field extends Model
     'is_active',
     'database_type',
     'dropdown_list_id',
-    'is_default_for_line_items'
+    'is_default_for_line_items',
+    'is_calculated',
 
   ];
   /**
@@ -71,6 +73,7 @@ class Field extends Model
     'is_active'   => 'boolean',
     'is_draft'   => 'boolean',
     'is_global'   => 'boolean',
+    'is_calculated' => 'boolean',
     'readonly'    => 'boolean',
     'hidden'      => 'boolean',
     'required'    => 'boolean',

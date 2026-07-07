@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ImpersonationSession;
 use App\Handlers\Modules\UserModuleHandler;
 use App\Notifications\SetPasswordNotification;
 use Illuminate\Http\Request;
@@ -198,9 +199,9 @@ class UserController extends Controller
     ]);
   }
 
-  public function impersonate(User $user)
+  public function impersonate(Request $request, User $user)
   {
-    
+
       $currentUser = auth()->user();
 
       if (!$currentUser->isRoot()) {
@@ -216,6 +217,15 @@ class UserController extends Controller
 
       // login as target user
       Auth::login($user);
+
+      $session = ImpersonationSession::create([
+          'impersonator_id' => $currentUser->id,
+          'target_user_id' => $user->id,
+          'ip_address' => $request->ip(),
+          'started_at' => now(),
+      ]);
+      Session::put('impersonation_session_id', $session->id);
+
       return redirect()->route('dashboard');
   }
 
@@ -255,11 +265,14 @@ class UserController extends Controller
       if (!$impersonatorId) {
           abort(403);
       }
+      if ($sessionId = session('impersonation_session_id')) {
+          ImpersonationSession::whereKey($sessionId)->update(['ended_at' => now()]);
+      }
 
       $originalUser = User::findOrFail($impersonatorId);
 
       Auth::login($originalUser);
-      session()->forget('impersonator_id');
+      session()->forget(['impersonator_id', 'impersonation_session_id']);
 
       return redirect()->route('dashboard');
   }
