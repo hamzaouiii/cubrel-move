@@ -4,7 +4,6 @@ return [
     'label' => 'Layouts',
     'record' => 'Record',
     'related' => 'Related Panels',
-    'subpanels' => 'Subpanels',
         'pdf_label' => 'PDF',
 
     'pdf' => [
@@ -34,8 +33,6 @@ return [
     'edit_record_tooltip' => 'Edit Record Layout for ',
     'create_related_tooltip' => 'Create Related Panels Layout for ',
     'edit_related_tooltip' => 'Edit Related Panels Layout for ',
-    'create_subpanels_tooltip' => 'Create Related Panels Layout for ',
-    'edit_subpanels_tooltip' => 'Edit Related Panels Layout for ',
     'available_fields' => 'Available Fields',
     'available_fields_hint' => 'Drag fields into the list on the right.',
     'available_relationships_hint' => 'Drag fields into the list on the right.',

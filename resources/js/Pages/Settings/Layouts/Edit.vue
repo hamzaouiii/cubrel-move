@@ -8,7 +8,6 @@ import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import LayoutListEditor from "@/Pages/Components/Settings/Layouts/LayoutListEditor.vue";
 import LayoutRecordEditor from "@/Pages/Components/Settings/Layouts/LayoutRecordEditor.vue";
 import LayoutRelatedEditor from "@/Pages/Components/Settings/Layouts/LayoutRelatedEditor.vue";
-import LayoutSubpanelEditor from "@/Pages/Components/Settings/Layouts/LayoutSubpanelEditor.vue";
 import LayoutLinkingPanelEditor from "@/Pages/Components/Settings/Layouts/LayoutLinkingPanelEditor.vue";
 import LayoutLineItemMappingEditor from "@/Pages/Components/Settings/Layouts/LayoutLineItemMappingEditor.vue";
 import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
@@ -525,13 +524,6 @@ const moduleColor = computed(() =>
           :rel-by-key="relatedByName"
           :empty-columns="emptyColumns"
           :has-no-rels="!relationships?.length"
-        />
-      </div>
-
-      <div v-else-if="type === 'subpanels'">
-        <LayoutSubpanelEditor
-          v-model:columns="listColumns"
-          :available-fields="availableListFields"
         />
       </div>
 
