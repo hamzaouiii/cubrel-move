@@ -56,31 +56,26 @@ return [
                         'label' => 'modules.leads.fields.phone',
                     ],
                     3 => [
-                        'name' => 'company',
-                        'type' => 'text',
-                        'label' => 'modules.leads.fields.company',
-                    ],
-                    4 => [
                         'name' => 'address',
                         'type' => 'address',
                         'label' => 'modules.leads.fields.address',
                     ],
-                    5 => [
+                    4 => [
                         'name' => 'description',
                         'type' => 'longText',
                         'label' => 'modules.defaults.description',
                     ],
-                    6 => [
+                    5 => [
                         'name' => 'owner_id',
                         'type' => 'record',
                         'label' => 'modules.defaults.owner_id',
                     ],
-                    7 => [
+                    6 => [
                         'name' => 'created_at',
                         'type' => 'datetime',
                         'label' => 'modules.defaults.created_at',
                     ],
-                    8 => [
+                    7 => [
                         'name' => 'updated_at',
                         'type' => 'datetime',
                         'label' => 'modules.defaults.updated_at',
@@ -132,11 +127,6 @@ return [
                 'label' => 'modules.leads.fields.email',
             ],
             2 => [
-                'name' => 'company',
-                'type' => 'text',
-                'label' => 'modules.leads.fields.company',
-            ],
-            3 => [
                 'name' => 'phone',
                 'type' => 'text',
                 'label' => 'modules.leads.fields.phone',
