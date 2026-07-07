@@ -82,11 +82,6 @@ class Module extends Model
             ->values();
     }
 
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
     /**
      * @return HasMany<Layout, $this>
      */
@@ -149,12 +144,6 @@ class Module extends Model
         ];
     }
 
-    public function layoutFor(string $type)
-    {
-        return $this->layouts()
-            ->where('type', $type)
-            ->first();
-    }
 
     /**
      * @return HasMany<Field, $this>
@@ -245,6 +234,81 @@ class Module extends Model
         }
 
         return self::$staticFieldCache[$key];
+    }
+
+    public static function warmFieldsCache(Collection $modules): void
+    {
+        $modules = $modules->filter(fn (Module $module) => ! isset(self::$staticFieldCache[$module->id]))->values();
+
+        if ($modules->isEmpty()) {
+            return;
+        }
+
+        $moduleIds = $modules->pluck('id');
+
+        $fields = Field::query()
+            ->where(function ($query) use ($moduleIds) {
+                $query->whereIn('module_id', $moduleIds)
+                    ->orWhere('is_global', true);
+            })
+            ->select([
+                'id',
+                'module_id',
+                'dropdown_list_id',
+                'related_module',
+                'name',
+                'type',
+                'key',
+                'readonly',
+                'sortable',
+                'searchable',
+                'filterable',
+                'label',
+                'required',
+                'is_draft',
+                'is_calculated',
+                'is_global',
+            ])
+            ->with('dropdown_list')
+            ->get();
+
+        $globalFields = $fields->where('is_global', true);
+
+        $lineItemFields = collect();
+        if ($modules->contains(fn (Module $module) => $module->has_line_items)) {
+            $lineItemFields = Field::query()
+                ->where('is_default_for_line_items', true)
+                ->select([
+                    'id',
+                    'module_id',
+                    'dropdown_list_id',
+                    'related_module',
+                    'name',
+                    'type',
+                    'key',
+                    'readonly',
+                    'sortable',
+                    'searchable',
+                    'filterable',
+                    'label',
+                    'required',
+                    'is_draft',
+                ])
+                ->get();
+        }
+
+        foreach ($modules as $module) {
+            $moduleFields = $fields->where('module_id', $module->id)
+                ->merge($globalFields)
+                ->unique('id')
+                ->values();
+
+            if ($module->has_line_items) {
+                $moduleFields = $moduleFields->merge($lineItemFields);
+            }
+
+            self::$staticFieldCache[$module->id] = $moduleFields;
+        }
     }
 
     /**
@@ -380,24 +444,32 @@ class Module extends Model
         return in_array($key, ['created_at', 'updated_at'], true);
     }
 
+    protected static array $staticLayoutCache = [];
+
     protected function resolveLayout(string $type): array
     {
+        $key = $this->id . ':' . $type;
+
+        if (isset(self::$staticLayoutCache[$key])) {
+            return self::$staticLayoutCache[$key];
+        }
+
         // 1. DB layout
         $layout = $this->layouts()->where('type', $type)->first();
         if ($layout !== null) {
-            return Layout::normalize($layout->definition ?? []);
+            return self::$staticLayoutCache[$key] = Layout::normalize($layout->definition ?? []);
         }
 
         // 2. Module config fallback
         $moduleConfig = config("module_layouts.{$this->slug}");
         if (is_array($moduleConfig) && isset($moduleConfig[$type])) {
-            return Layout::normalize($moduleConfig[$type]);
+            return self::$staticLayoutCache[$key] = Layout::normalize($moduleConfig[$type]);
         }
 
         // 3. Global fallback
         $globalDefault = Layout::getDefaultLayout($type);
         if ($globalDefault !== null) {
-            return Layout::normalize($globalDefault);
+            return self::$staticLayoutCache[$key] = Layout::normalize($globalDefault);
         }
 
         throw new \Exception("No {$type} layout found for module {$this->name}");

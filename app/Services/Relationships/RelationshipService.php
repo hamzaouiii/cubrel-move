@@ -283,10 +283,11 @@ class RelationshipService
       ->unique()
       ->values();
 
-    $modules = Module::with('fields')
-      ->whereIn('slug', $relatedSlugs)
+    $modules = Module::whereIn('slug', $relatedSlugs)
       ->get()
       ->keyBy('slug');
+
+    Module::warmFieldsCache($modules);
 
     return $relationships->map(function ($relationship) use ($modules) {
 
@@ -492,7 +493,7 @@ class RelationshipService
 
       if ($relationship->role === "child" || $relationship->role === "sibling") {
         if ($count == 1) {
-          $parent_record =  array('parent_record' => $relatedClass::query()->whereIn('id', $relatedIds)->first());
+          $parent_record = array('parent_record' => $records->first());
           $result[$relationship->name] =  array_merge($result[$relationship->name], $parent_record);
         }
       }

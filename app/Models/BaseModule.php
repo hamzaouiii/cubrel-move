@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 
 /**
- * Summary of BaseModule
  * This is a Business Class
  * A sibling class to App/Models/Module
  * All Modules Extend BaseModule By default
