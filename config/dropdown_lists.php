@@ -549,6 +549,10 @@ return [
             'value' => 'one-to-many',
         ],
         [
+            'label' => 'relationships.types.many-to-one',
+            'value' => 'many-to-one',
+        ],
+        [
             'label' => 'relationships.types.many-to-many',
             'value' => 'many-to-many',
         ],

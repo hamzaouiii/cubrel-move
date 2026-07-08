@@ -5,6 +5,7 @@ return [
     'types' => [
         'one-to-one' => 'One To One',
         'one-to-many' => 'One To Many',
+        'many-to-one' => 'Many To One',
         'many-to-many' => 'Many To Many',
     ],
     'type' => 'Type',
@@ -52,6 +53,7 @@ return [
     'confirm' => [
         'delete_title' => 'Delete relationship',
         'delete_msg' => 'This relationship contains :count linked records. Deleting it will remove all existing links between records. This action cannot be undone.',
+        'delete_msg_singular' => 'This relationship contains :count linked record. Deleting it will remove all existing links between records. This action cannot be undone.',
         'delete_msg_no_count' => 'Are you sure you want to delete this relationship ?',
         'delete_confirm' => 'Delete relationship',
         'delete_cancel' => 'Cancel',

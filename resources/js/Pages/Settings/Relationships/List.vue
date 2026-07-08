@@ -61,11 +61,14 @@ const currentModule = page.props.module.id;
 const deleteRelationship = async (rel) => {
   let msg;
   let highlt;
-  if (rel.links_used > 0) {
+  if (rel.links_used === 1) {
+    msg = t("relationships.confirm.delete_msg_singular", { count: 1 });
+    highlt = 1;
+  } else if (rel.links_used > 1) {
     msg = t("relationships.confirm.delete_msg", {
-      count: rel?.links_used || 0,
+      count: rel.links_used,
     });
-    highlt = rel?.links_used || 0;
+    highlt = rel.links_used;
   } else {
     msg = t("relationships.confirm.delete_msg_no_count");
     highlt = null;

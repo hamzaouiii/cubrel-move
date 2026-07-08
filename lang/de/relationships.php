@@ -5,6 +5,7 @@ return [
     'types' => [
         'one-to-one' => 'Eins zu Eins',
         'one-to-many' => 'Eins zu Viele',
+        'many-to-one' => 'Viele zu Eins',
         'many-to-many' => 'Viele zu Viele',
     ],
     'name' => 'Name',
@@ -50,6 +51,7 @@ return [
     'confirm' => [
         'delete_title' => 'Beziehung löschen',
         'delete_msg' => 'Diese Beziehung enthält :count verknüpfte Datensätze. Beim Löschen werden alle bestehenden Verknüpfungen entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
+        'delete_msg_singular' => 'Diese Beziehung enthält :count verknüpften Datensatz. Beim Löschen werden alle bestehenden Verknüpfungen entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
         'delete_msg_no_count' => 'Sind Sie sicher, dass Sie diese Beziehung löschen möchten?',
         'delete_confirm' => 'Beziehung löschen',
         'delete_cancel' => 'Abbrechen',
