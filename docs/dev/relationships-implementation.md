@@ -141,19 +141,23 @@ Rendering chain for one panel: `PanelList.vue` → `Panel.vue` (role-aware heade
 
 `related_panel_limit` and `linking_panel_limit` (`Settings::get(...)`) control page size for the panel body and the link-candidate picker respectively — admin-configurable, not hardcoded.
 
-## 7. Deleting a relationship — known gap
+## 7. Deleting a relationship — cleans up both sides
 
-`RelationshipManagerController::destroy()` calls `$relationship->cleanupRelationshipPanels($module_id)`, which removes the relationship from `related`-type layouts **only for the module the delete request came from**:
+`RelationshipManagerController::destroy()` calls `$relationship->cleanupRelationshipPanels()`, which removes the relationship from `related`-type layouts on **both** sides — not just the module the delete request came from:
 
 ```php
-public function cleanupRelationshipPanels(string $module_id): void
+public function cleanupRelationshipPanels(): void
 {
-    $layouts = Layout::where('type', 'related')->where('module_id', $module_id)->get();
+    $moduleIds = Module::query()
+        ->whereIn('slug', [$this->left_module, $this->right_module])
+        ->pluck('id');
+
+    $layouts = Layout::where('type', 'related')->whereIn('module_id', $moduleIds)->get();
     // ... strips $relationshipName from each layout's columns[].layout[]
 }
 ```
 
-Since a relationship can (and normally does) have a panel configured on **both** sides' `related` layouts, deleting it from one module's settings page can leave the other side's layout referencing a relationship that no longer exists. Not something the `many-to-one` work introduced — flagged here since it's directly adjacent (same controller method) and worth fixing alongside any future work in this area: `cleanupRelationshipPanels` would need to run for both `left_module` and `right_module`, not just the module the request originated from.
+Originally this only took a single `$module_id` (the module whose settings page the delete came from), so deleting a relationship from one side left the other side's layout referencing a relationship that no longer existed — flagged here as a known gap since it was found while implementing the `many-to-one` type (same controller method), not introduced by it. Since a relationship can (and normally does) have a panel configured on **both** sides' `related` layouts, the fix resolves `left_module`/`right_module` to their module ids directly from the relationship itself, rather than trusting the caller to know both sides. Covered by `tests/Feature/Modules/RelationshipManagerRouteTest.php::test_deleting_a_relationship_cleans_up_related_panels_on_both_sides`.
 
 ## 8. Reference
 

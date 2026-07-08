@@ -3,6 +3,7 @@
 namespace Tests\Feature\Modules;
 
 use App\Models\DropdownList;
+use App\Models\Layout;
 use App\Models\Modules\Account;
 use App\Models\Modules\Contact;
 use App\Models\Relationship;
@@ -105,6 +106,79 @@ class RelationshipManagerRouteTest extends TestCase
             ->assertRedirect();
 
         $this->assertModelMissing($relationship);
+    }
+
+    /**
+     * Regression test: cleanupRelationshipPanels() used to only strip the deleted
+     * relationship's 'related' panel from the requesting module's own layout,
+     * leaving a stale panel reference on the other side. A relationship panel is
+     * normally configured on both sides (Accounts shows a "Deals" panel, Deals
+     * shows an "Account" panel), so deleting it must clean up both.
+     */
+    public function test_deleting_a_relationship_cleans_up_related_panels_on_both_sides(): void
+    {
+        $accounts = $this->makeModule([
+            'slug' => 'accounts',
+            'name' => 'Accounts',
+            'path' => '/accounts',
+            'model_class' => Account::class,
+            'table_name' => 'accounts',
+        ]);
+        $deals = $this->makeModule([
+            'slug' => 'deals',
+            'name' => 'Deals',
+            'path' => '/deals',
+        ]);
+
+        $relationship = Relationship::create([
+            'name' => 'accounts_deals',
+            'label' => 'Deals',
+            'left_module' => 'accounts',
+            'right_module' => 'deals',
+            'type' => 'one-to-many',
+            'is_system' => false,
+        ]);
+
+        // module_id isn't in Layout::$fillable — LayoutManagerController sets it via
+        // direct property assignment (bypassing mass-assignment guarding), so tests
+        // creating a Layout fixture must do the same rather than pass it to create().
+        $accountsLayout = new Layout([
+            'module_name' => 'accounts',
+            'type' => 'related',
+            'definition' => [
+                'columns' => [
+                    ['layout' => [['name' => 'accounts_deals'], ['name' => 'other_relationship']]],
+                ],
+            ],
+        ]);
+        $accountsLayout->module_id = $accounts->id;
+        $accountsLayout->save();
+
+        $dealsLayout = new Layout([
+            'module_name' => 'deals',
+            'type' => 'related',
+            'definition' => [
+                'columns' => [
+                    ['layout' => [['name' => 'accounts_deals']]],
+                ],
+            ],
+        ]);
+        $dealsLayout->module_id = $deals->id;
+        $dealsLayout->save();
+
+        // Deleted from Accounts' own settings page — Deals' layout isn't the
+        // requesting module, but must still be cleaned up.
+        $this->delete("/settings/modules/{$accounts->id}/relationships/{$relationship->id}")
+            ->assertRedirect();
+
+        $this->assertSame(
+            ['other_relationship'],
+            collect($accountsLayout->fresh()->definition['columns'][0]['layout'])->pluck('name')->all(),
+        );
+        $this->assertSame(
+            [],
+            $dealsLayout->fresh()->definition['columns'][0]['layout'],
+        );
     }
 
     public function test_system_relationships_cannot_be_deleted(): void

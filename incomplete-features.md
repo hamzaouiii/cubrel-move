@@ -11,24 +11,14 @@
 > **Resolved**: "No way to delete a field, at any layer" — implemented (route, `FieldsManagerController::destroy()`, layout cleanup, records-using warning, render-time existence guards across every field-rendering surface). See `FEATURES.md`'s Field Manager section and `tests/Feature/Modules/FieldDeletionTest.php`.
 >
 > **Resolved**: "Audit trail: 'all matching' bulk edits aren't traceable per-record" — a new `audit_log_affected_records` join table (`audit_log_id`, `record_id`, indexed) now records every affected record for **both** bulk-selection modes (`explicit` and `all_matching`), not just explicit. `AuditService::log()` takes the affected IDs as a fifth argument and writes them there instead of inline in `diff` — a plain JSON array was the wrong fix for `all_matching` (unbounded size, no indexable containment check); the join table gives an indexed per-record lookup instead. See `docs/dev/audit-trail-implementation.md` §4.2/§4.2.1 and `tests/Feature/Audit/BulkOperationsAuditTest.php`.
-
----
-
-## Medium
-
-### 1. Relationship deletion only cleans up layouts on one side
-*(newly found)*
-
-- **Where**: `app/Models/Relationship.php::cleanupRelationshipPanels(string $module_id)`, called from `RelationshipManagerController::destroy()`
-- **What**: When a relationship is deleted, `cleanupRelationshipPanels($module_id)` strips it from `related`-type layouts — but only for `$module_id`, the module whose settings page the delete request came from. A relationship normally has a panel configured on **both** sides' `related` layouts (e.g. Accounts shows a "Deals" panel, Deals shows an "Account" panel). Deleting the relationship from Accounts' page only cleans up Accounts' layout; Deals' layout is left referencing a relationship that no longer exists.
-- **Impact**: A stale panel reference can linger in the other module's `related` layout after deletion — likely renders as an empty/broken panel, or is silently skipped by `PanelList.vue` if it can't resolve the relationship (needs verification either way — not yet confirmed which). Narrow blast radius: only affects custom relationships, only reachable through admin-only Settings.
-- **Fix**: `cleanupRelationshipPanels` should run for both `left_module` and `right_module`, not just the requesting module. Found while implementing the `many-to-one` relationship type (see `docs/dev/relationships-implementation.md` §7) — not introduced by that work, just adjacent and newly noticed.
+>
+> **Resolved**: "Relationship deletion only cleans up layouts on one side" — `Relationship::cleanupRelationshipPanels()` no longer takes a single `$module_id`; it resolves both `left_module`/`right_module` slugs to their module ids and cleans up `related`-type layouts on both sides regardless of which module's settings page the delete request came from. See `tests/Feature/Modules/RelationshipManagerRouteTest.php`.
 
 ---
 
 ## Low (cleanup / dead code / no runtime impact)
 
-### 2. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
+### 1. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
 *(previously flagged)*
 
 - **Where**: `app/Models/Dashboard.php`
@@ -36,7 +26,7 @@
 - **Impact**: None currently — they're simply never invoked, so the wrong column reference never executes. Purely a maintenance hazard: if someone calls `Dashboard::scopeGlobal()`/`scopeForUser()` in the future expecting it to work (the names read as if they're the real scoping mechanism), it will throw a SQL error on the missing column.
 - **Fix**: Delete both scopes, or rewrite them to use `user_id` and actually call them from `DashboardController@index` instead of the inline `where()`.
 
-### 3. IP whitelist — removed entirely
+### 2. IP whitelist — removed entirely
 *(previously flagged)*
 
 - **Where**: N/A — nothing exists anymore
@@ -44,7 +34,7 @@
 - **Impact**: None today — it's just absent. Flagged here (as in `FEATURES.md`) specifically so nobody mistakes this for "not started" when it's actually "built, then reverted."
 - **Fix**: If wanted again, treat as new feature work; check `git show eab2507` for why it caused 500s before repeating the same approach.
 
-### 4. Dead code: `RelationshipService::enforceCardinality()` is never called
+### 3. Dead code: `RelationshipService::enforceCardinality()` is never called
 *(newly found)*
 
 - **Where**: `app/Services/Relationships/RelationshipService.php:72`
@@ -52,15 +42,15 @@
 - **Impact**: None functionally (dead code doesn't execute), but it's actively misleading to read — a future maintainer could reasonably assume this is the enforcement mechanism, "fix" or extend it, and be confused when linking behavior doesn't change.
 - **Fix**: Delete it, or if the throwing behavior is actually preferred over silent re-parenting for some case, wire it in deliberately and decide which behavior should win where.
 
-### 5. Dead code: `RelationshipService::getRelationshipBetween()` is never called
+### 4. Dead code: `RelationshipService::getRelationshipBetween()` is never called
 *(newly found)*
 
 - **Where**: `app/Services/Relationships/RelationshipService.php:227`
 - **What**: Looks up the `Relationship` row(s) between two module slugs (checking both directions), optionally filtered by `type`. Confirmed via grep — no controller, service, or Vue component calls it.
-- **Impact**: None functionally. Same maintenance-hazard category as #4.
+- **Impact**: None functionally. Same maintenance-hazard category as #3.
 - **Fix**: Delete unless there's a near-term use for it (e.g. it might be a natural fit for validating "does a relationship already exist between these two modules" during relationship creation — currently `RelationshipManagerController::store()` does its own inline duplicate query instead of reusing this).
 
-### 6. `config/default_relationship_types.php` is dead and out of sync
+### 5. `config/default_relationship_types.php` is dead and out of sync
 *(newly found)*
 
 - **Where**: `config/default_relationship_types.php`, `app/Http/Controllers/RelationshipManagerController::create()`, `resources/js/Pages/Settings/Relationships/Create.vue`
@@ -68,7 +58,7 @@
 - **Impact**: None today (the config is simply unused), but it's a trap: it looks like a second source of truth for relationship types, and if anyone starts using it (or "fixes" it by adding `many-to-one` there too, assuming it matters), there'd be two lists to keep in sync for no reason.
 - **Fix**: Delete `config/default_relationship_types.php` and the `types` prop it feeds, or repurpose `Create.vue` to actually use it instead of `typeList` (there'd need to be a reason to prefer one over the other — right now there isn't).
 
-### 7. Two-factor authentication — dead, unused columns
+### 6. Two-factor authentication — dead, unused columns
 *(previously flagged, downgraded)*
 
 - **Where**: `users` table (`two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `failed_login_attempts`, `locked_until`)
@@ -121,8 +111,9 @@
 ## Reference
 
 - `FEATURES.md` — the short-form summary table this file expands on; §11 has the corrected module-visibility model; the Field Manager section documents the now-resolved field-deletion feature; §16 documents the now-resolved audit-trail join table.
-- `docs/dev/relationships-implementation.md` §7 — source of #1.
+- `docs/dev/relationships-implementation.md` §7 — source of the now-resolved relationship-deletion one-sided-cleanup bug (found while implementing the `many-to-one` relationship type).
 - `docs/dev/audit-trail-implementation.md` §4.2/§4.2.1 — technical detail for the resolved "all matching" bulk-edit traceability fix.
 - `docs/dev/419-session-recovery.md` §9 — source of the "planned follow-up" confirmation for the idle-window and remember-me items in "Not a Bug — Left for V2".
 - `tests/Feature/Modules/FieldDeletionTest.php` — coverage for the resolved field-deletion feature.
 - `tests/Feature/Audit/BulkOperationsAuditTest.php`, `tests/Feature/Audit/RecordHistoryControllerTest.php` — coverage for the resolved audit-trail join table.
+- `tests/Feature/Modules/RelationshipManagerRouteTest.php` — coverage for the resolved relationship-deletion both-sides cleanup fix.

@@ -55,12 +55,16 @@ class Relationship extends Model
     return array_diff($this->fillable, $this->excludedFromForms);
   }
 
-  public function cleanupRelationshipPanels(string $module_id): void
+  public function cleanupRelationshipPanels(): void
   {
     $relationshipName = $this->name;
 
+    $moduleIds = Module::query()
+      ->whereIn('slug', [$this->left_module, $this->right_module])
+      ->pluck('id');
+
     $layouts = Layout::where('type', 'related')
-      ->where('module_id', $module_id)
+      ->whereIn('module_id', $moduleIds)
       ->get();
     foreach ($layouts as $layout) {
       $value = $layout->definition;

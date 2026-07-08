@@ -258,7 +258,7 @@ The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle t
 
 Admins can view, create, and delete relationship definitions at `/settings/modules/{module}/relationships`. UI: `Settings/Relationships/List.vue` and `Settings/Relationships/Create.vue`.
 
-Relationships are deliberately not editable after creation — only create/list/delete. `RelationshipManagerController` only has `index`/`create`/`store`/`destroy` methods, and `routes/web.php` scopes its resource route to `->only(['index', 'create', 'store', 'destroy'])` to match — `edit`/`update` (and `show`, which the controller also never implemented) aren't registered, so hitting either URL 404s instead of erroring on an undefined controller method. Deleting a **system** relationship (`is_system`) is blocked both server-side (`destroy()` throws a `ValidationException`) and client-side (`List.vue`'s delete button is `disabled` for system rows); deleting a **custom** relationship shows a confirmation dialog that includes the number of existing links (`links_used`) when there are any.
+Relationships are deliberately not editable after creation — only create/list/delete. `RelationshipManagerController` only has `index`/`create`/`store`/`destroy` methods, and `routes/web.php` scopes its resource route to `->only(['index', 'create', 'store', 'destroy'])` to match — `edit`/`update` (and `show`, which the controller also never implemented) aren't registered, so hitting either URL 404s instead of erroring on an undefined controller method. Deleting a **system** relationship (`is_system`) is blocked both server-side (`destroy()` throws a `ValidationException`) and client-side (`List.vue`'s delete button is `disabled` for system rows); deleting a **custom** relationship shows a confirmation dialog that includes the number of existing links (`links_used`) when there are any. Deleting a relationship also strips its `related`-panel reference from **both** modules' layouts (`Relationship::cleanupRelationshipPanels()`, resolving `left_module`/`right_module` to their module ids) — not just whichever module's settings page the delete was performed from, since a relationship panel is normally configured on both sides (e.g. Accounts shows a "Deals" panel, Deals shows an "Account" panel).
 
 ---
 
@@ -713,7 +713,6 @@ Within the per-record History modal itself, a bulk-batch entry the viewed record
 
 | Priority | Area | Issue |
 |---|---|---|
-| Medium | Relationship deletion cleans up one side only | `cleanupRelationshipPanels()` only strips a deleted relationship from the requesting module's layout, can leave a stale panel on the other side |
 | Low | `Dashboard::scopeGlobal()` / `scopeForUser()` | Dead code — references a non-existent `owner_id` column and is never called; real per-user scoping is just `where('user_id', ...)` in the controller |
 | Low | IP whitelist | **Removed entirely** (added in `96dd5e8`, deleted in `eab2507` two days later) — not merely present-but-unused |
 | Low | `RelationshipService::enforceCardinality()` / `getRelationshipBetween()` | Dead code — both fully implemented, neither called from anywhere |

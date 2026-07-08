@@ -138,7 +138,7 @@ class RelationshipManagerController extends Controller
         'rel' => __('relationships.system_delete_forbidden')
       ]);
     }
-    $relationship->cleanupRelationshipPanels($module_id);
+    $relationship->cleanupRelationshipPanels();
     $relationship->delete();
 
     return back()->with('success', __('relationships.deleted'));
