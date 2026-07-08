@@ -1,7 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Updated 2026-07-08 from routes, controllers, models, config, migrations, and Vue components.
-> Half-built / incomplete items are marked **⚠ INCOMPLETE**.
+> Verified 2026-07-08 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -39,11 +38,10 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Contacts** | `contacts` | first_name, last_name, email, phone, position, notes | No | Yes |
 | **Deals** | `deals` | amount, sales_stage, probability, expected_close_date, type | No | Yes |
 | **Orders** | `orders` | order_number, status, order_date, due_date, subtotal, discount_amount, tax_amount, total | Yes | Yes |
-| **Invoices** | `invoices` | number, status, issue_date, due_date, currency, subtotal, discount_amount, tax_amount, total | Yes | Yes |
-| **Quotes** | `quotes` | number, status, valid_until, currency, subtotal, discount_amount, tax_amount, total | Yes | Yes |
+| **Invoices** | `invoices` | number, status, issue_date, due_date, subtotal, discount_amount, tax_amount, total | Yes | Yes |
+| **Quotes** | `quotes` | number, status, valid_until, subtotal, discount_amount, tax_amount, total | Yes | Yes |
 | **Products** | `products` | sku, category, price, unit, tax_rate, is_active | No | Yes |
 | **Support Cases** | `cases` | subject, status, priority, opened_at, closed_at | No | Yes |
-| **Inquiries** | `contact_messages` | email, phone, message, status, ip, user_agent | No | No |
 
 ### Infrastructure Models
 
@@ -51,12 +49,12 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 |---|---|
 | `Module` | Registry entry for every CRM module (slug, icon, flags, model/handler class, etc.) |
 | `Field` | Defines a field on a module — type, validation rules, display options |
-| `Layout` | Stores JSON configuration for list / record / related views per module |
+| `Layout` | Stores JSON configuration for list / record / related / linking-panel / line-item views per module |
 | `DropdownList` | Named lists of selectable option values used by select/status fields |
 | `Relationship` | Declares how two modules relate (one-to-many, many-to-many, one-to-one) |
 | `RelationshipLink` | Join record connecting two module records through a `Relationship` |
 | `UserInvite` | Pending invitation token with expiry and status |
-| `LineItem` | Child row on an Order, Invoice, or Quote (polymorphic `parent_type/parent_id`) |
+| `LineItem` | Child row on any module with line items enabled (polymorphic `parent_type`/`parent_id`) |
 | `Settings` / `SettingValue` | Key-value system settings with group and autoload support |
 | `Dashboard` | Per-user dashboard widget configuration (JSON) |
 | `PdfTemplate` | Module-scoped PDF template; owns its section `definition` JSON directly; `is_default` flag per module |
@@ -89,9 +87,7 @@ Defined in `config/default_field_types.php` and mapped to database column types 
 | `currency` | `decimal` | `CurrencyField.vue` | non-negative number |
 | `address` | `json` | `AddressField.vue` | all sub-fields non-empty |
 | `record` | `string` | `RelatedRecord.vue` | UUID format |
-| `number` | `integer` | (same as integer) | — |
-
-`CurrencyField.vue` and `AddressField.vue` are fully shipped: committed to git (`git log` shows real history for both, not untracked files), registered in `fieldRegistry.js` with validators, and handled by `PdfValueRenderer` (`address` → `formatAddress()`, `currency` → `PdfNumberFormatter::format()`) for PDF/export output.
+| `image` | `string` | `ImageField.vue` | image upload validation |
 
 ### Composite Field: Address
 
@@ -99,7 +95,7 @@ The `address` type stores a JSON object with sub-fields (street, city, postal_co
 
 ### Custom Field Storage
 
-All module tables carry a `custom_fields` JSON column (added via migration `2026_01_19`). Fields created through the Field Manager are stored here rather than as dedicated columns, unless they are stock (seed-time) fields.
+All module tables carry a `custom_fields` JSON column. Fields created through the Field Manager are stored here rather than as dedicated columns, unless they are stock (seed-time) fields.
 
 ---
 
@@ -107,22 +103,21 @@ All module tables carry a `custom_fields` JSON column (added via migration `2026
 
 ### Static Modules
 
-17 built-in modules are defined in `config/modules.php` and seeded via `ModulesTableSeeder`. Each module declares:
+14 built-in modules are defined in `config/modules.php` and seeded via `ModulesTableSeeder`. Each module declares:
 
 - `slug`, `name`, `label`, `single_label`, `icon`, `color`, `category`
 - `model_class` and `handler_class` (PHP class names)
 - `table_name`, `sort_order`, `is_active`, `show_in_sidebar`
-- Capability flags: `can_view`, `can_create`, `can_edit`, `can_delete`
 - Feature flags: `has_line_items`, `has_owner`, `is_product_like`, `line_item_source_module`
 
-**Categories:** `sales` (Leads, Accounts, Contacts, Deals) · `revenue` (Quotes, Orders, Invoices, Products, LineItems) · `support` (Cases) · `communication` (Inquiries) · `system` (Users, User Invites, Settings)
+**Categories:** `sales` (Leads, Accounts, Contacts, Deals) · `revenue` (Quotes, Orders, Invoices, Products, LineItems) · `support` (Cases) · `system` (Users, User Invites, Settings, Pdf Template)
 
 ### Line Items Are Configurable Per Module
 
-`has_line_items` is no longer hard-wired to Orders/Invoices/Quotes and no longer implies "snapshot from Products." Any module — standard or custom, built through the Module Builder — can enable line items:
+`has_line_items` is not hard-wired to Orders/Invoices/Quotes and does not imply "snapshot from Products." Any module — standard or custom, built through the Module Builder — can enable line items:
 
 - `is_product_like` flags a module (e.g. Products) as eligible to be picked as a **line-item source** by other modules.
-- `line_item_source_module` on the host module (Orders, Invoices, Quotes, or any custom module) picks which product-like module its line items search and snapshot from. Defaults to `products` for modules that predate this setting (backfilled by migration `2026_07_03_000000_add_line_item_config_to_modules_table`).
+- `line_item_source_module` on the host module (Orders, Invoices, Quotes, or any custom module) picks which product-like module its line items search and snapshot from, defaulting to `products`.
 - `Module::canChangeLineItemSourceModule()` locks the source picker in the UI once at least one line item row exists for that module — changing the source afterward would orphan existing `product_id` references and invalidate the field mapping below. `ModuleManagerController@update` also rejects the change server-side with `settings.modules.line_item_source_locked`.
 - `Module::lineItemSourceModuleSlug()` resolves the effective source (explicit value, or `'products'` fallback).
 - The Module Builder (`Settings/Modules/Create.vue`, `Builder/EditModule.vue`) and the Module Manager (`Settings/Modules/Record.vue`) both expose a source-module picker populated from `ModuleBuilderController::lineItemSourceOptions()` / the equivalent query in `ModuleManagerController@show` (any active `is_product_like` module other than itself).
@@ -138,12 +133,12 @@ Admins can build entirely new modules without writing code. The flow has dedicat
    - `initialize` — allocates the module record
    - `generate-files` — scaffolds handler and model PHP files
    - `create-labels` — writes translation keys
-   - `activate-fields` — marks draft fields as active
    - `create-table` — runs the migration
+   - `activate-fields` — marks draft fields as active
    - `rollback` — undoes deployment
 5. Progress is shown in `Builder/DeployProgressModal.vue`
 
-Covered by an automated end-to-end test: `tests/Feature/Modules/ModuleBuilderWorkflowTest.php` drives the real deploy pipeline over HTTP (`generate-files` → `create-labels` → `create-table` → `activate-fields`), asserts the generated PHP files actually land on disk (model + handler), and verifies the resulting module supports full CRUD.
+Covered by an automated end-to-end test: `tests/Feature/Modules/ModuleBuilderWorkflowTest.php` drives the real deploy pipeline over HTTP, asserts the generated PHP files actually land on disk (model + handler), and verifies the resulting module supports full CRUD.
 
 ### Handler Pattern
 
@@ -160,7 +155,7 @@ Every module has a handler class (extends `BaseModuleHandler`) responsible for:
 
 ### Layout Types
 
-Each module can have up to six layout types stored in the `layouts` table as JSON blobs. Default layouts are defined in `config/module_layouts/{module}.php` (and, for the new type below, `config/default_layouts.php`).
+Each module can have up to five layout types stored in the `layouts` table as JSON blobs. Default layouts are defined in `config/module_layouts/{module}.php` (and, for the newest type below, `config/default_layouts.php`). PDF output layout is a separate, standalone concern — see [PDF Generation](#13-pdf-generation).
 
 | Type | Purpose | UI editor |
 |---|---|---|
@@ -168,7 +163,6 @@ Each module can have up to six layout types stored in the `layouts` table as JSO
 | `record` | Sections and fields shown on a single record page | `LayoutRecordEditor.vue` |
 | `related` | Columns shown in related-record subpanels | `LayoutRelatedEditor.vue` |
 | `linkingPanel` | Columns shown in the record-selector overlay | `LayoutLinkingPanelEditor.vue` |
-| `pdf` | Fields rendered into PDF output | `LayoutPdfEditor.vue` |
 | `lineItemsSnapshot` | Which line-item fields appear on the create/edit sheet, and which field on the configured line-item source module autofills each one (only relevant when `has_line_items` is true) | `LayoutLineItemMappingEditor.vue` |
 
 ### Layout Editor
@@ -183,7 +177,7 @@ The Vue editors (`Settings/Layouts/Edit.vue`, `Settings/Layouts/Record.vue`) pro
 
 Layout config per module specifies fields by name and includes display metadata (label translation key, readonly flag, required flag, sortable flag).
 
-Within the `record` layout editor, a module's "Line Items" placeholder section (`has_line_items: true`) previously just displayed a static message. It now embeds its own `LayoutListEditor` instance, letting admins pick and reorder which `line_items` module fields appear as table columns — a separate field pool from the host module's own fields, so it's excluded from the regular "used fields" tracking (`availableRecordFields`) to avoid the columns being mistaken for unknown/used host-module fields.
+Within the `record` layout editor, a module's "Line Items" section (`has_line_items: true`) embeds its own `LayoutListEditor` instance, letting admins pick and reorder which `line_items` module fields appear as table columns — a separate field pool from the host module's own fields.
 
 ---
 
@@ -213,9 +207,7 @@ Both bulk delete and bulk update support three selection modes passed in the req
 | Bulk delete | `DELETE /{module}` | `ListActions/ListDeleteZone.vue` |
 | Bulk field update | `PUT /{module}` | `ListActions/MassUpdateZone.vue` |
 
-`RecordController@updateMany` writes via query-builder (`whereIn(...)->update([$column => $value])`), bypassing Eloquent entirely — since one field/value pair is applied uniformly to every selected record, required-field validation is checked once up front (`isEmptyBulkValue()`) rather than per record, rejecting the whole request if the target `Field` is `required` and the new value would be empty. `MassUpdateZone.vue` mirrors the same check client-side: clicking Update while a required field is empty shows the field's own error state (`FieldRenderer`'s `has-error`, same as single-record editing) plus a 1.5s toast, without emitting the update — the error only appears after a submit attempt, not the moment a required field is picked. The server-side check is the actual guarantee, since the client-side one alone wouldn't stop a direct request. No other validation (type/format) is enforced on this path, same as single-record create/update.
-
-The value field also supports `record`-type targets (e.g. bulk-reassigning "Owned by") via the same `RecordSelectorDrawer` picker used on the record page.
+A bulk field update applies one field/value pair uniformly to every selected record. If the target field is required, the whole request is rejected up front when the new value would be empty (`MassUpdateZone.vue` shows the same validation client-side that single-record editing uses). The value field also supports `record`-type targets (e.g. bulk-reassigning "Owned by") via the same `RecordSelectorDrawer` picker used on the record page.
 
 ### Export
 
@@ -226,11 +218,11 @@ The value field also supports `record`-type targets (e.g. bulk-reassigning "Owne
 | Export one record | `GET /{module}/{recordId}/export?format=json\|csv` | `ExportController@export` |
 | Export many | `POST /{module}/export` | `ExportController@exportMany` |
 
-- **Bulk export reuses the same three selection modes as bulk delete/update** (`selectedIds[]`, `allMatchingSelected` + current filter state, or `allMatchingSelected` + `excludedIds[]`), so an export can target an explicit selection, "all matching the current search/filter," or "all except."
+- Bulk export reuses the same three selection modes as bulk delete/update.
 - Every create/update/delete above (single-record and bulk) is logged automatically — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
-- Only `json` and `csv` are supported — no Excel/XLSX.
-- A single record's export includes a "line items" section appended after the main row when `module.has_line_items` is true; bulk export omits line items entirely (rows would have inconsistent shape across records).
-- Field values are formatted for export the same way they're formatted for PDFs — `ExportController` reuses `PdfValueRenderer` (see [PDF Generation](#13-pdf-generation)) for dates, selects/status labels, decimals/currency, and addresses, so export output and PDF output stay consistent.
+- Supported formats: JSON and CSV.
+- A single record's export includes a "line items" section appended after the main row when the module has line items enabled; bulk export omits line items (rows would have inconsistent shape across records).
+- Field values are formatted for export the same way they're formatted for PDFs, so exported values match what a generated PDF/preview shows.
 - Frontend: `ExportModal.vue` (format picker, single vs. bulk mode, downloads via blob response) opened from `ListActions/ExportZone.vue` on the list view.
 
 ---
@@ -241,7 +233,7 @@ The value field also supports `record`-type targets (e.g. bulk-reassigning "Owne
 
 Relationships between modules are declared in the `relationships` table and seeded by `RelationshipSeeder`. Stored shape is always one of `one-to-many`, `many-to-many`, `one-to-one` — `left_module` is the "one"/parent side, `right_module` is the "many"/child side (for `one-to-many`). System relationships (`is_system=true`) are non-deletable.
 
-The Create form additionally offers a **`many-to-one`** option, so a relationship can be created from either side without needing to know the left/right convention — `left_module` is always resolved to whichever module's settings page the request came from, so picking "many-to-one" from the *child* module's own page (e.g. "many Deals belong to one Account," created from Deals) needs `left`/`right` swapped before storage. `RelationshipManagerController::store()` does that swap and normalizes to `one-to-many` before the duplicate check and insert — `many-to-one` is never actually persisted as a `type` value, it's purely a creation-time convenience. See [Relationships Guide](docs/guides/relationships-guide.md) and [Relationships Implementation](docs/dev/relationships-implementation.md).
+The Create form additionally offers a **`many-to-one`** option, so a relationship can be created from either side without needing to know the left/right convention — picking "many-to-one" from the *child* module's own page (e.g. "many Deals belong to one Account," created from Deals) automatically swaps left/right and stores it as `one-to-many`; `many-to-one` is purely a creation-time convenience, never persisted as a `type` value itself. See [Relationships Guide](docs/guides/relationships-guide.md) and [Relationships Implementation](docs/dev/relationships-implementation.md).
 
 ### Linking / Unlinking
 
@@ -258,13 +250,13 @@ The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle t
 
 Admins can view, create, and delete relationship definitions at `/settings/modules/{module}/relationships`. UI: `Settings/Relationships/List.vue` and `Settings/Relationships/Create.vue`.
 
-Relationships are deliberately not editable after creation — only create/list/delete. `RelationshipManagerController` only has `index`/`create`/`store`/`destroy` methods, and `routes/web.php` scopes its resource route to `->only(['index', 'create', 'store', 'destroy'])` to match — `edit`/`update` (and `show`, which the controller also never implemented) aren't registered, so hitting either URL 404s instead of erroring on an undefined controller method. Deleting a **system** relationship (`is_system`) is blocked both server-side (`destroy()` throws a `ValidationException`) and client-side (`List.vue`'s delete button is `disabled` for system rows); deleting a **custom** relationship shows a confirmation dialog that includes the number of existing links (`links_used`) when there are any. Deleting a relationship also strips its `related`-panel reference from **both** modules' layouts (`Relationship::cleanupRelationshipPanels()`, resolving `left_module`/`right_module` to their module ids) — not just whichever module's settings page the delete was performed from, since a relationship panel is normally configured on both sides (e.g. Accounts shows a "Deals" panel, Deals shows an "Account" panel).
+Relationships are deliberately not editable after creation — only create/list/delete. Deleting a **system** relationship (`is_system`) is blocked both server-side and client-side; deleting a **custom** relationship shows a confirmation dialog that includes the number of existing links when there are any. Deleting a relationship strips its `related`-panel reference from **both** modules' layouts (not just whichever module's settings page the delete was performed from), since a relationship panel is normally configured on both sides (e.g. Accounts shows a "Deals" panel, Deals shows an "Account" panel).
 
 ---
 
 ## 7. Line Items
 
-Any module can support child line item rows — not just Orders, Invoices, and Quotes. A line item is a polymorphic child (`parent_type` / `parent_id`) that optionally references a record (`product_id`) in whichever module is configured as the host module's **line-item source** (see [Module System](#3-module-system)). Because the source module is now configurable rather than fixed, `LineItem` no longer declares `parent()` / `product()` Eloquent relations — there is no single related model class to bind to; resolution happens dynamically through the module/handler lookup instead.
+Any module can support child line item rows — not just Orders, Invoices, and Quotes. A line item is a polymorphic child (`parent_type`/`parent_id`) that optionally references a record (`product_id`) in whichever module is configured as the host module's **line-item source** (see [Module System](#3-module-system)).
 
 ### Per-item calculations (server-side, `LineItem::calculateTotals()`)
 
@@ -275,18 +267,17 @@ tax_amount      = (subtotal − discount_amount) × (tax_rate / 100)
 total           = subtotal − discount_amount + tax_amount
 ```
 
-`discount` is percentage-only — the client-side sheet (`LineItemsPanel.vue`) used to let a user edit either the discount percent or the flat discount amount and back-compute the other (`lastEdited` toggle); that dual-entry mode was removed, and `discount_amount` is now always derived from `discount`.
+`discount` is percentage-only; `discount_amount` is always derived from it.
 
 ### Configurable snapshot mapping
 
-When a line item's source-module record is picked (e.g. a Product on an Invoice line), which of its fields autofill which line-item fields is configurable per module via a new **`lineItemsSnapshot`** layout type:
+When a line item's source-module record is picked (e.g. a Product on an Invoice line), which of its fields autofill which line-item fields is configurable per module via the **`lineItemsSnapshot`** layout type:
 
 - Defined per module in the `layouts` table (falls back to `config/default_layouts.php`'s `lineItemsSnapshot` entry, e.g. `unit_price` ← source module's `price` field).
-- Edited through `LayoutLineItemMappingEditor.vue`, a drag-and-drop editor reached the same way as other layout types (`/settings/modules/{module}/layouts`).
-- `LayoutManagerController@store` validates it as `definition.fields[].{name, source_field}`; `@edit` additionally resolves and passes `sourceModuleFields` (the field list of whichever module is currently configured as the source) so the editor can offer a per-field autofill picker.
-- On the record page, `LineItemsPanel.vue`'s `onProductSelect` walks `snapshotLayout.fields` generically and copies `product[source_field]` into `row[name]` for every mapped field, instead of hardcoding `name`/`unit_price`/`unit`/`tax_rate`.
+- Edited through `LayoutLineItemMappingEditor.vue`, reached the same way as other layout types (`/settings/modules/{module}/layouts`).
+- On the record page, `LineItemsPanel.vue` walks the mapping generically and copies each mapped source field into the corresponding line-item field.
 
-The line-items **table's visible columns** are likewise no longer hardcoded — they come from the host module's record layout, inside the "Line Items" section's own `layout` array (`has_line_items: true`), configured per module in `config/module_layouts/{invoices,orders,quotes}.php` (previously an empty array with columns implied by the Vue template).
+The line-items table's **visible columns** are likewise configurable — they come from the host module's record layout, inside the "Line Items" section's own `layout` array.
 
 ### API
 
@@ -298,11 +289,11 @@ The line-items **table's visible columns** are likewise no longer hardcoded — 
 | Delete | `DELETE /line-items/{lineItem}` |
 | Reorder | `POST /line-items/reorder` (updates `sort_order`) |
 
-The record page shows line items when `module.has_line_items` is true. `RecordController` now only resolves line-item fields, the source module, its fields, list columns, and the snapshot layout when that flag is set — the previous implementation did an unconditional `firstOrFail()` lookup of the `products` module on **every** record page regardless of module, which could 500 if `products` were ever deactivated.
+The record page shows line items when the module has line items enabled.
 
 ### Parent total roll-up (server-side, `LineItemTotalsObserver`)
 
-`app/Observers/LineItemTotalsObserver.php`, registered on `LineItem` from `AppServiceProvider::boot()`, recomputes the parent record's `subtotal`/`discount_amount`/`tax_amount`/`total` by summing all its line items on every `saved`/`deleted` event — not just when `LineItemController@store/update` runs, and not dependent on anyone having that record's page open. Resolves the parent via `parent_type` (a module slug) → `Module::model_class`, the same polymorphic-by-convention pattern `AuditObserver` uses, and saves quietly (no audit-log noise, on top of `subtotal`/`discount_amount`/`tax_amount`/`total` already being flagged `is_calculated`). `Record.vue`'s `handleTotalsUpdated` now only mirrors the recalculated totals into the open record's form for immediate display — it no longer PUTs them back itself, since the server already persisted the correct values the moment the line item changed.
+Registered on `LineItem` from `AppServiceProvider::boot()`, this observer recomputes the parent record's `subtotal`/`discount_amount`/`tax_amount`/`total` by summing all its line items on every save/delete — not dependent on anyone having that record's page open. `total`/`subtotal`/`tax_amount`/`discount_amount` are flagged `is_calculated`, so the recompute doesn't create audit-log noise. `Record.vue` mirrors the recalculated totals into the open record's form for immediate display.
 
 ---
 
@@ -310,47 +301,47 @@ The record page shows line items when `module.has_line_items` is true. `RecordCo
 
 ### Global Search
 
-Route `GET /search` (name: `search`) handled by `SearchController`. `BaseModule` uses Laravel Scout's own `Searchable` trait (`composer.json`: `laravel/scout ^11.2`), backed by the `database` driver (`config/scout.php`: `'driver' => env('SCOUT_DRIVER', 'database')`) — this is a real, configured Scout driver, not a custom trait of the same name. `app/Search/Searchers/UniversalSearcher.php` calls `$modelClass::search($query)->get()`, Scout's actual search method. The `GlobalSearch.vue` overlay and `SearchOverlay.vue` component manage the front-end.
+Route `GET /search` handled by `SearchController`, orchestrated through `GlobalSearchService`. `BaseModule` uses Laravel Scout's `Searchable` trait, backed by the `database` driver. `UniversalSearcher` performs the actual per-module search. The `GlobalSearch.vue` overlay and `SearchOverlay.vue` component manage the front-end.
 
 ### Related Field Search
 
-Route `GET /relatedfield/search/{related_module}` (name: `records.search`) handled by `RelatedFieldController`. This is the typeahead endpoint used by the `RelatedRecord.vue` field component when the user types to find a record to link.
+Route `GET /relatedfield/search/{related_module}` handled by `RelatedFieldController`. This is the typeahead endpoint used by the `RelatedRecord.vue` field component when the user types to find a record to link.
 
 ### Advanced List Filtering
 
 List views have a full condition-based filter builder, not just column-level equality:
 
-- **Filterable fields**: a field is filterable if it's one of the `default.*` stock keys or has `Field::filterable === true`; `owner_id` is excluded on modules without `has_owner` (`app/Support/Filters/FilterQueryBuilder.php::allowedFieldsMap()`).
-- **Operators per field type** are declared in `config/filter_operators.php` — e.g. `equals`/`not_equals`/`contains`/`starts_with` for text, `greater_than`/`less_than`/`between` for numbers, `before`/`after`/`between` for dates, `is_empty`/`is_not_empty` for any type — enforced both server-side (`FilterOperators::isAllowed()`) and in the picker UI.
-- **Conditions** are an array of `{field, operator, value}` combined with a `match_type` of `all` (AND) or `any` (OR), applied to the query in `FilterQueryBuilder::apply()`. A condition's value can be the literal `@current_user`, substituted with the logged-in user's ID — this is how "my records" style filters work.
-- **Saved / shared / system filters** are a real model (`app/Models/ListFilter.php`), not just query-string state: a filter has `is_shared` (visible to the whole team), `is_system` (seeded, e.g. `my_records`, non-deletable), `is_global`, `conditions` (JSON), `match_type`, and `last_used`. Full CRUD at `POST|PUT|DELETE /{module}/filters[/{filter}]` (`ListFilterController`), seeded defaults via `DefaultFiltersSeeder` / `config/default_filters.php`.
-- **Frontend**: `ListActions/FilterZone.vue` — multi-condition builder (field/operator/value pickers, `between`/`in` handled specially), save/edit/delete named filters, a "share with team" toggle, an AND/OR switch, and an overflow panel separating private vs. shared filters sorted by last-used.
-- **Selecting a saved filter** via `?filter=<slug|uuid>` in the URL applies its conditions and bumps `last_used` (`ListController`) — so links stay shareable, but what's shared is a reference to a saved condition-set rather than raw column=value pairs.
+- **Filterable fields**: a field is filterable if it's one of the stock keys or has `Field::filterable === true`; `owner_id` is excluded on modules without `has_owner`.
+- **Operators per field type** are declared in `config/filter_operators.php` — e.g. `equals`/`not_equals`/`contains`/`starts_with` for text, `greater_than`/`less_than`/`between` for numbers, `before`/`after`/`between` for dates, `is_empty`/`is_not_empty` for any type — enforced both server-side and in the picker UI.
+- **Conditions** are an array of `{field, operator, value}` combined with a `match_type` of `all` (AND) or `any` (OR). A condition's value can be the literal `@current_user`, substituted with the logged-in user's ID — this is how "my records" style filters work.
+- **Saved / shared / system filters** are a real model (`ListFilter`): a filter has `is_shared` (visible to the whole team), `is_system` (seeded, e.g. `my_records`, non-deletable), `is_global`, `conditions` (JSON), `match_type`, and `last_used`. Full CRUD at `POST|PUT|DELETE /{module}/filters[/{filter}]`.
+- **Frontend**: `ListActions/FilterZone.vue` — multi-condition builder, save/edit/delete named filters, a "share with team" toggle, an AND/OR switch, and an overflow panel separating private vs. shared filters sorted by last-used.
+- **Selecting a saved filter** via `?filter=<slug|uuid>` in the URL applies its conditions and bumps `last_used` — so links stay shareable.
 
 ### Sorting
 
-Sorting remains simple: `BaseModuleHandler::getListData()` validates the requested `sort` column against the model's `getFillable()` list (not an explicit per-field `sortable` flag) and defaults to `created_at desc`.
+`BaseModuleHandler::getListData()` validates the requested sort column against the model's fillable list and defaults to `created_at desc`.
 
 ---
 
 ## 9. Dashboard
 
-Route `GET /` → `DashboardController@index`. Dashboards are now fully personalizable per user, not a fixed widget set.
+Route `GET /` → `DashboardController@index`. Dashboards are fully personalizable per user, not a fixed widget set.
 
 ### Personalized, persisted layout
 
-- `Dashboard` model (`app/Models/Dashboard.php`): fillable `user_id, name, slug, layout, sort_order`; `layout` is cast to `array` and holds the full widget configuration as JSON — **not** a `configuration` column as previously documented; the real migration (`2026_05_04_121726_create_dashboards_table.php`) names it `layout`.
-- `DashboardController@index` loads `Dashboard::where('user_id', $user->id)->first()` and only falls back to a role-based default (`DashboardPresets::layout()`, sourced from `config/dashboard_presets.php`, keyed by user type with `admin`/`read_only` variants) if the user has never saved their own layout.
-- `DashboardController@saveLayout` (`POST /dashboard/layout`) persists via `Dashboard::updateOrCreate(['user_id' => ...], ['layout' => ...])`.
-- `DashboardController@widgetData` (`POST /dashboard/widget-data`) resolves live data per widget type (`time-series`, `metric`, `breakdown`, `record-list`, `people`) through `AggregationService`, automatically owner-scoped for non-admin users. Companion endpoints `GET /dashboard/module-fields/{slug}`, `/dashboard/module-relationships/{slug}`, and `/dashboard/filterable-fields/{slug}` let each widget's config form populate its field/relationship/filter pickers per module.
+- `Dashboard` model: per-user `layout` (JSON) holding the full widget configuration.
+- `DashboardController@index` loads the user's own saved layout, falling back to a role-based default (`admin`/`read_only` variants) only if the user has never saved their own.
+- `DashboardController@saveLayout` persists the layout.
+- `DashboardController@widgetData` resolves live data per widget type (`time-series`, `metric`, `breakdown`, `record-list`, `people`) through `AggregationService`, automatically owner-scoped for non-admin users. Companion endpoints let each widget's config form populate its field/relationship/filter pickers per module.
 
 ### Editing UI
 
-`resources/js/Pages/Dashboard/Index.vue` provides an explicit edit mode (`enterEdit` / `saveLayout` / `cancelEdit`):
+`resources/js/Pages/Dashboard/Index.vue` provides an explicit edit mode:
 
 - HTML5 drag-and-drop reordering of widgets with a ghost placeholder and a masonry-style row-span layout.
-- Add/remove/reconfigure widgets (`addWidget`, `removeWidget`, `updateInstance`) — auto-persists immediately outside of bulk-edit mode, or via explicit Save/Cancel while editing.
-- Two widget kinds coexist: legacy fixed string-id widgets (e.g. `my-records`, not configurable) and typed, configurable instances (generated `instanceId`, `type`, `config`, `cols` width) added through `AddWidgetPanel.vue` / `WidgetRegistry.js`.
+- Add/remove/reconfigure widgets — auto-persists immediately outside of bulk-edit mode, or via explicit Save/Cancel while editing.
+- Two widget kinds coexist: legacy fixed string-id widgets (not configurable) and typed, configurable instances added through `AddWidgetPanel.vue`.
 - Five configurable widget types, each with its own config form: `MetricConfigForm.vue`, `TimeSeriesConfigForm.vue`, `BreakdownConfigForm.vue`, `RecordListConfigForm.vue`, `PeopleConfigForm.vue` — plus `WidthPicker.vue` for column span and `DashboardFilterBuilder.vue`, which reuses the same condition/operator system as list filters (see [Search](#8-search)) to scope a widget's data.
 
 ### Legacy fixed widgets (still present, non-configurable)
@@ -364,50 +355,59 @@ Route `GET /` → `DashboardController@index`. Dashboards are now fully personal
 | Deal stages | Won / lost / open deal counts | `DealStages.vue` (doughnut chart) |
 | Invoice overview | Invoice status breakdown | (inline in `Index.vue`) |
 
-**Minor cleanup item (not user-facing)** — `Dashboard::scopeGlobal()` / `scopeForUser()` reference a non-existent `owner_id` column and aren't called anywhere in the app; they appear to be dead code left over from an earlier design.
-
 ---
 
 ## 10. Settings
 
-Settings are stored as key-value rows in `setting_values`. The system is grouped by category. Most settings are shown on a dedicated page rendered by `Settings/Page.vue`.
+Settings are organized into groups, each with one or more items, each holding key-value rows in `setting_values`. Most settings pages are rendered by `Settings/Page.vue`.
 
-### Categories & Items
+### System
 
-| Category | Setting | Type |
+| Item | Setting | Type |
 |---|---|---|
-| **System** | `timezone` | Dropdown (IANA zones) |
-| | `date_format` | Dropdown (locale-aware examples) |
-| | `datetime_format` | Dropdown |
-| | `first_day_of_week` | Dropdown |
-| | `list_view_limit` | Integer |
-| | `linking_panel_limit` | Integer |
-| | `related_panel_limit` | Integer |
-| **Customisations** | `primary_color`, `secondary_color`, `danger_color`, `success_color` | Color pickers |
-| | `theme` | Dropdown (light/dark/system) |
-| | `border_radius` | Text/slider |
-| | `table_striped_rows` | Checkbox |
-| **Users** | `multi_currency_mode` | Checkbox |
+| **Locale** | `app_locale`, `default_locale` | Language pickers |
+| | `date_format`, `datetime_format` | Dropdown (locale-aware examples) |
+| | `timezone` | Dropdown (IANA zones) |
+| | `first_day_of_week` | Integer |
 | | `default_currency` | Dropdown |
-| | `enabled_languages`, `default_language`, `fallback_language` | Dropdowns |
-| | `show_language_switcher` | Checkbox |
-| **Email** | Outbound/inbound mail configuration | Text fields |
-| **Company** | Organisation identity fields | Text fields |
+| | `multi_currency_mode` | Checkbox |
+| **Style** | `theme` | Dropdown (light/dark/system) |
+| | `primary_color`, `secondary_color`, `success_color`, `danger_color` | Color pickers |
+| | `border_radius` | Integer/slider |
+| | `table_striped_rows` | Checkbox |
+| | `use_individual_module_colors` | Checkbox |
+| **Preferences** | `list_view_limit`, `linking_panel_limit`, `related_panel_limit` | Integer |
 
 The `SettingsController` provides live preview options for date/datetime formats based on the selected timezone.
+
+### Customisation
+
+Module Builder, Module Manager, and Dropdown Manager (below) are grouped here in Settings navigation.
+
+### Company
+
+Organisation identity — company name, address, phone, email, website, logo — editable at `/settings/company/company-info` (also the first step of onboarding, see [Onboarding & Setup](#15-onboarding--setup)).
 
 ### Field Manager
 
 Admins manage per-module field definitions at `/settings/modules/{module}/fields`:
 
-- **List** — shows editable fields with type and status; custom fields additionally show a `records_using` count (how many of the module's records have a non-null value for that field), computed via `FieldsManagerController@show`
-- **Create** — `FieldsManagerController@store` — creates a new field (label, type, validation options, dropdown list)
-- **Edit** — `FieldsManagerController@update` — update label, required flag, validation rules, etc.
-- **Delete** — `FieldsManagerController@destroy` — **custom fields only** (`is_custom = true`); stock/seed-time fields back a real DB column and are rejected with a validation error. The delete button in `Settings/Fields/List.vue` is disabled for stock fields, and shows a confirmation dialog with the `records_using` count when there are any (same pattern as deleting a relationship). Deleting a field also strips it from that module's `list`/`record`/`linkingPanel` layouts (`FieldsManagerController::removeFieldFromLayouts()`) — `related` and `lineItemsSnapshot` are deliberately left alone (their field references can be nested per-relationship-panel or point at a different module entirely), covered instead by render-time existence guards throughout the frontend (list, record, create, quick-create, record-picker, related panels, users, profile all filter out a field reference that no longer resolves, rather than crash or render a stale blank field). Existing records' `custom_fields` JSON is **not** modified on delete — the orphaned key is simply never read again once the `Field` row is gone (`HasCustomFields::isCustomField()`), rather than being stripped from every row.
+- **List** — shows editable fields with type and status; custom fields additionally show a `records_using` count (how many of the module's records have a non-null value for that field).
+- **Create** — creates a new field (label, type, validation options, dropdown list).
+- **Edit** — update label, required flag, validation rules, etc.
+- **Delete** — custom fields only; stock/seed-time fields back a real DB column and are protected. Shows a confirmation dialog with the `records_using` count when there are any. Deleting a field also strips it from that module's `list`/`record`/`linkingPanel` layouts, and every field-rendering surface in the app gracefully skips a field reference that no longer resolves.
 
 ### Dropdown Manager
 
-Named dropdown option lists live at `/settings/dropdowns`. Lists can be created, edited inline, or created-and-immediately-attached to a field (`storeAndAttach` endpoint). Components: `DropdownSelector.vue`, `CreateNewDropdownListModal.vue`, `EditDropdownListModal.vue`.
+Named dropdown option lists live at `/settings/dropdowns`. Lists can be created, edited inline, or created-and-immediately-attached to a field. Components: `DropdownSelector.vue`, `CreateNewDropdownListModal.vue`, `EditDropdownListModal.vue`.
+
+### PDF Templates
+
+See [PDF Generation](#13-pdf-generation).
+
+### Audit
+
+See [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
 
 ---
 
@@ -423,23 +423,19 @@ The system has two role levels:
 | `is_admin = true` | Admin — accesses settings, user management, impersonation |
 | neither | Regular user |
 
-`AdminMiddleware` protects all routes under `/settings`, `/users`, and `/invites`. It calls `user()->isAdmin()` and aborts with 403 if false.
+`AdminMiddleware` protects all routes under `/settings`, `/users`, and `/invites`.
 
-### Module Visibility — binary, not per-action
+### Module Visibility
 
-The `modules` table has no `can_view`/`can_create`/`can_edit`/`can_delete` capability columns — that was stale documentation carried over from an earlier design and never corrected; it's fixed now. The real, current model is a single binary split: **can a regular (non-admin) user see this module at all?**
+Whether a regular (non-admin) user can see a module at all is a single binary split:
 
-- `is_active` (module enabled/disabled) and `show_in_sidebar`/`show_in_module_manager` control visibility, evaluated the same way for every non-admin user — there's no per-user or per-role variation.
-- `AdminOnlyModuleScope` (`app/Scopes/AdminOnlyModuleScope.php`) additionally hides exactly two hardcoded module slugs (`users`, `settings`) from non-admins; admins bypass it entirely.
-- Once a module is visible to a regular user, that user has full create/edit/delete on its records and can link/unlink it via relationships — there is no finer split between viewing, editing, deleting, or linking within a visible module.
-
-`ModulePolicy` (commit `d03f11d`, deleted) only ever checked `$module->is_active` per ability, with admins bypassing via `before()` — it did not enforce any per-role or per-action distinction either, so its removal didn't regress anything beyond that one `is_active` check (which `AdminOnlyModuleScope` plus the controllers' own `is_active` lookups still effectively cover). `app/Policies/` is empty today; no `authorize()`/`Gate::`/`->can()` calls exist anywhere in the app outside unrelated Form Request boilerplate.
-
-Granular RBAC (per-user/per-role view vs. create vs. edit vs. delete) is intentionally out of scope for now — planned as a V2 feature, not a bug to fix today.
+- `is_active` (module enabled/disabled) and `show_in_sidebar`/`show_in_module_manager` control visibility, evaluated the same way for every non-admin user.
+- The `users` and `settings` modules are always hidden from non-admins; admins see everything.
+- Once a module is visible to a regular user, that user has full create/edit/delete on its records and can link/unlink it via relationships.
 
 ### Impersonation
 
-Admins can impersonate any user via `POST /users/{user}/impersonate`. A persistent banner (`ImpersonationBanner.vue`) is shown while impersonating. `POST /leaveimpersonate` returns to the original admin session. Every impersonation session (who, whom, from what IP, start/end) and every action taken while impersonating is now logged — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
+Admins can impersonate any user via `POST /users/{user}/impersonate`. A persistent banner (`ImpersonationBanner.vue`) is shown while impersonating. `POST /leaveimpersonate` returns to the original admin session. Every impersonation session (who, whom, from what IP, start/end) and every action taken while impersonating is logged — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
 
 ### Record Ownership
 
@@ -451,7 +447,7 @@ Admins can impersonate any user via `POST /users/{user}/impersonate`. A persiste
 
 ### User CRUD (Admin-only)
 
-Routes under `/users` cover full CRUD for user accounts. Admins can set `is_admin`, assign `title`, `phone`, `mobile`, `locale`, `timezone`, `avatar`. Password is hashed on save.
+Routes under `/users` cover full CRUD for user accounts. Admins can set `is_admin`, assign `title`, `phone`, `mobile`, `avatar`. Password is hashed on save.
 
 | Route | Purpose |
 |---|---|
@@ -460,6 +456,8 @@ Routes under `/users` cover full CRUD for user accounts. Admins can set `is_admi
 | `POST /users` | Store user |
 | `GET /users/{id}` | Show user record |
 | `PUT /users/{id}` | Update user |
+| `POST /users/{user}/reset-password` | Admin-initiated password reset |
+| `POST /users/{user}/send-set-password` | Send a set-password link to the user |
 | `GET /users-linking-list` | Paginated users for record-linking overlay |
 
 ### Invitation System
@@ -477,11 +475,9 @@ Admins can invite users by email. Accepted invites create a new User record.
 | `DELETE /invites/{invite}` | Delete invite record |
 | `GET /users/invites` | Pending invites list |
 
-`UserInvite::isPending()` checks `status = pending` and `expires_at > now()`.
-
 ### User Profile
 
-`GET /profile` and `PUT /profile` let the authenticated user update their own name, email, avatar, locale, timezone, date/time formats, and theme preference.
+`GET /profile` and `PUT /profile` let the authenticated user update their own name, email, phone, mobile, title, description, and avatar.
 
 ---
 
@@ -489,60 +485,46 @@ Admins can invite users by email. Accepted invites create a new User record.
 
 ### PDF Templates
 
-Templates are stored in the `pdf_templates` table (migration `2026_05_21`). Each template is fully standalone — it owns its layout `definition` (JSON) directly rather than depending on a shared Layout row. An optional `layout_id` FK is retained for backward compatibility with templates created through the old embedded-in-layout flow.
+Templates are stored in the `pdf_templates` table. Each template is fully standalone — it owns its layout `definition` (JSON) directly.
 
 | Column | Type | Purpose |
 |---|---|---|
 | `id` | UUID | PK |
 | `module_slug` | string | Which module the template belongs to |
 | `name` | string | Human-readable name |
-| `blade_view` | string | Blade view path (always `pdf.layout-driven`) |
-| `layout_id` | string (nullable) | Legacy FK to `layouts` table |
+| `blade_view` | string | Blade view path |
 | `description` | string (nullable) | Optional admin description |
 | `is_default` | boolean | Only one default per module at a time |
 | `definition` | JSON | Section tree that drives the rendered output |
 
-`PdfTemplate::defaultFor($moduleSlug)` fetches the default template for a module; `existsFor()` checks existence.
-
 ### Template Manager (Settings)
 
-Full CRUD at `/settings/pdf-templates` (route group `settings.pdf-templates.*`):
+Full CRUD at `/settings/pdf-templates`:
 
 | Route | Method | Action |
 |---|---|---|
-| `/settings/pdf-templates` | GET | `index` — paginated list; searchable by name or module label |
-| `/settings/pdf-templates/create?module=X` | GET | `create` — pre-loads fields, relationships, line-item fields for selected module |
-| `/settings/pdf-templates` | POST | `store` — validates `definition.sections`, ensures single default per module |
-| `/settings/pdf-templates/preview` | POST | `preview` — server-renders the Blade view with fake data; returns HTML for the live preview panel |
-| `/settings/pdf-templates/{id}` | GET | `edit` |
-| `/settings/pdf-templates/{id}` | PUT | `update` |
-| `/settings/pdf-templates/{id}` | DELETE | `destroy` |
-| `/settings/pdf-templates/{id}/default` | POST | `setDefault` — atomically sets one default, clears others |
+| `/settings/pdf-templates` | GET | List — paginated, searchable by name or module label |
+| `/settings/pdf-templates/create?module=X` | GET | Create — pre-loads fields, relationships, line-item fields for selected module |
+| `/settings/pdf-templates` | POST | Store — validates the section definition, ensures a single default per module |
+| `/settings/pdf-templates/preview` | POST | Live preview — server-renders with sample data |
+| `/settings/pdf-templates/{id}` | GET/PUT/DELETE | Edit / update / delete |
+| `/settings/pdf-templates/{id}/default` | POST | Atomically sets one default, clears others |
 
 ### Section-Based Definition Format
 
-A template `definition` is a JSON object `{ "sections": [...] }`. Each section has a `type` that controls how it is rendered:
+A template `definition` is a JSON object of sections. Each section has a `type` that controls how it is rendered:
 
 | Section type | Description |
 |---|---|
 | `header` | Two-column header row grid; left/right slots each hold a `kind` item |
-| `footer` | Fixed-to-bottom footer (static in preview mode); same two-column row format |
+| `footer` | Fixed-to-bottom footer; same two-column row format |
 | `fields` | Horizontal row of labelled field values; supports `full` or `half` width |
 | `text` | Static text/notes block with optional title |
 | `divider` | Horizontal rule |
 | `relationship` | Table of related records with configurable columns |
 | `line_items` | Full line-items table with subtotal / tax / discount / total summary |
 
-**Slot `kind` values** (used inside `header`/`footer` rows and `fields` sections):
-
-| Kind | Renders |
-|---|---|
-| `logo` | Company logo image, or initials fallback box |
-| `meta` | Company name, address, phone, email |
-| `title` | Document title + record number |
-| `field` | A single record field value, with optional label |
-| `page_number` | DomPDF `counter(page) / counter(pages)` |
-| `date` | Today's date |
+**Slot `kind` values** (used inside `header`/`footer` rows and `fields` sections): `logo`, `meta` (company name/address/phone/email), `title` (document title + record number), `field` (a single record field value), `page_number`, `date`.
 
 **Field `displayStyle` variants**: `title`, `subtitle`, `bold`, `small`, `label`, `status` (colored pill badge), `address` (multi-line), `highlight`, `muted`.
 
@@ -551,42 +533,25 @@ A template `definition` is a JSON object `{ "sections": [...] }`. Each section h
 ### Rendering Engine
 
 - **Engine**: [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf) (DomPDF).
-- **Blade view**: `resources/views/pdf/layout-driven.blade.php` — a single template that handles all section types.
-- **Fonts**: Fira Sans and Heebo TTF files in `resources/fonts/` are registered directly with `FontMetrics` before rendering so CSS can reference them by name. For browser preview, WOFF2 variants are embedded as Base64 `@font-face` data URIs (cached 30 days).
-- **Value rendering**: `PdfValueRenderer::render($type, $value, $dropdownValues)` normalises all field types:
-  - `date` / `datetime` — formatted via the system `date_format` / `datetime_format` setting
-  - `select` / `status` / `dropdown` — resolved to the human-readable label; i18n keys resolved automatically
-  - `decimal` / `currency` / `number` — formatted by `PdfNumberFormatter::format()`, which uses PHP `NumberFormatter` (ext-intl) when available, falling back to locale-aware `number_format`
-  - `address` — formatted as `street / postal city / state, country` multi-line
-  - `checkbox` / `bool` — `globals.pdf.yes` / `globals.pdf.no` translations
-  - `PdfValueRenderer` is no longer PDF-exclusive: `ExportController` (see [Record CRUD & Bulk Operations](#5-record-crud--bulk-operations)) reuses it to format the same field types for CSV/JSON export, so exported values match what a generated PDF/preview shows.
-- **Currency symbols**: `PdfNumberFormatter::symbol($code)` maps ISO 4217 codes to glyphs for ~25 currencies, falls back to the raw code.
-- **Company branding**: logo URL is converted to a Base64 data URI (cached 6 h) so DomPDF can embed it without HTTP round-trips. Local URLs are read from disk; remote URLs fetched with a 2 s timeout.
-- **Relationship data**: all relationships referenced by field items across sections are pre-loaded via `RelationshipService::getRelatedRecords()` before rendering; failures are silenced.
-- **Record data**: `custom_fields` JSON is merged into a flat array so all field values are accessible via uniform `$record['key']`.
-- **Output**: `stream()` — displays inline in the browser.
-- **Filename**: `{module-slug}-{record.number|recordId}.pdf`
-- **Template selection**: caller may pass `?template={id}` to request a specific template; otherwise the module's default is used.
+- **Fonts**: Fira Sans and Heebo, registered directly with the PDF engine so CSS can reference them by name.
+- **Value rendering**: normalises every field type for output — dates/datetimes via the system format settings, select/status/dropdown values resolved to their human-readable label, decimals/currency/numbers formatted locale-aware, addresses formatted multi-line, checkboxes as yes/no.
+- **Currency symbols**: maps 23 common ISO 4217 currency codes to their glyphs, falling back to the raw code for anything else.
+- **Company branding**: logo is embedded directly so PDFs render without external HTTP round-trips.
+- **Relationship data**: all relationships referenced by field items across sections are pre-loaded before rendering.
+- **Output**: streams inline in the browser; filename follows `{module-slug}-{record.number|recordId}.pdf`.
+- **Template selection**: caller may request a specific template; otherwise the module's default is used.
 
 ### Live Preview Panel
 
-`PdfPreviewPanel.vue` POSTs the current section definition to `/settings/pdf-templates/preview`. The controller builds fake data matching each field type (including 3 sample line-items and sample relationship rows), renders the Blade view with `isPreview: true`, and returns HTML. The panel displays this in a scaled `<iframe>` (A4 width 794 px, auto-height).
+`PdfPreviewPanel.vue` posts the current section definition to the preview endpoint, which builds representative sample data (including sample line-items and relationship rows) and returns rendered HTML, displayed in a scaled A4-width iframe.
 
 ### Record-Level PDF Modal
 
-`PdfModal.vue` is mounted on the record view when templates exist for the module. It shows a picker of all available templates for the module (default pre-highlighted). Selecting a template:
-
-1. Shows an animated progress bar + spinner while fetching.
-2. Fetches `GET /{module}/{recordId}/pdf?template={id}` as a blob.
-3. Creates an object URL and triggers a download automatically.
-4. Shows a "ready" state with a "Download again" button.
-5. On failure, shows error text with Retry and "Choose template" options.
-
-Auto-generates immediately if there is only one template (skips the picker).
+`PdfModal.vue` is mounted on the record view when templates exist for the module. It shows a picker of all available templates for the module (default pre-highlighted), fetches the generated PDF as a blob, and triggers a download automatically — auto-generating immediately if there is only one template.
 
 ### Field Type Coverage in PDFs
 
-All currently supported field types render correctly in PDFs: `text`, `longtext`, `email`, `phone`, `url`, `select`, `status`, `checkbox`, `date`, `datetime`, `integer`, `decimal`, `percentage`, `currency`, `address`, `record`.
+All field types render in PDF output: text, longtext, email, phone, url, select, status, checkbox, date, datetime, integer, decimal, percentage, currency, address, record.
 
 ---
 
@@ -604,31 +569,16 @@ Standard Laravel Auth flow:
 
 ### Session Management
 
-- **Storage & lifetime**: `database` session driver (`sessions` table), 8-hour lifetime (`SESSION_LIFETIME=480`), not expired on browser close, unencrypted payload. Cookie `secure`/`same_site` flags are left at env-driven defaults (no `SESSION_SECURE_COOKIE`/`SESSION_SAME_SITE` set) — `same_site` defaults to `lax`.
-- **"Remember me"**: working checkbox on `Login.vue`, passed through to `Auth::attempt($credentials, $remember)` in `AuthController::login()`. Grants a ~400-day `remember_web_...` cookie independent of the 8-hour session (Laravel's default `SessionGuard::$rememberDuration`). Logging out clears it for that device; since the underlying `remember_token` is per-user (not per-device) and non-rotating, logging out on one device also invalidates the remember-me token value on every other device sharing it, even though it doesn't touch their live session cookies.
-- **Idle timeout**: there's no separate idle-tracking mechanism — the 8-hour idle expiry *is* the rolling session lifetime (any authenticated request refreshes `last_activity`). A keep-alive heartbeat (`useKeepAlive.js`, mounted globally in `AppLayout.vue`) pings `GET /keep-alive` every 5 minutes while the tab is visible, so an open, visible tab effectively never times out; a backgrounded or closed tab expires after 8 hours idle.
-- **419 (expired session) recovery**: a custom exception-render branch (`bootstrap/app.php`) gives a soft recovery instead of Inertia's default full-screen 419 error. It distinguishes, at the moment the exception is thrown, "CSRF token stale but session still alive" (flash a toast, redirect back to the same page — the Vue component never unmounted, so in-progress form edits are untouched) from "session actually died" (redirect to `/login` with the original URL as the intended destination; the in-flight form draft is stashed to `sessionStorage` and restored after re-login, currently wired up only for the record edit page). See `docs/dev/419-session-recovery.md` for the full design.
-- **Impersonation and sessions**: `Auth::login()` internally regenerates the session (destroying the old session row, issuing a new ID/CSRF token) — since browser tabs share cookies, any other open tab in the same browser silently picks up the impersonated identity on its next request, with no warning in that tab.
-- **Concurrent sessions / multi-device**: fully independent by design — `sessions.user_id` is indexed but not unique, and no single-session-guard middleware exists, so the same user can be logged in on unlimited devices simultaneously with no way to see or revoke another device's session.
-- **Logout**: `POST /logout` invalidates only the current session (destroys that session row, regenerates ID/token) and does not affect other devices' live sessions.
-
-An admin-configurable idle window (30 min–24h) and an admin toggle to hide the "remember me" checkbox entirely are **not built** — `docs/dev/419-session-recovery.md` §9 lists both as "planned follow-up, not built," and they're now tracked as deliberately deferred to V2 (see `incomplete-features.md`'s "Not a Bug — Left for V2" section) rather than as a doc/code mismatch: `docs/guides/en/session-timeout-guide.md` was corrected to stop describing them as shipped. There is also no active-session listing or "log out other devices" UI (same V2 section). (Impersonation *is* now audited — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions) — this note is scoped to session management specifically.)
-
-### User Security Fields
-
-The `users` table includes `two_factor_secret`, `failed_login_attempts`, `locked_until`, `last_login_at`, `last_login_ip`, `password_changed_at`. These columns are present but **⚠ INCOMPLETE** — two-factor authentication UI and brute-force lockout logic were not found in controllers or middleware.
-
-### IP Whitelist — Removed
-
-The `ip_whitelists` table and `IpWhitelist` model were added (`96dd5e8`) and then deleted outright two days later (`eab2507`, "cleaned up migration to avoid 500 bugs"). Neither the table, the model, nor any reference to `ip_whitelist(s)` exists anywhere in the codebase today — this isn't an unused-but-present feature, it was built and then removed.
+- **Storage & lifetime**: database-backed sessions, 8-hour lifetime, not expired on browser close.
+- **"Remember me"**: checkbox on the login screen grants a long-lived (~400-day) cookie independent of the normal session, so a device stays signed in across browser restarts. Signing out explicitly clears it.
+- **Idle timeout**: a keep-alive heartbeat keeps an open, visible tab signed in indefinitely; a backgrounded or closed tab expires after the idle window.
+- **Session recovery**: an expired-session-mid-edit is handled gracefully — a stale-but-still-alive session flashes a quick "please save again" notice without losing the in-progress edit; a fully expired session redirects to login and restores the in-progress edit after re-authentication (currently wired up for the record edit page).
+- **Multi-device**: fully independent by design — the same user can be signed in on multiple devices simultaneously.
+- **Logout**: invalidates only the current device's session.
 
 ### Locale & Timezone
 
-`SetLocaleFromSettings` middleware reads user preferences on each request and sets the application locale accordingly.
-
-### Local Auto-Login
-
-`LocalAutoLogin` middleware bypasses authentication in local environments. Should be disabled for staging/production.
+Request-time middleware applies the active user's locale and timezone preferences automatically.
 
 ---
 
@@ -638,20 +588,18 @@ Two distinct, sequential flows take a fresh install from zero users to a working
 
 ### A. Instance setup — first admin account
 
-- `SetupController` (`GET|POST /setup/{token}`) is only reachable while `User::count() === 0` — it's a one-time install gate, not reusable after the first user exists.
-- The `{token}` is validated against `SetupToken` (`app/Services/Users/SetupTokenService.php`); `app/Mail/SetupInstanceMail.php` sends the link containing it.
-- Submitting the form creates the first user with `is_admin: true, is_root: true` (see [Permissions & Roles](#11-permissions--roles)), optionally sets the app locale, logs the user in, and redirects into onboarding below.
+- `SetupController` (`GET|POST /setup/{token}`) is only reachable while no users exist yet — a one-time install gate.
+- The `{token}` is validated against a dedicated setup-token service; the setup link is emailed to the installer.
+- Submitting the form creates the first user as a root admin, optionally sets the app locale, logs the user in, and redirects into onboarding below.
 - Frontend: `resources/js/Pages/Setup.vue`.
 
 ### B. Post-login onboarding wizard
 
-- Gated by a settings flag, not a route guard the user can skip: `app/Http/Middleware/EnsureOnboardingComplete.php` forces **every** request to `onboarding.show` until `Settings::bool('onboarding_completed')` is true (except the `onboarding.*` routes themselves and logout).
-- `OnboardingController@show` renders `Inertia::render('Onboarding', ['steps' => ['organisation', 'demo-data', 'invite']])`.
-- Step 1, **organisation** — company logo, name, address, phone, email, website, saved via `PUT /settings/company-info`.
-- Step 2, **demo-data** — optional toggle; if enabled, `OnboardingController@seedDemoData` runs `DevSeeder`, `RelationshipPopulationSeeder`, `OwnerAssignmentSeeder`, and `DashboardPresetSeeder` (with a bumped memory limit) to populate sample records, relationships, ownership, and default dashboard layouts.
-- Step 3, **invite** — delegates to `InviteTeamForm.vue` (see [User Management & Invitations](#12-user-management--invitations)); can be skipped.
-- `OnboardingController@finish` (`POST /onboarding/finish`) sets `onboarding_completed = '1'` via `SettingValue`, clears the settings cache, and redirects to the dashboard (or the users index).
-- Frontend: `resources/js/Pages/Onboarding.vue` — a 3-step wizard with step-dot progress; each step's completion calls `advance()`, and the final step calls the finish endpoint above.
+- Every request is gated to the onboarding flow until it's marked complete.
+- Step 1, **organisation** — company logo, name, address, phone, email, website.
+- Step 2, **demo-data** — optional toggle to populate sample records, relationships, ownership, and default dashboard layouts.
+- Step 3, **invite** — invite team members; can be skipped.
+- Frontend: `resources/js/Pages/Onboarding.vue` — a 3-step wizard with step-dot progress.
 
 ---
 
@@ -663,58 +611,40 @@ Every create/update/delete on any module record, every relationship link/unlink,
 
 | Table | Shape | Purpose |
 |---|---|---|
-| `audit_logs` | Append-only, one row per event | `created`/`updated`/`deleted`/`linked`/`unlinked` — `module_slug`, `record_id` (both nullable, for batch/system events), `user_id`, `impersonator_id`, `action`, `diff` (JSON), `created_at` |
-| `audit_log_affected_records` | Append-only, one row per (batch, record) pair | `audit_log_id` (FK, cascades on delete), `record_id` (indexed), `old_value` (JSON, nullable) — lets a bulk batch row be attributed back to every individual record it touched, each with its own prior value, without an unbounded JSON array (see Write paths below) |
-| `impersonation_sessions` | Mutable, one row per session | Who impersonated whom — `impersonator_id`, `target_user_id`, `ip_address`, `started_at`, `ended_at` (null while ongoing) |
-
-Deliberately schema-generic (the JSON column is named `diff`, not `changes` — naming it `changes` collided with a `protected $changes` property Eloquent's own base `Model` class already declares internally for dirty-tracking, silently breaking reads) so a planned future **Activities** feature can read/write the same `audit_logs` table with a broader `action` vocabulary without a rename.
+| `audit_logs` | Append-only, one row per event | `created`/`updated`/`deleted`/`linked`/`unlinked` — module, record, actor, action, and a JSON diff |
+| `audit_log_affected_records` | Append-only, one row per (batch, record) pair | Lets a bulk-operation batch row be attributed back to every individual record it touched, each with its own prior value |
+| `impersonation_sessions` | Mutable, one row per session | Who impersonated whom, from what IP, start/end (null while ongoing) |
 
 ### Write paths
 
-- **`AuditObserver`** (`app/Observers/AuditObserver.php`) — the primary hook, registered from `BaseModule::booted()` rather than `AppServiceProvider`, since Eloquent keys observer bindings to the literal class passed to `observe()`; late static binding inside `booted()` is what lets one registration correctly self-attach for every concrete module class (`Deal`, `Contact`, etc.). Fires on `created`/`updated`/`deleted` for every `BaseModule` subclass, including `User`.
-- **`RecordController`'s bulk `updateMany`/`destroyMany`** — these use query-builder writes (`whereIn(...)->update()`, `chunkById(...)->delete()`) which never fire Eloquent events, so they call the audit write path explicitly, logging one row per batch (not per affected record), for both selection modes (`explicit` and `all matching a filter`). The affected records go to `AuditService::log()`'s `$affectedRecords` parameter as a keyed array (`record_id => old_value`), which writes them into the `audit_log_affected_records` join table rather than inline in `diff` — a plain JSON array would work for a small explicit selection but not for "all matching," which can span an entire module's table; see `docs/dev/audit-trail-implementation.md` §4.2.1 for why. For `updateMany`, `old_value` is that record's own prior value of the field being changed (captured before the overwrite, per record — not just what the whole batch was set to); for `destroyMany`, it's the record's display label captured just before deletion, since nothing is left to query afterward.
-- **`RelationshipService::link()`/`unlink()`** — logs on **both sides** of the relationship, so either record's own history shows the connection regardless of which side the action was performed from.
+- **Field-level changes** on any module record (create/update/delete) are captured automatically, with no per-module setup.
+- **Bulk update/delete** log one row per batch (not per affected record) for both selection modes (explicit selection and "all matching a filter"). Each affected record's own prior value (for updates) or display label (for deletes) is captured individually, so a record's own history shows what it actually changed from — not just what the whole batch was set to.
+- **Linking/unlinking** relationships logs on **both sides** of the relationship, so either record's own history shows the connection regardless of which side the action was performed from.
 
-Deletion is a hard delete, by design, for now — `AuditObserver::deleted()` captures only a display label at delete time (`record_label`, `name ?? number ?? id`), not a full attribute snapshot, so a deleted record cannot be reconstructed from its audit entry. A real restore capability is intentionally deferred to a V2 **Bin system** (soft delete, a retention window, auto-purge — matching the `// TODO: Offer recovering deleted records (Bin system)` comment already in `RecordController.php`), not something this audit-log snapshot approach is meant to grow into.
+Deletion is a hard delete — a display label is captured at delete time so the audit trail shows what was deleted, though a deleted record itself isn't recoverable from its audit entry.
 
 ### Actor resolution and transparency
 
-Every write auto-resolves `user_id` (the current session identity — the impersonated user's id while impersonating) and `impersonator_id` (the real actor, set only while an impersonation session is active). **The impersonator's identity is always shown, unconditionally, to anyone who can see the row — there is no masking, no Gate, no visibility setting.**
+Every write auto-resolves the current session identity and, if an impersonation session is active, the real actor behind it. **The impersonator's identity is always shown, unconditionally, to anyone who can see the row.**
 
-The write path also no-ops entirely when there's no authenticated actor at all (console commands, seeders, queued jobs with no user context) — an enforced invariant of the write path itself, not something each caller opts into. Added after demo-data relationship seeding (`RelationshipPopulationSeeder`) was found logging real audit rows attributed to no one, since `Model::withoutEvents()` (used by `DatabaseSeeder` to suppress factory-driven audit noise) only suppresses Eloquent's event dispatcher — it has no effect on the relationship seeder's direct, non-event write calls.
+### Calculated fields
 
-### `is_calculated` field flag
-
-Fields flagged `is_calculated = true` (`total`/`subtotal`/`tax_amount`/`discount_amount` on any has-line-items module, and on `LineItem` itself — set in `config/default_line_item_fields.php` and `config/stock_fields.php`'s `line_items` section) are excluded from the `updated` diff, since they're recalculated automatically by the line-items panel rather than directly edited by a user. Driven by the flag, not a hardcoded field-name list — any field an admin later marks calculated via the Fields Manager is excluded automatically, no app code change needed.
+Fields flagged as calculated (e.g. `total`/`subtotal`/`tax_amount`/`discount_amount` on any module with line items) are excluded from the change diff, since they're recalculated automatically rather than directly edited by a user.
 
 ### Frontend
 
 | Surface | Route | Gate |
 |---|---|---|
-| Per-record history | Record page action menu → "View History" (modal) | Same visibility as the record itself (no additional per-record ACL exists in the app today) |
-| Global audit log | `/settings/audit-trail` | Admin (`AdminMiddleware`) |
-| Impersonation sessions | `/settings/impersonation-sessions` | Admin — **deliberately not root-only** |
+| Per-record history | Record page action menu → "View History" (modal) | Same visibility as the record itself |
+| Global audit log | `/settings/audit-trail` | Admin |
+| Impersonation sessions | `/settings/impersonation-sessions` | Admin |
 
-Both Settings pages filter using the app's real field components (searchable `Select`, `DateTime`) rather than native HTML inputs. Clicking a row in the global audit log opens one of two modals depending on the row: a row with a specific record behind it opens the per-record History modal (`HistoryModal.vue`), giving full field-aware old→new rendering (resolved field labels, dropdown option labels, `record`-type field names resolved to the related record's own name, locale-aware date formatting) instead of just the list of which fields changed. A bulk-batch row (`record_id` null) instead opens `BulkAffectedRecordsModal.vue`, which calls `AuditLogController::affectedRecords()` (`GET /settings/audit-trail/{auditLog}/affected-records`) to list every record the batch touched — each with its own resolved label and, for `updated` batches, its own old→new value pulled from `audit_log_affected_records`; paginated the same way the per-record history is, so this stays cheap even for an "all matching" batch that spans an entire module's table.
+Both Settings pages filter using the app's real field components (searchable dropdowns, date pickers) rather than native HTML inputs. Clicking a row in the global audit log opens one of two views depending on the row: a row with a specific record behind it opens the per-record History modal, with full field-aware old→new rendering (resolved field labels, dropdown option labels, related-record names, locale-aware date formatting). A bulk-batch row instead opens a breakdown view listing every record the batch touched — each with its own resolved label and, for updates, its own old→new value — paginated so this stays fast even for a batch spanning an entire module's table.
 
-Within the per-record History modal itself, a bulk-batch entry the viewed record was part of no longer shows only the batch-wide summary text ("10 records updated — Status set to \"Accepted\"") — when that record's own `old_value` is available (merged in per record by `RecordHistoryController`), it's rendered as a real old→new diff row underneath the summary, same as a normal field change.
+Within the per-record History modal itself, a bulk-batch entry the viewed record was part of shows both the batch-wide summary and a real old→new diff row for that specific record's own change.
 
 ### Reference
 
-- `docs/dev/audit-trail-implementation.md` — full technical writeup: schema decisions, every write path, and every bug found and fixed during implementation (including a latent `AdminOnlyModuleScope` bug in `BaseModule::getModuleSlug()`/`moduleDefinition()` that this feature was the first thing to actually exercise, and an `Eloquent Collection::merge()` dedupe-by-primary-key gotcha that silently collapsed per-module field lists when `id` wasn't selected).
+- `docs/dev/audit-trail-implementation.md` — full technical writeup.
 - `docs/guides/audit-trail-guide.md` — plain-language, user-facing guide.
-- `tests/Feature/Audit/` — automated test coverage (39 tests as of this writing) for every behavior and regression above.
-
----
-
-## Summary of Incomplete / Half-Built Areas
-
-> Short-form index, ordered by priority (Critical → Low). For full detail on each row (location, impact, what a fix involves) plus items found by codebase scans that never made it into this table, see [`incomplete-features.md`](incomplete-features.md), which uses the same order. Six things are **not** listed here as they're intentional V1/V2 scope decisions, not incomplete/broken: granular RBAC (per-user/role view vs. create vs. edit vs. delete, deferred to V2 — see §11), record restore (hard delete is intentional for now; a real fix is a full Bin system planned for V2, not a quick patch — see §16), line items not being cascade-deleted with their parent (entangled with that same Bin system), active session listing / revoke-a-device (new feature work), and the admin-configurable idle session window / admin toggle to hide "remember me" (both real gaps, but V2-scoped feature work, not patches — the guide that used to overclaim these has been corrected). See `incomplete-features.md`'s "Not a Bug — Left for V2" section for all five.
-
-| Priority | Area | Issue |
-|---|---|---|
-| Low | `Dashboard::scopeGlobal()` / `scopeForUser()` | Dead code — references a non-existent `owner_id` column and is never called; real per-user scoping is just `where('user_id', ...)` in the controller |
-| Low | IP whitelist | **Removed entirely** (added in `96dd5e8`, deleted in `eab2507` two days later) — not merely present-but-unused |
-| Low | `RelationshipService::enforceCardinality()` / `getRelationshipBetween()` | Dead code — both fully implemented, neither called from anywhere |
-| Low | `config/default_relationship_types.php` | Dead config — unused prop in `Create.vue`, and out of sync with the real type list (missing `many-to-one`) |
-| Low | Two-factor authentication | 2FA isn't offered in this version by design; the `users` columns for it are confirmed dead (never read/written anywhere) — inert, not a risk |
+- `tests/Feature/Audit/` — automated test coverage (39 tests as of this writing).

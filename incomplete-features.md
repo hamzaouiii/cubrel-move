@@ -1,65 +1,28 @@
 # Cubrel CRM — Incomplete / Half-Built Features
 
-> Companion to `FEATURES.md`, whose closing "Summary of Incomplete / Half-Built Areas" table is the short-form index. This file expands every one of those rows into a full entry (what it is, where it lives, why it matters, what a fix would involve), and adds items found by a fresh codebase scan that were never surfaced in `FEATURES.md` at all — either missed originally, or introduced as a side effect of later feature work (relationships, line items, bulk update).
+> Companion to `FEATURES.md`, whose closing "Summary of Incomplete / Half-Built Areas" table is the short-form index. This file expands each remaining row into a full entry (what it is, where it lives, why it matters, what a fix would involve). A working to-do list, not a changelog — resolved items are removed once fixed rather than kept around as history.
 >
-> Ordered by priority: **Critical** (security exposure or unrecoverable data loss) → **High** (real functional gap, no workaround) → **Medium** (user-facing correctness/trust, narrower blast radius) → **Low** (dead code, cleanup, no runtime impact). Each entry notes whether it was previously in `FEATURES.md`'s table or newly found in this scan.
->
-> **Corrections**: two items previously in this list have been removed after user clarification confirmed they're deliberate V1 scope decisions, not accidental gaps:
-> - **Module permissions (RBAC)** — `modules` doesn't have `can_view`/`can_create`/`can_edit`/`can_delete` columns (that was stale documentation); granular RBAC is intentionally deferred to V2. See `FEATURES.md` §11 for the current binary-visibility model.
-> - **Audit trail: record restore** — hard delete is intentional for now ("what is deleted is gone, and I'm fine with it"). A real fix isn't a quick snapshot-and-restore — it's a full **Bin system** (soft delete, a retention window of N days, auto-purge after) planned as a complete V2 feature, matching the `// TODO: Offer recovering deleted records (Bin system)` comment already sitting in `RecordController.php`. See `[[project_record_restore_roadmap]]` in memory, updated to reflect this.
->
-> **Resolved**: "No way to delete a field, at any layer" — implemented (route, `FieldsManagerController::destroy()`, layout cleanup, records-using warning, render-time existence guards across every field-rendering surface). See `FEATURES.md`'s Field Manager section and `tests/Feature/Modules/FieldDeletionTest.php`.
->
-> **Resolved**: "Audit trail: 'all matching' bulk edits aren't traceable per-record" — a new `audit_log_affected_records` join table (`audit_log_id`, `record_id`, indexed) now records every affected record for **both** bulk-selection modes (`explicit` and `all_matching`), not just explicit. `AuditService::log()` takes the affected IDs as a fifth argument and writes them there instead of inline in `diff` — a plain JSON array was the wrong fix for `all_matching` (unbounded size, no indexable containment check); the join table gives an indexed per-record lookup instead. See `docs/dev/audit-trail-implementation.md` §4.2/§4.2.1 and `tests/Feature/Audit/BulkOperationsAuditTest.php`.
->
-> **Resolved**: "Relationship deletion only cleans up layouts on one side" — `Relationship::cleanupRelationshipPanels()` no longer takes a single `$module_id`; it resolves both `left_module`/`right_module` slugs to their module ids and cleans up `related`-type layouts on both sides regardless of which module's settings page the delete request came from. See `tests/Feature/Modules/RelationshipManagerRouteTest.php`.
+> Ordered by priority: **Critical** (security exposure or unrecoverable data loss) → **High** (real functional gap, no workaround) → **Medium** (user-facing correctness/trust, narrower blast radius) → **Low** (dead code, cleanup, no runtime impact). A closing **Not a Bug — Left for V2** section holds real, known gaps that are deliberately deferred rather than fixed now.
 
 ---
 
 ## Low (cleanup / dead code / no runtime impact)
 
 ### 1. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
-*(previously flagged)*
 
 - **Where**: `app/Models/Dashboard.php`
 - **What**: Two Eloquent query scopes that reference an `owner_id` column the `dashboards` table doesn't have (the real migration, `2026_05_04_121726_create_dashboards_table.php`, only has `user_id`). Neither scope is called anywhere in the app — actual per-user scoping is a plain `Dashboard::where('user_id', $user->id)->first()` inline in `DashboardController@index`.
 - **Impact**: None currently — they're simply never invoked, so the wrong column reference never executes. Purely a maintenance hazard: if someone calls `Dashboard::scopeGlobal()`/`scopeForUser()` in the future expecting it to work (the names read as if they're the real scoping mechanism), it will throw a SQL error on the missing column.
 - **Fix**: Delete both scopes, or rewrite them to use `user_id` and actually call them from `DashboardController@index` instead of the inline `where()`.
 
-### 2. IP whitelist — removed entirely
-*(previously flagged)*
+### 2. Dead code: `RelationshipService::enforceCardinality()` / `getRelationshipBetween()` are never called
 
-- **Where**: N/A — nothing exists anymore
-- **What**: `ip_whitelists` table and `IpWhitelist` model were added in commit `96dd5e8`, then deleted two days later in `eab2507` ("cleaned up migration to avoid 500 bugs"). No table, model, migration, or string reference to `ip_whitelist(s)` exists anywhere in the current codebase.
-- **Impact**: None today — it's just absent. Flagged here (as in `FEATURES.md`) specifically so nobody mistakes this for "not started" when it's actually "built, then reverted."
-- **Fix**: If wanted again, treat as new feature work; check `git show eab2507` for why it caused 500s before repeating the same approach.
+- **Where**: `app/Services/Relationships/RelationshipService.php:72` and `:227`
+- **What**: `enforceCardinality()` is a fully-implemented method that `throw`s a `RuntimeException` on a duplicate link for `one-to-one`/`one-to-many`/`many-to-many` — confirmed via repo-wide grep, nothing calls it. The actual cardinality behavior lives inline in `link()`'s own `switch` statement, which for `one-to-many` **silently re-parents** (deletes the old link, inserts the new one) rather than throwing. `getRelationshipBetween()` looks up the `Relationship` row(s) between two module slugs (checking both directions), optionally filtered by `type` — also never called from any controller, service, or Vue component.
+- **Impact**: None functionally (dead code doesn't execute), but both are actively misleading to read — a future maintainer could reasonably assume `enforceCardinality()` is the enforcement mechanism and be confused when linking behavior doesn't change, or not realize `getRelationshipBetween()` already exists and write a duplicate inline query (which `RelationshipManagerController::store()` already does instead of reusing it).
+- **Fix**: Delete both, or wire `enforceCardinality()` in deliberately if the throwing behavior is actually preferred over silent re-parenting for some case; reuse `getRelationshipBetween()` in `RelationshipManagerController::store()`'s duplicate-check if keeping it.
 
-### 3. Dead code: `RelationshipService::enforceCardinality()` is never called
-*(newly found)*
-
-- **Where**: `app/Services/Relationships/RelationshipService.php:72`
-- **What**: A fully-implemented method that `throw`s a `RuntimeException` on a duplicate link for `one-to-one`/`one-to-many`/`many-to-many`. Confirmed via repo-wide grep — nothing calls it. The actual cardinality behavior lives inline in `link()`'s own `switch` statement, which for `one-to-many` **silently re-parents** (deletes the old link, inserts the new one) rather than throwing.
-- **Impact**: None functionally (dead code doesn't execute), but it's actively misleading to read — a future maintainer could reasonably assume this is the enforcement mechanism, "fix" or extend it, and be confused when linking behavior doesn't change.
-- **Fix**: Delete it, or if the throwing behavior is actually preferred over silent re-parenting for some case, wire it in deliberately and decide which behavior should win where.
-
-### 4. Dead code: `RelationshipService::getRelationshipBetween()` is never called
-*(newly found)*
-
-- **Where**: `app/Services/Relationships/RelationshipService.php:227`
-- **What**: Looks up the `Relationship` row(s) between two module slugs (checking both directions), optionally filtered by `type`. Confirmed via grep — no controller, service, or Vue component calls it.
-- **Impact**: None functionally. Same maintenance-hazard category as #3.
-- **Fix**: Delete unless there's a near-term use for it (e.g. it might be a natural fit for validating "does a relationship already exist between these two modules" during relationship creation — currently `RelationshipManagerController::store()` does its own inline duplicate query instead of reusing this).
-
-### 5. `config/default_relationship_types.php` is dead and out of sync
-*(newly found)*
-
-- **Where**: `config/default_relationship_types.php`, `app/Http/Controllers/RelationshipManagerController::create()`, `resources/js/Pages/Settings/Relationships/Create.vue`
-- **What**: A second, separate list of relationship types (`['one-to-one', 'one-to-many', 'many-to-many']`) — missing `many-to-one` entirely. It's read by `create()` and passed to `Create.vue` as a `types` prop, but that prop is never referenced anywhere in the component's template or script (confirmed via grep) — the actual dropdown is driven by the `typeList` prop, sourced from the `relationship_type_list` `DropdownList` row (`config/dropdown_lists.php`), which *was* updated to include `many-to-one`.
-- **Impact**: None today (the config is simply unused), but it's a trap: it looks like a second source of truth for relationship types, and if anyone starts using it (or "fixes" it by adding `many-to-one` there too, assuming it matters), there'd be two lists to keep in sync for no reason.
-- **Fix**: Delete `config/default_relationship_types.php` and the `types` prop it feeds, or repurpose `Create.vue` to actually use it instead of `typeList` (there'd need to be a reason to prefer one over the other — right now there isn't).
-
-### 6. Two-factor authentication — dead, unused columns
-*(previously flagged, downgraded)*
+### 3. Two-factor authentication — dead, unused columns
 
 - **Where**: `users` table (`two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `failed_login_attempts`, `locked_until`)
 - **What**: 2FA isn't offered in this version by design. Confirmed these five columns are never read or written anywhere in `app/` (the only `locked_until` hits are an unrelated column on the `modules` table, used for the Module Builder's draft-editing lock). All nullable/defaulted — inert, not a risk.
@@ -70,7 +33,7 @@
 
 ## Not a Bug — Left for V2
 
-> Reclassified out of the High-priority list above: these are real, known gaps, not doc-mismatches or dead code — but a proper fix is a larger V2 feature, not a patch to what exists today, so they're tracked here rather than as open bugs.
+> Real, known gaps — not doc-mismatches or dead code — but a proper fix is a larger V2 feature, not a patch to what exists today.
 
 ### Line items are orphaned, not cascade-deleted, when their parent record is deleted
 
@@ -100,20 +63,16 @@
 - **Impact**: Same as above — the guide previously overclaimed this; now corrected.
 - **Why it's left for V2, not fixed now**: needs a new `SettingValue` (e.g. `allow_remember_me`) plus gating the checkbox's rendering in `Login.vue` — small in isolation, but grouped with the idle-window setting above since both come from the same guide correction and the same "admin session controls" surface, worth designing together rather than piecemeal.
 
----
+### Granular RBAC (per-user/per-role view vs. create vs. edit vs. delete)
 
-## Not a gap (fixed during a previous pass)
+- **Where**: `app/Scopes/AdminOnlyModuleScope.php`, `Module` (no `can_view`/`can_create`/`can_edit`/`can_delete` columns)
+- **What**: Module visibility is currently a single binary split — a regular user either sees a module (and then has full create/edit/delete/link on it) or doesn't. There's no finer-grained per-action or per-role permission model.
+- **Impact**: Cannot restrict a role to, say, view-only on a module, or allow create but not delete. See `FEATURES.md` §11 for the current model.
+- **Why it's left for V2, not fixed now**: explicitly confirmed as deliberate V1 scope, not an accidental gap — a full RBAC system is a substantial feature on its own, not a patch.
 
-`FEATURES.md` had six references to `docs/419-session-recovery.md`, `docs/session-timeout-guide.md`, `docs/audit-trail-implementation.md`, and `docs/audit-trail-guide.md` using the old flat `docs/*.md` paths, left stale after the `docs/guides/` + `docs/dev/` split. Corrected in place — listed here only so it's not mistaken for something still broken.
+### Record restore (Bin system)
 
----
-
-## Reference
-
-- `FEATURES.md` — the short-form summary table this file expands on; §11 has the corrected module-visibility model; the Field Manager section documents the now-resolved field-deletion feature; §16 documents the now-resolved audit-trail join table.
-- `docs/dev/relationships-implementation.md` §7 — source of the now-resolved relationship-deletion one-sided-cleanup bug (found while implementing the `many-to-one` relationship type).
-- `docs/dev/audit-trail-implementation.md` §4.2/§4.2.1 — technical detail for the resolved "all matching" bulk-edit traceability fix.
-- `docs/dev/419-session-recovery.md` §9 — source of the "planned follow-up" confirmation for the idle-window and remember-me items in "Not a Bug — Left for V2".
-- `tests/Feature/Modules/FieldDeletionTest.php` — coverage for the resolved field-deletion feature.
-- `tests/Feature/Audit/BulkOperationsAuditTest.php`, `tests/Feature/Audit/RecordHistoryControllerTest.php` — coverage for the resolved audit-trail join table.
-- `tests/Feature/Modules/RelationshipManagerRouteTest.php` — coverage for the resolved relationship-deletion both-sides cleanup fix.
+- **Where**: `RecordController.php` (`// TODO: Offer recovering deleted records (Bin system)`)
+- **What**: Deletion is a hard delete — `AuditObserver::deleted()` captures only a display label, not a full attribute snapshot, so a deleted record can't be reconstructed from its audit entry.
+- **Impact**: No way to recover an accidentally-deleted record today.
+- **Why it's left for V2, not fixed now**: confirmed deliberate ("what is deleted is gone, and I'm fine with it") — a real fix isn't a quick snapshot-and-restore, it's a full **Bin system** (soft delete, a retention window of N days, auto-purge after). See [[project_record_restore_roadmap]].
