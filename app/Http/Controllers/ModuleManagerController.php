@@ -102,14 +102,7 @@ class ModuleManagerController extends Controller
     return Inertia::render('Settings/Modules/Create');
   }
 
-  public function edit(Module $module)
-  {
-    return Inertia::render('Settings/Modules/Edit', [
-      'settingModule' => $module,
-    ]);
-  }
-
-  public function store(Request $request)
+public function store(Request $request)
   {
     $validated = $request->validate([
       'display_label'        => ['required', 'string', 'max:255'],
