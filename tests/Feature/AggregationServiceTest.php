@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\DropdownList;
 use App\Models\Modules\Contact;
 use App\Models\Modules\Deal;
 use App\Models\Modules\Invoice;
@@ -18,8 +19,8 @@ use Tests\TestCase;
 
 class AggregationServiceTest extends TestCase
 {
-    use RefreshDatabase;
     use InteractsWithDashboardFixtures;
+    use RefreshDatabase;
 
     protected function makeLeadsModule()
     {
@@ -62,7 +63,7 @@ class AggregationServiceTest extends TestCase
     public function test_metric_count(): void
     {
         $module = $this->makeLeadsModule();
-        $owner  = $this->makeUser();
+        $owner = $this->makeUser();
         Lead::factory()->count(3)->create(['owner_id' => $owner->id]);
 
         $result = AggregationService::metric($module, ['aggregate' => 'count']);
@@ -109,42 +110,59 @@ class AggregationServiceTest extends TestCase
         AggregationService::metric($module, ['aggregate' => 'sum', 'field' => 'sales_stage']);
     }
 
-    // ── breakdown() ──────────────────────────────────────────────────────────
-
+    // breakdown groups correctly and orders by count 
     public function test_breakdown_groups_and_orders_by_count_desc(): void
     {
-        $module = $this->makeLeadsModule();
-        $this->makeField($module, ['name' => 'company', 'type' => 'text']);
+        $module = $this->makeDealsModule();
+        $dropdownList = DropdownList::create([
+          'key' => 'test_dropdown',
+            'values' => [
+                ['value' => 'closed_won',  'label' => 'Closed Won'],
+                ['value' => 'closed_lost', 'label' => 'Closed Lost'],
+            ],
+        ]);
+
+        $this->makeField($module, ['name' => 'sales_stage', 'type' => 'select','dropdown_list_id' => $dropdownList->id]);
+
         $owner = $this->makeUser();
 
-        Lead::factory()->count(2)->create(['owner_id' => $owner->id, 'company' => 'Acme Inc.']);
-        Lead::factory()->count(1)->create(['owner_id' => $owner->id, 'company' => 'Globex Inc.']);
+        Deal::factory()->count(2)->create(['owner_id' => $owner->id, 'sales_stage' => 'closed_won']);
+        Deal::factory()->count(1)->create(['owner_id' => $owner->id, 'sales_stage' => 'closed_lost']);
 
         $result = AggregationService::breakdown($module, [
-            'groupBy'   => 'company',
-            'metric'    => ['type' => 'count'],
+            'groupBy' => 'sales_stage',
+            'metric' => ['type' => 'count'],
             'chartType' => 'donut',
         ]);
 
-        $this->assertSame(['Acme Inc.', 'Globex Inc.'], $result['labels']);
+        $this->assertSame(['Closed Won', 'Closed Lost'], $result['labels']);
         $this->assertSame([2.0, 1.0], $result['series'][0]['data']);
     }
-
+//
     public function test_breakdown_respects_limit(): void
     {
-        $module = $this->makeLeadsModule();
-        $this->makeField($module, ['name' => 'company', 'type' => 'text']);
+        $module = $this->makeDealsModule();
+                $dropdownList = DropdownList::create([
+          'key' => 'test_dropdown',
+            'values' => [
+                ['value' => 'closed_won',  'label' => 'Closed Won'],
+                ['value' => 'closed_lost', 'label' => 'Closed Lost'],
+                ['value' => 'proposal', 'label' => 'proposal'],
+            ],
+        ]);
+                $this->makeField($module, ['name' => 'sales_stage', 'type' => 'select','dropdown_list_id' => $dropdownList->id]);
+
         $owner = $this->makeUser();
 
-        Lead::factory()->create(['owner_id' => $owner->id, 'company' => 'A']);
-        Lead::factory()->create(['owner_id' => $owner->id, 'company' => 'B']);
-        Lead::factory()->create(['owner_id' => $owner->id, 'company' => 'C']);
+        Deal::factory()->create(['owner_id' => $owner->id, 'sales_stage' => 'closed_won']);
+        Deal::factory()->create(['owner_id' => $owner->id, 'sales_stage' => 'closed_lost']);
+        Deal::factory()->create(['owner_id' => $owner->id, 'sales_stage' => 'proposal']);
 
         $result = AggregationService::breakdown($module, [
-            'groupBy'   => 'company',
-            'metric'    => ['type' => 'count'],
+            'groupBy' => 'sales_stage',
+            'metric' => ['type' => 'count'],
             'chartType' => 'donut',
-            'limit'     => 2,
+            'limit' => 2,
         ]);
 
         $this->assertCount(2, $result['labels']);
@@ -157,7 +175,7 @@ class AggregationServiceTest extends TestCase
 
         $this->expectException(HttpException::class);
         AggregationService::breakdown($module, [
-            'groupBy'   => 'company',
+            'groupBy' => 'company',
             'chartType' => 'pyramid',
         ]);
     }
@@ -185,8 +203,8 @@ class AggregationServiceTest extends TestCase
 
         $result = AggregationService::timeSeries($module, [
             'dateField' => 'created_at',
-            'metric'    => ['type' => 'count'],
-            'interval'  => 'month',
+            'metric' => ['type' => 'count'],
+            'interval' => 'month',
             'dateRange' => 'last_6_months',
             'chartType' => 'bar',
         ]);
@@ -208,7 +226,7 @@ class AggregationServiceTest extends TestCase
         $this->expectException(HttpException::class);
         AggregationService::timeSeries($module, [
             'dateField' => 'created_at',
-            'interval'  => 'fortnight',
+            'interval' => 'fortnight',
         ]);
     }
 
@@ -226,7 +244,7 @@ class AggregationServiceTest extends TestCase
     public function test_record_list_returns_rows_and_module_meta(): void
     {
         $module = $this->makeLeadsModule();
-        $owner  = $this->makeUser();
+        $owner = $this->makeUser();
         Lead::factory()->count(3)->create(['owner_id' => $owner->id]);
 
         $result = AggregationService::recordList($module, ['limit' => 2]);
@@ -251,7 +269,7 @@ class AggregationServiceTest extends TestCase
         $this->makeField($leads, ['name' => 'owner_id', 'type' => 'record', 'related_module' => 'users']);
         $this->makeUsersModule();
 
-        $topOwner   = $this->makeUser();
+        $topOwner = $this->makeUser();
         $otherOwner = $this->makeUser();
 
         Lead::factory()->count(3)->create(['owner_id' => $topOwner->id]);
@@ -259,7 +277,7 @@ class AggregationServiceTest extends TestCase
 
         $result = AggregationService::people($leads, [
             'relationField' => 'owner_id',
-            'aggregate'     => 'count',
+            'aggregate' => 'count',
         ]);
 
         $this->assertSame('users', $result['peopleModuleSlug']);
@@ -284,8 +302,8 @@ class AggregationServiceTest extends TestCase
 
         $result = AggregationService::people($deals, [
             'relationField' => 'owner_id',
-            'aggregate'     => 'sum',
-            'field'         => 'amount',
+            'aggregate' => 'sum',
+            'field' => 'amount',
         ]);
 
         $this->assertCount(1, $result['rows']);
@@ -300,7 +318,7 @@ class AggregationServiceTest extends TestCase
         $usersModule = $this->makeUsersModule();
         $this->makeField($usersModule, ['name' => 'avatar', 'type' => 'image']);
 
-        $withAvatar    = $this->makeUser(['avatar' => '/storage/uploads/images/ada.jpg']);
+        $withAvatar = $this->makeUser(['avatar' => '/storage/uploads/images/ada.jpg']);
         $withoutAvatar = $this->makeUser();
 
         Lead::factory()->create(['owner_id' => $withAvatar->id]);
@@ -308,7 +326,7 @@ class AggregationServiceTest extends TestCase
 
         $result = AggregationService::people($leads, [
             'relationField' => 'owner_id',
-            'aggregate'     => 'count',
+            'aggregate' => 'count',
         ]);
 
         $rowsById = collect($result['rows'])->keyBy('id');
@@ -328,8 +346,8 @@ class AggregationServiceTest extends TestCase
 
         $result = AggregationService::people($leads, [
             'relationField' => 'owner_id',
-            'aggregate'     => 'count',
-            'limit'         => 2,
+            'aggregate' => 'count',
+            'limit' => 2,
         ]);
 
         $this->assertCount(2, $result['rows']);
@@ -379,40 +397,40 @@ class AggregationServiceTest extends TestCase
         $this->makeContactsModule();
 
         $relationship = Relationship::create([
-            'name'         => 'contacts_invoices',
-            'label'        => 'relationships.contacts_invoices',
-            'left_module'  => 'contacts',
+            'name' => 'contacts_invoices',
+            'label' => 'relationships.contacts_invoices',
+            'left_module' => 'contacts',
             'right_module' => 'invoices',
-            'type'         => 'one-to-many',
+            'type' => 'one-to-many',
         ]);
 
         // BaseModule::booted() auto-fills owner_id on create when none is given,
         // falling back to the first user in the DB — there must be one already.
         $this->makeUser();
 
-        $topContact   = Contact::factory()->create();
+        $topContact = Contact::factory()->create();
         $otherContact = Contact::factory()->create();
 
-        $topInvoices  = Invoice::factory()->count(2)->create();
+        $topInvoices = Invoice::factory()->count(2)->create();
         $otherInvoice = Invoice::factory()->create();
 
         foreach ($topInvoices as $invoice) {
             RelationshipLink::create([
                 'relationship_id' => $relationship->id,
-                'left_id'         => $topContact->id,
-                'right_id'        => $invoice->id,
+                'left_id' => $topContact->id,
+                'right_id' => $invoice->id,
             ]);
         }
 
         RelationshipLink::create([
             'relationship_id' => $relationship->id,
-            'left_id'         => $otherContact->id,
-            'right_id'        => $otherInvoice->id,
+            'left_id' => $otherContact->id,
+            'right_id' => $otherInvoice->id,
         ]);
 
         $result = AggregationService::people($invoices, [
             'relationshipName' => 'contacts_invoices',
-            'aggregate'        => 'count',
+            'aggregate' => 'count',
         ]);
 
         $this->assertSame('contacts', $result['peopleModuleSlug']);
@@ -430,18 +448,18 @@ class AggregationServiceTest extends TestCase
         $this->makeField($invoices, ['name' => 'total', 'type' => 'currency']);
 
         $relationship = Relationship::create([
-            'name'         => 'contacts_invoices',
-            'label'        => 'relationships.contacts_invoices',
-            'left_module'  => 'contacts',
+            'name' => 'contacts_invoices',
+            'label' => 'relationships.contacts_invoices',
+            'left_module' => 'contacts',
             'right_module' => 'invoices',
-            'type'         => 'one-to-many',
+            'type' => 'one-to-many',
         ]);
 
         // BaseModule::booted() auto-fills owner_id on create when none is given,
         // falling back to the first user in the DB — there must be one already.
         $this->makeUser();
 
-        $contact  = Contact::factory()->create();
+        $contact = Contact::factory()->create();
         $invoiceA = Invoice::factory()->create(['total' => 100]);
         $invoiceB = Invoice::factory()->create(['total' => 250]);
 
@@ -450,8 +468,8 @@ class AggregationServiceTest extends TestCase
 
         $result = AggregationService::people($invoices, [
             'relationshipName' => 'contacts_invoices',
-            'aggregate'        => 'sum',
-            'field'            => 'total',
+            'aggregate' => 'sum',
+            'field' => 'total',
         ]);
 
         $this->assertCount(1, $result['rows']);
@@ -474,11 +492,11 @@ class AggregationServiceTest extends TestCase
         $this->makeDealsModule();
 
         Relationship::create([
-            'name'         => 'deals_contacts',
-            'label'        => 'relationships.deals_contacts',
-            'left_module'  => 'deals',
+            'name' => 'deals_contacts',
+            'label' => 'relationships.deals_contacts',
+            'left_module' => 'deals',
             'right_module' => 'contacts',
-            'type'         => 'many-to-many',
+            'type' => 'many-to-many',
         ]);
 
         $this->expectException(HttpException::class);
@@ -491,18 +509,18 @@ class AggregationServiceTest extends TestCase
         $this->makeContactsModule();
 
         Relationship::create([
-            'name'         => 'contacts_invoices',
-            'label'        => 'relationships.contacts_invoices',
-            'left_module'  => 'contacts',
+            'name' => 'contacts_invoices',
+            'label' => 'relationships.contacts_invoices',
+            'left_module' => 'contacts',
             'right_module' => 'invoices',
-            'type'         => 'one-to-many',
+            'type' => 'one-to-many',
         ]);
 
         $this->expectException(HttpException::class);
         AggregationService::people($invoices, [
             'relationshipName' => 'contacts_invoices',
-            'aggregate'        => 'count',
-            'filters'          => [['field' => 'notes', 'operator' => 'equals', 'value' => 'x']],
+            'aggregate' => 'count',
+            'filters' => [['field' => 'notes', 'operator' => 'equals', 'value' => 'x']],
         ]);
     }
 }
