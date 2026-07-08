@@ -213,7 +213,9 @@ Both bulk delete and bulk update support three selection modes passed in the req
 | Bulk delete | `DELETE /{module}` | `ListActions/ListDeleteZone.vue` |
 | Bulk field update | `PUT /{module}` | `ListActions/MassUpdateZone.vue` |
 
-**⚠ INCOMPLETE — Bulk field update has no required-field validation**: `RecordController@updateMany` writes straight to the DB via query-builder (`whereIn(...)->update([$column => $value])`), bypassing Eloquent entirely — no `required`/`nullable` check against the target `Field` definition, unlike single-record create/update which goes through form validation. A user can mass-clear a required field (e.g. blank out every selected record's `name`) across an arbitrary number of records with no error, in both "explicit selection" and "all matching filter" modes.
+`RecordController@updateMany` writes via query-builder (`whereIn(...)->update([$column => $value])`), bypassing Eloquent entirely — since one field/value pair is applied uniformly to every selected record, required-field validation is checked once up front (`isEmptyBulkValue()`) rather than per record, rejecting the whole request if the target `Field` is `required` and the new value would be empty. `MassUpdateZone.vue` mirrors the same check client-side: clicking Update while a required field is empty shows the field's own error state (`FieldRenderer`'s `has-error`, same as single-record editing) plus a 1.5s toast, without emitting the update — the error only appears after a submit attempt, not the moment a required field is picked. The server-side check is the actual guarantee, since the client-side one alone wouldn't stop a direct request. No other validation (type/format) is enforced on this path, same as single-record create/update.
+
+The value field also supports `record`-type targets (e.g. bulk-reassigning "Owned by") via the same `RecordSelectorDrawer` picker used on the record page.
 
 ### Export
 
@@ -237,7 +239,9 @@ Both bulk delete and bulk update support three selection modes passed in the req
 
 ### Definition
 
-Relationships between modules are declared in the `relationships` table and seeded by `RelationshipSeeder`. Supported types: `one-to-many`, `many-to-many`, `one-to-one`. System relationships (`is_system=true`) are non-deletable.
+Relationships between modules are declared in the `relationships` table and seeded by `RelationshipSeeder`. Stored shape is always one of `one-to-many`, `many-to-many`, `one-to-one` — `left_module` is the "one"/parent side, `right_module` is the "many"/child side (for `one-to-many`). System relationships (`is_system=true`) are non-deletable.
+
+The Create form additionally offers a **`many-to-one`** option, so a relationship can be created from either side without needing to know the left/right convention — `left_module` is always resolved to whichever module's settings page the request came from, so picking "many-to-one" from the *child* module's own page (e.g. "many Deals belong to one Account," created from Deals) needs `left`/`right` swapped before storage. `RelationshipManagerController::store()` does that swap and normalizes to `one-to-many` before the duplicate check and insert — `many-to-one` is never actually persisted as a `type` value, it's purely a creation-time convenience. See [Relationships Guide](docs/guides/relationships-guide.md) and [Relationships Implementation](docs/dev/relationships-implementation.md).
 
 ### Linking / Unlinking
 
@@ -254,7 +258,7 @@ The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle t
 
 Admins can view, create, and delete relationship definitions at `/settings/modules/{module}/relationships`. UI: `Settings/Relationships/List.vue` and `Settings/Relationships/Create.vue`.
 
-**⚠ INCOMPLETE** — The resource route exists for `update` but no edit UI was found for modifying an existing relationship definition after creation.
+Relationships are deliberately not editable after creation — only create/list/delete. `RelationshipManagerController` only has `index`/`create`/`store`/`destroy` methods, and `routes/web.php` scopes its resource route to `->only(['index', 'create', 'store', 'destroy'])` to match — `edit`/`update` (and `show`, which the controller also never implemented) aren't registered, so hitting either URL 404s instead of erroring on an undefined controller method. Deleting a **system** relationship (`is_system`) is blocked both server-side (`destroy()` throws a `ValidationException`) and client-side (`List.vue`'s delete button is `disabled` for system rows); deleting a **custom** relationship shows a confirmation dialog that includes the number of existing links (`links_used`) when there are any.
 
 ---
 
@@ -396,9 +400,10 @@ The `SettingsController` provides live preview options for date/datetime formats
 
 Admins manage per-module field definitions at `/settings/modules/{module}/fields`:
 
-- **List** — shows editable fields with type and status
+- **List** — shows editable fields with type and status; custom fields additionally show a `records_using` count (how many of the module's records have a non-null value for that field), computed via `FieldsManagerController@show`
 - **Create** — `FieldsManagerController@store` — creates a new field (label, type, validation options, dropdown list)
 - **Edit** — `FieldsManagerController@update` — update label, required flag, validation rules, etc.
+- **Delete** — `FieldsManagerController@destroy` — **custom fields only** (`is_custom = true`); stock/seed-time fields back a real DB column and are rejected with a validation error. The delete button in `Settings/Fields/List.vue` is disabled for stock fields, and shows a confirmation dialog with the `records_using` count when there are any (same pattern as deleting a relationship). Deleting a field also strips it from that module's `list`/`record`/`linkingPanel` layouts (`FieldsManagerController::removeFieldFromLayouts()`) — `related` and `lineItemsSnapshot` are deliberately left alone (their field references can be nested per-relationship-panel or point at a different module entirely), covered instead by render-time existence guards throughout the frontend (list, record, create, quick-create, record-picker, related panels, users, profile all filter out a field reference that no longer resolves, rather than crash or render a stale blank field). Existing records' `custom_fields` JSON is **not** modified on delete — the orphaned key is simply never read again once the `Field` row is gone (`HasCustomFields::isCustomField()`), rather than being stripped from every row.
 
 ### Dropdown Manager
 
@@ -420,11 +425,17 @@ The system has two role levels:
 
 `AdminMiddleware` protects all routes under `/settings`, `/users`, and `/invites`. It calls `user()->isAdmin()` and aborts with 403 if false.
 
-### Module-Level Capability Flags
+### Module Visibility — binary, not per-action
 
-Each module row in the `modules` table carries `can_view`, `can_create`, `can_edit`, `can_delete` boolean flags. These are surfaced to the front end via `HandleInertiaRequests` shared props and used to show/hide UI actions.
+The `modules` table has no `can_view`/`can_create`/`can_edit`/`can_delete` capability columns — that was stale documentation carried over from an earlier design and never corrected; it's fixed now. The real, current model is a single binary split: **can a regular (non-admin) user see this module at all?**
 
-**⚠ INCOMPLETE — regressed, not just unaudited**: the capability flags (`can_view`, `can_create`, etc.) are stored per module globally, not per user or per role — there is no RBAC system; all non-admin users share the same permissions, and `users` has no roles/permissions schema beyond `type` and `is_admin`. `ModulePolicy` no longer exists at all: it was deliberately deleted (commit `d03f11d`, "Cleanup fro module policy"), along with the `authorize()` calls that used it in `ModuleBuilderController`/`ModuleManagerController`. There is now zero policy/gate enforcement anywhere in the app (`app/Policies/` is empty; no `authorize()`/`Gate::`/`->can()` calls outside unrelated Form Request boilerplate).
+- `is_active` (module enabled/disabled) and `show_in_sidebar`/`show_in_module_manager` control visibility, evaluated the same way for every non-admin user — there's no per-user or per-role variation.
+- `AdminOnlyModuleScope` (`app/Scopes/AdminOnlyModuleScope.php`) additionally hides exactly two hardcoded module slugs (`users`, `settings`) from non-admins; admins bypass it entirely.
+- Once a module is visible to a regular user, that user has full create/edit/delete on its records and can link/unlink it via relationships — there is no finer split between viewing, editing, deleting, or linking within a visible module.
+
+`ModulePolicy` (commit `d03f11d`, deleted) only ever checked `$module->is_active` per ability, with admins bypassing via `before()` — it did not enforce any per-role or per-action distinction either, so its removal didn't regress anything beyond that one `is_active` check (which `AdminOnlyModuleScope` plus the controllers' own `is_active` lookups still effectively cover). `app/Policies/` is empty today; no `authorize()`/`Gate::`/`->can()` calls exist anywhere in the app outside unrelated Form Request boilerplate.
+
+Granular RBAC (per-user/per-role view vs. create vs. edit vs. delete) is intentionally out of scope for now — planned as a V2 feature, not a bug to fix today.
 
 ### Impersonation
 
@@ -596,12 +607,12 @@ Standard Laravel Auth flow:
 - **Storage & lifetime**: `database` session driver (`sessions` table), 8-hour lifetime (`SESSION_LIFETIME=480`), not expired on browser close, unencrypted payload. Cookie `secure`/`same_site` flags are left at env-driven defaults (no `SESSION_SECURE_COOKIE`/`SESSION_SAME_SITE` set) — `same_site` defaults to `lax`.
 - **"Remember me"**: working checkbox on `Login.vue`, passed through to `Auth::attempt($credentials, $remember)` in `AuthController::login()`. Grants a ~400-day `remember_web_...` cookie independent of the 8-hour session (Laravel's default `SessionGuard::$rememberDuration`). Logging out clears it for that device; since the underlying `remember_token` is per-user (not per-device) and non-rotating, logging out on one device also invalidates the remember-me token value on every other device sharing it, even though it doesn't touch their live session cookies.
 - **Idle timeout**: there's no separate idle-tracking mechanism — the 8-hour idle expiry *is* the rolling session lifetime (any authenticated request refreshes `last_activity`). A keep-alive heartbeat (`useKeepAlive.js`, mounted globally in `AppLayout.vue`) pings `GET /keep-alive` every 5 minutes while the tab is visible, so an open, visible tab effectively never times out; a backgrounded or closed tab expires after 8 hours idle.
-- **419 (expired session) recovery**: a custom exception-render branch (`bootstrap/app.php`) gives a soft recovery instead of Inertia's default full-screen 419 error. It distinguishes, at the moment the exception is thrown, "CSRF token stale but session still alive" (flash a toast, redirect back to the same page — the Vue component never unmounted, so in-progress form edits are untouched) from "session actually died" (redirect to `/login` with the original URL as the intended destination; the in-flight form draft is stashed to `sessionStorage` and restored after re-login, currently wired up only for the record edit page). See `docs/419-session-recovery.md` for the full design.
+- **419 (expired session) recovery**: a custom exception-render branch (`bootstrap/app.php`) gives a soft recovery instead of Inertia's default full-screen 419 error. It distinguishes, at the moment the exception is thrown, "CSRF token stale but session still alive" (flash a toast, redirect back to the same page — the Vue component never unmounted, so in-progress form edits are untouched) from "session actually died" (redirect to `/login` with the original URL as the intended destination; the in-flight form draft is stashed to `sessionStorage` and restored after re-login, currently wired up only for the record edit page). See `docs/dev/419-session-recovery.md` for the full design.
 - **Impersonation and sessions**: `Auth::login()` internally regenerates the session (destroying the old session row, issuing a new ID/CSRF token) — since browser tabs share cookies, any other open tab in the same browser silently picks up the impersonated identity on its next request, with no warning in that tab.
 - **Concurrent sessions / multi-device**: fully independent by design — `sessions.user_id` is indexed but not unique, and no single-session-guard middleware exists, so the same user can be logged in on unlimited devices simultaneously with no way to see or revoke another device's session.
 - **Logout**: `POST /logout` invalidates only the current session (destroys that session row, regenerates ID/token) and does not affect other devices' live sessions.
 
-**⚠ INCOMPLETE / DOC-CODE MISMATCH** — `docs/session-timeout-guide.md` (a user-facing help article) describes two admin settings as if already shipped: an admin-configurable idle window (30 min–24h) and an admin toggle to hide the "remember me" checkbox entirely. **Neither exists in code** — `docs/419-session-recovery.md` §9 explicitly lists both as "planned follow-up, not built." There is also no active-session listing or "log out other devices" UI. (Impersonation *is* now audited — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions) — this note is scoped to session management specifically.)
+**⚠ INCOMPLETE / DOC-CODE MISMATCH** — `docs/guides/session-timeout-guide.md` (a user-facing help article) describes two admin settings as if already shipped: an admin-configurable idle window (30 min–24h) and an admin toggle to hide the "remember me" checkbox entirely. **Neither exists in code** — `docs/dev/419-session-recovery.md` §9 explicitly lists both as "planned follow-up, not built." There is also no active-session listing or "log out other devices" UI. (Impersonation *is* now audited — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions) — this note is scoped to session management specifically.)
 
 ### User Security Fields
 
@@ -663,6 +674,8 @@ Deliberately schema-generic (the JSON column is named `diff`, not `changes` — 
 - **`RecordController`'s bulk `updateMany`/`destroyMany`** — these use query-builder writes (`whereIn(...)->update()`, `chunkById(...)->delete()`) which never fire Eloquent events, so they call the audit write path explicitly, logging one row per batch (not per affected record). `affected_ids` is only captured in explicit-selection mode, not "all matching a filter," to avoid an unbounded array on a large bulk edit (see the incomplete-areas note below).
 - **`RelationshipService::link()`/`unlink()`** — logs on **both sides** of the relationship, so either record's own history shows the connection regardless of which side the action was performed from.
 
+Deletion is a hard delete, by design, for now — `AuditObserver::deleted()` captures only a display label at delete time (`record_label`, `name ?? number ?? id`), not a full attribute snapshot, so a deleted record cannot be reconstructed from its audit entry. A real restore capability is intentionally deferred to a V2 **Bin system** (soft delete, a retention window, auto-purge — matching the `// TODO: Offer recovering deleted records (Bin system)` comment already in `RecordController.php`), not something this audit-log snapshot approach is meant to grow into.
+
 ### Actor resolution and transparency
 
 Every write auto-resolves `user_id` (the current session identity — the impersonated user's id while impersonating) and `impersonator_id` (the real actor, set only while an impersonation session is active). **The impersonator's identity is always shown, unconditionally, to anyone who can see the row — there is no masking, no Gate, no visibility setting.**
@@ -685,25 +698,26 @@ Both Settings pages filter using the app's real field components (searchable `Se
 
 ### Reference
 
-- `docs/audit-trail-implementation.md` — full technical writeup: schema decisions, every write path, and every bug found and fixed during implementation (including a latent `AdminOnlyModuleScope` bug in `BaseModule::getModuleSlug()`/`moduleDefinition()` that this feature was the first thing to actually exercise, and an `Eloquent Collection::merge()` dedupe-by-primary-key gotcha that silently collapsed per-module field lists when `id` wasn't selected).
-- `docs/audit-trail-guide.md` — plain-language, user-facing guide.
+- `docs/dev/audit-trail-implementation.md` — full technical writeup: schema decisions, every write path, and every bug found and fixed during implementation (including a latent `AdminOnlyModuleScope` bug in `BaseModule::getModuleSlug()`/`moduleDefinition()` that this feature was the first thing to actually exercise, and an `Eloquent Collection::merge()` dedupe-by-primary-key gotcha that silently collapsed per-module field lists when `id` wasn't selected).
+- `docs/guides/audit-trail-guide.md` — plain-language, user-facing guide.
 - `tests/Feature/Audit/` — automated test coverage (33 tests as of this writing) for every behavior and regression above.
 
 ---
 
 ## Summary of Incomplete / Half-Built Areas
 
-| Area | Issue |
-|---|---|
-| `Dashboard::scopeGlobal()` / `scopeForUser()` | Dead code — references a non-existent `owner_id` column and is never called; real per-user scoping is just `where('user_id', ...)` in the controller |
-| Module permissions (RBAC) | `can_view/create/edit/delete` flags are global, not per-user/role; no roles/permissions schema exists |
-| `ModulePolicy` | **Deleted entirely** (commit `d03f11d`), along with its `authorize()` call sites — not merely unaudited. Zero policy/gate enforcement exists anywhere in the app today |
-| Relationship edit UI | No route or component to edit an existing relationship definition (only create/list/delete) |
-| Two-factor authentication | DB columns present, no UI or enforcement middleware found |
-| IP whitelist | **Removed entirely** (added in `96dd5e8`, deleted in `eab2507` two days later) — not merely present-but-unused |
-| Admin-configurable idle session window | Described as shipped in `docs/session-timeout-guide.md`; does not exist — 8h idle window is a static `.env` value |
-| Admin toggle to hide "remember me" | Described as shipped in `docs/session-timeout-guide.md`; does not exist — checkbox is always shown |
-| Active session listing / revoke-a-device | No UI or backend to view or end sessions on other devices; no single-session-per-user enforcement |
-| Audit trail: "all matching" bulk edits | Only explicit-selection bulk edits/deletes capture `affected_ids`; a filtered "select all matching" bulk action only appears as one summary row in the global audit log, not inside any individual record's own history |
-| Audit trail: record restore | A deleted record's audit entry keeps its display label, not a full attribute snapshot — restoring a deleted record from the audit trail isn't possible yet |
-| Bulk field update: no required-field validation | `RecordController@updateMany` bypasses Eloquent validation entirely — a required field can be mass-cleared across any number of records with no error |
+> Short-form index, ordered by priority (Critical → Low). For full detail on each row (location, impact, what a fix involves) plus items found by codebase scans that never made it into this table, see [`incomplete-features.md`](incomplete-features.md), which uses the same order. Two things are **not** listed here as they're intentional V1 scope decisions, not incomplete/broken: granular RBAC (per-user/role view vs. create vs. edit vs. delete, deferred to V2 — see §11), and record restore (hard delete is intentional for now; a real fix is a full Bin system planned for V2, not a quick patch — see §16).
+
+| Priority | Area | Issue |
+|---|---|---|
+| High | Line items orphaned on parent delete | No cascade or observer deletes a record's `LineItem` rows when it's deleted — they accumulate indefinitely |
+| High | Active session listing / revoke-a-device | No UI or backend to view or end sessions on other devices; no single-session-per-user enforcement |
+| High | Audit trail: "all matching" bulk edits | Only explicit-selection bulk edits/deletes capture `affected_ids`; a filtered "select all matching" bulk action only appears as one summary row in the global audit log, not inside any individual record's own history |
+| Medium | Admin-configurable idle session window | Described as shipped in `docs/guides/session-timeout-guide.md`; does not exist — 8h idle window is a static `.env` value |
+| Medium | Admin toggle to hide "remember me" | Described as shipped in `docs/guides/session-timeout-guide.md`; does not exist — checkbox is always shown |
+| Medium | Relationship deletion cleans up one side only | `cleanupRelationshipPanels()` only strips a deleted relationship from the requesting module's layout, can leave a stale panel on the other side |
+| Low | `Dashboard::scopeGlobal()` / `scopeForUser()` | Dead code — references a non-existent `owner_id` column and is never called; real per-user scoping is just `where('user_id', ...)` in the controller |
+| Low | IP whitelist | **Removed entirely** (added in `96dd5e8`, deleted in `eab2507` two days later) — not merely present-but-unused |
+| Low | `RelationshipService::enforceCardinality()` / `getRelationshipBetween()` | Dead code — both fully implemented, neither called from anywhere |
+| Low | `config/default_relationship_types.php` | Dead config — unused prop in `Create.vue`, and out of sync with the real type list (missing `many-to-one`) |
+| Low | Two-factor authentication | 2FA isn't offered in this version by design; the `users` columns for it are confirmed dead (never read/written anywhere) — inert, not a risk |
