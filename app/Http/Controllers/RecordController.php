@@ -321,6 +321,9 @@ class RecordController extends Controller
         if (! $allMatchingSelected && count($selectedIds) === 0) {
             return back()->with('error', 'No records selected.');
         }
+        if ($field->required && $this->isEmptyBulkValue($newValue)) {
+            return back()->with('error', "The field '{$field->name}' is required and cannot be left empty.");
+        }
 
         $baseQuery = $modelClass::query();
 
@@ -413,5 +416,17 @@ class RecordController extends Controller
         return array_values(
             array_filter((array) $input, fn ($id) => $id !== null && $id !== '')
         );
+    }
+
+    /**
+     * Mirrors MassUpdateZone.vue's isEmptyValue() — used to reject a bulk
+     * update up front when it would clear a required field.
+     */
+    private function isEmptyBulkValue(mixed $value): bool
+    {
+        return $value === null
+            || $value === ''
+            || (is_string($value) && trim($value) === '')
+            || (is_array($value) && count($value) === 0);
     }
 }
