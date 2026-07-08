@@ -123,22 +123,50 @@ AuditService::log('updated', $moduleModel->slug, null, [
     'field' => $field_name,
     'value' => $newValue,
     'count' => $updatedCount,
-    'affected_ids' => $selectedIds,
-]);
+], $selectedIds);
 ```
 
-`affected_ids` is only captured in **explicit**-selection mode (the user picked specific records via checkboxes) — **not** in `all_matching` mode (a "select everything matching this filter" bulk action without an explicit id list), to avoid a potentially huge JSON array for large filtered operations. This is a deliberate, documented gap: `all_matching` bulk edits/deletes only ever show up as one summary row in the global Audit Trail; they can't be attributed back to any individual record's own history (see §7).
+The affected records are passed as `AuditService::log()`'s fifth argument, `$affectedRecords`, and land in a separate `audit_log_affected_records` join table (`audit_log_id`, `record_id`, `old_value`, indexed on `record_id`) rather than inline in the `diff` JSON. This applies to **both** selection modes now — `explicit` (queried up front from `$selectedIds`) and `all_matching` (accumulated across `chunkById()`'s chunks as the query-builder update/delete runs). Earlier, `all_matching` deliberately skipped capturing affected IDs at all, to avoid an unbounded JSON array on a large filtered bulk edit — see §7 for why a plain JSON column was the wrong fix and the join table is the actual one.
 
-For `destroyMany()`'s explicit-list branch specifically, record labels are captured **before** the delete runs, same reasoning as `AuditObserver::deleted()`:
+`$affectedRecords` can be either a flat list of IDs or a **keyed** array (`record_id => old_value`) — `AuditService::log()` detects which via `array_is_list()`. For `updateMany()`, it's keyed: before applying the new value, each affected record's *own current value* of the field being changed is read (via the model's own attribute accessor, so custom fields resolve the same as stock ones) and captured as that record's `old_value`. This is what lets a record's own History entry show what *it* actually changed from, not just what the whole batch was set to — a bulk "set Status to Accepted" batch can quite legitimately be moving different records from different prior statuses.
 
 ```php
-$recordLabels = $modelClass::whereIn('id', $selectedIds)->pluck('name', 'id');
+$oldValues[(string) $model->id] = $model->{$field->name};
+// ...
+AuditService::log('updated', $moduleModel->slug, null, [
+    'mode' => 'explicit', 'field' => $field_name, 'value' => $newValue, 'count' => $updatedCount,
+], $oldValues);
+```
+
+For `destroyMany()`, `$affectedRecords` is also keyed, but the "old value" is the record's display label rather than a field value (a delete has no single field to diff — the whole record is gone), captured **before** the delete runs, same reasoning as `AuditObserver::deleted()`:
+
+```php
+$recordLabels = $modelClass::whereIn('id', $selectedIds)->pluck('name', 'id')
+    ->mapWithKeys(fn ($label, $id) => [(string) $id => $label]);
 $deleted = $modelClass::whereIn('id', $selectedIds)->delete();
 AuditService::log('deleted', $moduleModel->slug, null, [
-    'mode' => 'explicit', 'count' => $deleted,
-    'affected_ids' => $selectedIds, 'record_labels' => $recordLabels,
-]);
+    'mode' => 'explicit', 'count' => $deleted, 'record_labels' => $recordLabels,
+], $recordLabels->all());
 ```
+
+`record_labels` stays inline in `diff` too (it's bounded by the same small explicit-selection size, and isn't something a lookup needs to query *by*) — it's duplicated into the join table's `old_value` only so `AuditLogController::affectedRecords()` (§6.1) has a label to show per row without a second data source. `all_matching` delete captures the same per-record labels during its `chunkById()` loop, where earlier it only counted IDs.
+
+### 4.2.1 Why a JSON array of IDs doesn't scale, and what the join table buys
+
+`RecordHistoryController::index()` answers "show this record's history" by finding every batch row the record was part of. With IDs stored as a JSON array on `diff`, that lookup is `whereJsonContains('diff->affected_ids', $recordId)` — a linear scan through every candidate row's array, since no RDBMS can put a real B-tree index on "does this JSON array contain this value." For `explicit` mode that's fine (a human-picked selection is small), but `all_matching` can match an entire module's table — tens of thousands of IDs in one JSON column, and that cost is paid on *every* record's history lookup, forever, for as long as that row exists.
+
+`audit_log_affected_records` normalizes this: one narrow row per `(audit_log_id, record_id)` pair, with `record_id` indexed. `RecordHistoryController` now matches via an indexed subquery:
+
+```php
+$query->where('record_id', $recordId)
+    ->orWhereIn('id', function ($sub) use ($recordId) {
+        $sub->select('audit_log_id')->from('audit_log_affected_records')->where('record_id', $recordId);
+    });
+```
+
+...then, for whichever bulk-batch rows matched, looks up **this specific record's** `old_value` from the same table and merges it into that entry's `changes` before returning — so the same batch row renders differently depending on whose history it's shown in. This is the piece a plain JSON-array-of-IDs design couldn't have given for free: storing *only* IDs answers "was this record in the batch," but not "what was this record's own prior value," without a second lookup keyed the same indexed way the join table already provides.
+
+Writing the join rows still means accumulating every affected ID (and, for updates, every old value) in PHP for `all_matching` mode (across `chunkById()`'s chunks) before a single chunked `insert()` — a one-time, bounded-by-available-memory cost at write time — rather than a per-read cost that degrades every time any record's history is opened. `AuditService::log()` chunks the insert itself (1,000 rows at a time) so a single `all_matching` batch never becomes one oversized `INSERT`.
 
 ### 4.3 `RelationshipService::link()`/`unlink()` — logged on both sides
 
@@ -285,6 +313,7 @@ This makes "no real actor → no audit row" an enforced invariant of the write p
 
 - **Global, admin-gated log** — `Settings/AuditTrail/Index.vue` (`app/Http/Controllers/AuditLogController.php`), filterable by module/user/action/date range, paginated with the same hand-rolled `meta` shape `PdfTemplatesController::index` already uses.
 - **Per-record modal** — `HistoryModal.vue` (`app/Http/Controllers/RecordHistoryController.php`), opened via a "View History" item added to the record page's existing action dropdown (`Modules/Record.vue`), rather than as a third tab — the tab approach was tried first and replaced on request, since it competed for space with Overview/Related and duplicated navigation the action menu already provides.
+- **Bulk-batch breakdown modal** — `BulkAffectedRecordsModal.vue` (`AuditLogController::affectedRecords()`, `GET /settings/audit-trail/{auditLog}/affected-records`). Clicking a bulk row in the global log (`record_id` null) opens this instead of the per-record modal, listing every record the batch touched — each with its own resolved label and, for `updated` batches, its own old→new value read straight from `audit_log_affected_records`. Paginated the same way as per-record history, so an "all matching" batch spanning an entire module's table stays cheap to browse.
 
 Per-record history visibility has no additional ACL beyond being logged in, because **no such ACL exists on records themselves yet** in this codebase — confirmed by reading `RecordController`, which has no ownership/visibility restriction on `show()` beyond the outer `auth`+`onboarded` middleware. If record-level visibility restrictions land later, this endpoint's gating should move alongside them.
 
@@ -296,7 +325,7 @@ Both surfaces resolve raw stored values into what a user actually recognizes, ra
 - **Dropdown values → option labels**: `formatValue()`/`dropdownLabel()` look up the field's own `dropdown_list.values` (already present on the `fields` prop via `Module::allFields()`'s `with('dropdown_list')`) and match the raw stored value against it.
 - **`record` type fields → related record names**: prefers the server-resolved `*_label` (§4.5) over the raw id.
 - **Dates**: formatted via `@/utils/datetime`'s `formatDate`/`formatDateTime`, which respects the app's configured `date_format`/`datetime_format`/`timezone` settings — the same utility `FiledTypes/DateTime.vue` uses, not a hardcoded format.
-- **Bulk / link / delete entries**: each has a distinct payload shape (`{mode, count, field, value, affected_ids}` / `{relationship, related_module, related_label}` / `{record_label}`) and gets its own rendering branch (`isBulkChange()`, `isLinkChange()`, the `deleted` check) rather than being forced through the generic per-field `{old, new}` diff table.
+- **Bulk / link / delete entries**: each has a distinct payload shape (`{mode, count, field, value}` for bulk, with affected records and their own old values living in the separate `audit_log_affected_records` join table rather than in this payload / `{relationship, related_module, related_label}` / `{record_label}`) and gets its own rendering branch (`isBulkChange()`, `isLinkChange()`, the `deleted` check) rather than being forced through the generic per-field `{old, new}` diff table. In `HistoryModal.vue`, when the record being viewed has a per-record `old_value` merged in for a bulk entry (§4.2.1), the batch summary text is followed by a real old→new diff row for that field — reusing the same `formatValue()` used everywhere else, rather than a second bespoke renderer.
 
 ### 6.3 Module badge coloring
 
@@ -308,7 +337,6 @@ Both list pages' filter bars use `FiledTypes/Select.vue` (searchable by default,
 
 ## 7. Known limitations / explicit non-goals
 
-- **`all_matching` bulk edits/deletes aren't traceable to individual records.** Only the `explicit`-selection bulk mode captures `affected_ids` (§4.2); records affected by a filtered "select everything matching" bulk action only show up in the global Audit Trail's batch summary row, never inside their own per-record history.
 - **No restore-from-audit feature.** `deleted()` captures a `record_label` snapshot, nothing else — enough to know *what* was deleted, not enough to bring it back. See `project_record_restore_roadmap` memory note; would need a full attribute snapshot (and a plan for relationship/line-item data) to actually support restoration.
 - **No per-record ACL.** Documented in §6.1 — the History modal's visibility is just "logged in," matching the record's own current (lack of) visibility restriction.
 - **Impersonation session tracking is single-level.** `impersonator_id` in the session key is a single value, not a stack — nested impersonation (impersonating while already impersonating) isn't a supported concept here, consistent with `UserController::impersonate()` itself never having supported it either.
@@ -333,10 +361,11 @@ Both list pages' filter bars use `FiledTypes/Select.vue` (searchable by default,
 - `app/Http/Controllers/RecordController.php` — bulk `updateMany`/`destroyMany` audit calls
 - `app/Http/Controllers/UserController.php` — impersonation session create/close-out
 - `app/Services/Relationships/RelationshipService.php` — link/unlink audit calls
-- `app/Http/Controllers/AuditLogController.php` (new)
+- `app/Http/Controllers/AuditLogController.php` (new) — later gained `affectedRecords()` for the bulk-batch breakdown view
 - `app/Http/Controllers/ImpersonationSessionController.php` (new)
-- `app/Http/Controllers/RecordHistoryController.php` (new)
-- `routes/web.php` — `settings.audit-trail.*`, `settings.impersonation-sessions.*`, `modules.record.history`
+- `app/Http/Controllers/RecordHistoryController.php` (new) — later gained per-record `old_value` merging for bulk-batch entries
+- `database/migrations/2026_07_08_120000_create_audit_log_affected_records_table.php` (new) — `audit_log_id`, `record_id`, `old_value`
+- `routes/web.php` — `settings.audit-trail.*` (including `affected-records`), `settings.impersonation-sessions.*`, `modules.record.history`
 - `config/settings.php` — new `audit` settings group
 - `lang/en|de/{settings,globals,modules}.php` — new translation keys throughout
 - `database/migrations/2026_01_08_163003_create_fields_table.php` — added `is_calculated` boolean (not run at edit time, per explicit instruction — applies whenever this migration next runs)
@@ -347,7 +376,8 @@ Both list pages' filter bars use `FiledTypes/Select.vue` (searchable by default,
 **Frontend**
 - `resources/js/Pages/Settings/AuditTrail/Index.vue` (new)
 - `resources/js/Pages/Settings/ImpersonationSessions/Index.vue` (new)
-- `resources/js/Pages/Components/Modules/HistoryModal.vue` (new)
+- `resources/js/Pages/Components/Modules/HistoryModal.vue` (new) — later gained a per-record old→new diff row for bulk entries
+- `resources/js/Pages/Components/Modules/BulkAffectedRecordsModal.vue` (new) — bulk-batch breakdown view
 - `resources/js/Pages/Components/Settings/AuditTrail/ImpersonationBadge.vue` (new)
 - `resources/js/Pages/Modules/Record.vue` — "View History" action-menu item
 - `resources/scss/settings.scss`, `resources/scss/globals.scss` — new styling
@@ -359,18 +389,21 @@ Both list pages' filter bars use `FiledTypes/Select.vue` (searchable by default,
 - `BulkOperationsAuditTest.php` — `updateMany`/`destroyMany`, both selection modes
 - `RelationshipLinkAuditTest.php` — both-sides logging, plus the no-actor regression (§5.5)
 - `AuditLogControllerTest.php` — admin gate, filtering, the `fields_by_module` collapse regression (§5.4)
-- `RecordHistoryControllerTest.php` — per-record scoping, `affected_ids` matching
+- `RecordHistoryControllerTest.php` — per-record scoping, matching via the `audit_log_affected_records` join table, per-record `old_value` merging for bulk entries
+- `AuditLogAffectedRecordsTest.php` — the bulk-batch breakdown endpoint: admin gate, per-record old/new value for `updated` batches, captured labels for `deleted` batches
 - `ImpersonationSessionControllerTest.php` — admin (not root-only) gate, filtering
 
 ## 10. Manual verification
 
-Verified two ways: an automated test suite (`tests/Feature/Audit/`, 32 tests as of this writing) covering the behaviors and regressions described above, plus direct exercising via `php artisan tinker` during development for anything faster to check by hand than to write a full test for:
+Verified two ways: an automated test suite (`tests/Feature/Audit/`, 39 tests as of this writing) covering the behaviors and regressions described above, plus direct exercising via `php artisan tinker` during development for anything faster to check by hand than to write a full test for:
 
 - Plain field update (non-impersonated) → single audit row, correct `user_id`, `impersonator_id` null.
 - Impersonated field update → row has `user_id` = impersonated user, `impersonator_id` = root, fully visible (no masking) in both the record's History modal and the global Audit Trail.
 - Impersonation start → `impersonation_sessions` row created with `ip_address`/`started_at`; leave → same row gets `ended_at`, duration computed correctly (positive, matching real elapsed wall-clock time).
 - Deleting a record → audit row's `changes.record_label` matches the record's name at time of deletion.
-- Bulk explicit-selection update/delete → exactly one batch-level audit row, not one per affected record; `affected_ids` present.
+- Bulk explicit-selection **and** all-matching update/delete → exactly one batch-level audit row, not one per affected record; matching rows exist in `audit_log_affected_records` for every affected record either way, each with its own `old_value` (the field's prior value for updates, the record's label for deletes).
+- Viewing one specific record's own history for a bulk-update batch it was part of → shows that record's own old→new value, not just the batch summary; a different affected record in the same batch shows its own (potentially different) old value.
+- Clicking a bulk-batch row in the global Audit Trail → opens the affected-records breakdown, listing every touched record with its own value/label, paginated.
 - Linking/unlinking two records → exactly two audit rows (one per side), each correctly cross-referencing the other's resolved label.
 - `owner_id` (a `record`-type field) reassignment → diff includes both the raw ids and resolved `old_label`/`new_label` names.
 - No authenticated actor (console/seeder context) → `AuditService::log()` no-ops entirely, verified both directly and via `RelationshipService::link()` after `auth()->logout()`.

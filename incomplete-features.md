@@ -9,24 +9,14 @@
 > - **Audit trail: record restore** — hard delete is intentional for now ("what is deleted is gone, and I'm fine with it"). A real fix isn't a quick snapshot-and-restore — it's a full **Bin system** (soft delete, a retention window of N days, auto-purge after) planned as a complete V2 feature, matching the `// TODO: Offer recovering deleted records (Bin system)` comment already sitting in `RecordController.php`. See `[[project_record_restore_roadmap]]` in memory, updated to reflect this.
 >
 > **Resolved**: "No way to delete a field, at any layer" — implemented (route, `FieldsManagerController::destroy()`, layout cleanup, records-using warning, render-time existence guards across every field-rendering surface). See `FEATURES.md`'s Field Manager section and `tests/Feature/Modules/FieldDeletionTest.php`.
-
----
-
-## High
-
-### 1. Audit trail: "all matching" bulk edits aren't traceable per-record
-*(previously flagged)*
-
-- **Where**: `app/Http/Controllers/RecordController.php` (`updateMany`/`destroyMany`, `allMatchingSelected` branch)
-- **What**: Explicit-selection bulk edits/deletes capture `affected_ids` in the audit log entry, so `RecordHistoryController` can surface that batch inside each individual affected record's own history (via `whereJsonContains('diff->affected_ids', ...)`). A filtered "select all matching this search/filter" bulk action deliberately does **not** capture `affected_ids` (to avoid an unbounded JSON array on a large edit) — so that batch only ever shows up as one summary row in the global Audit Trail, never inside any single record's own history.
-- **Impact**: If you bulk-edit "all matching" a filter, and later look at one specific affected record's history, that edit is invisible there — you'd only find it by searching the global log.
-- **Fix**: No clean fix without re-introducing the unbounded-array problem it was designed to avoid — a real solution likely needs a separate `audit_log_affected_records` join table (one row per record per batch) rather than a JSON array on the log row itself.
+>
+> **Resolved**: "Audit trail: 'all matching' bulk edits aren't traceable per-record" — a new `audit_log_affected_records` join table (`audit_log_id`, `record_id`, indexed) now records every affected record for **both** bulk-selection modes (`explicit` and `all_matching`), not just explicit. `AuditService::log()` takes the affected IDs as a fifth argument and writes them there instead of inline in `diff` — a plain JSON array was the wrong fix for `all_matching` (unbounded size, no indexable containment check); the join table gives an indexed per-record lookup instead. See `docs/dev/audit-trail-implementation.md` §4.2/§4.2.1 and `tests/Feature/Audit/BulkOperationsAuditTest.php`.
 
 ---
 
 ## Medium
 
-### 2. Relationship deletion only cleans up layouts on one side
+### 1. Relationship deletion only cleans up layouts on one side
 *(newly found)*
 
 - **Where**: `app/Models/Relationship.php::cleanupRelationshipPanels(string $module_id)`, called from `RelationshipManagerController::destroy()`
@@ -38,7 +28,7 @@
 
 ## Low (cleanup / dead code / no runtime impact)
 
-### 3. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
+### 2. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
 *(previously flagged)*
 
 - **Where**: `app/Models/Dashboard.php`
@@ -46,7 +36,7 @@
 - **Impact**: None currently — they're simply never invoked, so the wrong column reference never executes. Purely a maintenance hazard: if someone calls `Dashboard::scopeGlobal()`/`scopeForUser()` in the future expecting it to work (the names read as if they're the real scoping mechanism), it will throw a SQL error on the missing column.
 - **Fix**: Delete both scopes, or rewrite them to use `user_id` and actually call them from `DashboardController@index` instead of the inline `where()`.
 
-### 4. IP whitelist — removed entirely
+### 3. IP whitelist — removed entirely
 *(previously flagged)*
 
 - **Where**: N/A — nothing exists anymore
@@ -54,7 +44,7 @@
 - **Impact**: None today — it's just absent. Flagged here (as in `FEATURES.md`) specifically so nobody mistakes this for "not started" when it's actually "built, then reverted."
 - **Fix**: If wanted again, treat as new feature work; check `git show eab2507` for why it caused 500s before repeating the same approach.
 
-### 5. Dead code: `RelationshipService::enforceCardinality()` is never called
+### 4. Dead code: `RelationshipService::enforceCardinality()` is never called
 *(newly found)*
 
 - **Where**: `app/Services/Relationships/RelationshipService.php:72`
@@ -62,15 +52,15 @@
 - **Impact**: None functionally (dead code doesn't execute), but it's actively misleading to read — a future maintainer could reasonably assume this is the enforcement mechanism, "fix" or extend it, and be confused when linking behavior doesn't change.
 - **Fix**: Delete it, or if the throwing behavior is actually preferred over silent re-parenting for some case, wire it in deliberately and decide which behavior should win where.
 
-### 6. Dead code: `RelationshipService::getRelationshipBetween()` is never called
+### 5. Dead code: `RelationshipService::getRelationshipBetween()` is never called
 *(newly found)*
 
 - **Where**: `app/Services/Relationships/RelationshipService.php:227`
 - **What**: Looks up the `Relationship` row(s) between two module slugs (checking both directions), optionally filtered by `type`. Confirmed via grep — no controller, service, or Vue component calls it.
-- **Impact**: None functionally. Same maintenance-hazard category as #9.
+- **Impact**: None functionally. Same maintenance-hazard category as #4.
 - **Fix**: Delete unless there's a near-term use for it (e.g. it might be a natural fit for validating "does a relationship already exist between these two modules" during relationship creation — currently `RelationshipManagerController::store()` does its own inline duplicate query instead of reusing this).
 
-### 7. `config/default_relationship_types.php` is dead and out of sync
+### 6. `config/default_relationship_types.php` is dead and out of sync
 *(newly found)*
 
 - **Where**: `config/default_relationship_types.php`, `app/Http/Controllers/RelationshipManagerController::create()`, `resources/js/Pages/Settings/Relationships/Create.vue`
@@ -78,7 +68,7 @@
 - **Impact**: None today (the config is simply unused), but it's a trap: it looks like a second source of truth for relationship types, and if anyone starts using it (or "fixes" it by adding `many-to-one` there too, assuming it matters), there'd be two lists to keep in sync for no reason.
 - **Fix**: Delete `config/default_relationship_types.php` and the `types` prop it feeds, or repurpose `Create.vue` to actually use it instead of `typeList` (there'd need to be a reason to prefer one over the other — right now there isn't).
 
-### 8. Two-factor authentication — dead, unused columns
+### 7. Two-factor authentication — dead, unused columns
 *(previously flagged, downgraded)*
 
 - **Where**: `users` table (`two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `failed_login_attempts`, `locked_until`)
@@ -130,8 +120,9 @@
 
 ## Reference
 
-- `FEATURES.md` — the short-form summary table this file expands on; §11 has the corrected module-visibility model; the Field Manager section documents the now-resolved field-deletion feature.
-- `docs/dev/relationships-implementation.md` §7 — source of #2.
-- `docs/dev/audit-trail-implementation.md` — source of #1's technical detail.
+- `FEATURES.md` — the short-form summary table this file expands on; §11 has the corrected module-visibility model; the Field Manager section documents the now-resolved field-deletion feature; §16 documents the now-resolved audit-trail join table.
+- `docs/dev/relationships-implementation.md` §7 — source of #1.
+- `docs/dev/audit-trail-implementation.md` §4.2/§4.2.1 — technical detail for the resolved "all matching" bulk-edit traceability fix.
 - `docs/dev/419-session-recovery.md` §9 — source of the "planned follow-up" confirmation for the idle-window and remember-me items in "Not a Bug — Left for V2".
 - `tests/Feature/Modules/FieldDeletionTest.php` — coverage for the resolved field-deletion feature.
+- `tests/Feature/Audit/BulkOperationsAuditTest.php`, `tests/Feature/Audit/RecordHistoryControllerTest.php` — coverage for the resolved audit-trail join table.

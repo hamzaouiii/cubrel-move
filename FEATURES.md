@@ -664,6 +664,7 @@ Every create/update/delete on any module record, every relationship link/unlink,
 | Table | Shape | Purpose |
 |---|---|---|
 | `audit_logs` | Append-only, one row per event | `created`/`updated`/`deleted`/`linked`/`unlinked` — `module_slug`, `record_id` (both nullable, for batch/system events), `user_id`, `impersonator_id`, `action`, `diff` (JSON), `created_at` |
+| `audit_log_affected_records` | Append-only, one row per (batch, record) pair | `audit_log_id` (FK, cascades on delete), `record_id` (indexed), `old_value` (JSON, nullable) — lets a bulk batch row be attributed back to every individual record it touched, each with its own prior value, without an unbounded JSON array (see Write paths below) |
 | `impersonation_sessions` | Mutable, one row per session | Who impersonated whom — `impersonator_id`, `target_user_id`, `ip_address`, `started_at`, `ended_at` (null while ongoing) |
 
 Deliberately schema-generic (the JSON column is named `diff`, not `changes` — naming it `changes` collided with a `protected $changes` property Eloquent's own base `Model` class already declares internally for dirty-tracking, silently breaking reads) so a planned future **Activities** feature can read/write the same `audit_logs` table with a broader `action` vocabulary without a rename.
@@ -671,7 +672,7 @@ Deliberately schema-generic (the JSON column is named `diff`, not `changes` — 
 ### Write paths
 
 - **`AuditObserver`** (`app/Observers/AuditObserver.php`) — the primary hook, registered from `BaseModule::booted()` rather than `AppServiceProvider`, since Eloquent keys observer bindings to the literal class passed to `observe()`; late static binding inside `booted()` is what lets one registration correctly self-attach for every concrete module class (`Deal`, `Contact`, etc.). Fires on `created`/`updated`/`deleted` for every `BaseModule` subclass, including `User`.
-- **`RecordController`'s bulk `updateMany`/`destroyMany`** — these use query-builder writes (`whereIn(...)->update()`, `chunkById(...)->delete()`) which never fire Eloquent events, so they call the audit write path explicitly, logging one row per batch (not per affected record). `affected_ids` is only captured in explicit-selection mode, not "all matching a filter," to avoid an unbounded array on a large bulk edit (see the incomplete-areas note below).
+- **`RecordController`'s bulk `updateMany`/`destroyMany`** — these use query-builder writes (`whereIn(...)->update()`, `chunkById(...)->delete()`) which never fire Eloquent events, so they call the audit write path explicitly, logging one row per batch (not per affected record), for both selection modes (`explicit` and `all matching a filter`). The affected records go to `AuditService::log()`'s `$affectedRecords` parameter as a keyed array (`record_id => old_value`), which writes them into the `audit_log_affected_records` join table rather than inline in `diff` — a plain JSON array would work for a small explicit selection but not for "all matching," which can span an entire module's table; see `docs/dev/audit-trail-implementation.md` §4.2.1 for why. For `updateMany`, `old_value` is that record's own prior value of the field being changed (captured before the overwrite, per record — not just what the whole batch was set to); for `destroyMany`, it's the record's display label captured just before deletion, since nothing is left to query afterward.
 - **`RelationshipService::link()`/`unlink()`** — logs on **both sides** of the relationship, so either record's own history shows the connection regardless of which side the action was performed from.
 
 Deletion is a hard delete, by design, for now — `AuditObserver::deleted()` captures only a display label at delete time (`record_label`, `name ?? number ?? id`), not a full attribute snapshot, so a deleted record cannot be reconstructed from its audit entry. A real restore capability is intentionally deferred to a V2 **Bin system** (soft delete, a retention window, auto-purge — matching the `// TODO: Offer recovering deleted records (Bin system)` comment already in `RecordController.php`), not something this audit-log snapshot approach is meant to grow into.
@@ -694,13 +695,15 @@ Fields flagged `is_calculated = true` (`total`/`subtotal`/`tax_amount`/`discount
 | Global audit log | `/settings/audit-trail` | Admin (`AdminMiddleware`) |
 | Impersonation sessions | `/settings/impersonation-sessions` | Admin — **deliberately not root-only** |
 
-Both Settings pages filter using the app's real field components (searchable `Select`, `DateTime`) rather than native HTML inputs. Clicking a row in the global audit log (when it has a specific record behind it — bulk-batch rows don't) opens the same per-record History modal, giving full field-aware old→new rendering (resolved field labels, dropdown option labels, `record`-type field names resolved to the related record's own name, locale-aware date formatting) instead of just the list of which fields changed.
+Both Settings pages filter using the app's real field components (searchable `Select`, `DateTime`) rather than native HTML inputs. Clicking a row in the global audit log opens one of two modals depending on the row: a row with a specific record behind it opens the per-record History modal (`HistoryModal.vue`), giving full field-aware old→new rendering (resolved field labels, dropdown option labels, `record`-type field names resolved to the related record's own name, locale-aware date formatting) instead of just the list of which fields changed. A bulk-batch row (`record_id` null) instead opens `BulkAffectedRecordsModal.vue`, which calls `AuditLogController::affectedRecords()` (`GET /settings/audit-trail/{auditLog}/affected-records`) to list every record the batch touched — each with its own resolved label and, for `updated` batches, its own old→new value pulled from `audit_log_affected_records`; paginated the same way the per-record history is, so this stays cheap even for an "all matching" batch that spans an entire module's table.
+
+Within the per-record History modal itself, a bulk-batch entry the viewed record was part of no longer shows only the batch-wide summary text ("10 records updated — Status set to \"Accepted\"") — when that record's own `old_value` is available (merged in per record by `RecordHistoryController`), it's rendered as a real old→new diff row underneath the summary, same as a normal field change.
 
 ### Reference
 
 - `docs/dev/audit-trail-implementation.md` — full technical writeup: schema decisions, every write path, and every bug found and fixed during implementation (including a latent `AdminOnlyModuleScope` bug in `BaseModule::getModuleSlug()`/`moduleDefinition()` that this feature was the first thing to actually exercise, and an `Eloquent Collection::merge()` dedupe-by-primary-key gotcha that silently collapsed per-module field lists when `id` wasn't selected).
 - `docs/guides/audit-trail-guide.md` — plain-language, user-facing guide.
-- `tests/Feature/Audit/` — automated test coverage (33 tests as of this writing) for every behavior and regression above.
+- `tests/Feature/Audit/` — automated test coverage (39 tests as of this writing) for every behavior and regression above.
 
 ---
 
@@ -710,7 +713,6 @@ Both Settings pages filter using the app's real field components (searchable `Se
 
 | Priority | Area | Issue |
 |---|---|---|
-| High | Audit trail: "all matching" bulk edits | Only explicit-selection bulk edits/deletes capture `affected_ids`; a filtered "select all matching" bulk action only appears as one summary row in the global audit log, not inside any individual record's own history |
 | Medium | Relationship deletion cleans up one side only | `cleanupRelationshipPanels()` only strips a deleted relationship from the requesting module's layout, can leave a stale panel on the other side |
 | Low | `Dashboard::scopeGlobal()` / `scopeForUser()` | Dead code — references a non-existent `owner_id` column and is never called; real per-user scoping is just `where('user_id', ...)` in the controller |
 | Low | IP whitelist | **Removed entirely** (added in `96dd5e8`, deleted in `eab2507` two days later) — not merely present-but-unused |

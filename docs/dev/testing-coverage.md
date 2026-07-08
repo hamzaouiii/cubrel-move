@@ -59,17 +59,18 @@ What the existing PHPUnit suite (`tests/Feature`, `tests/Unit`) actually verifie
 
 ## Audit trail system
 
-The most heavily covered subsystem (8 files), each cross-referenced against `docs/dev/audit-trail-implementation.md`:
+The most heavily covered subsystem (9 files), each cross-referenced against `docs/dev/audit-trail-implementation.md`:
 
 | File | Covers |
 | --- | --- |
-| `tests/Feature/Audit/AuditServiceTest.php` | `AuditService::log()` is a no-op with no authenticated actor; writes a correctly-attributed row when authenticated. |
+| `tests/Feature/Audit/AuditServiceTest.php` | `AuditService::log()` is a no-op with no authenticated actor (including when `$affectedRecords` is passed); writes a correctly-attributed row when authenticated; affected records land in the `audit_log_affected_records` join table, not the `diff` JSON. |
 | `tests/Feature/Audit/AuditObserverTest.php` | Create/update logging with correct diffs; identical-value re-save logs nothing; `is_calculated`-flagged fields excluded from diffs (proven by flag, not by field name); delete captures a `record_label` snapshot; `record`-type field changes resolve human-readable labels, not raw IDs; regression test for a non-admin editing their own `User` record (previously threw via `AdminOnlyModuleScope`). |
-| `tests/Feature/Audit/BulkOperationsAuditTest.php` | Bulk update/delete via `RecordController::updateMany()`/`destroyMany()` (query-builder writes that bypass Eloquent events) log one row per batch: `mode: explicit` with `affected_ids`, vs `mode: all_matching` with a count only; bulk delete captures pre-deletion `record_labels`. |
+| `tests/Feature/Audit/BulkOperationsAuditTest.php` | Bulk update/delete via `RecordController::updateMany()`/`destroyMany()` (query-builder writes that bypass Eloquent events) log one row per batch for both `mode: explicit` and `mode: all_matching`; each affected record's own old value (update) or captured label (delete) is verified in `audit_log_affected_records` for both selection modes. |
 | `tests/Feature/Audit/ImpersonationAuditTest.php` | Starting impersonation creates an `ImpersonationSession` row; actions while impersonating log `user_id` as the impersonated identity but `impersonator_id` always reveals the real actor; leaving impersonation closes the session with correct attribution (regression: must read impersonator session keys before `Auth::logout()`); session duration is positive (regression: previous sign-flip bug); ongoing sessions flagged correctly. |
 | `tests/Feature/Audit/ImpersonationSessionControllerTest.php` | Non-admin gets 403; plain (non-root) admin can view; filter by `target_user_id`; `ended_at: null` sessions flagged `ongoing`. |
 | `tests/Feature/Audit/AuditLogControllerTest.php` | Non-admin gets 403; admin can filter the global trail by `?module=`; regression test for `fields_by_module` collapsing across modules (an unselected `id` broke `Collection::merge()` dedup); `fields_by_module` carries full field metadata (`type`, `related_module`) for the frontend. |
-| `tests/Feature/Audit/RecordHistoryControllerTest.php` | Per-record history is scoped to that record only; surfaces bulk-batch entries the record was part of (matched via `affected_ids`, since bulk rows have `record_id = null`); does not leak batch entries belonging to unrelated records. |
+| `tests/Feature/Audit/AuditLogAffectedRecordsTest.php` | `AuditLogController::affectedRecords()` — non-admin gets 403; an `updated` batch row lists each affected record with its own resolved label plus old/new value; a `deleted` batch row lists each record's captured label (`still_exists: false`) since the record itself is gone. |
+| `tests/Feature/Audit/RecordHistoryControllerTest.php` | Per-record history is scoped to that record only; surfaces bulk-batch entries the record was part of (matched via the `audit_log_affected_records` join table, since bulk rows have `record_id = null`); merges that specific record's own `old_value` into a bulk entry rather than leaving only the batch-wide summary; does not leak batch entries belonging to unrelated records. |
 | `tests/Feature/Audit/RelationshipLinkAuditTest.php` | Linking/unlinking logs one row per side (each carrying the other side's resolved display label); unauthenticated `link()` calls (e.g. console/seeder) log nothing, same as the general `AuditService` no-op rule. |
 
 ## Miscellaneous
