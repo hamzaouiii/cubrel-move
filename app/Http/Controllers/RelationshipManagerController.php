@@ -69,7 +69,7 @@ class RelationshipManagerController extends Controller
       'name' => ['required', 'string', 'max:255', 'unique:relationships,name'],
       'label' => ['required', 'string', 'max:255'],
       'right_module' => ['required', 'string', 'exists:modules,slug'],
-      'type' => ['required', 'in:one-to-one,one-to-many,many-to-many'],
+      'type' => ['required', 'in:one-to-one,one-to-many,many-to-one,many-to-many'],
     ]);
 
     $leftModule = $module;
@@ -83,12 +83,23 @@ class RelationshipManagerController extends Controller
         'right_module' => __('relationships.errors.self_reference_not_allowed')
       ]);
     }
+
+    $type = $validated['type'];
+
+    // 'many-to-one' is just 'one-to-many' reveresed. It it is the same relationship type in the service. 
+    // we swap the left and right modules here and switch the type the one-to-many since it is the type the service can resolve 
+    // this means many-to-one only really exists in this controller in the whole code base
+    if ($type === 'many-to-one') {
+      [$leftModule, $rightModule] = [$rightModule, $leftModule];
+      $type = 'one-to-many';
+    }
+
     //Prevent identical relationship duplicates
 
     $duplicate = Relationship::query()
       ->where('left_module', $leftModule->slug)
       ->where('right_module', $rightModule->slug)
-      ->where('type', $validated['type'])
+      ->where('type', $type)
       ->exists();
 
     if ($duplicate) {
@@ -105,7 +116,7 @@ class RelationshipManagerController extends Controller
       'label' => $validated['label'],
       'left_module' => $leftModule->slug,
       'right_module' => $rightModule->slug,
-      'type' => $validated['type'],
+      'type' => $type,
       'join_table' => $joinTable,
       'is_system' => 0,
     ]);

@@ -131,4 +131,68 @@ class RelationshipManagerRouteTest extends TestCase
 
         $this->assertModelExists($relationship);
     }
+
+    /**
+     * 'many-to-one' isn't stored as its own type — it's 'one-to-many' with
+     * left/right swapped, since left_module is always resolved to whichever
+     * module's settings page the request came from. Creating "many deals to
+     * one account" from Deals' own page must end up stored identically to
+     * creating "one account to many deals" from Accounts' page.
+     */
+    public function test_many_to_one_is_stored_as_one_to_many_with_modules_swapped(): void
+    {
+        $deals = $this->makeModule([
+            'slug' => 'deals',
+            'name' => 'Deals',
+            'path' => '/deals',
+        ]);
+        $this->makeModule([
+            'slug' => 'accounts',
+            'name' => 'Accounts',
+            'path' => '/accounts',
+        ]);
+
+        $this->post("/settings/modules/{$deals->id}/relationships", [
+            'name' => 'deals_accounts',
+            'label' => 'Account',
+            'right_module' => 'accounts',
+            'type' => 'many-to-one',
+        ])->assertRedirect();
+
+        $relationship = Relationship::where('name', 'deals_accounts')->firstOrFail();
+
+        $this->assertSame('accounts', $relationship->left_module);
+        $this->assertSame('deals', $relationship->right_module);
+        $this->assertSame('one-to-many', $relationship->type);
+    }
+
+    public function test_many_to_one_duplicate_is_still_caught_after_swap(): void
+    {
+        $deals = $this->makeModule([
+            'slug' => 'deals',
+            'name' => 'Deals',
+            'path' => '/deals',
+        ]);
+        $this->makeModule([
+            'slug' => 'accounts',
+            'name' => 'Accounts',
+            'path' => '/accounts',
+        ]);
+
+        Relationship::create([
+            'name' => 'accounts_deals_existing',
+            'label' => 'Deals',
+            'left_module' => 'accounts',
+            'right_module' => 'deals',
+            'type' => 'one-to-many',
+            'is_system' => false,
+        ]);
+
+        $this->post("/settings/modules/{$deals->id}/relationships", [
+            'name' => 'deals_accounts_new',
+            'label' => 'Account',
+            'right_module' => 'accounts',
+            'type' => 'many-to-one',
+        ])->assertSessionHasErrors('right_module');
+    }
 }
