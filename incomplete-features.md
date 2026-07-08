@@ -14,23 +14,7 @@
 
 ## High
 
-### 1. Line items are orphaned, not cascade-deleted, when their parent record is deleted
-*(newly found)*
-
-- **Where**: `app/Models/Modules/LineItem.php`, `app/Http/Controllers/RecordController.php::destroy()`/`destroyMany()`
-- **What**: `LineItem` rows reference their parent via `parent_type`/`parent_id` (polymorphic-by-convention, no real FK). Deleting a parent record (an Order, Invoice, Quote, or any custom has-line-items module record) — whether single or bulk — does not delete its associated `LineItem` rows. No model event, observer, or FK cascade handles this.
-- **Impact**: Orphaned `LineItem` rows accumulate in the `line_items` table indefinitely, invisible in the UI (nothing queries for a parent-less line item) but never cleaned up. Checks that query `LineItem::where('parent_type', $slug)->exists()` (e.g. determining whether a module "has line items in use") would see these ghost rows and could report `true` for a module that, from a user's perspective, has no visible line items left anywhere.
-- **Fix**: Either a `deleted()` hook on every has-line-items `BaseModule` subclass (or a generic one keyed off `has_line_items`) that deletes matching `LineItem` rows, or a scheduled cleanup job. Should reuse `LineItemTotalsObserver`'s `parent_type` resolution pattern (`app/Observers/LineItemTotalsObserver.php`) for consistency. **Note**: if the planned Bin system (see the correction note above) lands first, it should supersede this — cascade-deleting line items immediately would conflict with a soft-delete/restore window.
-
-### 2. Active session listing / revoke-a-device — missing entirely
-*(previously flagged)*
-
-- **Where**: N/A
-- **What**: No UI or backend endpoint lists a user's other active sessions, and no "log out other devices" action exists. `sessions.user_id` is indexed but not unique — the same user can be logged in on unlimited devices with no visibility into or control over that from either the user's or an admin's side.
-- **Impact**: A user who suspects unauthorized access to their account has no self-service way to see or kill other sessions; neither does an admin on their behalf.
-- **Fix**: New feature — a sessions list scoped to `auth()->id()` (or, for admins, any user), reading the `sessions` table, with a per-row "revoke" action that deletes that session row.
-
-### 3. Audit trail: "all matching" bulk edits aren't traceable per-record
+### 1. Audit trail: "all matching" bulk edits aren't traceable per-record
 *(previously flagged)*
 
 - **Where**: `app/Http/Controllers/RecordController.php` (`updateMany`/`destroyMany`, `allMatchingSelected` branch)
@@ -42,23 +26,7 @@
 
 ## Medium
 
-### 4. Admin-configurable idle session window — doc/code mismatch
-*(previously flagged)*
-
-- **Where**: `docs/guides/session-timeout-guide.md` (claims), `.env` `SESSION_LIFETIME` (reality)
-- **What**: The user-facing help article describes an admin setting to shorten/lengthen the idle timeout (30 min – 24h). No such setting exists in code — the 8-hour idle window is a static `.env` value (`SESSION_LIFETIME=480`), not configurable from Settings. `docs/dev/419-session-recovery.md` §9 explicitly lists this as "planned follow-up, not built."
-- **Impact**: The published user guide is actively wrong about a real, checkable admin capability. Anyone reading it and going looking for the setting won't find it.
-- **Fix**: Either build the setting (add a `SettingValue`, wire it into whatever reads `SESSION_LIFETIME` at runtime — note Laravel's session lifetime is normally a boot-time config value, not trivially per-request-dynamic, so this needs real design) or correct the guide to stop claiming it exists.
-
-### 5. Admin toggle to hide "remember me" — doc/code mismatch
-*(previously flagged)*
-
-- **Where**: `docs/guides/session-timeout-guide.md` (claims), `resources/js/Pages/Login.vue` (reality)
-- **What**: Same guide describes an admin toggle to remove the "Keep me signed in" checkbox from the login screen entirely. No such setting exists — the checkbox is unconditionally rendered for every user.
-- **Impact**: Same as #4 — documented capability that doesn't exist.
-- **Fix**: Add a `SettingValue` (e.g. `allow_remember_me`), gate the checkbox's rendering in `Login.vue` on it, or correct the guide.
-
-### 6. Relationship deletion only cleans up layouts on one side
+### 2. Relationship deletion only cleans up layouts on one side
 *(newly found)*
 
 - **Where**: `app/Models/Relationship.php::cleanupRelationshipPanels(string $module_id)`, called from `RelationshipManagerController::destroy()`
@@ -70,7 +38,7 @@
 
 ## Low (cleanup / dead code / no runtime impact)
 
-### 7. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
+### 3. `Dashboard::scopeGlobal()` / `scopeForUser()` — dead code
 *(previously flagged)*
 
 - **Where**: `app/Models/Dashboard.php`
@@ -78,7 +46,7 @@
 - **Impact**: None currently — they're simply never invoked, so the wrong column reference never executes. Purely a maintenance hazard: if someone calls `Dashboard::scopeGlobal()`/`scopeForUser()` in the future expecting it to work (the names read as if they're the real scoping mechanism), it will throw a SQL error on the missing column.
 - **Fix**: Delete both scopes, or rewrite them to use `user_id` and actually call them from `DashboardController@index` instead of the inline `where()`.
 
-### 8. IP whitelist — removed entirely
+### 4. IP whitelist — removed entirely
 *(previously flagged)*
 
 - **Where**: N/A — nothing exists anymore
@@ -86,7 +54,7 @@
 - **Impact**: None today — it's just absent. Flagged here (as in `FEATURES.md`) specifically so nobody mistakes this for "not started" when it's actually "built, then reverted."
 - **Fix**: If wanted again, treat as new feature work; check `git show eab2507` for why it caused 500s before repeating the same approach.
 
-### 9. Dead code: `RelationshipService::enforceCardinality()` is never called
+### 5. Dead code: `RelationshipService::enforceCardinality()` is never called
 *(newly found)*
 
 - **Where**: `app/Services/Relationships/RelationshipService.php:72`
@@ -94,7 +62,7 @@
 - **Impact**: None functionally (dead code doesn't execute), but it's actively misleading to read — a future maintainer could reasonably assume this is the enforcement mechanism, "fix" or extend it, and be confused when linking behavior doesn't change.
 - **Fix**: Delete it, or if the throwing behavior is actually preferred over silent re-parenting for some case, wire it in deliberately and decide which behavior should win where.
 
-### 10. Dead code: `RelationshipService::getRelationshipBetween()` is never called
+### 6. Dead code: `RelationshipService::getRelationshipBetween()` is never called
 *(newly found)*
 
 - **Where**: `app/Services/Relationships/RelationshipService.php:227`
@@ -102,7 +70,7 @@
 - **Impact**: None functionally. Same maintenance-hazard category as #9.
 - **Fix**: Delete unless there's a near-term use for it (e.g. it might be a natural fit for validating "does a relationship already exist between these two modules" during relationship creation — currently `RelationshipManagerController::store()` does its own inline duplicate query instead of reusing this).
 
-### 11. `config/default_relationship_types.php` is dead and out of sync
+### 7. `config/default_relationship_types.php` is dead and out of sync
 *(newly found)*
 
 - **Where**: `config/default_relationship_types.php`, `app/Http/Controllers/RelationshipManagerController::create()`, `resources/js/Pages/Settings/Relationships/Create.vue`
@@ -110,13 +78,47 @@
 - **Impact**: None today (the config is simply unused), but it's a trap: it looks like a second source of truth for relationship types, and if anyone starts using it (or "fixes" it by adding `many-to-one` there too, assuming it matters), there'd be two lists to keep in sync for no reason.
 - **Fix**: Delete `config/default_relationship_types.php` and the `types` prop it feeds, or repurpose `Create.vue` to actually use it instead of `typeList` (there'd need to be a reason to prefer one over the other — right now there isn't).
 
-### 12. Two-factor authentication — dead, unused columns
+### 8. Two-factor authentication — dead, unused columns
 *(previously flagged, downgraded)*
 
 - **Where**: `users` table (`two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `failed_login_attempts`, `locked_until`)
 - **What**: 2FA isn't offered in this version by design. Confirmed these five columns are never read or written anywhere in `app/` (the only `locked_until` hits are an unrelated column on the `modules` table, used for the Module Builder's draft-editing lock). All nullable/defaulted — inert, not a risk.
 - **Impact**: None. Purely cosmetic: a future dev could assume 2FA is supported and be wrong.
 - **Fix**: No urgency. A one-line migration to drop the columns is optional cleanup, not a requirement.
+
+---
+
+## Not a Bug — Left for V2
+
+> Reclassified out of the High-priority list above: these are real, known gaps, not doc-mismatches or dead code — but a proper fix is a larger V2 feature, not a patch to what exists today, so they're tracked here rather than as open bugs.
+
+### Line items are orphaned, not cascade-deleted, when their parent record is deleted
+
+- **Where**: `app/Models/Modules/LineItem.php`, `app/Http/Controllers/RecordController.php::destroy()`/`destroyMany()`
+- **What**: `LineItem` rows reference their parent via `parent_type`/`parent_id` (polymorphic-by-convention, no real FK). Deleting a parent record (an Order, Invoice, Quote, or any custom has-line-items module record) — whether single or bulk — does not delete its associated `LineItem` rows. No model event, observer, or FK cascade handles this.
+- **Impact**: Orphaned `LineItem` rows accumulate in the `line_items` table indefinitely, invisible in the UI (nothing queries for a parent-less line item) but never cleaned up. Checks that query `LineItem::where('parent_type', $slug)->exists()` (e.g. determining whether a module "has line items in use") would see these ghost rows and could report `true` for a module that, from a user's perspective, has no visible line items left anywhere.
+- **Why it's left for V2, not fixed now**: the real fix is entangled with the planned Bin system (soft delete, retention window, auto-purge — see [[project_record_restore_roadmap]]). Cascade-hard-deleting line items the moment a parent is deleted would conflict with a future soft-delete/restore window — a record restored from the Bin would come back with no line items. Worth solving once, as part of that feature, not twice.
+
+### Active session listing / revoke-a-device — missing entirely
+
+- **Where**: N/A
+- **What**: No UI or backend endpoint lists a user's other active sessions, and no "log out other devices" action exists. `sessions.user_id` is indexed but not unique — the same user can be logged in on unlimited devices with no visibility into or control over that from either the user's or an admin's side.
+- **Impact**: A user who suspects unauthorized access to their account has no self-service way to see or kill other sessions; neither does an admin on their behalf.
+- **Why it's left for V2, not fixed now**: this is new feature work (a sessions list scoped to `auth()->id()`, or any user for admins, reading the `sessions` table, with a per-row "revoke" action), not a small patch — same scale of effort as the other V2-deferred items above (granular RBAC, the Bin system).
+
+### Admin-configurable idle session window
+
+- **Where**: `docs/guides/en/session-timeout-guide.md`, `.env` `SESSION_LIFETIME` (reality)
+- **What**: An admin setting to shorten/lengthen the idle timeout (30 min – 24h). No such setting exists in code — the 8-hour idle window is a static `.env` value (`SESSION_LIFETIME=480`), not configurable from Settings. `docs/dev/419-session-recovery.md` §9 lists this as "planned follow-up, not built."
+- **Impact**: None currently beyond the missing capability itself — the user guide previously described this as already shipped (a real doc/code mismatch), which has now been corrected in `docs/guides/en/session-timeout-guide.md` to stop claiming it exists.
+- **Why it's left for V2, not fixed now**: Laravel's session lifetime is normally a boot-time config value, not trivially per-request-dynamic, so making it admin-configurable needs real design (a `SettingValue` plus wiring into whatever reads `SESSION_LIFETIME` at runtime) rather than a quick patch.
+
+### Admin toggle to hide "remember me"
+
+- **Where**: `docs/guides/en/session-timeout-guide.md`, `resources/js/Pages/Login.vue` (reality)
+- **What**: An admin toggle to remove the "Keep me signed in" checkbox from the login screen entirely. No such setting exists — the checkbox is unconditionally rendered for every user.
+- **Impact**: Same as above — the guide previously overclaimed this; now corrected.
+- **Why it's left for V2, not fixed now**: needs a new `SettingValue` (e.g. `allow_remember_me`) plus gating the checkbox's rendering in `Login.vue` — small in isolation, but grouped with the idle-window setting above since both come from the same guide correction and the same "admin session controls" surface, worth designing together rather than piecemeal.
 
 ---
 
@@ -129,7 +131,7 @@
 ## Reference
 
 - `FEATURES.md` — the short-form summary table this file expands on; §11 has the corrected module-visibility model; the Field Manager section documents the now-resolved field-deletion feature.
-- `docs/dev/relationships-implementation.md` §7 — source of #6.
-- `docs/dev/audit-trail-implementation.md` — source of #3's technical detail.
-- `docs/dev/419-session-recovery.md` §9 — source of #4/#5's "planned follow-up" confirmation.
+- `docs/dev/relationships-implementation.md` §7 — source of #2.
+- `docs/dev/audit-trail-implementation.md` — source of #1's technical detail.
+- `docs/dev/419-session-recovery.md` §9 — source of the "planned follow-up" confirmation for the idle-window and remember-me items in "Not a Bug — Left for V2".
 - `tests/Feature/Modules/FieldDeletionTest.php` — coverage for the resolved field-deletion feature.

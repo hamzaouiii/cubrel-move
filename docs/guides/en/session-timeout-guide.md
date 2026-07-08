@@ -33,11 +33,6 @@ Yes. When you log in, check the **"Keep me signed in"** box and Cubrel will reme
 - **Logging out clears it.** If you sign out explicitly, this is wiped and you'll need your password again next time, just like a normal session.
 - **Only use it on your own device.** Because it keeps you signed in for so long, anyone who uses that browser afterward could open Cubrel as you. Skip it on shared or public computers.
 
-#### Admin controls two things from Settings:
-
-- **The idle window.** The default is 8 hours, but an admin can shorten or lengthen it (min: 30 minutes and max: 24 hours) to match your organization's security needs. Whatever they set applies to everyone and becomes the standard timeout your sessions fall back to.
-- **The "Keep me signed in" option.** An admin can turn this off entirely for the whole organization. When it's off, the checkbox disappears from the login screen for everyone, and all users fall back to the idle window above, with no way to opt into staying signed in longer.
-
 ## As long as you're working, you'll never see it
 
 While you have Cubrel open in a visible browser tab, it quietly checks in with the server every few minutes in the background, you won't see or feel this happening at all. As long as the tab stays open and visible on your screen, this keeps resetting the 8-hour clock, so **a session you're actively using essentially never expires**, no matter how long you've had it open. This only stops if you switch away to a different tab or minimize the window for an extended period, in other words, if you genuinely walk away.
