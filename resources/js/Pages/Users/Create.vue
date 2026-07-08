@@ -319,14 +319,21 @@ const getField = (f) => {
     <div class="record-layout__scroll">
       <div class="record-layout__sections">
         <template v-for="s in recordLayout.sections" :key="s.name">
-          <div class="record-layout__sections__item">
+          <div
+            v-if="Object.values(s.layout || {}).some(
+              (f) => getField(f) && !getField(f).readonly,
+            )"
+            class="record-layout__sections__item"
+          >
             <div class="record-layout__sections__item__title">
               {{ s.name }}
             </div>
 
             <div class="record-layout__sections__item__layout">
               <div
-                v-for="f in s.layout.filter((f) => !getField(f).readonly)"
+                v-for="f in Object.values(s.layout || {}).filter(
+                  (f) => getField(f) && !getField(f).readonly,
+                )"
                 :key="f.name"
                 class="record-layout__sections__item__layout__field"
               >

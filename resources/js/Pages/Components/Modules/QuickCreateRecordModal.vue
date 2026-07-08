@@ -77,11 +77,16 @@ const recordLayout = computed(() => {
   };
 });
 
-const visibleSections = computed(() =>
-  recordLayout.value.sections.filter((s) => !s.has_line_items),
-);
-
 const getField = (f) => props.fields.find((field) => field.name === f.name) ?? f;
+const fieldExists = (f) => props.fields.some((field) => field.name === f.name);
+
+const visibleSections = computed(() =>
+  Object.values(recordLayout.value.sections || {}).filter(
+    (s) =>
+      !s.has_line_items &&
+      Object.values(s.layout || {}).some((f) => fieldExists(f)),
+  ),
+);
 
 const getIcon = (slug) => {
   if (!slug) return "fa-solid fa-user";
@@ -316,7 +321,9 @@ useUnsavedChangesGuard({
 
               <div class="record-layout__sections__item__layout">
                 <div
-                  v-for="f in s.layout.filter((f) => !getField(f).readonly)"
+                  v-for="f in Object.values(s.layout || {}).filter(
+                    (f) => fieldExists(f) && !getField(f).readonly,
+                  )"
                   :key="f.name"
                   class="record-layout__sections__item__layout__field"
                 >

@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
-use App\Contracts\ModuleHandler;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use App\Models\Field;
 use App\Models\Label;
+use App\Models\Layout;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class FieldsManagerController extends Controller
@@ -16,7 +17,7 @@ class FieldsManagerController extends Controller
   /**
    * Show the form for creating a new resource.
    */
-  public function create(Request $request, string $module_id)
+  public function create(string $module_id)
   {
     $module = Module::query()
       ->where('id', $module_id)
@@ -39,15 +40,41 @@ class FieldsManagerController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Request $request, string $module_id)
+  public function show(string $module_id)
   {
     $module = Module::query()
       ->where('id', $module_id)
       ->firstOrFail();
+
+    $fields = $module->allEditableFields()->map(function (Field $field) use ($module) {
+      $field->records_using = $field->is_custom
+        ? $this->countRecordsUsingField($module, $field->name)
+        : null;
+
+      return $field;
+    });
+
     return Inertia::render('Settings/Fields/List', [
       'module' => $module,
-      'fields' => $module->allEditableFields()
+      'fields' => $fields
     ]);
+  }
+
+  /**
+   * count how my records have data for field in module table
+   * @param Module $module
+   * @param string $fieldName
+   * @return int
+   */
+  private function countRecordsUsingField(Module $module, string $fieldName): int
+  {
+    if (! $module->table_name || ! Schema::hasTable($module->table_name)) {
+      return 0;
+    }
+
+    return DB::table($module->table_name)
+      ->whereNotNull("custom_fields->{$fieldName}")
+      ->count();
   }
 
   /**
@@ -178,10 +205,62 @@ class FieldsManagerController extends Controller
   }
 
   /**
-   * Remove the specified resource from storage.
+   * delete field
+   * only custom fields can be deleted
+   * @param Request $request
+   * @param string $module_id
+   * @param string $field_name
+   * @return \Illuminate\Http\RedirectResponse
    */
-  public function destroy(string $id)
+  public function destroy(Request $request, string $module_id, string $field_name)
   {
-    //
+    $module = Module::query()->where('id', $module_id)->firstOrFail();
+
+    $field = Field::query()
+      ->where('module_id', $module_id)
+      ->where('name', $field_name)
+      ->firstOrFail();
+
+    if (! $field->is_custom) {
+      throw ValidationException::withMessages([
+        'field' => __('fields.delete_forbidden_stock'),
+      ]);
+    }
+
+    $field->delete();
+
+    $this->removeFieldFromLayouts($module, $field_name);
+
+    return back()->with('success', __('fields.field_delete_success'));
+  }
+
+  /**
+   * delete field definition from layouts that already contain it
+   * @param Module $module
+   * @param string $fieldName
+   * @return void
+   */
+  private function removeFieldFromLayouts(Module $module, string $fieldName): void
+  {
+    Layout::where('module_id', $module->id)
+      ->whereIn('type', ['list', 'linkingPanel', 'record'])
+      ->get()
+      ->each(function (Layout $layout) use ($fieldName) {
+        $definition = $layout->definition ?? [];
+
+        if ($layout->type === 'record') {
+          foreach ($definition['sections'] ?? [] as $i => $section) {
+            $definition['sections'][$i]['layout'] = array_values(
+              array_filter($section['layout'] ?? [], fn ($f) => ($f['name'] ?? null) !== $fieldName)
+            );
+          }
+        } else {
+          $definition['columns'] = array_values(
+            array_filter($definition['columns'] ?? [], fn ($c) => ($c['name'] ?? null) !== $fieldName)
+          );
+        }
+
+        $layout->update(['definition' => $definition]);
+      });
   }
 }

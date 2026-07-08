@@ -129,8 +129,8 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
                     Route::put('fields/{field}', [FieldsManagerController::class, 'update'])
                         ->name('modules.fields.update');
 
-                    // Route::delete('fields/{field}', [FieldsManagerController::class, 'destroy'])
-                    //   ->name('modules.fields.destroy');
+                    Route::delete('fields/{field}', [FieldsManagerController::class, 'destroy'])
+                        ->name('modules.fields.destroy');
 
                     // Layouts
                     Route::get('layouts', [LayoutManagerController::class, 'show'])

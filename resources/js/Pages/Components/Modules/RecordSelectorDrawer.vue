@@ -65,13 +65,17 @@ const drawerTitle = computed(() => {
   return `${t("modules.selectdrawer.select")} ${t("modules." + props.relatedModule + ".single_label")}`;
 });
 
-const layoutColumns = computed(() => props.layout ?? []);
+const layoutColumns = computed(() => Object.values(props.layout ?? {}));
 
 // The first column drives the primary label; remaining columns are supplementary.
 const primaryColumn = computed(
   () => layoutColumns.value[0] ?? { name: "name", label: "Name" },
 );
-const extraColumns = computed(() => layoutColumns.value.slice(1));
+const extraColumns = computed(() =>
+  layoutColumns.value
+    .slice(1)
+    .filter((col) => props.fields?.some((field) => field.name === col.name)),
+);
 
 let debounceTimer = null;
 

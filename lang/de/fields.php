@@ -12,9 +12,21 @@ return [
   'field_update_success' => 'Feld erfolgreich aktualisiert.',
   'field_update_error' => 'Fehler beim Speichern des Feldes.',
   'field_reset_success' => 'Feld auf Datenbank-Werte zurückgesetzt.',
+  'field_delete_success' => 'Feld erfolgreich gelöscht.',
+  'deleting' => 'Feld wird gelöscht...',
+  'delete_forbidden_stock' => 'Standardfelder können nicht gelöscht werden, nur benutzerdefinierte Felder.',
   'key_is_taken_error'    => 'Ein Feld mit demselben Systemnamen existiert bereits.',
   'regex_hint'        => 'Für benutzerdefinierte Validierungsregeln',
   'label_hint'        => 'Min. 4 Zeichen',
+
+  'confirm' => [
+    'delete_title' => 'Feld löschen',
+    'delete_msg' => 'Dieses Feld enthält Daten bei :count Datensätzen. Beim Löschen werden diese Daten nicht entfernt, das Feld ist danach jedoch nicht mehr sichtbar oder bearbeitbar. Diese Aktion kann nicht rückgängig gemacht werden.',
+    'delete_msg_singular' => 'Dieses Feld enthält Daten bei :count Datensatz. Beim Löschen werden diese Daten nicht entfernt, das Feld ist danach jedoch nicht mehr sichtbar oder bearbeitbar. Diese Aktion kann nicht rückgängig gemacht werden.',
+    'delete_msg_no_count' => 'Sind Sie sicher, dass Sie dieses Feld löschen möchten?',
+    'delete_confirm' => 'Feld löschen',
+    'delete_cancel' => 'Abbrechen',
+  ],
   'types' => [
     'longtext' => 'Langer Text',
     'text' => 'Text',

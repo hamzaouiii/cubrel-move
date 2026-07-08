@@ -49,7 +49,7 @@ const showInviteModal = ref(false);
 
 const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
-    (column) => column !== null,
+    (column) => column !== null && getField(column),
   );
 });
 

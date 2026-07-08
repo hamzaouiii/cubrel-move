@@ -325,7 +325,13 @@ const getLinkingLayout = (slug) => {
       <div class="record-layout__sections">
         <div
           class="record-layout__sections__item"
-          v-for="s in recordLayout.sections.filter((s) => !s.has_line_items)"
+          v-for="s in Object.values(recordLayout.sections || {}).filter(
+            (s) =>
+              !s.has_line_items &&
+              Object.values(s.layout || {}).some(
+                (f) => getField(f) && !getField(f).readonly,
+              ),
+          )"
           :key="s.name"
         >
           <div class="record-layout__sections__item__title">
@@ -334,7 +340,9 @@ const getLinkingLayout = (slug) => {
 
           <div class="record-layout__sections__item__layout">
             <div
-              v-for="f in s.layout.filter((f) => !getField(f).readonly)"
+              v-for="f in Object.values(s.layout || {}).filter(
+                (f) => getField(f) && !getField(f).readonly,
+              )"
               :key="f.name"
               class="record-layout__sections__item__layout__field"
             >

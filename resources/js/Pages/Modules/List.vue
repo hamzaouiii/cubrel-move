@@ -79,7 +79,7 @@ const updateForm = useForm({
 
 const listLayoutColumns = computed(() => {
   return Object.values(props.listLayout?.columns || {}).filter(
-    (column) => column !== null,
+    (column) => column !== null && getField(column),
   );
 });
 

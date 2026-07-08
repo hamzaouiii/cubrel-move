@@ -512,14 +512,18 @@ useUnsavedChangesGuard({
       <div v-if="currentTab !== 'related'" class="record-layout__sections">
         <div
           class="record-layout__sections__item"
-          v-for="s in overviewLayout.sections"
+          v-for="s in Object.values(overviewLayout.sections || {}).filter(
+            (s) => Object.values(s.layout || {}).some((f) => getField(f)),
+          )"
         >
           <div class="record-layout__sections__item__title">
             {{ s.name }}
           </div>
           <div class="record-layout__sections__item__layout">
             <div
-              v-for="f in s.layout"
+              v-for="f in Object.values(s.layout || {}).filter(
+                (field) => getField(field),
+              )"
               class="record-layout__sections__item__layout__field"
               @click="enableEditing()"
             >

@@ -76,6 +76,11 @@ const unlink = async (record) => {
 const panel_limit = computed(() =>
   Number(page.props.appSettings?.related_panel_limit),
 );
+const visibleFields = computed(() =>
+  Object.values(props.panel.fields || {}).filter((field) =>
+    props.fields?.some((f) => f.name === field.name),
+  ),
+);
 </script>
 
 <template>
@@ -86,7 +91,7 @@ const panel_limit = computed(() =>
           <thead>
             <tr>
               <th
-                v-for="field in panel.fields"
+                v-for="field in visibleFields"
                 :key="field.name"
                 :class="{ 'is-action': field.type === 'action' }"
               >
@@ -103,7 +108,7 @@ const panel_limit = computed(() =>
                 :key="'skeleton-' + n"
                 class="skeleton-row"
               >
-                <td v-for="field in panel.fields" :key="field.name">
+                <td v-for="field in visibleFields" :key="field.name">
                   <div class="skeleton-bar"></div>
                 </td>
                 <td></td>
@@ -115,7 +120,7 @@ const panel_limit = computed(() =>
                 v-for="record in records"
                 :key="record.id"
                 :record="record"
-                :header="panel.fields"
+                :header="visibleFields"
                 :related_slug="relationship.related_slug"
                 :openMenuId="openMenuId"
                 @toggleMenu="toggleMenu"
@@ -135,7 +140,7 @@ const panel_limit = computed(() =>
         >
           <PanelParentRecord
             :record="parentRecord"
-            :header="panel.fields"
+            :header="visibleFields"
             :related_slug="relationship.related_slug"
             :key="parentRecord?.id"
             :color="color"

@@ -335,6 +335,7 @@ class Module extends Model
                     'label',
                     'required',
                     'is_draft',
+                    'is_custom',
                     'related_module',
                 ])
                 ->with('dropdown_list')

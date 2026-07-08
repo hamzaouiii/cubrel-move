@@ -12,9 +12,21 @@ return [
   'field_create_error' => 'An error occurred while creating field.',
   'field_update_error' => 'An error occurred while updating field.',
   'field_reset_success' => 'Field reset to Database values.',
+  'field_delete_success' => 'Field deleted successfully.',
+  'deleting' => 'Deleting field...',
+  'delete_forbidden_stock' => 'Stock fields cannot be deleted, only custom fields.',
   'key_is_taken_error'    => 'A field with the same system name already exists',
   'label_hint'        => 'Min. 4 characters',
   'regex_hint'        => 'Use for custom validation rules',
+
+  'confirm' => [
+    'delete_title' => 'Delete field',
+    'delete_msg' => 'This field has data on :count records. Deleting it will not remove that data, but it will no longer be visible or editable. This action cannot be undone.',
+    'delete_msg_singular' => 'This field has data on :count record. Deleting it will not remove that data, but it will no longer be visible or editable. This action cannot be undone.',
+    'delete_msg_no_count' => 'Are you sure you want to delete this field?',
+    'delete_confirm' => 'Delete field',
+    'delete_cancel' => 'Cancel',
+  ],
 
   'types' => [
     'longtext' => 'Long text',

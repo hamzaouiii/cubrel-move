@@ -398,6 +398,17 @@ const getField = (f) => {
   return pp;
 };
 
+// A section with no visible fields left (every field it configured has
+// since been deleted) shouldn't render an empty title/box — line-items
+// sections aren't field-driven, so they always render regardless.
+const visibleSections = computed(() =>
+  Object.values(props.overviewLayout?.sections || {}).filter(
+    (s) =>
+      s.has_line_items ||
+      Object.values(s.layout || {}).some((f) => getField(f)),
+  ),
+);
+
 const getMode = (f) => {
   if (getField(f)?.readonly) return "detail";
   return mode.value;
@@ -673,7 +684,7 @@ const handleTotalsUpdated = (totals) => {
       <div v-show="currentTab === 'overview'" class="record-layout__sections">
         <div
           class="record-layout__sections__item"
-          v-for="s in overviewLayout.sections"
+          v-for="s in visibleSections"
         >
           <!-- In Record.vue, inside the sections loop -->
           <template v-if="s.has_line_items">
@@ -699,7 +710,9 @@ const handleTotalsUpdated = (totals) => {
             </div>
             <div class="record-layout__sections__item__layout">
               <div
-                v-for="f in s.layout"
+                v-for="f in Object.values(s.layout || {}).filter(
+                  (field) => getField(field),
+                )"
                 class="record-layout__sections__item__layout__field"
               >
                 <span

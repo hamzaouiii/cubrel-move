@@ -2,8 +2,15 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
+import { useConfirm } from "@/Composables/useConfirm";
+import { useAlerts } from "@/Composables/useAlerts";
+
+const { confirm } = useConfirm();
+const { info, success, error, clearAllAlerts } = useAlerts();
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 defineOptions({
   layout: [AppLayout, SettingsLayout],
@@ -51,6 +58,47 @@ const color = () =>
   appSettings.use_individual_module_colors
     ? props.module.color
     : appSettings.primary_color;
+
+const deleteField = async (f) => {
+  let msg;
+  let highlt;
+  if (f.records_using === 1) {
+    msg = t("fields.confirm.delete_msg_singular", { count: 1 });
+    highlt = 1;
+  } else if (f.records_using > 1) {
+    msg = t("fields.confirm.delete_msg", { count: f.records_using });
+    highlt = f.records_using;
+  } else {
+    msg = t("fields.confirm.delete_msg_no_count");
+    highlt = null;
+  }
+
+  const ok = await confirm({
+    title: t("fields.confirm.delete_title"),
+    message: msg,
+    confirmText: t("fields.confirm.delete_confirm"),
+    cancelText: t("fields.confirm.delete_cancel"),
+    danger: true,
+    highlight: highlt,
+  });
+  if (!ok) return;
+
+  router.delete(`${page.url.replace(/\/+$/, "")}/${f.name}`, {
+    preserveScroll: true,
+    onStart: () => {
+      clearAllAlerts();
+      info(t("fields.deleting"));
+    },
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("fields.field_delete_success"));
+    },
+    onError: (e) => {
+      clearAllAlerts();
+      error(e.field);
+    },
+  });
+};
 </script>
 
 <template>
@@ -116,6 +164,7 @@ const color = () =>
 
               <i v-else class="fa-solid fa-sort sort-icon hover-icon"></i>
             </th>
+            <th style="width: 70px"></th>
           </tr>
         </thead>
 
@@ -131,6 +180,17 @@ const color = () =>
             </td>
             <td>{{ $t(f.label) }}</td>
             <td>{{ $t("fields.types." + f.type) }}</td>
+            <td style="width: 70px" class="fields__table__row__actions" @click.stop>
+              <button
+                class="fields__table__row__actions__delete"
+                :disabled="!f.is_custom"
+                @click="deleteField(f)"
+              >
+                <i
+                  class="fields__table__row__actions__delete__icon fa-solid fa-trash"
+                ></i>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
