@@ -16,9 +16,8 @@ und so weiter sind alles Module. Jedes hat seinen eigenen Platz in der
 Seitenleiste, eine eigene Listenansicht, eine eigene Datensatzseite und einen
 eigenen Satz an Feldern. Falls Cubrel noch kein Modul für etwas hat, das Ihr
 Unternehmen abbilden möchte, können Sie selbst eines erstellen. Details dazu
-finden Sie im [Leitfaden zu Modulen](../en/modules.md) (aktuell nur auf
-Englisch verfügbar), einschließlich der Schritte zum Erstellen eines neuen
-Moduls.
+finden Sie im [Leitfaden zu Modulen](modules.md), einschließlich der
+Schritte zum Erstellen eines neuen Moduls.
 
 ### Kernmodul
 
