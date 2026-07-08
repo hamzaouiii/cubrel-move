@@ -1,5 +1,4 @@
 <script setup>
-import axios from "axios";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
 import {
@@ -528,21 +527,7 @@ const getLinkingLayout = (slug) => {
   return l?.layouts?.linkingPanel?.columns || null;
 };
 
-const totalsDiffer = (a, b) =>
-  Math.abs(parseFloat(a || 0) - parseFloat(b || 0)) > 0.005;
-
 const handleTotalsUpdated = (totals) => {
-  // Line items recompute this on every mount just by loading their rows; most
-  // of the time it matches what's already stored, so only write back (and only
-  // via a plain background request, never an Inertia visit, since a full-page
-  // refresh with no user action to attribute it to reads as a glitch) when the
-  // recalculated totals actually drifted from what's on the record.
-  const changed =
-    totalsDiffer(totals.subtotal, form.subtotal) ||
-    totalsDiffer(totals.tax_amount, form.tax_amount) ||
-    totalsDiffer(totals.discount_amount, form.discount_amount) ||
-    totalsDiffer(totals.total, form.total);
-
   form.subtotal = totals.subtotal;
   form.tax_amount = totals.tax_amount;
   form.discount_amount = totals.discount_amount;
@@ -553,13 +538,6 @@ const handleTotalsUpdated = (totals) => {
     tax_amount: totals.tax_amount,
     discount_amount: totals.discount_amount,
     total: totals.total,
-  });
-
-  if (!changed) return;
-
-  const moduleSlug = props.module.slug ?? props.module;
-  axios.put(`/${moduleSlug}/${props.record.id}`, totals).catch((e) => {
-    console.error("Failed to sync recalculated totals", e);
   });
 };
 </script>
@@ -768,7 +746,9 @@ const handleTotalsUpdated = (totals) => {
           :search-endpoint="singleLinkSearchEndpoint"
           :related-module="relationship(activePanel?.name)?.related_slug"
           :icon="getIcon(relationship(activePanel?.name)?.related_slug)"
-          :accent-color="getRelatedColor(relationship(activePanel?.name)?.related_slug)"
+          :accent-color="
+            getRelatedColor(relationship(activePanel?.name)?.related_slug)
+          "
           :selected-record="activeParentRecord?.id"
           :layout="activeLayout(activePanel)"
           :fields="Object.values(relationship(activePanel?.name)?.fields || {})"
