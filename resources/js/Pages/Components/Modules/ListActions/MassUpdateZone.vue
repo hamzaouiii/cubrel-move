@@ -1,7 +1,13 @@
 <script setup>
-import { computed } from "vue";
-import { useForm } from "@inertiajs/vue3";
+import { computed, ref, getCurrentInstance } from "vue";
+import { useForm, usePage } from "@inertiajs/vue3";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
+import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
+import { useAlerts } from "@/Composables/useAlerts";
+
+const { error } = useAlerts();
+const { proxy } = getCurrentInstance();
+const t = proxy.$t;
 
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
@@ -13,7 +19,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-  "selectAllMatching", // replaces "toggleAll" — fires when user clicks the prompt
+  "selectAllMatching",
   "clearSelection",
   "massUpdate",
   "cancelClicked",
@@ -28,8 +34,6 @@ const form = useForm({
   inputValue: null,
 });
 
-// ─── Selection counts ────────────────────────────────────────────────────────
-
 const totalSelected = computed(() => {
   if (props.allMatchingSelected) {
     return (props.meta?.total ?? 0) - props.excludedIds.length;
@@ -37,12 +41,6 @@ const totalSelected = computed(() => {
   return props.selectedIds.length;
 });
 
-/**
- * Show the "Select all N records" prompt when:
- * - NOT already in allMatching mode
- * - At least one record on the current page is selected
- * - There are more records in the result set than are visible on this page
- */
 const showSelectAllPrompt = computed(() => {
   return (
     !props.allMatchingSelected &&
@@ -50,8 +48,6 @@ const showSelectAllPrompt = computed(() => {
     props.meta?.total > props.selectedIds.length
   );
 });
-
-// ─── Field dropdown ──────────────────────────────────────────────────────────
 
 const fieldDropDownOptions = computed(() => {
   return (props.fields ?? [])
@@ -82,20 +78,42 @@ const moduleFieldsField = computed(() => ({
 
 const getField = (key) => props.fields?.find((field) => field.key === key);
 
-// ─── Submit guard ─────────────────────────────────────────────────────────────
+const selectedField = computed(() => getField(form.field));
 
-const canSubmit = computed(() => {
+const isEmptyValue = (value) =>
+  value === "" ||
+  value === null ||
+  value === undefined ||
+  (Array.isArray(value) && value.length === 0);
+
+const requiredValueMissing = computed(() => {
   return (
-    Boolean(totalSelected.value) &&
-    Boolean(form.field) &&
-    String(form.inputValue ?? "").trim().length > 0
+    Boolean(selectedField.value?.required) && isEmptyValue(form.inputValue)
   );
 });
 
-// ─── Emit mass update ────────────────────────────────────────────────────────
+const attemptedSubmit = ref(false);
+const showRequiredError = computed(
+  () => attemptedSubmit.value && requiredValueMissing.value,
+);
+
+const canSubmit = computed(() => {
+  return Boolean(totalSelected.value) && Boolean(form.field);
+});
 
 const emitMassUpdate = () => {
   if (!canSubmit.value) return;
+
+  attemptedSubmit.value = true;
+  if (requiredValueMissing.value) {
+    error(
+      `${t(selectedField.value.label)} ${t("fields.validation.is_required")}`,
+      {
+        timeout: 1000,
+      },
+    );
+    return;
+  }
 
   emit("massUpdate", {
     allMatchingSelected: props.allMatchingSelected,
@@ -109,6 +127,30 @@ const emitMassUpdate = () => {
 
 const resetInputValue = () => {
   form.inputValue = null;
+  attemptedSubmit.value = false;
+  inputValueLabel.value = null;
+};
+
+const fieldOverlayOpen = ref(false);
+const inputValueLabel = ref(null);
+
+const allModules = computed(() => usePage().props.modules);
+const getIcon = (slug) => {
+  if (!slug) return null;
+  return (
+    allModules.value?.find((m) => m.slug === slug)?.icon || "fa-solid fa-user"
+  );
+};
+
+const openFieldOverlay = () => {
+  if (!selectedField.value?.related_module) return;
+  fieldOverlayOpen.value = true;
+};
+
+const onFieldRecordSelect = (record) => {
+  form.inputValue = record.id;
+  inputValueLabel.value = record.name;
+  fieldOverlayOpen.value = false;
 };
 </script>
 
@@ -116,19 +158,16 @@ const resetInputValue = () => {
   <div class="mass-update-zone">
     <div class="mass-update-zone__content">
       <div class="mass-update-zone__text">
-        <!-- Zero selection state -->
         <div v-if="!totalSelected">
           <span>{{ $t("modules.update.description") }}</span>
         </div>
 
-        <!-- Selected count -->
         <div v-else>
           <span>
             {{ $t("modules.update.selected_count", { count: totalSelected }) }}
           </span>
         </div>
 
-        <!-- "Select all N records in result set" prompt -->
         <span
           v-if="showSelectAllPrompt"
           class="select-all-in-scope"
@@ -136,7 +175,6 @@ const resetInputValue = () => {
         >
           {{ $t("modules.update.select_all", { total: meta.total }) }}
         </span>
-        <span v-else> </span>
       </div>
     </div>
 
@@ -176,8 +214,27 @@ const resetInputValue = () => {
           :field="getField(form.field)"
           v-model="form.inputValue"
           mode="edit"
+          :has-error="showRequiredError"
+          :related_label="inputValueLabel"
+          :icon="getIcon(selectedField?.related_module)"
+          @open-link-overlay="openFieldOverlay"
         />
       </div>
     </div>
+
+    <RecordSelectorDrawer
+      :open="fieldOverlayOpen"
+      :search-endpoint="
+        selectedField?.related_module
+          ? `/relatedfield/search/${selectedField.related_module}`
+          : ''
+      "
+      :related-module="selectedField?.related_module"
+      :icon="getIcon(selectedField?.related_module)"
+      :selected-record="form.inputValue"
+      :fields="fields"
+      @select="onFieldRecordSelect"
+      @close="fieldOverlayOpen = false"
+    />
   </div>
 </template>
