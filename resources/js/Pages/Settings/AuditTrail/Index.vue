@@ -9,6 +9,7 @@ import ImpersonationBadge from "@/Pages/Components/Settings/AuditTrail/Impersona
 import Select from "@/Pages/Components/FiledTypes/Select.vue";
 import DateTime from "@/Pages/Components/FiledTypes/DateTime.vue";
 import HistoryModal from "@/Pages/Components/Modules/HistoryModal.vue";
+import BulkAffectedRecordsModal from "@/Pages/Components/Modules/BulkAffectedRecordsModal.vue";
 import { formatDateTime } from "@/utils/datetime";
 
 defineOptions({ layout: [AppLayout, SettingsLayout] });
@@ -146,15 +147,26 @@ const changesSummary = (log) => {
 const when = (value) => formatDateTime(value, appSettings);
 
 const selectedRecord = ref(null);
+const selectedBulkLog = ref(null);
+
+const isBulkRow = (log) => !log.record_id && log.changes?.count !== undefined;
 
 const openHistory = (log) => {
-  if (!log.record_id) return;
+  if (log.record_id) {
+    selectedRecord.value = {
+      moduleSlug: log.module_slug,
+      recordId: log.record_id,
+      fields: props.fields_by_module?.[log.module_slug] ?? [],
+    };
+    return;
+  }
 
-  selectedRecord.value = {
-    moduleSlug: log.module_slug,
-    recordId: log.record_id,
-    fields: props.fields_by_module?.[log.module_slug] ?? [],
-  };
+  if (isBulkRow(log)) {
+    selectedBulkLog.value = {
+      auditLogId: log.id,
+      fields: props.fields_by_module?.[log.module_slug] ?? [],
+    };
+  }
 };
 
 const metaSentence = computed(() => {
@@ -277,7 +289,7 @@ const metaSentence = computed(() => {
           <tr
             v-for="log in logs"
             :key="log.id"
-            :class="{ 'audit-trail__row--clickable': log.record_id }"
+            :class="{ 'audit-trail__row--clickable': log.record_id || isBulkRow(log) }"
             @click="openHistory(log)"
           >
             <td class="audit-trail__cell-when">{{ when(log.created_at) }}</td>
@@ -319,6 +331,13 @@ const metaSentence = computed(() => {
       :record-id="selectedRecord.recordId"
       :fields="selectedRecord.fields"
       @close="selectedRecord = null"
+    />
+
+    <BulkAffectedRecordsModal
+      v-if="selectedBulkLog"
+      :audit-log-id="selectedBulkLog.auditLogId"
+      :fields="selectedBulkLog.fields"
+      @close="selectedBulkLog = null"
     />
   </div>
 </template>

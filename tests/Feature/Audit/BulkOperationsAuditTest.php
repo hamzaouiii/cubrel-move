@@ -6,6 +6,7 @@ use App\Handlers\Modules\AccountsModuleHandler;
 use App\Models\AuditLog;
 use App\Models\Modules\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
@@ -44,9 +45,12 @@ class BulkOperationsAuditTest extends TestCase
         $this->actingAs($this->makeUser(['is_admin' => true]));
     }
 
-    public function test_bulk_update_with_explicit_selection_logs_one_row_with_affected_ids(): void
+    public function test_bulk_update_with_explicit_selection_logs_each_records_own_old_value(): void
     {
-        $accounts = collect(range(1, 3))->map(fn ($i) => Account::create(['name' => "Account {$i}"]));
+        $accounts = collect(range(1, 3))->map(fn ($i) => Account::create([
+            'name' => "Account {$i}",
+            'website' => "https://old-{$i}.example",
+        ]));
         AuditLog::query()->delete();
 
         $this->put('/accounts', [
@@ -63,20 +67,25 @@ class BulkOperationsAuditTest extends TestCase
 
         $this->assertSame('explicit', $changes['mode']);
         $this->assertSame(3, $changes['count']);
-        $this->assertEqualsCanonicalizing(
-            $accounts->pluck('id')->map(fn ($id) => (string) $id)->all(),
-            collect($changes['affected_ids'])->map(fn ($id) => (string) $id)->all(),
-        );
+        $this->assertArrayNotHasKey('affected_ids', $changes);
 
-        foreach ($accounts as $account) {
+        $oldValuesByRecordId = DB::table('audit_log_affected_records')
+            ->where('audit_log_id', $log->id)
+            ->pluck('old_value', 'record_id');
+
+        foreach ($accounts as $index => $account) {
+            $this->assertSame(
+                "https://old-".($index + 1).".example",
+                json_decode($oldValuesByRecordId[(string) $account->id], true),
+            );
             $this->assertSame('https://example.com', $account->fresh()->website);
         }
     }
 
-    public function test_bulk_update_with_all_matching_logs_count_without_affected_ids(): void
+    public function test_bulk_update_with_all_matching_also_logs_each_records_own_old_value(): void
     {
-        Account::create(['name' => 'Account A']);
-        Account::create(['name' => 'Account B']);
+        $a = Account::create(['name' => 'Account A', 'website' => 'https://old-a.example']);
+        $b = Account::create(['name' => 'Account B', 'website' => 'https://old-b.example']);
         AuditLog::query()->delete();
 
         $this->put('/accounts', [
@@ -92,6 +101,13 @@ class BulkOperationsAuditTest extends TestCase
         $this->assertSame('all_matching', $changes['mode']);
         $this->assertSame(2, $changes['count']);
         $this->assertArrayNotHasKey('affected_ids', $changes);
+
+        $oldValuesByRecordId = DB::table('audit_log_affected_records')
+            ->where('audit_log_id', $log->id)
+            ->pluck('old_value', 'record_id');
+
+        $this->assertSame('https://old-a.example', json_decode($oldValuesByRecordId[(string) $a->id], true));
+        $this->assertSame('https://old-b.example', json_decode($oldValuesByRecordId[(string) $b->id], true));
     }
 
     public function test_bulk_delete_with_explicit_selection_captures_labels_before_deleting(): void
@@ -114,12 +130,19 @@ class BulkOperationsAuditTest extends TestCase
         $this->assertSame(2, $changes['count']);
         $this->assertSame('Delete Me A', $changes['record_labels'][(string) $a->id]);
         $this->assertSame('Delete Me B', $changes['record_labels'][(string) $b->id]);
+
+        $oldValuesByRecordId = DB::table('audit_log_affected_records')
+            ->where('audit_log_id', $log->id)
+            ->pluck('old_value', 'record_id');
+
+        $this->assertSame('Delete Me A', json_decode($oldValuesByRecordId[(string) $a->id], true));
+        $this->assertSame('Delete Me B', json_decode($oldValuesByRecordId[(string) $b->id], true));
     }
 
-    public function test_bulk_delete_with_all_matching_logs_count_only(): void
+    public function test_bulk_delete_with_all_matching_also_logs_each_records_label(): void
     {
-        Account::create(['name' => 'Bulk Delete A']);
-        Account::create(['name' => 'Bulk Delete B']);
+        $a = Account::create(['name' => 'Bulk Delete A']);
+        $b = Account::create(['name' => 'Bulk Delete B']);
         AuditLog::query()->delete();
 
         $this->delete('/accounts', [
@@ -135,5 +158,14 @@ class BulkOperationsAuditTest extends TestCase
         $this->assertSame('all_matching', $changes['mode']);
         $this->assertSame(2, $changes['count']);
         $this->assertArrayNotHasKey('affected_ids', $changes);
+
+        $oldValuesByRecordId = DB::table('audit_log_affected_records')
+            ->where('audit_log_id', $log->id)
+            ->pluck('old_value', 'record_id');
+
+        // Records are gone by the time this runs — their label was captured into
+        // old_value at delete time, since there's nothing left to query afterward.
+        $this->assertSame('Bulk Delete A', json_decode($oldValuesByRecordId[(string) $a->id], true));
+        $this->assertSame('Bulk Delete B', json_decode($oldValuesByRecordId[(string) $b->id], true));
     }
 }

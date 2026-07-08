@@ -8,6 +8,7 @@ use App\Models\Module;
 use App\Models\User;
 use App\Support\Settings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class AuditLogController extends Controller
@@ -44,12 +45,6 @@ class AuditLogController extends Controller
             ->orderBy('sort_order')
             ->get(['id', 'slug', 'name', 'label', 'color', 'icon']);
 
-        // Field metadata per module — not just {name, label} for the
-        // "Changes" column, but everything HistoryModal needs (type,
-        // related_module, dropdown_list) since clicking a row opens that
-        // same modal for the row's record. One query for every module's
-        // fields (not $module->allFields() in a loop, which re-queries —
-        // and re-eager-loads dropdown_list — once per module).
         $allFields = Field::query()
             ->where(function ($q) use ($modules) {
                 $q->whereIn('module_id', $modules->pluck('id'))->orWhere('is_global', true);
@@ -103,6 +98,51 @@ class AuditLogController extends Controller
             'audit_modules' => $modules,
             'fields_by_module' => $fieldsByModule,
             'users' => User::orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    /**
+     * Per-record breakdown of a bulk update/delete batch row — the global log only
+     * shows one summary row per batch, so this is what the "list of affected
+     * records" view opens when that row is clicked.
+     */
+    public function affectedRecords(Request $request, AuditLog $auditLog)
+    {
+        $moduleModel = Module::where('slug', $auditLog->module_slug)->first();
+        $modelClass = $moduleModel?->model_class;
+
+        $paginator = DB::table('audit_log_affected_records')
+            ->where('audit_log_id', $auditLog->id)
+            ->orderBy('id')
+            ->paginate($request->get('perPage', 15));
+
+        $ids = collect($paginator->items())->pluck('record_id')->all();
+
+        $liveLabels = ($auditLog->action === 'updated' && $modelClass && class_exists($modelClass))
+            ? $modelClass::whereIn('id', $ids)->pluck('name', 'id')
+            : collect();
+
+        $data = collect($paginator->items())->map(function ($row) use ($auditLog, $liveLabels) {
+            $oldValue = $row->old_value !== null ? json_decode($row->old_value, true) : null;
+
+            return [
+                'record_id' => $row->record_id,
+                'label' => $auditLog->action === 'deleted'
+                    ? ($oldValue ?? $row->record_id)
+                    : ($liveLabels->get($row->record_id) ?? $row->record_id),
+                'old_value' => $auditLog->action === 'updated' ? $oldValue : null,
+                'still_exists' => $auditLog->action !== 'deleted',
+            ];
+        });
+
+        return response()->json([
+            'log' => $auditLog->toDisplayArray(),
+            'data' => $data,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'total' => $paginator->total(),
+            ],
         ]);
     }
 }

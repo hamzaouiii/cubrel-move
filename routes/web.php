@@ -193,6 +193,7 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
             // Audit Trail
             Route::prefix('audit-trail')->name('audit-trail.')->group(function () {
                 Route::get('/', [AuditLogController::class, 'index'])->name('index');
+                Route::get('/{auditLog}/affected-records', [AuditLogController::class, 'affectedRecords'])->name('affected-records');
             });
 
             // Impersonation Sessions

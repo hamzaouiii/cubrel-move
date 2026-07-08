@@ -72,6 +72,9 @@ const diffValue = (name, diff, which) => {
 
 const isBulkChange = (changes) => !!changes && changes.count !== undefined;
 
+const hasRecordOldValue = (changes) =>
+  !!changes && changes.old_value !== undefined;
+
 const bulkSummary = (entry) => {
   const c = entry.changes;
   return t("globals.audit_trail.bulk_summary_detail", {
@@ -107,7 +110,8 @@ const load = async (nextPage = 1) => {
       `/modules/${props.moduleSlug}/${props.recordId}/history`,
       { params: { page: nextPage } },
     );
-    entries.value = nextPage === 1 ? data.data : [...entries.value, ...data.data];
+    entries.value =
+      nextPage === 1 ? data.data : [...entries.value, ...data.data];
     page.value = data.meta.current_page;
     lastPage.value = data.meta.last_page;
     phase.value = "ready";
@@ -201,12 +205,37 @@ onMounted(() => load(1));
                 {{ linkSummary(entry) }}
               </p>
 
-              <p
-                v-else-if="isBulkChange(entry.changes)"
-                class="history-modal__entry__bulk"
-              >
-                {{ bulkSummary(entry) }}
-              </p>
+              <template v-else-if="isBulkChange(entry.changes)">
+                <p class="history-modal__entry__bulk">
+                  {{ bulkSummary(entry) }}
+                </p>
+                <table
+                  v-if="hasRecordOldValue(entry.changes)"
+                  class="history-modal__entry__changes"
+                >
+                  <tbody>
+                    <tr>
+                      <th>{{ fieldLabel(entry.changes.field) }}</th>
+                      <td class="history-modal__entry__changes__old">
+                        {{
+                          formatValue(
+                            entry.changes.field,
+                            entry.changes.old_value,
+                          )
+                        }}
+                      </td>
+                      <td class="history-modal__entry__changes__arrow">
+                        <i class="fa-solid fa-arrow-right"></i>
+                      </td>
+                      <td class="history-modal__entry__changes__new">
+                        {{
+                          formatValue(entry.changes.field, entry.changes.value)
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </template>
 
               <table
                 v-else-if="entry.changes && Object.keys(entry.changes).length"
@@ -246,8 +275,18 @@ onMounted(() => load(1));
       </div>
 
       <button class="pdf-modal__close" @click="close">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M18 6L6 18M6 6L18 18" stroke-width="2" stroke-linecap="round" />
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            d="M18 6L6 18M6 6L18 18"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
         </svg>
       </button>
     </div>

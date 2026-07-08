@@ -245,17 +245,21 @@ class RecordController extends Controller
             }
 
             $count = 0;
-            DB::transaction(function () use ($baseQuery, &$count) {
-                $baseQuery->select('id')->chunkById(500, function ($chunk) use (&$count) {
+            $recordLabels = [];
+            DB::transaction(function () use ($baseQuery, &$count, &$recordLabels) {
+                $baseQuery->select(['id', 'name'])->chunkById(500, function ($chunk) use (&$count, &$recordLabels) {
                     $ids = $chunk->pluck('id')->all();
                     $count += count($ids);
                     if (! empty($ids)) {
+                        foreach ($chunk as $model) {
+                            $recordLabels[(string) $model->id] = $model->name ?? (string) $model->id;
+                        }
                         (clone $chunk)->first()->newQuery()->whereIn('id', $ids)->delete();
                     }
                 });
             });
 
-            AuditService::log('deleted', $moduleModel->slug, null, ['mode' => 'all_matching', 'count' => $count]);
+            AuditService::log('deleted', $moduleModel->slug, null, ['mode' => 'all_matching', 'count' => $count], $recordLabels);
 
             return back()->with('success', "{$count} records deleted.");
         }
@@ -265,15 +269,15 @@ class RecordController extends Controller
         // single-record equivalent).
 
         // TODO: Offer recovering deleted records (Bin system)
-        $recordLabels = $modelClass::whereIn('id', $selectedIds)->pluck('name', 'id');
+        $recordLabels = $modelClass::whereIn('id', $selectedIds)->pluck('name', 'id')
+            ->mapWithKeys(fn ($label, $id) => [(string) $id => $label]);
         $deleted = $modelClass::whereIn('id', $selectedIds)->delete();
 
         AuditService::log('deleted', $moduleModel->slug, null, [
             'mode' => 'explicit',
             'count' => $deleted,
-            'affected_ids' => $selectedIds,
             'record_labels' => $recordLabels,
-        ]);
+        ], $recordLabels->all());
 
         return back()->with('success', "{$deleted} records deleted.");
     }
@@ -349,10 +353,16 @@ class RecordController extends Controller
             $value = $field->is_custom ? $newValue : $this->castValueForColumn($modelClass, $field->name, $newValue);
 
             $count = 0;
-            DB::transaction(function () use ($baseQuery, $field, $value, &$count, $modelClass) {
-                $baseQuery->select('id')->chunkById(500, function ($chunk) use ($field, $value, &$count, $modelClass) {
+            $oldValues = [];
+            $selectColumns = $field->is_custom ? ['id', 'custom_fields'] : ['id', $field->name];
+            DB::transaction(function () use ($baseQuery, $field, $value, &$count, &$oldValues, $modelClass, $selectColumns) {
+                $baseQuery->select($selectColumns)->chunkById(500, function ($chunk) use ($field, $value, &$count, &$oldValues, $modelClass) {
                     $ids = $chunk->pluck('id')->all();
                     if (! empty($ids)) {
+                        foreach ($chunk as $model) {
+                            $oldValues[(string) $model->id] = $model->{$field->name};
+                        }
+
                         $column = $field->is_custom
                           ? "custom_fields->{$field->name}"
                           : $field->name;
@@ -367,10 +377,15 @@ class RecordController extends Controller
                 'field' => $field_name,
                 'value' => $value,
                 'count' => $count,
-            ]);
+            ], $oldValues);
 
             return back()->with('success', "{$count} records updated.");
         }
+
+        $oldValues = ($field->is_custom
+            ? $modelClass::whereIn('id', $selectedIds)->get(['id', 'custom_fields'])
+            : $modelClass::whereIn('id', $selectedIds)->get(['id', $field_name])
+        )->mapWithKeys(fn ($model) => [(string) $model->id => $model->{$field_name}])->all();
 
         // Explicit list mode
         if ($field->is_custom) {
@@ -386,8 +401,7 @@ class RecordController extends Controller
             'field' => $field_name,
             'value' => $newValue,
             'count' => $updatedCount,
-            'affected_ids' => $selectedIds,
-        ]);
+        ], $oldValues);
 
         return back()->with('success', "{$updatedCount} records updated.");
     }
