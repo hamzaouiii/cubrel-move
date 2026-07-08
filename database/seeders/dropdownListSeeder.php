@@ -22,5 +22,20 @@ class dropdownListSeeder extends Seeder
         ]
       );
     }
+
+    $relationshipTypes = collect(config('default_relationship_types', []))
+      ->map(fn (string $type) => [
+        'label' => "relationships.types.{$type}",
+        'value' => $type,
+      ])
+      ->all();
+
+    DropdownList::updateOrCreate(
+      ['key' => 'relationship_type_list'],
+      [
+        'values'    => $relationshipTypes,
+        'is_global' => false,
+      ]
+    );
   }
 }
