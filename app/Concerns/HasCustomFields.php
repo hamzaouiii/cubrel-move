@@ -47,11 +47,11 @@ trait HasCustomFields
     ) {
       return parent::getAttribute($key);
     }
-    if ($this->isCustomField($key)) { // line 38
+    if ($this->isCustomField($key)) { 
       return $this->getAttribute($key);
     }
 
-    return parent::__get($key); // 42
+    return parent::__get($key); 
   }
 
   public function getAttribute($key)
@@ -153,11 +153,12 @@ trait HasCustomFields
   protected function getCachedCustomFields(): array
   {
     $table = $this->getTable();
-    if (!isset(self::$moduleCache[$table])) {
+    // previously this was isset(), arrays_key_exist is the right choice here becuase modules that are not active (return null instead of false) should be cached too
+    if (!array_key_exists($table, self::$moduleCache)) {
       self::$moduleCache[$table] = Module::query()
         ->where('table_name', $table)
         ->where('is_active', 1)
-        ->first(); //148
+        ->first();
     }
 
     $module = self::$moduleCache[$table];

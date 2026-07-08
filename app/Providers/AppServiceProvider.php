@@ -14,6 +14,8 @@ use App\Models\Label;
 use App\Observers\LabelObserver;
 use App\Models\Settings\SettingValue;
 use App\Observers\SettingValueObserver;
+use App\Models\Modules\LineItem;
+use App\Observers\LineItemTotalsObserver;
 use App\Services\Users\OwnershipService;
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
   {
     Label::observe(LabelObserver::class);
     SettingValue::observe(SettingValueObserver::class);
+    LineItem::observe(LineItemTotalsObserver::class);
 
     Vite::prefetch(concurrency: 3);
 
