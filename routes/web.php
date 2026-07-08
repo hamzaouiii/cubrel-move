@@ -146,7 +146,9 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
                         ->name('modules.layouts.store');
 
                     // Relationships
-                    Route::resource('relationships', RelationshipManagerController::class)->names('relationships');
+                    Route::resource('relationships', RelationshipManagerController::class)
+                        ->only(['index', 'create', 'store', 'destroy'])
+                        ->names('relationships');
                 });
 
             // moduleBuilder

@@ -44,13 +44,6 @@ class AuditObserver
         AuditService::log('updated', $module->slug, $model->id, $changes);
     }
 
-    /**
-     * For 'record' type fields (e.g. owner_id -> users), old/new hold the
-     * related record's id — meaningless to a viewer on its own. Resolve
-     * and store the related record's display label alongside the id, same
-     * "snapshot now, don't rely on it still existing later" reasoning as
-     * deleted()'s record_label.
-     */
     private function buildFieldChange(Module $module, string $key, $old, $new): array
     {
         $diff = ['old' => $old, 'new' => $new];
@@ -65,16 +58,6 @@ class AuditObserver
         return $diff;
     }
 
-    /**
-     * Null-safe Module lookup, bypassing AdminOnlyModuleScope for the same
-     * reason as BaseModule::getModuleSlug()/moduleDefinition() (see
-     * docs/audit-trail-implementation.md §5.1) — but unlike those two,
-     * deliberately returns null instead of throwing when no Module row
-     * exists for this class at all (not an admin-scope issue, a genuinely
-     * missing registration — e.g. a fresh install before modules are
-     * seeded, or a test that creates a User without registering one).
-     * Audit logging must never crash the save it's observing.
-     */
     private function resolveModule(BaseModule $model): ?Module
     {
         return Module::withoutGlobalScope(AdminOnlyModuleScope::class)
@@ -107,10 +90,6 @@ class AuditObserver
         if (! $module) {
             return;
         }
-
-        // Once a record is gone, module_slug + record_id alone can't identify
-        // it again — capture its display label now, matching the same
-        // name ?? number ?? id fallback used elsewhere (e.g. Record.vue).
         AuditService::log('deleted', $module->slug, $model->id, [
             'record_label' => $model->name ?? $model->number ?? $model->id,
         ]);
