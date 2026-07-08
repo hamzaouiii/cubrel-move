@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Updated 2026-07-04 from routes, controllers, models, config, migrations, and Vue components.
+> Updated 2026-07-08 from routes, controllers, models, config, migrations, and Vue components.
 > Half-built / incomplete items are marked **⚠ INCOMPLETE**.
 
 ---
@@ -22,6 +22,7 @@
 13. [PDF Generation](#13-pdf-generation)
 14. [Authentication & Security](#14-authentication--security)
 15. [Onboarding & Setup](#15-onboarding--setup)
+16. [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)
 
 ---
 
@@ -37,9 +38,9 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Accounts** | `accounts` | name, website, email, phone, billing_address (JSON), shipping_address (JSON) | No | Yes |
 | **Contacts** | `contacts` | first_name, last_name, email, phone, position, notes | No | Yes |
 | **Deals** | `deals` | amount, sales_stage, probability, expected_close_date, type | No | Yes |
-| **Orders** | `orders` | order_number, total_amount, status, order_date, due_date | Yes | Yes |
-| **Invoices** | `invoices` | number, status, issue_date, due_date, currency, subtotal, tax, total | Yes | Yes |
-| **Quotes** | `quotes` | number, status, valid_until, currency, subtotal, tax, total | Yes | Yes |
+| **Orders** | `orders` | order_number, status, order_date, due_date, subtotal, discount_amount, tax_amount, total | Yes | Yes |
+| **Invoices** | `invoices` | number, status, issue_date, due_date, currency, subtotal, discount_amount, tax_amount, total | Yes | Yes |
+| **Quotes** | `quotes` | number, status, valid_until, currency, subtotal, discount_amount, tax_amount, total | Yes | Yes |
 | **Products** | `products` | sku, category, price, unit, tax_rate, is_active | No | Yes |
 | **Support Cases** | `cases` | subject, status, priority, opened_at, closed_at | No | Yes |
 | **Inquiries** | `contact_messages` | email, phone, message, status, ip, user_agent | No | No |
@@ -59,6 +60,8 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | `Settings` / `SettingValue` | Key-value system settings with group and autoload support |
 | `Dashboard` | Per-user dashboard widget configuration (JSON) |
 | `PdfTemplate` | Module-scoped PDF template; owns its section `definition` JSON directly; `is_default` flag per module |
+| `AuditLog` | Append-only event log — who changed what record, and who linked/unlinked which relationship (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)) |
+| `ImpersonationSession` | One row per impersonation session — who impersonated whom, from what IP, start/end (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)) |
 
 ---
 
@@ -182,8 +185,6 @@ Layout config per module specifies fields by name and includes display metadata 
 
 Within the `record` layout editor, a module's "Line Items" placeholder section (`has_line_items: true`) previously just displayed a static message. It now embeds its own `LayoutListEditor` instance, letting admins pick and reorder which `line_items` module fields appear as table columns — a separate field pool from the host module's own fields, so it's excluded from the regular "used fields" tracking (`availableRecordFields`) to avoid the columns being mistaken for unknown/used host-module fields.
 
-**⚠ INCOMPLETE — `subpanels` is dead/broken scaffolding, not just "not wired"**: `LayoutSubpanelEditor.vue` *is* imported and rendered in `Settings/Layouts/Edit.vue` (`v-else-if="type === 'subpanels'"`), but there's no way to reach it through normal navigation — the layout-type picker (`Settings/Layouts/Record.vue`) only has cards for `list`, `record`, `related`, `linkingPanel`, and `lineItemsSnapshot`, with no "subpanels" card. Even if reached by URL directly, saving would fail: `LayoutManagerController@store` only validates `list`/`linkingPanel`/`record`/`related`/`lineItemsSnapshot` and `abort(422, "Unknown layout type")`s anything else, including `subpanels`. `LayoutRelatedFields.vue` (field selector for related panels) exists but its integration path is unclear.
-
 ---
 
 ## 5. Record CRUD & Bulk Operations
@@ -212,6 +213,8 @@ Both bulk delete and bulk update support three selection modes passed in the req
 | Bulk delete | `DELETE /{module}` | `ListActions/ListDeleteZone.vue` |
 | Bulk field update | `PUT /{module}` | `ListActions/MassUpdateZone.vue` |
 
+**⚠ INCOMPLETE — Bulk field update has no required-field validation**: `RecordController@updateMany` writes straight to the DB via query-builder (`whereIn(...)->update([$column => $value])`), bypassing Eloquent entirely — no `required`/`nullable` check against the target `Field` definition, unlike single-record create/update which goes through form validation. A user can mass-clear a required field (e.g. blank out every selected record's `name`) across an arbitrary number of records with no error, in both "explicit selection" and "all matching filter" modes.
+
 ### Export
 
 `ExportController` provides CSV and JSON export, both single-record and bulk:
@@ -222,6 +225,7 @@ Both bulk delete and bulk update support three selection modes passed in the req
 | Export many | `POST /{module}/export` | `ExportController@exportMany` |
 
 - **Bulk export reuses the same three selection modes as bulk delete/update** (`selectedIds[]`, `allMatchingSelected` + current filter state, or `allMatchingSelected` + `excludedIds[]`), so an export can target an explicit selection, "all matching the current search/filter," or "all except."
+- Every create/update/delete above (single-record and bulk) is logged automatically — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
 - Only `json` and `csv` are supported — no Excel/XLSX.
 - A single record's export includes a "line items" section appended after the main row when `module.has_line_items` is true; bulk export omits line items entirely (rows would have inconsistent shape across records).
 - Field values are formatted for export the same way they're formatted for PDFs — `ExportController` reuses `PdfValueRenderer` (see [PDF Generation](#13-pdf-generation)) for dates, selects/status labels, decimals/currency, and addresses, so export output and PDF output stay consistent.
@@ -244,7 +248,7 @@ Relationships between modules are declared in the `relationships` table and seed
 | Link records | `POST /modules/{module}/{record}/relationships/{relationship}` |
 | Unlink records | `DELETE /modules/{module}/{record}/relationships/{relationship}/{relatedId}` |
 
-The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle the UI for selecting and linking records.
+The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle the UI for selecting and linking records. Linking and unlinking are both logged — on both sides of the relationship — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
 
 ### Relationship Manager (Settings)
 
@@ -290,9 +294,11 @@ The line-items **table's visible columns** are likewise no longer hardcoded — 
 | Delete | `DELETE /line-items/{lineItem}` |
 | Reorder | `POST /line-items/reorder` (updates `sort_order`) |
 
-The record page shows line items when `module.has_line_items` is true. `RecordController` now only resolves line-item fields, the source module, its fields, list columns, and the snapshot layout when that flag is set — the previous implementation did an unconditional `firstOrFail()` lookup of the `products` module on **every** record page regardless of module, which could 500 if `products` were ever deactivated. Line item totals roll up to the parent record's `total_amount` field.
+The record page shows line items when `module.has_line_items` is true. `RecordController` now only resolves line-item fields, the source module, its fields, list columns, and the snapshot layout when that flag is set — the previous implementation did an unconditional `firstOrFail()` lookup of the `products` module on **every** record page regardless of module, which could 500 if `products` were ever deactivated.
 
-**⚠ INCOMPLETE** — The roll-up from line item totals to parent `total_amount` is not automatically triggered server-side on every save; the current implementation in `LineItemController@store/update` calls `calculateTotals()` on the item but there is no observer or event that recomputes the parent's aggregate total.
+### Parent total roll-up (server-side, `LineItemTotalsObserver`)
+
+`app/Observers/LineItemTotalsObserver.php`, registered on `LineItem` from `AppServiceProvider::boot()`, recomputes the parent record's `subtotal`/`discount_amount`/`tax_amount`/`total` by summing all its line items on every `saved`/`deleted` event — not just when `LineItemController@store/update` runs, and not dependent on anyone having that record's page open. Resolves the parent via `parent_type` (a module slug) → `Module::model_class`, the same polymorphic-by-convention pattern `AuditObserver` uses, and saves quietly (no audit-log noise, on top of `subtotal`/`discount_amount`/`tax_amount`/`total` already being flagged `is_calculated`). `Record.vue`'s `handleTotalsUpdated` now only mirrors the recalculated totals into the open record's form for immediate display — it no longer PUTs them back itself, since the server already persisted the correct values the moment the line item changed.
 
 ---
 
@@ -422,7 +428,7 @@ Each module row in the `modules` table carries `can_view`, `can_create`, `can_ed
 
 ### Impersonation
 
-Admins can impersonate any user via `POST /users/{user}/impersonate`. A persistent banner (`ImpersonationBanner.vue`) is shown while impersonating. `POST /leaveimpersonate` returns to the original admin session.
+Admins can impersonate any user via `POST /users/{user}/impersonate`. A persistent banner (`ImpersonationBanner.vue`) is shown while impersonating. `POST /leaveimpersonate` returns to the original admin session. Every impersonation session (who, whom, from what IP, start/end) and every action taken while impersonating is now logged — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
 
 ### Record Ownership
 
@@ -595,7 +601,7 @@ Standard Laravel Auth flow:
 - **Concurrent sessions / multi-device**: fully independent by design — `sessions.user_id` is indexed but not unique, and no single-session-guard middleware exists, so the same user can be logged in on unlimited devices simultaneously with no way to see or revoke another device's session.
 - **Logout**: `POST /logout` invalidates only the current session (destroys that session row, regenerates ID/token) and does not affect other devices' live sessions.
 
-**⚠ INCOMPLETE / DOC-CODE MISMATCH** — `docs/session-timeout-guide.md` (a user-facing help article) describes two admin settings as if already shipped: an admin-configurable idle window (30 min–24h) and an admin toggle to hide the "remember me" checkbox entirely. **Neither exists in code** — `docs/419-session-recovery.md` §9 explicitly lists both as "planned follow-up, not built." There is also no active-session listing or "log out other devices" UI, and no impersonation-specific audit log (only a transient `impersonator_id` session value marks that impersonation is in progress).
+**⚠ INCOMPLETE / DOC-CODE MISMATCH** — `docs/session-timeout-guide.md` (a user-facing help article) describes two admin settings as if already shipped: an admin-configurable idle window (30 min–24h) and an admin toggle to hide the "remember me" checkbox entirely. **Neither exists in code** — `docs/419-session-recovery.md` §9 explicitly lists both as "planned follow-up, not built." There is also no active-session listing or "log out other devices" UI. (Impersonation *is* now audited — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions) — this note is scoped to session management specifically.)
 
 ### User Security Fields
 
@@ -638,19 +644,66 @@ Two distinct, sequential flows take a fresh install from zero users to a working
 
 ---
 
+## 16. Audit Trail & Impersonation Sessions
+
+Every create/update/delete on any module record, every relationship link/unlink, and every impersonation session (the login-as itself, not just individual actions taken during it) is logged automatically — no per-module setup required.
+
+### Two tables, two different shapes
+
+| Table | Shape | Purpose |
+|---|---|---|
+| `audit_logs` | Append-only, one row per event | `created`/`updated`/`deleted`/`linked`/`unlinked` — `module_slug`, `record_id` (both nullable, for batch/system events), `user_id`, `impersonator_id`, `action`, `diff` (JSON), `created_at` |
+| `impersonation_sessions` | Mutable, one row per session | Who impersonated whom — `impersonator_id`, `target_user_id`, `ip_address`, `started_at`, `ended_at` (null while ongoing) |
+
+Deliberately schema-generic (the JSON column is named `diff`, not `changes` — naming it `changes` collided with a `protected $changes` property Eloquent's own base `Model` class already declares internally for dirty-tracking, silently breaking reads) so a planned future **Activities** feature can read/write the same `audit_logs` table with a broader `action` vocabulary without a rename.
+
+### Write paths
+
+- **`AuditObserver`** (`app/Observers/AuditObserver.php`) — the primary hook, registered from `BaseModule::booted()` rather than `AppServiceProvider`, since Eloquent keys observer bindings to the literal class passed to `observe()`; late static binding inside `booted()` is what lets one registration correctly self-attach for every concrete module class (`Deal`, `Contact`, etc.). Fires on `created`/`updated`/`deleted` for every `BaseModule` subclass, including `User`.
+- **`RecordController`'s bulk `updateMany`/`destroyMany`** — these use query-builder writes (`whereIn(...)->update()`, `chunkById(...)->delete()`) which never fire Eloquent events, so they call the audit write path explicitly, logging one row per batch (not per affected record). `affected_ids` is only captured in explicit-selection mode, not "all matching a filter," to avoid an unbounded array on a large bulk edit (see the incomplete-areas note below).
+- **`RelationshipService::link()`/`unlink()`** — logs on **both sides** of the relationship, so either record's own history shows the connection regardless of which side the action was performed from.
+
+### Actor resolution and transparency
+
+Every write auto-resolves `user_id` (the current session identity — the impersonated user's id while impersonating) and `impersonator_id` (the real actor, set only while an impersonation session is active). **The impersonator's identity is always shown, unconditionally, to anyone who can see the row — there is no masking, no Gate, no visibility setting.**
+
+The write path also no-ops entirely when there's no authenticated actor at all (console commands, seeders, queued jobs with no user context) — an enforced invariant of the write path itself, not something each caller opts into. Added after demo-data relationship seeding (`RelationshipPopulationSeeder`) was found logging real audit rows attributed to no one, since `Model::withoutEvents()` (used by `DatabaseSeeder` to suppress factory-driven audit noise) only suppresses Eloquent's event dispatcher — it has no effect on the relationship seeder's direct, non-event write calls.
+
+### `is_calculated` field flag
+
+Fields flagged `is_calculated = true` (`total`/`subtotal`/`tax_amount`/`discount_amount` on any has-line-items module, and on `LineItem` itself — set in `config/default_line_item_fields.php` and `config/stock_fields.php`'s `line_items` section) are excluded from the `updated` diff, since they're recalculated automatically by the line-items panel rather than directly edited by a user. Driven by the flag, not a hardcoded field-name list — any field an admin later marks calculated via the Fields Manager is excluded automatically, no app code change needed.
+
+### Frontend
+
+| Surface | Route | Gate |
+|---|---|---|
+| Per-record history | Record page action menu → "View History" (modal) | Same visibility as the record itself (no additional per-record ACL exists in the app today) |
+| Global audit log | `/settings/audit-trail` | Admin (`AdminMiddleware`) |
+| Impersonation sessions | `/settings/impersonation-sessions` | Admin — **deliberately not root-only** |
+
+Both Settings pages filter using the app's real field components (searchable `Select`, `DateTime`) rather than native HTML inputs. Clicking a row in the global audit log (when it has a specific record behind it — bulk-batch rows don't) opens the same per-record History modal, giving full field-aware old→new rendering (resolved field labels, dropdown option labels, `record`-type field names resolved to the related record's own name, locale-aware date formatting) instead of just the list of which fields changed.
+
+### Reference
+
+- `docs/audit-trail-implementation.md` — full technical writeup: schema decisions, every write path, and every bug found and fixed during implementation (including a latent `AdminOnlyModuleScope` bug in `BaseModule::getModuleSlug()`/`moduleDefinition()` that this feature was the first thing to actually exercise, and an `Eloquent Collection::merge()` dedupe-by-primary-key gotcha that silently collapsed per-module field lists when `id` wasn't selected).
+- `docs/audit-trail-guide.md` — plain-language, user-facing guide.
+- `tests/Feature/Audit/` — automated test coverage (33 tests as of this writing) for every behavior and regression above.
+
+---
+
 ## Summary of Incomplete / Half-Built Areas
 
 | Area | Issue |
 |---|---|
-| Line item parent total roll-up | No server-side observer to recompute parent `total_amount` when line items change |
 | `Dashboard::scopeGlobal()` / `scopeForUser()` | Dead code — references a non-existent `owner_id` column and is never called; real per-user scoping is just `where('user_id', ...)` in the controller |
 | Module permissions (RBAC) | `can_view/create/edit/delete` flags are global, not per-user/role; no roles/permissions schema exists |
 | `ModulePolicy` | **Deleted entirely** (commit `d03f11d`), along with its `authorize()` call sites — not merely unaudited. Zero policy/gate enforcement exists anywhere in the app today |
 | Relationship edit UI | No route or component to edit an existing relationship definition (only create/list/delete) |
-| Layout subpanel editor | `LayoutSubpanelEditor.vue` is wired into the Edit page's switch statement but unreachable (no picker card links to it) and would 422 on save (`subpanels` isn't a recognized layout type in `LayoutManagerController@store`) |
 | Two-factor authentication | DB columns present, no UI or enforcement middleware found |
 | IP whitelist | **Removed entirely** (added in `96dd5e8`, deleted in `eab2507` two days later) — not merely present-but-unused |
 | Admin-configurable idle session window | Described as shipped in `docs/session-timeout-guide.md`; does not exist — 8h idle window is a static `.env` value |
 | Admin toggle to hide "remember me" | Described as shipped in `docs/session-timeout-guide.md`; does not exist — checkbox is always shown |
 | Active session listing / revoke-a-device | No UI or backend to view or end sessions on other devices; no single-session-per-user enforcement |
-| Impersonation audit log | Only a transient `impersonator_id` session value marks impersonation; no persisted record of who impersonated whom, when |
+| Audit trail: "all matching" bulk edits | Only explicit-selection bulk edits/deletes capture `affected_ids`; a filtered "select all matching" bulk action only appears as one summary row in the global audit log, not inside any individual record's own history |
+| Audit trail: record restore | A deleted record's audit entry keeps its display label, not a full attribute snapshot — restoring a deleted record from the audit trail isn't possible yet |
+| Bulk field update: no required-field validation | `RecordController@updateMany` bypasses Eloquent validation entirely — a required field can be mass-cleared across any number of records with no error |
