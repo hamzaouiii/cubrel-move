@@ -219,11 +219,20 @@ const toggleRow = (id) => {
   }
 };
 
+// Only pre-select the already-linked parent when it's actually the record
+// shown in the list (role !== "parent", matching displayedRecords below) —
+// otherwise the footer button reports a selection the user never made.
+const canPreselectParent = computed(
+  () =>
+    props.relationship.role !== "parent" &&
+    props.relationship.type != "many-to-many",
+);
+
 const initializeSelected = () => {
   if (
     props.selectedParent &&
     selected.value.length === 0 &&
-    props.relationship.type != "many-to-many"
+    canPreselectParent.value
   ) {
     selected.value = [props.selectedParent.id];
   }
@@ -236,8 +245,8 @@ onMounted(() => {
 watch(
   () => props.selectedParent,
   (newVal) => {
-    if (newVal) {
-      selected.value = [newVal];
+    if (newVal && canPreselectParent.value) {
+      selected.value = [newVal.id];
     }
   },
 );
@@ -331,8 +340,16 @@ const clearSearch = () => {
           </div>
 
           <div class="related-links__list">
+            <div
+              v-if="!loading && displayedRecords.length === 0"
+              class="related-links__no-records"
+            >
+              <i class="fa-solid fa-border-none"></i>
+              <span>{{ $t("modules.linking.no_records_found") }}</span>
+            </div>
+
             <table
-              v-if="cleanedLayout && cleanedLayout.length"
+              v-else-if="cleanedLayout && cleanedLayout.length"
               class="related-links__table"
             >
               <thead>

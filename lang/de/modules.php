@@ -104,6 +104,7 @@ return [
         'create_record' => 'Datensatz erstellen',
         'new_record' => 'Neu: :label',
         'link_count' => 'Verknüpfen :count :label',
+        'no_records_found' => 'Keine Datensätze gefunden',
     ],
     'delete' => [
         'confirm_delete' => 'Löschen bestätigen',

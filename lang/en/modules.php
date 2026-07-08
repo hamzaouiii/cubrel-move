@@ -91,6 +91,7 @@ return [
         'create_record' => 'Create record',
         'new_record' => 'New :label',
         'link_count' => 'Link :count :label',
+        'no_records_found' => 'No records found',
     ],
     'delete' => [
         'confirm_delete' => 'Confirm Delete',
