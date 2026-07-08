@@ -9,7 +9,7 @@ Two related accountability gaps existed before this work:
 - `RecordController::update()` does a bare `$record->fill($request->except(...))->save()` — no change tracking anywhere. Nothing recorded who changed what, when, on any record in any module.
 - `UserController::impersonate()`/`leaveImpersonation()` (`app/Http/Controllers/UserController.php:202-230`, `261-280`) both call `Auth::login()`, which fully swaps the authenticated identity. While impersonating, `auth()->id()` resolves to the *target* user, not the real actor — any naive "current user" logging would misattribute every action taken during impersonation to the impersonated user, with zero trace that root was actually driving. Impersonation itself (who logged in as whom, for how long) also wasn't recorded anywhere at all.
 
-This was raised directly out of `docs/419-session-recovery.md` §9's finding (impersonation swapping the session mid-tab) and its listed follow-up items.
+This was raised directly out of `docs/dev/419-session-recovery.md` §9's finding (impersonation swapping the session mid-tab) and its listed follow-up items.
 
 ## 2. Two separate tables, deliberately not one
 

@@ -1,6 +1,6 @@
 # `Module` and `BaseModule`: Implementation Notes
 
-Companion to `docs/module-basemodule-guide.md`, which covers the conceptual split. This document covers the concrete mechanics: schema, caching, coupling points, and gotchas worth knowing before touching either class.
+Companion to `docs/guides/module-basemodule-guide.md`, which covers the conceptual split. This document covers the concrete mechanics: schema, caching, coupling points, and gotchas worth knowing before touching either class.
 
 ## 1. `Module` (`app/Models/Module.php`)
 
@@ -13,7 +13,7 @@ protected static function booted(): void
 }
 ```
 
-That scope hides admin-only module rows (`users`, `settings`) from non-admin querents by default. Anything that needs to resolve a `Module` row **regardless of the acting user's role** — i.e. any internal/structural lookup rather than a user-facing listing — must bypass it explicitly with `Module::withoutGlobalScope(AdminOnlyModuleScope::class)`. See §5.1 of `docs/audit-trail-implementation.md` for a real bug this scope caused (`BaseModule::getModuleSlug()` throwing for non-admins before the bypass was added).
+That scope hides admin-only module rows (`users`, `settings`) from non-admin querents by default. Anything that needs to resolve a `Module` row **regardless of the acting user's role** — i.e. any internal/structural lookup rather than a user-facing listing — must bypass it explicitly with `Module::withoutGlobalScope(AdminOnlyModuleScope::class)`. See §5.1 of `docs/dev/audit-trail-implementation.md` for a real bug this scope caused (`BaseModule::getModuleSlug()` throwing for non-admins before the bypass was added).
 
 ### 1.1 Responsibilities
 
@@ -30,13 +30,13 @@ protected static array $staticFieldCache = [];   // keyed by Module id
 protected static array $staticLayoutCache = [];   // keyed by "{Module id}:{layout type}"
 ```
 
-Both are request-lifetime memoization, not a cross-request cache (no TTL, no invalidation, no cache store involved — just a static array). `allFields()` populates `$staticFieldCache[$this->id]` lazily; `warmFieldsCache(Collection $modules)` exists to batch-populate it for a whole collection of modules up front (one query for module-specific + global fields, one for line-item defaults if any module in the batch needs them), avoiding the N+1 that calling `allFields()` in a loop would otherwise cause. This is the same class of bug documented in §5.4 of `docs/audit-trail-implementation.md` — `warmFieldsCache()` is the fix pattern for it when iterating multiple modules.
+Both are request-lifetime memoization, not a cross-request cache (no TTL, no invalidation, no cache store involved — just a static array). `allFields()` populates `$staticFieldCache[$this->id]` lazily; `warmFieldsCache(Collection $modules)` exists to batch-populate it for a whole collection of modules up front (one query for module-specific + global fields, one for line-item defaults if any module in the batch needs them), avoiding the N+1 that calling `allFields()` in a loop would otherwise cause. This is the same class of bug documented in §5.4 of `docs/dev/audit-trail-implementation.md` — `warmFieldsCache()` is the fix pattern for it when iterating multiple modules.
 
 **Caveat:** because these are plain static arrays with no request-boundary reset beyond PHP's own process lifecycle, they're safe within a single request/CLI invocation but must not be assumed to reflect fresh data across requests in long-running contexts (queue workers, Octane) without an explicit reset — none currently exists.
 
 ### 1.3 `select()` allowlists are a footgun
 
-Every field query in this class enumerates an explicit `select([...])` column list rather than `select('*')`. Any column added to the `fields` table will be **silently un-hydrated** everywhere it's read via `Module` unless it's added to every relevant `select()` array here too. This has already caused one real bug: `is_calculated` had to be added to `allFields()`'s two `select()` lists (`allFields()` and `warmFieldsCache()`) as part of the audit trail feature, otherwise the flag never made it into memory even though the column existed and was set (`docs/audit-trail-implementation.md` §4.4, §9). When adding a new `fields` column that any downstream consumer needs, grep this file for `select([` and update every list that should carry it.
+Every field query in this class enumerates an explicit `select([...])` column list rather than `select('*')`. Any column added to the `fields` table will be **silently un-hydrated** everywhere it's read via `Module` unless it's added to every relevant `select()` array here too. This has already caused one real bug: `is_calculated` had to be added to `allFields()`'s two `select()` lists (`allFields()` and `warmFieldsCache()`) as part of the audit trail feature, otherwise the flag never made it into memory even though the column existed and was set (`docs/dev/audit-trail-implementation.md` §4.4, §9). When adding a new `fields` column that any downstream consumer needs, grep this file for `select([` and update every list that should carry it.
 
 ## 2. `BaseModule` (`app/Models/BaseModule.php`)
 
@@ -66,7 +66,7 @@ class Deal extends BaseModule
 
 Current subclasses: `Deal`, `Contact`, `Account`, `Invoice`, `Order`, `Quote`, `Product`, `Lead`, `SupportCase`, `LineItem`. Each overrides `$table`/`$fillable` and may override `getCasts()`/`toSearchResult()` for module-specific behavior, while inheriting everything structural from `BaseModule`.
 
-One exception worth knowing: `RelationshipLink` extends `Model` directly, **not** `BaseModule` — deliberately, since it has no corresponding `Module` row, and extending `BaseModule` would make `getModuleSlug()` try (and fail) to resolve one. See `docs/audit-trail-implementation.md` §4.3.
+One exception worth knowing: `RelationshipLink` extends `Model` directly, **not** `BaseModule` — deliberately, since it has no corresponding `Module` row, and extending `BaseModule` would make `getModuleSlug()` try (and fail) to resolve one. See `docs/dev/audit-trail-implementation.md` §4.3.
 
 ### 2.2 `moduleCasts` escape hatch
 
@@ -101,7 +101,7 @@ protected static function bootAuditObserver(): void
 }
 ```
 
-This is registered from `booted()`, not `AppServiceProvider::boot()`, specifically because Laravel's Eloquent event dispatcher keys observer bindings to the literal class passed to `observe()`. A single `BaseModule::observe(...)` call in a service provider would bind against `App\Models\BaseModule` itself and never fire for `Deal`/`Contact`/etc., since those fire events under their own class names. Because `booted()` runs once per *concrete* subclass (Eloquent tracks a `$booted` flag per class), `static::` here late-binds correctly to whichever concrete class is actually booting. Full writeup: `docs/audit-trail-implementation.md` §4.1.
+This is registered from `booted()`, not `AppServiceProvider::boot()`, specifically because Laravel's Eloquent event dispatcher keys observer bindings to the literal class passed to `observe()`. A single `BaseModule::observe(...)` call in a service provider would bind against `App\Models\BaseModule` itself and never fire for `Deal`/`Contact`/etc., since those fire events under their own class names. Because `booted()` runs once per *concrete* subclass (Eloquent tracks a `$booted` flag per class), `static::` here late-binds correctly to whichever concrete class is actually booting. Full writeup: `docs/dev/audit-trail-implementation.md` §4.1.
 
 `User` does **not** extend `BaseModule`, but deliberately mirrors this pattern: it overrides `booted()` without calling `parent::booted()` (since `users` has no `owner_id` column and the owner-defaulting closure would crash), but still calls `static::bootAuditObserver()` itself so audit events aren't silently lost.
 

@@ -59,7 +59,7 @@ What the existing PHPUnit suite (`tests/Feature`, `tests/Unit`) actually verifie
 
 ## Audit trail system
 
-The most heavily covered subsystem (8 files), each cross-referenced against `docs/audit-trail-implementation.md`:
+The most heavily covered subsystem (8 files), each cross-referenced against `docs/dev/audit-trail-implementation.md`:
 
 | File | Covers |
 | --- | --- |
