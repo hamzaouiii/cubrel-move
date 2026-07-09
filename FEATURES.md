@@ -401,6 +401,8 @@ Admins manage per-module field definitions at `/settings/modules/{module}/fields
 
 Named dropdown option lists live at `/settings/dropdowns`. Lists can be created, edited inline, or created-and-immediately-attached to a field. Components: `DropdownSelector.vue`, `CreateNewDropdownListModal.vue`, `EditDropdownListModal.vue`.
 
+For `status`-type fields, each option additionally carries a color, background color, and icon, authored inline via a color picker and the shared icon picker (`StatusOptionRowFields.vue`), with drag-to-reorder for the option order. Status fields render these as colored pill badges (`StatusField.vue`).
+
 ### PDF Templates
 
 See [PDF Generation](#13-pdf-generation).
