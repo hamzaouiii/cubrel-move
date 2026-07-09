@@ -22,8 +22,8 @@ class DashboardControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Routes under this controller sit behind the 'onboarded' middleware,
-        // which redirects to /onboarding unless this setting is truthy.
+        
+        
         $this->completeOnboarding();
     }
 
@@ -152,9 +152,9 @@ class DashboardControllerTest extends TestCase
 
     public function test_index_returns_expected_shared_props(): void
     {
-        // OwnershipService caches its module→table map forever under a fixed key;
-        // the array cache store persists for the whole PHPUnit process, so a stale
-        // map from an earlier test's (now rolled-back) modules can leak in here.
+        
+        
+        
         Cache::flush();
 
         $this->makeLeadsModule();
@@ -208,8 +208,8 @@ class DashboardControllerTest extends TestCase
 
         $response->assertOk()->assertJson(['ok' => true]);
         $this->assertDatabaseHas('dashboards', ['user_id' => $user->id, 'name' => 'My Dashboard']);
-        // assertEquals, not assertSame: MySQL's JSON column type doesn't
-        // guarantee key order on round-trip, only the key/value pairs.
+        
+        
         $this->assertEquals($layout, Dashboard::where('user_id', $user->id)->first()->layout);
 
         $newLayout = [['instanceId' => 'xyz', 'type' => 'breakdown', 'cols' => 2, 'config' => ['module' => 'deals']]];

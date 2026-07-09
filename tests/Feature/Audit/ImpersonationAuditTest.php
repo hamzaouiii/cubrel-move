@@ -9,12 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers impersonation session tracking (UserController::impersonate()/
- * leaveImpersonation()) and the actor-resolution/transparency behavior of
- * AuditService::log() while impersonating. See
- * docs/audit-trail-implementation.md §3, §3.1, §5.2.
- */
 class ImpersonationAuditTest extends TestCase
 {
     use RefreshDatabase;
@@ -59,30 +53,26 @@ class ImpersonationAuditTest extends TestCase
 
         $this->post(route('impersonate', $target))->assertRedirect();
 
-        // Every subsequent request in this test is now authenticated AS $target.
+        
         $account = Account::create(['name' => 'Original']);
-        AuditLog::query()->delete(); // isolate from the 'created' row
+        AuditLog::query()->delete(); 
 
         $this->put("/accounts/{$account->id}", ['name' => 'Changed While Impersonating'])
             ->assertSessionHas('success');
 
         $log = AuditLog::where('action', 'updated')->where('record_id', $account->id)->firstOrFail();
 
-        // user_id is the session identity (the impersonated user) ...
+        
         $this->assertSame((string) $target->id, (string) $log->user_id);
-        // ... but impersonator_id always reveals the real actor, unconditionally.
+        
         $this->assertSame((string) $root->id, (string) $log->impersonator_id);
 
         $display = $log->toDisplayArray();
         $this->assertSame($root->name, $display['impersonator']['name']);
     }
 
-    /**
-     * Regression test for docs/audit-trail-implementation.md §3.1: closing
-     * out the session must read session('impersonator_id') /
-     * session('impersonation_session_id') BEFORE Auth::login()/forget() run,
-     * or the session row ends up unattributed.
-     */
+    
+
     public function test_leaving_impersonation_closes_the_session_with_correct_attribution(): void
     {
         $root = $this->makeUser(['is_root' => true, 'is_admin' => true, 'status' => 'active']);
@@ -102,11 +92,8 @@ class ImpersonationAuditTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $session->durationInSeconds());
     }
 
-    /**
-     * Regression test for docs/audit-trail-implementation.md §5.2: Carbon's
-     * diffInSeconds() sign convention previously produced a negative
-     * duration for a session that had clearly already elapsed positively.
-     */
+    
+
     public function test_session_duration_is_positive_not_negative(): void
     {
         $root = $this->makeUser(['is_root' => true]);

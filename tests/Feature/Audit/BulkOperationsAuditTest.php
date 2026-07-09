@@ -10,12 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers the explicit AuditService::log() calls in RecordController's
- * updateMany()/destroyMany() — bulk operations use query-builder writes that
- * never fire Eloquent model events, so AuditObserver alone can't see them.
- * See docs/audit-trail-implementation.md §4.2.
- */
 class BulkOperationsAuditTest extends TestCase
 {
     use RefreshDatabase;
@@ -163,8 +157,8 @@ class BulkOperationsAuditTest extends TestCase
             ->where('audit_log_id', $log->id)
             ->pluck('old_value', 'record_id');
 
-        // Records are gone by the time this runs — their label was captured into
-        // old_value at delete time, since there's nothing left to query afterward.
+        
+        
         $this->assertSame('Bulk Delete A', json_decode($oldValuesByRecordId[(string) $a->id], true));
         $this->assertSame('Bulk Delete B', json_decode($oldValuesByRecordId[(string) $b->id], true));
     }

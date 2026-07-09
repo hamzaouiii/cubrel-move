@@ -7,13 +7,6 @@ use Database\Seeders\dropdownListSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * config/default_relationship_types.php is the single source of truth for which
- * relationship types exist — config/dropdown_lists.php no longer carries its own
- * separate 'relationship_type_list' entry. This covers dropdownListSeeder building
- * that dropdown's options from the config at seed time, rather than the two lists
- * drifting out of sync (see incomplete-features.md, resolved item).
- */
 class DropdownListSeederTest extends TestCase
 {
     use RefreshDatabase;

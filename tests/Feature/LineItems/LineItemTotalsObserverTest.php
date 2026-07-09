@@ -10,14 +10,6 @@ use Illuminate\Support\Str;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers LineItemTotalsObserver (app/Observers/LineItemTotalsObserver.php),
- * which recomputes the parent record's subtotal/discount_amount/tax_amount/
- * total on every line-item create/update/delete. Replaces the previous
- * view-triggered design where Record.vue's handleTotalsUpdated only wrote
- * these back when someone happened to open that exact record's page — see
- * the "Line item parent total roll-up" note removed from FEATURES.md.
- */
 class LineItemTotalsObserverTest extends TestCase
 {
     use RefreshDatabase;
@@ -109,12 +101,8 @@ class LineItemTotalsObserverTest extends TestCase
         $this->assertSame('0.00', (string) $this->order->total);
     }
 
-    /**
-     * The recompute save must not read as a real "update" in the audit
-     * trail — it's a derived value, not a user edit. total/subtotal/etc are
-     * already flagged is_calculated (see AuditObserver), and the observer
-     * uses saveQuietly() on top of that as belt-and-suspenders.
-     */
+    
+
     public function test_recomputing_the_parent_does_not_create_an_audit_log_entry(): void
     {
         $this->makeLineItem(['unit_price' => 100, 'quantity' => 1]);

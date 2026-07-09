@@ -9,10 +9,6 @@ use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers ImpersonationSessionController — deliberately gated to "any admin",
- * not root-only, per docs/audit-trail-implementation.md §2/§6.
- */
 class ImpersonationSessionControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -34,7 +30,7 @@ class ImpersonationSessionControllerTest extends TestCase
 
     public function test_plain_admin_without_root_can_view_sessions(): void
     {
-        // Deliberately NOT root — this page is admin-visible, no root guard.
+        
         $admin = $this->makeUser(['is_admin' => true, 'is_root' => false]);
         $this->actingAs($admin);
 

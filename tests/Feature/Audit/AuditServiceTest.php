@@ -9,13 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers AuditService::log() directly — the single write path every audit
- * caller (AuditObserver, RecordController's bulk operations,
- * RelationshipService::link()/unlink()) goes through. See
- * docs/audit-trail-implementation.md §3, §5 (added after demo-data
- * relationship seeding was found logging audit rows with no real actor).
- */
 class AuditServiceTest extends TestCase
 {
     use RefreshDatabase;

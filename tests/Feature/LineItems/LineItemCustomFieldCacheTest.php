@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-
 class LineItemCustomFieldCacheTest extends TestCase
 {
     use RefreshDatabase;

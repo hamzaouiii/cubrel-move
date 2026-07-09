@@ -11,17 +11,6 @@ use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers FieldsManagerController::destroy() — previously an empty stub with
- * its route commented out (see FEATURES.md/incomplete-features.md's "No way
- * to delete a field, at any layer"). Only custom fields (is_custom = true)
- * can be deleted; stock/seed-time fields back a real DB column and are
- * rejected. Deleting a custom field also strips it from list/record/
- * linkingPanel layouts (but deliberately leaves 'related' alone — its
- * columns reference relationship names, not fields — and leaves existing
- * records' custom_fields JSON untouched, since HasCustomFields makes an
- * orphaned key permanently inert once the Field row is gone).
- */
 class FieldDeletionTest extends TestCase
 {
     use RefreshDatabase;
@@ -140,13 +129,8 @@ class FieldDeletionTest extends TestCase
         $this->assertSame(['name'], $columnNames);
     }
 
-    /**
-     * 'related' columns reference relationship names, not field names — a
-     * field named the same as a relationship (edge case, but the column
-     * shape is identical: {name, ...}) must not be stripped from this
-     * layout type. Deliberately out of scope per removeFieldFromLayouts()'s
-     * docblock.
-     */
+    
+
     public function test_deleting_a_field_does_not_touch_the_related_layout(): void
     {
         $this->makeField($this->module, ['name' => 'favourite_colour', 'is_custom' => true]);
@@ -173,11 +157,11 @@ class FieldDeletionTest extends TestCase
         $raw = DB::table('accounts')->where('id', $account->id)->value('custom_fields');
         $this->assertSame('Blue', json_decode($raw, true)['favourite_colour']);
 
-        // But it's no longer surfaced through the model — clear the
-        // request-lifetime static cache first (HasCustomFields memoizes the
-        // custom-field list per module/table for the life of the process;
-        // Account::create() above already populated it pre-delete, which a
-        // real subsequent HTTP request wouldn't have).
+        
+        
+        
+        
+        
         Account::clearCustomFieldCache();
         $this->assertArrayNotHasKey('favourite_colour', $account->fresh()->toArray());
     }

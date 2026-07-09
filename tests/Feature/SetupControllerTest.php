@@ -114,8 +114,8 @@ class SetupControllerTest extends TestCase
 
     public function test_store_persists_app_locale_setting_when_locale_given(): void
     {
-        // Mirrors a real fresh instance, where SettingValuesSeeder has
-        // already seeded 'app_locale' (with 'en') before setup ever runs.
+        
+        
         SettingValue::create(['setting_item' => 'locale', 'key' => 'app_locale', 'value' => 'en']);
         $token = (new SetupTokenService())->generate();
 
@@ -145,10 +145,10 @@ class SetupControllerTest extends TestCase
             'email'    => 'someone-else@example.com',
         ]));
 
-        // The first signup logged the new root user in, and /setup/{token}
-        // sits under guest middleware (same as /invites/{token}), so the
-        // second request never even reaches the controller's own
-        // User::count() > 0 check — guest middleware redirects first.
+        
+        
+        
+        
         $second->assertRedirect('/');
         $this->assertSame(1, User::count());
     }

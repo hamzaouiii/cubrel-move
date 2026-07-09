@@ -8,15 +8,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers RecordController@updateMany's required-field guard. Previously this
- * endpoint wrote straight via query-builder with no validation at all — a
- * required field could be mass-cleared across any number of records with no
- * error. Checked once up front (not per record), since one field/value pair
- * is applied uniformly to every selected record either way. See
- * FEATURES.md's former "Bulk field update: no required-field validation"
- * incomplete-areas note.
- */
 class BulkUpdateValidationTest extends TestCase
 {
     use RefreshDatabase;

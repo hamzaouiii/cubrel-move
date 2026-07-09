@@ -17,13 +17,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Custom fields aren't declared on the module itself — they're rows in the
- * `fields` table (is_custom = true) created via FieldsManagerController, and
- * their values live in each record's `custom_fields` JSON column, handled
- * transparently by the HasCustomFields trait. This covers the full lifecycle:
- * defining a custom field, storing a value through it, and updating it.
- */
 class CustomFieldCrudTest extends TestCase
 {
     use RefreshDatabase;
@@ -35,18 +28,13 @@ class CustomFieldCrudTest extends TestCase
 
         $this->completeOnboarding();
 
-        // Same pagination-setting gap as ModuleCrudTest; unused here but kept
-        // for parity in case a future test in this class touches the index page.
+        
+        
         SettingValue::create(['setting_item' => 'preferences', 'key' => 'list_view_limit', 'value' => 25]);
     }
 
-    /**
-     * 'inquiries' is deliberately excluded: its backing table (contact_messages)
-     * has no custom_fields column at all. add_json_to_all_module_tables lists
-     * 'inquiries' as a table name, but no such table exists (it's
-     * 'contact_messages'), so that migration silently no-ops for this module —
-     * custom fields don't work for Inquiries in the app today either.
-     */
+    
+
     public static function moduleProvider(): array
     {
         return [
@@ -62,10 +50,8 @@ class CustomFieldCrudTest extends TestCase
         ];
     }
 
-    /**
-     * Registers the module and returns [Module, admin User]. Field definitions
-     * are managed under /settings/..., which sits behind AdminMiddleware.
-     */
+    
+
     protected function setUpModule(string $slug, string $modelClass, bool $hasOwner): array
     {
         $module = $this->makeModule([
@@ -74,7 +60,7 @@ class CustomFieldCrudTest extends TestCase
             'path' => "/{$slug}",
             'has_owner' => $hasOwner,
             'model_class' => $modelClass,
-            // HasCustomFields looks up the module by table_name, which for
+            
             'table_name' => (new $modelClass)->getTable(),
         ]);
 

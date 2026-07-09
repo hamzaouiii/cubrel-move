@@ -12,13 +12,8 @@ class InviteAcceptanceTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Regression test: before the User::booted() fix, this crashed with
-     * "Unknown column 'owner_id' in 'field list'" — BaseModule::booted()
-     * tried to auto-fill owner_id on every model including User, but the
-     * users table has no such column. This affected every invite
-     * acceptance in production, not just an empty-database edge case.
-     */
+    
+
     public function test_invite_can_be_accepted_and_creates_a_real_user(): void
     {
         Mail::fake();

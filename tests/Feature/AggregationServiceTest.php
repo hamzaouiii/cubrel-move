@@ -58,7 +58,7 @@ class AggregationServiceTest extends TestCase
         ], $overrides));
     }
 
-    // ── metric() ─────────────────────────────────────────────────────────────
+    
 
     public function test_metric_count(): void
     {
@@ -110,7 +110,7 @@ class AggregationServiceTest extends TestCase
         AggregationService::metric($module, ['aggregate' => 'sum', 'field' => 'sales_stage']);
     }
 
-    // breakdown groups correctly and orders by count 
+    
     public function test_breakdown_groups_and_orders_by_count_desc(): void
     {
         $module = $this->makeDealsModule();
@@ -138,7 +138,7 @@ class AggregationServiceTest extends TestCase
         $this->assertSame(['Closed Won', 'Closed Lost'], $result['labels']);
         $this->assertSame([2.0, 1.0], $result['series'][0]['data']);
     }
-//
+
     public function test_breakdown_respects_limit(): void
     {
         $module = $this->makeDealsModule();
@@ -188,7 +188,7 @@ class AggregationServiceTest extends TestCase
         AggregationService::breakdown($module, ['chartType' => 'donut']);
     }
 
-    // ── timeSeries() ─────────────────────────────────────────────────────────
+    
 
     public function test_time_series_buckets_by_month_and_fills_gaps_with_zero(): void
     {
@@ -239,7 +239,7 @@ class AggregationServiceTest extends TestCase
         AggregationService::timeSeries($module, ['dateField' => 'company']);
     }
 
-    // ── recordList() ─────────────────────────────────────────────────────────
+    
 
     public function test_record_list_returns_rows_and_module_meta(): void
     {
@@ -253,15 +253,15 @@ class AggregationServiceTest extends TestCase
         $this->assertSame('leads', $result['moduleSlug']);
     }
 
-    // ── people() — via record-type field (e.g. owner_id) ────────────────────────
-    //
-    // None of these tests call actingAs(), so Auth::check() is false the whole
-    // time — meaning AdminOnlyModuleScope would normally hide the 'users'
-    // module from every query here. Every test below that resolves 'users' as
-    // the people module is therefore also a regression check for the
-    // Module::withoutGlobalScope(AdminOnlyModuleScope::class) fix in
-    // resolvePeopleModule() — without it, these would all fail with
-    // "Related people module not found or inactive."
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     public function test_people_via_field_ranks_by_count_desc(): void
     {
@@ -389,7 +389,7 @@ class AggregationServiceTest extends TestCase
         AggregationService::people($leads, ['relationField' => 'owner_id', 'aggregate' => 'median']);
     }
 
-    // ── people() — via named Relationship (relationships/relationship_links) ───
+    
 
     public function test_people_via_relationship_ranks_by_count_desc(): void
     {
@@ -404,8 +404,8 @@ class AggregationServiceTest extends TestCase
             'type' => 'one-to-many',
         ]);
 
-        // BaseModule::booted() auto-fills owner_id on create when none is given,
-        // falling back to the first user in the DB — there must be one already.
+        
+        
         $this->makeUser();
 
         $topContact = Contact::factory()->create();
@@ -455,8 +455,8 @@ class AggregationServiceTest extends TestCase
             'type' => 'one-to-many',
         ]);
 
-        // BaseModule::booted() auto-fills owner_id on create when none is given,
-        // falling back to the first user in the DB — there must be one already.
+        
+        
         $this->makeUser();
 
         $contact = Contact::factory()->create();

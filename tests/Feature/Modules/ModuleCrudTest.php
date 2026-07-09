@@ -20,12 +20,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * CRUD coverage for the 10 generic CRM modules (all served by the shared
- * RecordController/ListController pair) plus Users, which has its own
- * dedicated UserController and required fields, so it doesn't fit the
- * data-provider loop and gets its own methods below.
- */
 class ModuleCrudTest extends TestCase
 {
     use RefreshDatabase;
@@ -37,9 +31,9 @@ class ModuleCrudTest extends TestCase
 
         $this->completeOnboarding();
 
-        // ListController::getListData() falls back to this setting for
-        // pagination when no perPage param is given; it's normally seeded by
-        // SettingValuesSeeder, which RefreshDatabase-only tests don't run.
+        
+        
+        
         SettingValue::create(['setting_item' => 'preferences', 'key' => 'list_view_limit', 'value' => 25]);
     }
 
@@ -58,13 +52,8 @@ class ModuleCrudTest extends TestCase
         ];
     }
 
-    /**
-     * Registers the module under test and returns an authenticated user.
-     * Also ensures 'line_items' and 'products' module rows exist, since
-     * RecordController::__invoke() unconditionally looks both up (to seed
-     * line-item UI metadata) on every single record-show request, regardless
-     * of which module is being viewed.
-     */
+    
+
     protected function setUpGenericModule(string $slug, string $modelClass, bool $hasOwner): User
     {
         $this->makeModule([
@@ -174,10 +163,10 @@ class ModuleCrudTest extends TestCase
         $this->assertDatabaseMissing((new $modelClass)->getTable(), ['id' => $record->id]);
     }
 
-    // ── Users ───────────────────────────────────────────────────────────
-    // Served by UserController (dedicated validation, admin-only middleware),
-    // not the generic RecordController. There's also no delete route for
-    // users, so this covers Create/Read/Update only.
+    
+    
+    
+    
 
     protected function setUpUsersModule(): User
     {
@@ -213,11 +202,11 @@ class ModuleCrudTest extends TestCase
     {
         $this->setUpUsersModule();
 
-        // first_name/last_name must be present (even empty) — the real
-        // Users/Create.vue form always submits them, but UserController::store()
-        // -> User::createFromAccountForm() reads $data['first_name'] directly with
-        // no fallback, so a payload that omits the keys entirely (rather than
-        // sending '') would 500 instead of failing validation.
+        
+        
+        
+        
+        
         $response = $this->post('/users', [
             'username' => 'new.user',
             'first_name' => '',

@@ -9,11 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers AuditLogController::affectedRecords() — the per-record breakdown
- * behind the global Audit Trail's "list of affected records" view for a bulk
- * update/delete batch row. See docs/audit-trail-implementation.md §4.2/§6.1.
- */
 class AuditLogAffectedRecordsTest extends TestCase
 {
     use RefreshDatabase;

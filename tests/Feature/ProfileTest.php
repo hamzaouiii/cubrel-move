@@ -16,15 +16,15 @@ class ProfileTest extends TestCase
     {
         parent::setUp();
 
-        // /profile sits behind the 'onboarded' middleware, which redirects to
-        // /onboarding unless this setting is truthy.
+        
+        
         $this->completeOnboarding();
     }
 
     public function test_profile_page_is_displayed(): void
     {
-        // UserProfileController::index() looks up the 'users' Module
-        // registry row via firstOrFail() — without it the route 404s.
+        
+        
         $this->makeModule(['slug' => 'users', 'name' => 'Users', 'path' => '/users']);
 
         $user = User::factory()->create();
@@ -40,9 +40,9 @@ class ProfileTest extends TestCase
     {
         $user = User::factory()->create();
 
-        // UserProfileController::update() requires username and uses
-        // first_name/last_name (not a single "name" field) — back() needs
-        // an explicit referer since the controller doesn't redirect('/profile').
+        
+        
+        
         $response = $this
             ->actingAs($user)
             ->from('/profile')
@@ -64,6 +64,6 @@ class ProfileTest extends TestCase
         $this->assertSame('test@example.com', $user->email);
     }
 
-    // No account-deletion tests: this app has no DELETE /profile route —
-    // users are managed by admins (UserController) rather than self-deleted.
+    
+    
 }

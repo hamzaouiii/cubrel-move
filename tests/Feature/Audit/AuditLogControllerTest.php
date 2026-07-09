@@ -11,11 +11,6 @@ use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers AuditLogController — the admin-gated global Audit Trail page. See
- * docs/audit-trail-implementation.md §6.1, and §5.4 for the N+1 /
- * field-collapse regression this specifically guards against.
- */
 class AuditLogControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -71,12 +66,8 @@ class AuditLogControllerTest extends TestCase
         );
     }
 
-    /**
-     * Regression test for docs/audit-trail-implementation.md §5.4: building
-     * fields_by_module via Field::query()->get() without selecting 'id'
-     * collapsed every module's field list into a single entry, because
-     * Eloquent Collection::merge() dedupes by primary key.
-     */
+    
+
     public function test_fields_by_module_resolves_distinct_labels_per_module(): void
     {
         $accountsModule = $this->makeModule([
@@ -119,13 +110,8 @@ class AuditLogControllerTest extends TestCase
         );
     }
 
-    /**
-     * fields_by_module needs to carry everything HistoryModal.vue relies on
-     * (type/related_module/dropdown_list), not just {name, label} — a row
-     * click on the global list opens that same modal, reusing its full
-     * field-aware rendering (dropdown labels, record-type labels, date
-     * formatting) instead of just showing which field names changed.
-     */
+    
+
     public function test_fields_by_module_carries_history_modal_metadata(): void
     {
         $accountsModule = $this->makeModule([

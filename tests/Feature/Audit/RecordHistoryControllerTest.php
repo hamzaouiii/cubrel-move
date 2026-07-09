@@ -8,10 +8,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers RecordHistoryController — the per-record "View History" JSON
- * endpoint. See docs/audit-trail-implementation.md §4.2/§6.1.
- */
 class RecordHistoryControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -55,13 +51,8 @@ class RecordHistoryControllerTest extends TestCase
         $this->assertSame((string) $this->accountA->id, (string) $data[0]['record_id']);
     }
 
-    /**
-     * Regression test for the fix documented in
-     * docs/audit-trail-implementation.md §4.2/§6: a bulk edit logs a single
-     * batch row with record_id = null, so a record's own history must also
-     * match against the audit_log_affected_records join table, not just
-     * record_id.
-     */
+    
+
     public function test_history_includes_bulk_batch_entries_the_record_was_part_of(): void
     {
         AuditLog::query()->delete();
@@ -83,12 +74,8 @@ class RecordHistoryControllerTest extends TestCase
         $this->assertSame(2, $data[0]['changes']['count']);
     }
 
-    /**
-     * A bulk batch's own diff only has the field/new-value applied to the whole
-     * batch — this record's own prior value lives in the join table, keyed per
-     * (audit_log_id, record_id), and must be merged in specifically for the
-     * record whose history is being viewed.
-     */
+    
+
     public function test_history_merges_this_records_own_old_value_into_a_bulk_batch_entry(): void
     {
         AuditLog::query()->delete();

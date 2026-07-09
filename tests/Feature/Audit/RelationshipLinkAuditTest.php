@@ -10,12 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers RelationshipService::link()/unlink() logging an entry on BOTH sides
- * of a relationship, so either record's own history shows the connection
- * regardless of which side the action was performed from. See
- * docs/audit-trail-implementation.md §4.3.
- */
 class RelationshipLinkAuditTest extends TestCase
 {
     use RefreshDatabase;
@@ -114,17 +108,8 @@ class RelationshipLinkAuditTest extends TestCase
         $this->assertSame('Voß Brückner AG', $contactSide->toDisplayArray()['changes']['related_label']);
     }
 
-    /**
-     * Regression test: demo-data seeding (RelationshipPopulationSeeder)
-     * calls RelationshipService::link() directly, with no authenticated
-     * user in a console context. Model-event-driven auditing already skips
-     * this naturally when a seeder wraps creation in
-     * Model::withoutEvents() (see DatabaseSeeder's WithoutModelEvents
-     * trait), but link()/unlink() never went through model events at all —
-     * before this fix, seeded links were logged anyway, attributed to no
-     * one ("Unknown" in the UI). AuditService::log() now uniformly no-ops
-     * without an authenticated actor, for every caller.
-     */
+    
+
     public function test_linking_without_an_authenticated_actor_logs_nothing(): void
     {
         auth()->logout();

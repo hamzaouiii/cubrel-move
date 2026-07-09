@@ -10,11 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers AuditObserver (app/Observers/AuditObserver.php), the primary hook
- * registered from BaseModule::booted() for created/updated/deleted events on
- * every module model. See docs/audit-trail-implementation.md §4.1/§4.4/§4.5.
- */
 class AuditObserverTest extends TestCase
 {
     use RefreshDatabase;
@@ -73,7 +68,7 @@ class AuditObserverTest extends TestCase
         $this->actingAs($user);
 
         $account = Account::create(['name' => 'Original Name']);
-        AuditLog::query()->delete(); // isolate from the 'created' row above
+        AuditLog::query()->delete(); 
 
         $account->update(['name' => 'New Name']);
 
@@ -95,19 +90,15 @@ class AuditObserverTest extends TestCase
         $account = Account::create(['name' => 'Unchanged Co']);
         $countBefore = AuditLog::count();
 
-        // Re-assigning the identical value leaves the model clean, so
-        // Eloquent never fires the 'updated' event at all.
+        
+        
         $account->update(['name' => 'Unchanged Co']);
 
         $this->assertSame($countBefore, AuditLog::count());
     }
 
-    /**
-     * total/subtotal/tax_amount/discount_amount are excluded because their
-     * Field rows carry is_calculated = true (see config/stock_fields.php and
-     * config/default_line_item_fields.php) — not because AuditObserver
-     * hardcodes their names.
-     */
+    
+
     public function test_fields_flagged_is_calculated_are_excluded_from_the_diff(): void
     {
         $ordersModule = $this->registerOrdersModule();
@@ -127,8 +118,8 @@ class AuditObserverTest extends TestCase
         $order = Order::create(['name' => 'Order 1', 'status' => 'draft']);
         AuditLog::query()->delete();
 
-        // A real status change alongside the four fields the line-items
-        // panel recalculates automatically on every save.
+        
+        
         $order->update([
             'status' => 'confirmed',
             'total' => 999,
@@ -147,12 +138,8 @@ class AuditObserverTest extends TestCase
         $this->assertArrayNotHasKey('discount_amount', $diff);
     }
 
-    /**
-     * Proves the exclusion is driven by the is_calculated flag, not a
-     * hardcoded field-name list: a field named 'total' with the flag left
-     * off is NOT excluded, and an arbitrarily-named field with the flag on
-     * IS excluded.
-     */
+    
+
     public function test_is_calculated_flag_not_field_name_drives_exclusion(): void
     {
         $ordersModule = $this->registerOrdersModule();
@@ -163,8 +150,8 @@ class AuditObserverTest extends TestCase
             'type' => 'currency',
             'is_calculated' => false,
         ]);
-        // Arbitrary real column, unrelated to the original hardcoded list,
-        // flagged is_calculated to prove it's the flag doing the work.
+        
+        
         $this->makeField($ordersModule, [
             'name' => 'order_number',
             'key' => 'orders.order_number',
@@ -241,14 +228,8 @@ class AuditObserverTest extends TestCase
         $this->assertSame($newOwner->name, $diff['owner_id']['new_label']);
     }
 
-    /**
-     * Regression test for the bug documented in
-     * docs/audit-trail-implementation.md §5.1: BaseModule::getModuleSlug()/
-     * moduleDefinition() used to query Module without bypassing
-     * AdminOnlyModuleScope, so a non-admin saving their own User record
-     * would crash with a TypeError once AuditObserver started calling
-     * getModuleSlug() on every save.
-     */
+    
+
     public function test_non_admin_can_save_their_own_user_record_without_crashing(): void
     {
         $this->makeModule([
@@ -262,8 +243,8 @@ class AuditObserverTest extends TestCase
         $plainUser = $this->makeUser(['is_admin' => false, 'first_name' => 'Plain', 'last_name' => 'User']);
         $this->actingAs($plainUser);
 
-        // Would previously throw: "BaseModule::getModuleSlug(): Return value
-        // must be of type string, null returned."
+        
+        
         $plainUser->update(['first_name' => 'Updated']);
 
         $this->assertSame('Updated', $plainUser->fresh()->first_name);

@@ -11,15 +11,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithDashboardFixtures;
 use Tests\TestCase;
 
-/**
- * Covers RelationshipManagerController's route surface. Relationships are
- * deliberately not editable after creation (only create/list/delete) — the
- * resource route used to be registered unscoped, so 'edit'/'update' resolved
- * to controller methods that don't exist (a 500 if ever hit, not a clean
- * 404). routes/web.php now scopes it to
- * ->only(['index','create','store','destroy']) to match the controller's
- * actual methods. See FEATURES.md §6 Relationships.
- */
 class RelationshipManagerRouteTest extends TestCase
 {
     use RefreshDatabase;
@@ -31,7 +22,7 @@ class RelationshipManagerRouteTest extends TestCase
         $this->completeOnboarding();
         $this->actingAs($this->makeUser(['is_admin' => true]));
 
-        // Required by RelationshipManagerController@create's firstOrFail() lookup.
+        
         DropdownList::create([
             'key' => 'relationship_type_list',
             'values' => [
@@ -64,10 +55,10 @@ class RelationshipManagerRouteTest extends TestCase
         $this->get("/settings/modules/{$module->id}/relationships/{$relationship->id}/edit")
             ->assertNotFound();
 
-        // The URI still matches the DELETE route registered for the same
-        // path, so an unsupported method there is a 405 (method not
-        // allowed), not a 404 — Laravel only 404s once no route matches the
-        // URI at all, regardless of method.
+        
+        
+        
+        
         $this->put("/settings/modules/{$module->id}/relationships/{$relationship->id}", [
             'label' => 'Renamed',
         ])->assertMethodNotAllowed();
@@ -108,13 +99,8 @@ class RelationshipManagerRouteTest extends TestCase
         $this->assertModelMissing($relationship);
     }
 
-    /**
-     * Regression test: cleanupRelationshipPanels() used to only strip the deleted
-     * relationship's 'related' panel from the requesting module's own layout,
-     * leaving a stale panel reference on the other side. A relationship panel is
-     * normally configured on both sides (Accounts shows a "Deals" panel, Deals
-     * shows an "Account" panel), so deleting it must clean up both.
-     */
+    
+
     public function test_deleting_a_relationship_cleans_up_related_panels_on_both_sides(): void
     {
         $accounts = $this->makeModule([
@@ -139,9 +125,9 @@ class RelationshipManagerRouteTest extends TestCase
             'is_system' => false,
         ]);
 
-        // module_id isn't in Layout::$fillable — LayoutManagerController sets it via
-        // direct property assignment (bypassing mass-assignment guarding), so tests
-        // creating a Layout fixture must do the same rather than pass it to create().
+        
+        
+        
         $accountsLayout = new Layout([
             'module_name' => 'accounts',
             'type' => 'related',
@@ -166,8 +152,8 @@ class RelationshipManagerRouteTest extends TestCase
         $dealsLayout->module_id = $deals->id;
         $dealsLayout->save();
 
-        // Deleted from Accounts' own settings page — Deals' layout isn't the
-        // requesting module, but must still be cleaned up.
+        
+        
         $this->delete("/settings/modules/{$accounts->id}/relationships/{$relationship->id}")
             ->assertRedirect();
 
@@ -206,13 +192,8 @@ class RelationshipManagerRouteTest extends TestCase
         $this->assertModelExists($relationship);
     }
 
-    /**
-     * 'many-to-one' isn't stored as its own type — it's 'one-to-many' with
-     * left/right swapped, since left_module is always resolved to whichever
-     * module's settings page the request came from. Creating "many deals to
-     * one account" from Deals' own page must end up stored identically to
-     * creating "one account to many deals" from Accounts' page.
-     */
+    
+
     public function test_many_to_one_is_stored_as_one_to_many_with_modules_swapped(): void
     {
         $deals = $this->makeModule([
