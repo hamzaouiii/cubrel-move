@@ -58,10 +58,6 @@ return [
         'icon'  => 'fa-solid fa-square-check'
     ],
     [
-        'value' => 'relationship',
-        'icon'  => 'fa-solid fa-diagram-project'
-    ],
-    [
         'value' => 'record',
         'icon'  => 'fa-solid fa-address-card'
     ],

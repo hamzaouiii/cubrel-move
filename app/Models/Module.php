@@ -36,6 +36,7 @@ class Module extends Model
         'path',
         'sort_order',
         'is_active',
+        'is_relatable',
         'description',
         'model_class',
         'handler_class',
@@ -54,6 +55,7 @@ class Module extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_relatable' => 'boolean',
     ];
 
     protected $guarded = [];
@@ -147,7 +149,7 @@ class Module extends Model
 
     /**
      * @return HasMany<Field, $this>
-     *                               excludes default fields
+     *  excludes default fields
      */
     public function fields()
     {
@@ -425,7 +427,7 @@ class Module extends Model
 
     public function getFieldMetadata(string $field_name): array
     {
-        $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_default', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at','is_default_for_line_items'];
+        $excluded = ['id', 'key', 'module_id', 'is_custom', 'is_active', 'is_draft', 'is_default', 'is_global', 'database_type', 'deleted_at', 'created_at', 'updated_at','is_default_for_line_items', 'is_calculated', 'regex'];
         $field = Field::query()
             ->where(function ($query) {
                 $query->where('module_id', $this->id)
@@ -495,9 +497,7 @@ class Module extends Model
     }
 
     /**
-     * The source module can only be (re)configured while no line items have been
-     * created yet for this module — changing it afterward would silently orphan
-     * existing rows' product_id references and invalidate any snapshot mapping.
+     * The source module can only be reconfigured while no line items have been created. Changing the source module will leave orphaned Line Items 
      */
     public function canChangeLineItemSourceModule(): bool
     {

@@ -517,6 +517,10 @@
               text-transform: uppercase;
               letter-spacing: 0.07em;
               color: #9ba3bc;
+
+              &.settings__dropdown__edit__header__info__indicator__style {
+                flex: 10;
+              }
             }
 
             div {
@@ -549,6 +553,73 @@
           .settings__dropdown__edit__value__actions__delete {
             opacity: 1;
           }
+        }
+
+        &--status {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0;
+          padding: 16px 20px 20px;
+
+          &:hover {
+            cursor: grab;
+          }
+
+          &:active {
+            cursor: grabbing;
+          }
+        }
+
+        &--dragging {
+          opacity: 0.35;
+        }
+
+        &--drag-over {
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 2px rgba(79, 110, 247, 0.15);
+        }
+
+        &--add {
+          justify-content: center;
+          align-items: center;
+          gap: 8px;
+          background-color: #f8f9fc;
+          border: 1.5px dashed #d8dce8;
+          color: #7b82a0;
+          font-weight: 600;
+          font-size: 0.875rem;
+          cursor: pointer;
+
+          i {
+            font-size: 1rem;
+          }
+
+          &:hover {
+            background-color: #f2f4fb;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+          }
+        }
+
+        &__row {
+          display: flex;
+          flex-direction: row;
+          gap: 20px;
+          align-items: center;
+        }
+
+        &__style {
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px dashed #eaecf4;
+        }
+
+        &__drag-handle {
+          flex: 0 0 auto;
+          display: flex;
+          align-items: center;
+          color: #b0b7cc;
+          cursor: grab;
         }
 
         &__item {
@@ -612,6 +683,17 @@
           justify-content: space-around;
           align-items: center;
 
+          &--left {
+            flex: 0 0 auto;
+            justify-content: flex-start;
+            gap: 6px;
+
+            .settings__dropdown__edit__value__actions__delete,
+            .settings__dropdown__edit__value__actions__edit {
+              opacity: 1;
+            }
+          }
+
           &__add {
             width: 30px;
             height: 30px;
@@ -667,11 +749,20 @@
           }
 
           &__edit {
-            color: var(--primary-color);
-            transition: all 0.1s ease-in;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7b82a0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
 
             &:hover {
-              transform: scale(1.2);
+              background: rgba(79, 110, 247, 0.1);
+              color: var(--primary-color);
+              transform: scale(1.1);
             }
           }
         }
@@ -973,6 +1064,7 @@
     font-size: 1.25rem; // Slightly smaller for better UI balance
     font-weight: 500;
     line-height: 1.2;
+    margin: 15px 0;
 
     .breadcrumb-link {
       color: var(--primary-color);
@@ -1149,12 +1241,16 @@
     }
 
     &__save {
-      background: var(--module-color);
+      background: var(--module-color, var(--primary-color));
       color: white;
       border: none;
 
       &:hover:not(:disabled) {
-        background: color-mix(in srgb, var(--module-color) 90%, transparent);
+        background: color-mix(
+          in srgb,
+          var(--module-color, var(--primary-color)) 90%,
+          transparent
+        );
         transform: translateY(-1px);
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
       }
@@ -2704,6 +2800,99 @@
   }
 }
 
+.status-option-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+
+  &__preview {
+    flex: 0 0 auto;
+    padding-top: 22px;
+
+    .status-badge {
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  &__color {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 1 200px;
+    min-width: 160px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ba3bc;
+
+    .color-picker {
+      width: 100%;
+      max-width: none;
+
+      &__control {
+        padding: 8px 12px;
+      }
+    }
+  }
+
+  &__icon {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 1 200px;
+    min-width: 160px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ba3bc;
+
+    .icon-picker {
+      width: 100%;
+      max-width: none;
+    }
+  }
+}
+
+.status-row-drag-ghost {
+  position: fixed;
+  z-index: 2000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #eaecf4;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(26, 29, 46, 0.15);
+  opacity: 0.95;
+  transform: translateZ(0);
+
+  &__handle {
+    color: #b0b7cc;
+  }
+}
+
+.status-drop-zone {
+  height: 8px;
+  margin: 2px 0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &--active {
+    height: 44px;
+    margin: 8px 0;
+    background: rgba(79, 110, 247, 0.06);
+    border: 1.5px dashed var(--primary-color);
+  }
+}
+
 .related-fields {
   background-color: rgba(239, 239, 239, 0.315);
   border-radius: 0 0 5px 5px;
@@ -2841,7 +3030,6 @@
 
       &:focus {
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.12);
       }
     }
   }
@@ -2907,6 +3095,19 @@
             color: var(--primary-color);
           }
         }
+      }
+
+      &__badge {
+        margin-left: 10px;
+        padding: 2px 9px;
+        font-family: "Fira Sans", "Heebo", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b21a8;
+        background: #f3e8ff;
+        border-radius: 999px;
       }
 
       &__actions {
@@ -4815,7 +5016,6 @@ textarea {
   position: relative;
   display: flex;
   align-items: flex-start;
-  min-height: 100%;
 
   &__expand-btn {
     all: unset;

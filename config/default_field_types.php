@@ -8,7 +8,6 @@ return [
   'select',
   'date',
   'number',
-  'relationship',
   'checkbox',
   'currency',
   'percentage',

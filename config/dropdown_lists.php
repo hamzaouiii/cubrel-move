@@ -2,541 +2,973 @@
 
 return [
     'deals_type_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.deals_type_list.new_business',
             'value' => 'new_business',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.deals_type_list.existing_business',
             'value' => 'existing_business',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.deals_type_list.renewal',
             'value' => 'renewal',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.deals_type_list.upsell',
             'value' => 'upsell',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
     ],
     'orders_status_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.orders_status_list.draft',
             'value' => 'draft',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.orders_status_list.pending',
             'value' => 'pending',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.orders_status_list.confirmed',
             'value' => 'confirmed',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.orders_status_list.processing',
             'value' => 'processing',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.orders_status_list.completed',
             'value' => 'completed',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.orders_status_list.cancelled',
             'value' => 'cancelled',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
     ],
     'deals_sales_stage_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.deals_sales_stage_list.prospecting',
             'value' => 'prospecting',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.deals_sales_stage_list.qualification',
             'value' => 'qualification',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.deals_sales_stage_list.proposal',
             'value' => 'proposal',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.deals_sales_stage_list.negotiation',
             'value' => 'negotiation',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.deals_sales_stage_list.closed_won',
             'value' => 'closed_won',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.deals_sales_stage_list.closed_lost',
             'value' => 'closed_lost',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
     ],
     'cases_status_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.cases_status_list.open',
             'value' => 'open',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.cases_status_list.in_progress',
             'value' => 'in_progress',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.cases_status_list.pending_input',
             'value' => 'pending_input',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.cases_status_list.rejected',
             'value' => 'rejected',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.cases_status_list.closed',
             'value' => 'closed',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
     ],
     'invoices_status_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.invoices_status_list.draft',
             'value' => 'draft',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.invoices_status_list.sent',
             'value' => 'sent',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.invoices_status_list.viewed',
             'value' => 'viewed',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.invoices_status_list.partial',
             'value' => 'partial',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.invoices_status_list.paid',
             'value' => 'paid',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.invoices_status_list.overdue',
             'value' => 'overdue',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
-        6 => [
+        [
             'label' => 'dropdowns.invoices_status_list.void',
             'value' => 'void',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
     ],
     'quotes_status_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.quotes_status_list.draft',
             'value' => 'draft',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.quotes_status_list.sent',
             'value' => 'sent',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.quotes_status_list.viewed',
             'value' => 'viewed',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.quotes_status_list.accepted',
             'value' => 'accepted',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.quotes_status_list.rejected',
             'value' => 'rejected',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.quotes_status_list.expired',
             'value' => 'expired',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
     ],
     'cases_priority_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.cases_priority_list.low',
             'value' => 'low',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.cases_priority_list.medium',
             'value' => 'medium',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.cases_priority_list.high',
             'value' => 'high',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.cases_priority_list.urgent',
             'value' => 'urgent',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
     ],
-
     'products_category_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.product_category_list.electronics',
             'value' => 'electronics',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.product_category_list.software',
             'value' => 'software',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.product_category_list.hardware',
             'value' => 'hardware',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.product_category_list.services',
             'value' => 'services',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.product_category_list.consulting',
             'value' => 'consulting',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.product_category_list.subscriptions',
             'value' => 'subscriptions',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        6 => [
+        [
             'label' => 'dropdowns.product_category_list.licenses',
             'value' => 'licenses',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
     ],
     'products_unit_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.products_unit_list.pcs',
             'value' => 'pcs',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.products_unit_list.hr',
             'value' => 'hr',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.products_unit_list.day',
             'value' => 'day',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.products_unit_list.month',
             'value' => 'month',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.products_unit_list.kg',
             'value' => 'kg',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.products_unit_list.g',
             'value' => 'g',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        6 => [
+        [
             'label' => 'dropdowns.products_unit_list.l',
             'value' => 'l',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        7 => [
+        [
             'label' => 'dropdowns.products_unit_list.m',
             'value' => 'm',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        8 => [
+        [
             'label' => 'dropdowns.products_unit_list.box',
             'value' => 'box',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        9 => [
+        [
             'label' => 'dropdowns.products_unit_list.set',
             'value' => 'set',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        10 => [
+        [
             'label' => 'dropdowns.products_unit_list.flat',
             'value' => 'flat',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
     ],
-        'line_items_unit_list' => [
-        0 => [
+    'line_items_unit_list' => [
+        [
             'label' => 'dropdowns.line_items_unit_list.pcs',
             'value' => 'pcs',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.hr',
             'value' => 'hr',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.day',
             'value' => 'day',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.month',
             'value' => 'month',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.kg',
             'value' => 'kg',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.g',
             'value' => 'g',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        6 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.l',
             'value' => 'l',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        7 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.m',
             'value' => 'm',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        8 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.box',
             'value' => 'box',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        9 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.set',
             'value' => 'set',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        10 => [
+        [
             'label' => 'dropdowns.line_items_unit_list.flat',
             'value' => 'flat',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
     ],
     'currency_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.currency_list.usd',
             'value' => 'USD',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.currency_list.eur',
             'value' => 'EUR',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.currency_list.gbp',
             'value' => 'GBP',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.currency_list.jpy',
             'value' => 'JPY',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        4 => [
+        [
             'label' => 'dropdowns.currency_list.cny',
             'value' => 'CNY',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        5 => [
+        [
             'label' => 'dropdowns.currency_list.aud',
             'value' => 'AUD',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        6 => [
+        [
             'label' => 'dropdowns.currency_list.cad',
             'value' => 'CAD',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        7 => [
+        [
             'label' => 'dropdowns.currency_list.chf',
             'value' => 'CHF',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        8 => [
+        [
             'label' => 'dropdowns.currency_list.inr',
             'value' => 'INR',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        9 => [
+        [
             'label' => 'dropdowns.currency_list.brl',
             'value' => 'BRL',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
     ],
     'module_category_list' => [
-        0 => [
+        [
             'label' => 'modules.categories.sales',
             'value' => 'sales',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        1 => [
+        [
             'label' => 'modules.categories.communication',
             'value' => 'communication',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
-        2 => [
+        [
             'label' => 'modules.categories.revenue',
             'value' => 'revenue',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        3 => [
+        [
             'label' => 'modules.categories.support',
             'value' => 'support',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
-        4 => [
+        [
             'label' => 'modules.categories.system',
             'value' => 'system',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
     ],
     'users_status_list' => [
-        0 => [
+        [
             'label' => 'dropdowns.users_status_list.active',
             'value' => 'active',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
-        1 => [
+        [
             'label' => 'dropdowns.users_status_list.inactive',
             'value' => 'inactive',
-            'status' => 'default',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
         ],
-        2 => [
+        [
             'label' => 'dropdowns.users_status_list.suspended',
             'value' => 'suspended',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
-        3 => [
+        [
             'label' => 'dropdowns.users_status_list.invited',
             'value' => 'invited',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
     ],
     'users_type_list' => [
-        ['label' => 'dropdowns.users_type_list.admin', 'value' => 'admin', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_type_list.executive', 'value' => 'executive', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_type_list.sales_rep', 'value' => 'sales_rep', 'status' => 'success'],
-        ['label' => 'dropdowns.users_type_list.sales_manager', 'value' => 'sales_manager', 'status' => 'success'],
-        ['label' => 'dropdowns.users_type_list.support_agent', 'value' => 'support_agent', 'status' => 'info'],
-        ['label' => 'dropdowns.users_type_list.marketing_user', 'value' => 'marketing_user', 'status' => 'info'],
-        ['label' => 'dropdowns.users_type_list.read_only', 'value' => 'read_only', 'status' => 'default'],
+        [
+            'label' => 'dropdowns.users_type_list.admin',
+            'value' => 'admin',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_type_list.executive',
+            'value' => 'executive',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_type_list.sales_rep',
+            'value' => 'sales_rep',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_type_list.sales_manager',
+            'value' => 'sales_manager',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_type_list.support_agent',
+            'value' => 'support_agent',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_type_list.marketing_user',
+            'value' => 'marketing_user',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_type_list.read_only',
+            'value' => 'read_only',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
+        ],
     ],
     'users_title_list' => [
-        // Standard titles
-        ['label' => 'dropdowns.users_title_list.mr', 'value' => 'mr', 'status' => 'default'],
-        ['label' => 'dropdowns.users_title_list.mrs', 'value' => 'mrs', 'status' => 'default'],
-        ['label' => 'dropdowns.users_title_list.ms', 'value' => 'ms', 'status' => 'default'],
-        ['label' => 'dropdowns.users_title_list.mx', 'value' => 'mx', 'status' => 'default'],
-        ['label' => 'dropdowns.users_title_list.dr', 'value' => 'dr', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.prof', 'value' => 'prof', 'status' => 'info'],
-
-        // Gender-neutral / professional
-        ['label' => 'dropdowns.users_title_list.misc', 'value' => 'misc', 'status' => 'default'],
-        ['label' => 'dropdowns.users_title_list.rev', 'value' => 'rev', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.fr', 'value' => 'fr', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.sr', 'value' => 'sr', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.rabbi', 'value' => 'rabbi', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.imam', 'value' => 'imam', 'status' => 'info'],
-
-        // Academic / professional
-        ['label' => 'dropdowns.users_title_list.atty', 'value' => 'atty', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.cpa', 'value' => 'cpa', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.eng', 'value' => 'eng', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.phd', 'value' => 'phd', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.md', 'value' => 'md', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.rn', 'value' => 'rn', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.jd', 'value' => 'jd', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.dds', 'value' => 'dds', 'status' => 'info'],
-
-        // Nobility / honorary
-        ['label' => 'dropdowns.users_title_list.sir', 'value' => 'sir', 'status' => 'success'],
-        ['label' => 'dropdowns.users_title_list.dame', 'value' => 'dame', 'status' => 'success'],
-        ['label' => 'dropdowns.users_title_list.lord', 'value' => 'lord', 'status' => 'success'],
-        ['label' => 'dropdowns.users_title_list.lady', 'value' => 'lady', 'status' => 'success'],
-
-        // Military ranks
-        ['label' => 'dropdowns.users_title_list.cpt', 'value' => 'cpt', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.maj', 'value' => 'maj', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.col', 'value' => 'col', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.gen', 'value' => 'gen', 'status' => 'danger'],
-
-        // Additional inclusive / informal / cultural
-        ['label' => 'dropdowns.users_title_list.coach', 'value' => 'coach', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.judge', 'value' => 'judge', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.rep', 'value' => 'rep', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.sen', 'value' => 'sen', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.gov', 'value' => 'gov', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.amb', 'value' => 'amb', 'status' => 'danger'],
-        ['label' => 'dropdowns.users_title_list.principal', 'value' => 'principal', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.pastor', 'value' => 'pastor', 'status' => 'info'],
-        ['label' => 'dropdowns.users_title_list.elder', 'value' => 'elder', 'status' => 'info'],
+        [
+            'label' => 'dropdowns.users_title_list.mr',
+            'value' => 'mr',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.mrs',
+            'value' => 'mrs',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.ms',
+            'value' => 'ms',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.mx',
+            'value' => 'mx',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.dr',
+            'value' => 'dr',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.prof',
+            'value' => 'prof',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.misc',
+            'value' => 'misc',
+            'color' => '#374151',
+            'bgColor' => '#e5e7eb',
+            'icon' => 'fa-solid fa-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.rev',
+            'value' => 'rev',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.fr',
+            'value' => 'fr',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.sr',
+            'value' => 'sr',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.rabbi',
+            'value' => 'rabbi',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.imam',
+            'value' => 'imam',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.atty',
+            'value' => 'atty',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.cpa',
+            'value' => 'cpa',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.eng',
+            'value' => 'eng',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.phd',
+            'value' => 'phd',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.md',
+            'value' => 'md',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.rn',
+            'value' => 'rn',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.jd',
+            'value' => 'jd',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.dds',
+            'value' => 'dds',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.sir',
+            'value' => 'sir',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.dame',
+            'value' => 'dame',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.lord',
+            'value' => 'lord',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.lady',
+            'value' => 'lady',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.cpt',
+            'value' => 'cpt',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.maj',
+            'value' => 'maj',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.col',
+            'value' => 'col',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.gen',
+            'value' => 'gen',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.coach',
+            'value' => 'coach',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.judge',
+            'value' => 'judge',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.rep',
+            'value' => 'rep',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.sen',
+            'value' => 'sen',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.gov',
+            'value' => 'gov',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.amb',
+            'value' => 'amb',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.principal',
+            'value' => 'principal',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.pastor',
+            'value' => 'pastor',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
+        [
+            'label' => 'dropdowns.users_title_list.elder',
+            'value' => 'elder',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
+        ],
     ],
     'userinvites_status_list' => [
         [
             'label' => 'dropdowns.userinvites_status_list.pending',
             'value' => 'pending',
-            'status' => 'info',
+            'color' => '#1e40af',
+            'bgColor' => '#bfdbfe',
+            'icon' => 'fa-solid fa-info-circle',
         ],
         [
             'label' => 'dropdowns.userinvites_status_list.revoked',
             'value' => 'revoked',
-            'status' => 'danger',
+            'color' => '#991b1b',
+            'bgColor' => '#fee2e2',
+            'icon' => 'fa-solid fa-times-circle',
         ],
         [
             'label' => 'dropdowns.userinvites_status_list.accepted',
             'value' => 'accepted',
-            'status' => 'success',
+            'color' => '#065f46',
+            'bgColor' => '#d1fae5',
+            'icon' => 'fa-solid fa-check-circle',
         ],
         [
             'label' => 'dropdowns.userinvites_status_list.expired',
             'value' => 'expired',
-            'status' => 'warning',
+            'color' => '#92400e',
+            'bgColor' => '#fed7aa',
+            'icon' => 'fa-solid fa-exclamation-triangle',
         ],
     ],
 ];

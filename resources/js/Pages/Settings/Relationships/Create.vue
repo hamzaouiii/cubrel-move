@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
-import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { ref, computed, getCurrentInstance, watch } from "vue";
 
 import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
@@ -48,14 +48,6 @@ watch(getRelationshipName, (value) => {
     form.name = value;
   }
 });
-const relationshipUrl = () => {
-  const url = page.url;
-  const segments = url.split("/").filter(Boolean);
-  if (segments.at(-1) === "create") {
-    segments.pop();
-  }
-  return "/" + segments.join("/");
-};
 
 const storeUrl = () => {
   return `/settings/modules/${props.module.id}/relationships`;
@@ -133,12 +125,6 @@ const getList = (field) => {
         :setting-module="module"
         active-key="relationships"
       ></ModuleSettingsHeader>
-      <div class="settings__module__header">
-        <Link :href="relationshipUrl()">
-          <i class="fa-solid fa-arrow-left"></i>
-          {{ $t("relationships.back_to_list") }}
-        </Link>
-      </div>
       <div class="settings__module__edit">
         <form
           class="settings__module__edit__form"

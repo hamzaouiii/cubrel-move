@@ -69,6 +69,7 @@ const editableFields = computed(() => {
     "line_item_source_module",
     "has_owner",
     "show_in_module_manager",
+    "is_relatable",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),

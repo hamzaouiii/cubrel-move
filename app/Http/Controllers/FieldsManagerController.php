@@ -26,6 +26,7 @@ class FieldsManagerController extends Controller
     $field_types = config("icon_default_field_types");
     $field_modules = Module::select('slug', 'icon', 'color')
     ->where('is_active', true)
+    ->where('is_relatable', true)
     ->get();
     $field  = new Field();
     return Inertia::render('Settings/Fields/Create', [
@@ -118,7 +119,13 @@ class FieldsManagerController extends Controller
       'max_length' => ['nullable', 'integer'],
       'regex' => ['nullable', 'string'],
       'related_module' => ['nullable', 'string'],
+      'dropdown_list' => ['nullable', 'exists:dropdown_lists,id'],
     ]);
+
+    if (array_key_exists('dropdown_list', $data)) {
+      $data['dropdown_list_id'] = $data['dropdown_list'];
+      unset($data['dropdown_list']);
+    }
 
     //handle language label seperately from the rest of metadata
     if ($request->input('label') !== $field->label) {
@@ -170,7 +177,7 @@ class FieldsManagerController extends Controller
     $label_value = $data['label'];
 
     $dropdown_list = null;
-    if (isset($data['dropdown_list']) && $data['type'] === "select") {
+    if (isset($data['dropdown_list']) && in_array($data['type'], ['select', 'status'], true)) {
       $dropdown_list = $data['dropdown_list'];
     }
 

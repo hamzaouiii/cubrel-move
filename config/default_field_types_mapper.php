@@ -11,7 +11,6 @@ return [
   'number' => 'integer',
   'integer' => 'integer',
   'decimal' => 'decimal',
-  'relationship' => 'foreignId',
   'checkbox' => 'boolean',
   'url' => 'string',
   'percentage' => 'decimal',

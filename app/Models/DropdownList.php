@@ -19,11 +19,13 @@ class DropdownList extends Model
     'key',
     'field_key',
     'values',
-    'is_draft'
+    'is_draft',
+    'is_status'
   ];
 
   protected $casts = [
     'values' => 'array',
+    'is_status' => 'boolean',
   ];
 
   public static function get($key): DropdownList
