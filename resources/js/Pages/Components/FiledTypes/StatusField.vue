@@ -3,20 +3,16 @@
  * Status Field Component - Enhanced Select with Color Highlighting
  *
  * Usage:
- * Send an array of options with optional color configurations:
+ * Send an array of options, each with its own explicit style:
  * options = [
  *   {
  *     value: 'active',
  *     label: 'Active',
- *     color: '#10b981',  // Custom color
- *     bgColor: '#d1fae5', // Custom background
+ *     color: '#10b981',  // Text/icon color
+ *     bgColor: '#d1fae5', // Background color
  *     icon: 'fa-solid fa-check-circle' // Optional icon
  *   },
- *   { value: 'pending', label: 'Pending', status: 'warning' }, // Predefined style
- *   { value: 'inactive', label: 'Inactive', status: 'danger' }
  * ]
- *
- * Predefined status styles: 'success', 'warning', 'danger', 'info', 'default'
  */
 
 import {
@@ -78,44 +74,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "change"]);
 
-// Predefined status color schemes
-const statusStyles = {
-  success: {
-    color: "#065f46",
-    bgColor: "#d1fae5",
-    borderColor: "#a7f3d0",
-    icon: "fa-solid fa-check-circle",
-    lightBg: "#ecfdf5",
-  },
-  warning: {
-    color: "#92400e",
-    bgColor: "#fed7aa",
-    borderColor: "#fed7aa",
-    icon: "fa-solid fa-exclamation-triangle",
-    lightBg: "#fffbeb",
-  },
-  danger: {
-    color: "#991b1b",
-    bgColor: "#fee2e2",
-    borderColor: "#fecaca",
-    icon: "fa-solid fa-times-circle",
-    lightBg: "#fef2f2",
-  },
-  info: {
-    color: "#1e40af",
-    bgColor: "#bfdbfe",
-    borderColor: "#bfdbfe",
-    icon: "fa-solid fa-info-circle",
-    lightBg: "#eff6ff",
-  },
-  default: {
-    color: "#374151",
-    bgColor: "#e5e7eb",
-    borderColor: "#e5e7eb",
-    icon: "fa-solid fa-circle",
-    lightBg: "#f9fafb",
-  },
-};
+// Fallback style for options that don't set their own color/bgColor/icon.
+const DEFAULT_COLOR = "#374151";
+const DEFAULT_BG_COLOR = "#e5e7eb";
+const DEFAULT_ICON = "fa-solid fa-circle";
 
 const options = computed(() => {
   return props?.dropdown_list?.values || [];
@@ -136,28 +98,13 @@ const normalizedOptions = computed(() => {
     list = Object.values(options.value).flat();
   }
 
-  // Process options to ensure they have status/style properties
-  const processedList = list.map((option) => {
-    // If option has predefined status string
-    if (option.status && statusStyles[option.status]) {
-      return {
-        ...option,
-        ...statusStyles[option.status],
-      };
-    }
-    // If option has custom colors, use them
-    if (option.color || option.bgColor) {
-      return {
-        ...statusStyles.default,
-        ...option,
-      };
-    }
-    // Default style
-    return {
-      ...statusStyles.default,
-      ...option,
-    };
-  });
+  // Fill in defaults for any option missing its own color/bgColor/icon.
+  const processedList = list.map((option) => ({
+    color: DEFAULT_COLOR,
+    bgColor: DEFAULT_BG_COLOR,
+    icon: DEFAULT_ICON,
+    ...option,
+  }));
 
   if (props.nullable) {
     return processedList;
@@ -176,13 +123,7 @@ const normalizedOptions = computed(() => {
 });
 
 const selectedOption = computed(() => {
-  const selected = normalizedOptions.value.find(
-    (o) => o.value === props.modelValue,
-  );
-  if (selected && !selected.color) {
-    return { ...statusStyles.default, ...selected };
-  }
-  return selected;
+  return normalizedOptions.value.find((o) => o.value === props.modelValue);
 });
 
 const filteredOptions = computed(() => {
@@ -201,12 +142,12 @@ const getStatusStyle = (option) => {
   if (!option) return {};
 
   const style = {
-    color: option.color || statusStyles.default.color,
-    backgroundColor: option.bgColor || statusStyles.default.bgColor,
+    color: option.color || DEFAULT_COLOR,
+    backgroundColor: option.bgColor || DEFAULT_BG_COLOR,
   };
 
   if (!props.pillStyle) {
-    style.borderLeft = `3px solid ${option.color || statusStyles.default.color}`;
+    style.borderLeft = `3px solid ${option.color || DEFAULT_COLOR}`;
   }
 
   return style;
@@ -388,18 +329,16 @@ const highlightMatch = (text) => {
               <div
                 class="status-option-preview"
                 :style="{
-                  backgroundColor:
-                    option.bgColor || statusStyles.default.bgColor,
-                  borderLeftColor: option.color || statusStyles.default.color,
+                  backgroundColor: option.bgColor || DEFAULT_BG_COLOR,
+                  borderLeftColor: option.color || DEFAULT_COLOR,
                 }"
               >
                 <div
                   class="status-option-badge"
                   :class="{ 'status-option-badge--pill': pillStyle }"
                   :style="{
-                    color: option.color || statusStyles.default.color,
-                    backgroundColor:
-                      option.bgColor || statusStyles.default.bgColor,
+                    color: option.color || DEFAULT_COLOR,
+                    backgroundColor: option.bgColor || DEFAULT_BG_COLOR,
                   }"
                 >
                   <i
@@ -450,8 +389,8 @@ const highlightMatch = (text) => {
         </div>
         <ul class="status-field__list">
           <li v-for="option in filteredOptions" :key="option.value" class="status-field__option" :class="{ 'is-active': option.value === modelValue }" role="option" @click="selectOption(option.value)">
-            <div class="status-option-preview" :style="{ backgroundColor: option.bgColor || statusStyles.default.bgColor, borderLeftColor: option.color || statusStyles.default.color }">
-              <div class="status-option-badge status-option-badge--pill" :style="{ color: option.color || statusStyles.default.color, backgroundColor: option.bgColor || statusStyles.default.bgColor }">
+            <div class="status-option-preview" :style="{ backgroundColor: option.bgColor || DEFAULT_BG_COLOR, borderLeftColor: option.color || DEFAULT_COLOR }">
+              <div class="status-option-badge status-option-badge--pill" :style="{ color: option.color || DEFAULT_COLOR, backgroundColor: option.bgColor || DEFAULT_BG_COLOR }">
                 <i v-if="showIcon && option.icon" :class="[option.icon, 'status-option-icon']"></i>
                 <span>{{ t(option.label) }}</span>
               </div>

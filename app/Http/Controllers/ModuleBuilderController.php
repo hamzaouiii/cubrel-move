@@ -200,7 +200,7 @@ class ModuleBuilderController extends Controller
     ], $data);
 
     $dropdown_list = null;
-    if (!empty($data['dropdown_list']) && $data['type'] === "select") {
+    if (!empty($data['dropdown_list']) && in_array($data['type'], ['select', 'status'], true)) {
       $dropdown_list = $data['dropdown_list'];
     }
 

@@ -96,11 +96,6 @@ class ModuleManagerController extends Controller
     return redirect()->route('settings.modules.module-settings', $module->id);
   }
 
-  public function create()
-  {
-
-    return Inertia::render('Settings/Modules/Create');
-  }
 
 public function store(Request $request)
   {

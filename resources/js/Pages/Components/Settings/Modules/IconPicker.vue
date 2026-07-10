@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
+import { useDropdownFlip } from "@/Composables/useDropdownFlip";
 
 const props = defineProps({
   modelValue: { type: String, default: "" },
@@ -16,6 +17,8 @@ const loading = ref(false);
 const page = ref(1);
 const showSelector = ref(false);
 const selected = ref(props.modelValue || "fa-solid fa-bahai");
+const root = ref(null);
+const { flipUp, recalc } = useDropdownFlip(root, { menuHeight: 360 });
 
 const vClickOutside = {
   mounted(el, binding) {
@@ -50,7 +53,12 @@ const selectIcon = (icon) => {
   showSelector.value = false;
 };
 
-const toggleSelector = () => (showSelector.value = !showSelector.value);
+const toggleSelector = async () => {
+  showSelector.value = !showSelector.value;
+  if (showSelector.value) {
+    await recalc();
+  }
+};
 const closeSelector = () => (showSelector.value = false);
 
 const changePage = (newPage) => {
@@ -68,7 +76,7 @@ onMounted(fetchIcons);
 </script>
 
 <template>
-  <div class="icon-picker" v-click-outside="closeSelector">
+  <div class="icon-picker" ref="root" v-click-outside="closeSelector">
     <div
       class="icon-picker__trigger"
       @click="toggleSelector"
@@ -90,7 +98,11 @@ onMounted(fetchIcons);
     </div>
 
     <transition name="expande">
-      <div v-if="showSelector" class="icon-picker__selector">
+      <div
+        v-if="showSelector"
+        class="icon-picker__selector"
+        :class="{ 'icon-picker__selector--flip-up': flipUp }"
+      >
         <div class="icon-picker__dropdown-search">
           <input
             type="text"

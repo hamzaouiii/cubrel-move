@@ -123,6 +123,10 @@ return [
     'no_shades_found'    => "No shades found.",
     'hex_input_error'    => "Invalid hex color (e.g., #RRGGBB or #RGB)",
     'apply'              => 'Apply',
+    "tab_palette"      =>"Palette",
+    "tab_custom"      =>"Custom",
+    "recent"      =>"Recent",
+    "pick_from_screen "      =>"Pick from screen",
     'shades' => [
       'blues'   => 'Blues Indigos',
       'teals'   => 'Teals Cyans',

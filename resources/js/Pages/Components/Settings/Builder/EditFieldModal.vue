@@ -18,6 +18,7 @@ import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
 import DropdownSelector from "@/Pages/Components/Settings/Dropdowns/DropdownSelector.vue";
 import CreateNewDropdownListModal from "@/Pages/Components/Settings/Dropdowns/CreateNewDropdownListModal.vue";
+import EditDropdownListModal from "@/Pages/Components/Settings/Dropdowns/EditDropdownListModal.vue";
 
 const { error, info, clearAllAlerts } = useAlerts();
 
@@ -35,6 +36,7 @@ const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
 const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
 const selected_dropdown_list = ref(props.field.dropdown_list_id);
 const DropDownListOptions = ref([]);
 
@@ -52,6 +54,7 @@ const {
   isReadonly,
   isDisplayLabel,
   isRegex,
+  hasDropdownOptions,
 } = useFieldRules(form, toRef(props, "metadata"));
 
 const generatedName = computed(() => {
@@ -121,7 +124,7 @@ const saveField = () => {
     form.key = generatedKey.value;
     form.name = generatedName.value;
   }
-  if (form.type === "select") {
+  if (hasDropdownOptions(form.type)) {
     form.dropdown_list = selected_dropdown_list.value;
   } else {
     form.dropdown_list = null;
@@ -160,6 +163,11 @@ const displayKeyError = () => {
 // Dropdown Modal Logic
 const openCreateDialog = () => (showCreateDialog.value = true);
 const closeCreateDialog = () => (showCreateDialog.value = false);
+const openEditDialog = () => {
+  if (!selected_dropdown_list.value) return;
+  showEditDialog.value = true;
+};
+const closeEditDialog = () => (showEditDialog.value = false);
 
 const fetchDrodownList = async () => {
   try {
@@ -173,6 +181,10 @@ const fetchDrodownList = async () => {
 const assignList = (value) => {
   DropDownListOptions.value.push(value);
   selected_dropdown_list.value = value.id;
+};
+
+const getDropdonwItem = (id) => {
+  return DropDownListOptions.value.find((e) => e.id === id);
 };
 
 onMounted(() => {
@@ -269,13 +281,14 @@ const handleKeydown = (e) => {
                     <transition name="dropdown-fade">
                       <div
                         class="dropdown-selector"
-                        v-if="form[fieldName] === 'select'"
+                        v-if="hasDropdownOptions(form[fieldName])"
                       >
                         <DropdownSelector
                           v-model="selected_dropdown_list"
                           :options="DropDownListOptions"
                           @onOpenCreateDialog="openCreateDialog"
-                          :is-draft="true"
+                          @onOpenEditDialog="openEditDialog"
+                          :is-draft="form.type !== 'status'"
                         />
                       </div>
                     </transition>
@@ -373,7 +386,17 @@ const handleKeydown = (e) => {
         @onCloseModal="closeCreateDialog"
         @listCreated="assignList"
         :is-draft="true"
+        :is-status="form.type === 'status'"
+        :module-slug="module.slug"
+        :field-label="t(form.label)"
         v-if="showCreateDialog"
+      />
+
+      <EditDropdownListModal
+        v-if="showEditDialog"
+        :dropdown="getDropdonwItem(selected_dropdown_list)"
+        :is-status="form.type === 'status'"
+        @onCloseModal="closeEditDialog"
       />
     </div>
   </div>

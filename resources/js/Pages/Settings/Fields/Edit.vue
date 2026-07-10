@@ -1,14 +1,18 @@
 <script setup>
+import axios from "axios";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
-import { Head, Link, usePage, useForm, router } from "@inertiajs/vue3";
-import { getCurrentInstance, toRef, watch, computed } from "vue";
+import { Head, usePage, useForm, router } from "@inertiajs/vue3";
+import { getCurrentInstance, toRef, watch, computed, ref, onMounted } from "vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useFieldRules } from "@/Composables/useFieldRules";
 
 import ModuleSettingsHeader from "@/Pages/Components/Settings/ModuleSettingsHeader.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import DropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
+import DropdownSelector from "@/Pages/Components/Settings/Dropdowns/DropdownSelector.vue";
+import CreateNewDropdownListModal from "@/Pages/Components/Settings/Dropdowns/CreateNewDropdownListModal.vue";
+import EditDropdownListModal from "@/Pages/Components/Settings/Dropdowns/EditDropdownListModal.vue";
 
 const { success, error, info, warning, clearAllAlerts } = useAlerts();
 
@@ -47,6 +51,7 @@ const form = useForm({
   min_length: props.metadata.min_length || "",
   max_length: props.metadata.max_length || "",
   regex: props.metadata.regex || "",
+  dropdown_list: props.metadata.dropdown_list_id || "",
 });
 
 /**
@@ -54,8 +59,57 @@ const form = useForm({
  * Destructuring centralized helpers.
  * Note: passed 'true' to isReadonly in the template for Edit Mode logic.
  */
-const { visibleMetadata, applyRules, isCheckbox, isDropDown, isReadonly } =
-  useFieldRules(form, toRef(props, "metadata"));
+const {
+  visibleMetadata,
+  applyRules,
+  isCheckbox,
+  isDropDown,
+  isReadonly,
+  hasDropdownOptions,
+} = useFieldRules(form, toRef(props, "metadata"));
+
+// Dropdown Modal Logic — the field's type itself is locked post-creation,
+// but a select/status field's attached options list can still be swapped
+// or edited here.
+const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
+const selected_dropdown_list = ref(props.metadata.dropdown_list_id || null);
+const initialDropdown = ref(props.metadata.dropdown_list_id || null);
+const DropDownListOptions = ref([]);
+
+const isDirty = computed(() => {
+  return form.isDirty || selected_dropdown_list.value !== initialDropdown.value;
+});
+
+const openCreateDialog = () => (showCreateDialog.value = true);
+const closeCreateDialog = () => (showCreateDialog.value = false);
+const openEditDialog = () => {
+  if (!selected_dropdown_list.value) return;
+  showEditDialog.value = true;
+};
+const closeEditDialog = () => (showEditDialog.value = false);
+
+const fetchDrodownList = async () => {
+  try {
+    const { data } = await axios.get("/api/dropdown-lists", {});
+    DropDownListOptions.value = data.list;
+  } catch (error) {
+    console.error(t("settings.dropdown_list_fetch_failed"), error);
+  }
+};
+
+const assignList = (value) => {
+  DropDownListOptions.value.push(value);
+  selected_dropdown_list.value = value.id;
+};
+
+const getDropdonwItem = (id) => {
+  return DropDownListOptions.value.find((e) => e.id === id);
+};
+
+onMounted(() => {
+  fetchDrodownList();
+});
 
 // Apply rules whenever type changes
 watch(
@@ -83,10 +137,14 @@ const fieldsUrl = () => {
 
 const saveField = () => {
   info(t("settings.saving"));
+  if (hasDropdownOptions(form.type)) {
+    form.dropdown_list = selected_dropdown_list.value;
+  }
   form.put(page.url, {
     preserveScroll: true,
     onSuccess: () => {
       clearAllAlerts();
+      initialDropdown.value = selected_dropdown_list.value;
       success(t("fields.field_update_success"));
       router.visit(fieldsUrl());
     },
@@ -99,6 +157,7 @@ const saveField = () => {
 
 const resetForm = () => {
   form.reset();
+  selected_dropdown_list.value = initialDropdown.value;
   warning(t("fields.field_reset_success"));
 };
 
@@ -126,13 +185,6 @@ const moduleColor = computed(() =>
   >
     <ModuleSettingsHeader :setting-module="module" active-key="fields" />
 
-    <div class="settings__module__header">
-      <Link :href="fieldsUrl()">
-        <i class="fa-solid fa-arrow-left"></i>
-        {{ $t("fields.back_to_list") }}
-      </Link>
-    </div>
-
     <div class="settings__module__edit">
       <form class="settings__module__edit__form" @submit.prevent="saveField">
         <div
@@ -147,6 +199,21 @@ const moduleColor = computed(() =>
           <div class="settings__module__edit__element__content">
             <template v-if="isReadonly(fieldName, true)">
               <input type="text" v-model="form[fieldName]" disabled />
+
+              <transition name="dropdown-fade">
+                <div
+                  v-if="fieldName === 'type' && hasDropdownOptions(form.type)"
+                  class="dropdown-selector"
+                >
+                  <DropdownSelector
+                    v-model="selected_dropdown_list"
+                    :options="DropDownListOptions"
+                    @onOpenCreateDialog="openCreateDialog"
+                    @onOpenEditDialog="openEditDialog"
+                    :is-draft="form.type !== 'status'"
+                  />
+                </div>
+              </transition>
             </template>
 
             <template v-else-if="isCheckbox(fieldName)">
@@ -193,7 +260,7 @@ const moduleColor = computed(() =>
             type="button"
             class="settings__actions__reset"
             @click="resetForm"
-            :disabled="!form.isDirty"
+            :disabled="!isDirty"
           >
             {{ $t("settings.reset") }}
           </button>
@@ -201,12 +268,28 @@ const moduleColor = computed(() =>
           <button
             type="submit"
             class="settings__actions__save"
-            :disabled="!form.isDirty"
+            :disabled="!isDirty"
           >
             {{ $t("settings.save") }}
           </button>
         </div>
       </form>
     </div>
+
+    <CreateNewDropdownListModal
+      @onCloseModal="closeCreateDialog"
+      @listCreated="assignList"
+      :is-status="form.type === 'status'"
+      :module-slug="module.slug"
+      :field-label="form.label"
+      v-if="showCreateDialog"
+    />
+
+    <EditDropdownListModal
+      :dropdown="getDropdonwItem(selected_dropdown_list)"
+      :is-status="form.type === 'status'"
+      @onCloseModal="closeEditDialog"
+      v-if="showEditDialog"
+    />
   </div>
 </template>

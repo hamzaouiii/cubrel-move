@@ -80,6 +80,7 @@ const {
   isDropDown,
   isReadonly,
   isRelatedModule,
+  hasDropdownOptions,
 } = useFieldRules(form, toRef(props, "metadata"));
 
 const generatedName = computed(() => {
@@ -166,7 +167,7 @@ const saveField = () => {
     form.name = generatedName.value;
     form.label = form?.label.trim();
   }
-  if (form.type === "select") {
+  if (hasDropdownOptions(form.type)) {
     form.dropdown_list = selected_dropdown_list.value;
   }
   form.post(page.url, {
@@ -267,13 +268,6 @@ const moduleColor = computed(() =>
         active-key="fields"
       ></ModuleSettingsHeader>
 
-      <div class="settings__module__header">
-        <Link :href="fieldsUrl()">
-          <i class="fa-solid fa-arrow-left"></i>
-          {{ $t("fields.back_to_list") }}
-        </Link>
-      </div>
-
       <div class="settings__module__edit">
         <form class="settings__module__edit__form" @submit.prevent="saveField">
           <div
@@ -324,7 +318,7 @@ const moduleColor = computed(() =>
                 <transition name="dropdown-fade">
                   <div
                     class="dropdown-selector"
-                    v-if="form[fieldName] === 'select'"
+                    v-if="hasDropdownOptions(form[fieldName])"
                   >
                     <DropdownSelector
                       v-model="selected_dropdown_list"
@@ -402,11 +396,15 @@ const moduleColor = computed(() =>
   <CreateNewDropdownListModal
     @onCloseModal="closeCreateDialog"
     @listCreated="assignList"
+    :is-status="form.type === 'status'"
+    :module-slug="module.slug"
+    :field-label="form.label"
     v-if="showCreateDialog"
   />
 
   <EditDropdownListModal
     :dropdown="getDropdonwItem(selected_dropdown_list)"
+    :is-status="form.type === 'status'"
     @onCloseModal="closeEditDialog"
     v-if="showEditDialog"
   />

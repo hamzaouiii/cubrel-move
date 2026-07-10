@@ -89,6 +89,9 @@ const editUrl = (f) => {
           >
             <td style="cursor: pointer">
               {{ f.key }}
+              <span v-if="f.is_status" class="dropdowns__table__row__badge">
+                {{ $t("settings.dropdown.status_list_badge") }}
+              </span>
             </td>
 
             <td class="dropdowns__table__row__actions">

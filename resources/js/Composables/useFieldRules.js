@@ -20,6 +20,9 @@ export const fieldTypeRules = {
   select: {
     hide: ["regex", "min_length", "max_length"],
   },
+  status: {
+    hide: ["regex", "min_length", "max_length"],
+  },
   date: {
     hide: ["regex", "min_length", "max_length"],
   },
@@ -34,6 +37,7 @@ export const fieldTypeRules = {
     hide: ["regex", "min_length", "max_length"],
   },
 };
+const DROPDOWN_CAPABLE_TYPES = ["select", "status"];
 
 export function useFieldRules(form, metadata) {
   /**
@@ -104,6 +108,7 @@ export function useFieldRules(form, metadata) {
   const isDisplayLabel = (field) => field === "label";
   const isRegex = (field) => field === "regex";
   const isRelatedModule = (field) => field === "related_module";
+  const hasDropdownOptions = (type) => DROPDOWN_CAPABLE_TYPES.includes(type);
 
   /**
    * Determine if a field should be read-only.
@@ -124,6 +129,7 @@ export function useFieldRules(form, metadata) {
     isDisplayLabel,
     isRegex,
     isRelatedModule,
+    hasDropdownOptions,
     fieldTypeRules,
   };
 }

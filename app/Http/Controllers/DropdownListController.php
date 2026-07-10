@@ -44,6 +44,7 @@ class DropdownListController extends Controller
       'key' => 'required|string',
       'values' => 'required',
       'is_draft' => 'required',
+      'is_status' => 'sometimes|boolean',
     ]);
     $dd = DropdownList::create($data);
     return redirect()
@@ -80,10 +81,11 @@ class DropdownListController extends Controller
   public function update(Request $request, string $dropdown_list_id)
   {
 
-    $dropdown = DropdownList::find($dropdown_list_id);
+    $dropdown = DropdownList::findOrFail($dropdown_list_id);
 
     $data = $request->validate([
       'values' => 'required',
+      'is_status' => 'sometimes|boolean',
     ]);
 
     $dropdown->update($data);
@@ -119,6 +121,7 @@ class DropdownListController extends Controller
       'key' => 'required|string',
       'values' => 'required',
       'is_draft' => 'required',
+      'is_status' => 'sometimes|boolean',
     ]);
     $dropdown = DropdownList::create($data);
     return response()->json($dropdown);

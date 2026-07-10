@@ -26,9 +26,9 @@ class Field extends Model
   protected $fillable = [
     'id',
     'module_id',
+    'label',
     'type',
     'related_module',
-    'label',
     'name',
     'key',
     'is_custom',

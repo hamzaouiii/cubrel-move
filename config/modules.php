@@ -182,6 +182,8 @@ return [
         'is_custom' => 0,
         'has_owner' => false,
         'show_in_module_manager' => false,
+        'is_relatable' => false,
+
 
     ],
 
@@ -258,6 +260,7 @@ return [
         'table_name' => 'settings',
         'is_custom' => 0,
         'show_in_module_manager' => false,
+        'is_relatable' => false,
 
     ],
     [
@@ -279,6 +282,8 @@ return [
         'table_name' => 'users',
         'is_custom' => 0,
         'show_in_module_manager' => false,
+        'is_relatable' => false,
+
 
     ],
     [
@@ -292,6 +297,7 @@ return [
         'sort_order' => 998,
         'category' => 'system',
         'is_active' => true,
+        'is_relatable' => false,
         'show_in_sidebar' => 0,
         'handler_class' => 'App\\Handlers\\Modules\\UserInviteModuleHandler',
         'description' => 'Users Invites',
@@ -313,6 +319,7 @@ return [
         'sort_order' => 998,
         'category' => 'system',
         'is_active' => false,
+        'is_relatable' => false,
         'show_in_sidebar' => 0,
         'handler_class' => 'App\\Handlers\\Modules\\PdfTemplateModuleHandler',
         'description' => 'Manage Pdf Template',

@@ -40,6 +40,7 @@ class RelationshipManagerController extends Controller
     $moduleList = [
       'values' => Module::query()
         ->where('is_active', 1)
+        ->where('is_relatable', 1)
         ->where('id', '!=', $module_id)
         ->orderBy('slug')
         ->get()
