@@ -40,6 +40,7 @@ return [
     'actions' => [
         'share' => 'Teilen',
         'export' => 'Exportieren',
+        'import' => 'Importieren',
         'pdf'   => 'Als PDF Drucken',
         'history' => 'Verlauf anzeigen',
         'apply' => 'Anwenden',

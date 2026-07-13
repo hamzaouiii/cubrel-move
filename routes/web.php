@@ -27,6 +27,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
 use App\Http\Controllers\PdfTemplatesController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\AuditLogController;
@@ -226,6 +227,9 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::get('/{module}/{recordId}/pdf', [PdfController::class, 'generate'])->name('modules.record.pdf');
     Route::get('/{module}/{recordId}/export', [ExportController::class, 'export'])->name('modules.record.export');
     Route::post('/{module}/export', [ExportController::class, 'exportMany'])->name('modules.records.exportMany');
+    Route::post('/{module}/import/preview', [ImportController::class, 'preview'])->name('modules.import.preview');
+    Route::post('/{module}/import/{import}/start', [ImportController::class, 'start'])->name('modules.import.start');
+    Route::get('/{module}/import/{import}/status', [ImportController::class, 'status'])->name('modules.import.status');
     Route::get('/{module}/{recordId}', RecordController::class)->name('modules.record.show');
     Route::put('/{module}/{record}', [RecordController::class, 'update'])->name('modules.records.update');
     Route::delete('/{module}', [RecordController::class, 'destroyMany'])->name('modules.records.destroyMany');

@@ -27,6 +27,7 @@ return [
     'actions' => [
         'share' => 'Share',
         'export' => 'Export',
+        'import' => 'Import',
         'pdf' => 'Print As PDF',
         'history' => 'View History',
         'apply' => 'Apply',
