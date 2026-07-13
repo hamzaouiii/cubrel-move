@@ -22,12 +22,12 @@ class DevSeeder extends Seeder
   {
     Account::factory(10)->create();
     Contact::factory(20)->create();
-    Lead::factory(10)->create();
+    Lead::factory(100)->create();
     Quote::factory(10)->create();
-    Invoice::factory(10)->create();
+    Invoice::factory(50)->create();
     SupportCase::factory(12)->create();
     Product::factory()->count(20)->create();
-    Deal::factory()->count(10)->create();
+    Deal::factory()->count(100)->create();
     Order::factory()->count(10)->create();
   }
 }
