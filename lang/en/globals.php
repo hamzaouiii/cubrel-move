@@ -19,6 +19,8 @@ return [
     'sidebar' => [
         'expand' => 'Open Sidebar',
         'close' => 'Close Sidebar',
+        'hide' => 'Hide Sidebar',
+        'show' => 'Show Sidebar',
         'home' => 'Dashboard',
     ],
     'copied' => 'Copied',
