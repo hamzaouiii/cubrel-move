@@ -7,6 +7,7 @@ const props = defineProps({
   related_slug: String,
   record: Object,
   getRelatedRecordurl: Function,
+  color: String,
 });
 
 const emit = defineEmits(["quick-edit", "unlink", "close"]);
@@ -15,7 +16,7 @@ const menuRef = ref(null);
 const menuStyle = ref({});
 
 const MENU_WIDTH = 180;
-const OFFSET = 6; // small spacing from button
+const OFFSET = 6;
 
 const updatePosition = () => {
   if (!props.triggerEl || !menuRef.value) return;
@@ -26,17 +27,14 @@ const updatePosition = () => {
   let top = rect.bottom + OFFSET;
   let left = rect.right - MENU_WIDTH;
 
-  // 🔥 Flip vertically if near bottom
   if (rect.bottom + menuRect.height > window.innerHeight) {
     top = rect.top - menuRect.height - OFFSET;
   }
 
-  // Prevent right overflow
   if (left + MENU_WIDTH > window.innerWidth) {
     left = window.innerWidth - MENU_WIDTH - 8;
   }
 
-  // Prevent left overflow
   if (left < 8) {
     left = 8;
   }
@@ -93,6 +91,7 @@ onUnmounted(() => {
         :href="getRelatedRecordurl(related_slug, record.id)"
         target="_blank"
         rel="noopener noreferrer"
+        :style="{ '--module-color': color }"
       >
         <li>
           <i class="fa-solid fa-up-right-from-square"></i>
@@ -100,14 +99,18 @@ onUnmounted(() => {
         </li>
       </a>
 
-      <li @click="$emit('quick-edit', record)" class="disabled">
+      <!-- <li @click="$emit('quick-edit', record)" class="disabled">
         <i class="fa-solid fa-brush"></i>
         <span>{{ $t("modules.actions.quick_edit") }}</span>
-      </li>
+      </li> -->
 
       <li class="actiondropdown-menu__divider"></li>
 
-      <li class="actiondropdown-menu__unlink" @click="$emit('unlink', record)">
+      <li
+        class="actiondropdown-menu__unlink"
+        @click="$emit('unlink', record)"
+        :style="{ '--module-color': color }"
+      >
         <i class="fa-solid fa-link-slash"></i>
         <span>{{ $t("modules.actions.unlink") }}</span>
       </li>

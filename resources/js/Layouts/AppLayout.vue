@@ -68,6 +68,7 @@ provide("useModuleColors", useModuleColors);
       '--primary-color': appSettings.primary_color,
       '--danger-color': appSettings.danger_color,
       '--secondary-color': appSettings.secondary_color,
+      '--success-color': appSettings.success_color,
     }"
     :class="{ impersonating: page.props.auth.impersonating }"
     v-if="!showSmallScreenOverlay"

@@ -176,78 +176,11 @@ const cancel = () => {
               @click="generate(format)"
             >
               <div class="pdf-template-row__icon">
-                <!-- JSON icon -->
-                <svg
+                <i
                   v-if="format.id === 'json'"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <polyline
-                    points="14 2 14 8 20 8"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M8 13h2a1 1 0 0 1 0 2H8v1h2"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M14 13v3l1 1 1-1v-3"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <!-- CSV icon -->
-                <svg
-                  v-else
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <polyline
-                    points="14 2 14 8 20 8"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <line
-                    x1="8"
-                    y1="13"
-                    x2="16"
-                    y2="13"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <line
-                    x1="8"
-                    y1="17"
-                    x2="16"
-                    y2="17"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                </svg>
+                  class="fa-solid fa-file-code"
+                ></i>
+                <i v-else class="fa-solid fa-file-csv"></i>
               </div>
 
               <div class="pdf-template-row__info">
@@ -258,20 +191,7 @@ const cancel = () => {
               </div>
 
               <div class="pdf-template-row__action">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    d="M5 12h14M12 5l7 7-7 7"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                <i class="fa-solid fa-chevron-right"></i>
               </div>
             </div>
           </template>
@@ -280,22 +200,7 @@ const cancel = () => {
           <template v-else-if="phase === 'generating'">
             <div class="pdf-modal__spinner-wrap">
               <div class="pdf-modal__spinner">
-                <svg
-                  width="48"
-                  height="48"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <circle
-                    cx="24"
-                    cy="24"
-                    r="20"
-                    stroke-width="3"
-                    stroke-dasharray="62.8 62.8"
-                    stroke-linecap="round"
-                  />
-                </svg>
+                <i class="fa-solid fa-circle-notch"></i>
               </div>
               <div class="pdf-modal__spinner-label">
                 {{
@@ -311,20 +216,7 @@ const cancel = () => {
           <template v-else-if="phase === 'ready'">
             <div class="pdf-modal__ready">
               <div class="pdf-modal__ready__icon">
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#10b981"
-                >
-                  <path
-                    d="M20 6L9 17L4 12"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                <i class="fa-solid fa-check"></i>
               </div>
               <div class="pdf-modal__ready__label">
                 {{
@@ -340,20 +232,7 @@ const cancel = () => {
           <template v-else-if="phase === 'error'">
             <div class="pdf-modal__error">
               <div class="pdf-modal__error__icon">
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    d="M18 6L6 18M6 6L18 18"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                <i class="fa-solid fa-xmark"></i>
               </div>
               <div class="pdf-modal__error__label">
                 {{
@@ -381,20 +260,7 @@ const cancel = () => {
             <template v-else-if="phase === 'ready'">
               <div class="deployment-success">
                 <div class="deployment-success__message">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#10b981"
-                  >
-                    <path
-                      d="M20 6L9 17L4 12"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+                  <i class="fa-solid fa-check"></i>
                   <span>{{ $t("globals.export.modal_download_started") }}</span>
                 </div>
                 <div style="display: flex; gap: 10px">
@@ -402,35 +268,10 @@ const cancel = () => {
                     class="deployment-card__button"
                     @click="triggerDownload"
                   >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
+                    <i
+                      class="fa-solid fa-download"
                       style="margin-right: 6px"
-                    >
-                      <path
-                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <polyline
-                        points="7 10 12 15 17 10"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <line
-                        x1="12"
-                        y1="15"
-                        x2="12"
-                        y2="3"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                      />
-                    </svg>
+                    ></i>
                     {{ $t("globals.export.modal_download_again") }}
                   </button>
                   <button
@@ -485,19 +326,7 @@ const cancel = () => {
 
       <!-- Close button -->
       <button class="pdf-modal__close" @click="cancel" :disabled="!canClose">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <path
-            d="M18 6L6 18M6 6L18 18"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
   </div>

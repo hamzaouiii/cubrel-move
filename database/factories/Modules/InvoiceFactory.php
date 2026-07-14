@@ -30,7 +30,7 @@ class InvoiceFactory extends Factory
         'sent',
         'paid',
         'overdue',
-        'cancelled'
+        'viewed',
       ]),
 
       'issue_date' => $this->faker->optional()->date(),
