@@ -2901,13 +2901,13 @@
     &:hover {
       background-color: color-mix(
         in srgb,
-        var(--primary-color, #3498db) 10%,
+        var(--module-color, var(--primary-color)) 10%,
         white
       );
-      color: var(--primary-color, #3498db);
+      color: var(--module-color, var(--primary-color));
 
       i {
-        color: var(--primary-color, #3498db);
+        color: var(--module-color, var(--primary-color));
       }
     }
 

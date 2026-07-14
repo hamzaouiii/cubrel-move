@@ -69,6 +69,7 @@ const fieldResolver = (name) => {
           @quick-edit="emit('quick-edit', record)"
           @unlink="emit('unlink', record)"
           @close="emit('toggleMenu', null)"
+          :color="color"
         />
       </div>
     </td>
