@@ -617,7 +617,7 @@ return [
         'modal_title_done' => 'Import Complete',
         'modal_title_error' => 'Import Failed',
         'drop_zone_label' => 'Drag and drop a CSV or JSON file here, or click to browse',
-        'upload_hint' => 'CSV and JSON files up to 10MB are supported.',
+        'upload_hint' => 'CSV and JSON files up to :size are supported.',
         'file_too_large' => 'File exceeds the maximum size of :size.',
         'invalid_file_type' => 'Only CSV and JSON files are supported.',
         'mislabeled_csv' => 'This file looks like JSON, not CSV — check its content or extension.',

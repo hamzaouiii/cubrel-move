@@ -11,7 +11,6 @@ use App\Services\Import\ImportFileReader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 use function in_array;
 
@@ -24,7 +23,12 @@ class ImportController extends Controller
 
         // validate the file
         $request->validate([
-            'file' => ['required', 'file', 'extensions:csv,json', 'max:10240'],
+            'file' => [
+                'required',
+                'file',
+                'extensions:'.implode(',', config('import.accepted_extensions')),
+                'max:'.config('import.max_file_size_kb'),
+            ],
         ]);
 
         // read the file
@@ -99,7 +103,6 @@ class ImportController extends Controller
         $data = $request->validate([
             'mapping' => ['required', 'array'],
             'matchField' => ['nullable', 'string'],
-            'delimiter' => ['nullable', 'string', Rule::in([',', ';'])],
         ]);
 
         $mapping = array_filter($data['mapping'], fn ($fieldName) => ! empty($fieldName));
@@ -135,7 +138,6 @@ class ImportController extends Controller
         $import->update([
             'column_mapping' => $mapping,
             'match_field' => $matchField,
-            'delimiter' => $data['delimiter'] ?? $import->delimiter,
             'status' => config('import.statuses.queued'),
         ]);
 

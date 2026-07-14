@@ -74,6 +74,10 @@ class ListController extends Controller
             'availableFilters' => $availableFilters,
             'activeFilter' => $activeFilter,
             'dropdownLists' => $recorddropdownLists,
+            // import config
+            'importMaxFileSizeKb' => config('import.max_file_size_kb'),
+            'importAcceptedExtensions' => config('import.accepted_extensions'),
+            'importExcludedFieldTypes' => config('import.excluded_fields'),
 
         ], $props));
     }

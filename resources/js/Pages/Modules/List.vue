@@ -20,6 +20,7 @@ import ExportZone from "@/Pages/Components/Modules/ListActions/ExportZone.vue";
 import FilterZone from "@/Pages/Components/Modules/ListActions/FilterZone.vue";
 import Selectbox from "@/Pages//Components/FiledTypes/Selectbox.vue";
 import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
+import ImportModal from "@/Pages/Components/Modules/ImportModal.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -38,6 +39,9 @@ const props = defineProps({
   filterableFields: { type: Array, default: () => [] },
   availableFilters: { type: Array, default: () => [] },
   activeFilter: { type: Object, default: null },
+  importMaxFileSizeKb: { type: Number, default: null },
+  importAcceptedExtensions: { type: Array, default: () => [] },
+  importExcludedFieldTypes: { type: Array, default: () => [] },
 });
 
 const { proxy } = getCurrentInstance();
@@ -50,8 +54,8 @@ const showDeleteZone = ref(false);
 const showMassUpdateZone = ref(false);
 const showExportZone = ref(false);
 const showExportModal = ref(false);
+const showImportModal = ref(false);
 
-// ─── Selection State ────────────────────────────────────────────────────────
 // allMatchingSelected = true means "every record in the result set is selected,
 // EXCEPT those in excludedIds".
 const allMatchingSelected = ref(false);
@@ -374,6 +378,17 @@ const goToLink = (path) => {
   router.visit(path);
 };
 
+// ─── Import ──────────────────────────────────────────────────────────────────
+
+const handleImportModalClose = ({ imported } = {}) => {
+  showImportModal.value = false;
+  if (imported) {
+    // Import writes go through axios, not Inertia's router, so items/meta
+    // were never refreshed automatically — pull the current list state.
+    router.reload({ only: ["items", "meta"] });
+  }
+};
+
 const resetActionZone = () => {
   showDeleteZone.value = false;
   showMassUpdateZone.value = false;
@@ -670,6 +685,18 @@ const isAdmin = computed(() => {
               </li>
               <li>
                 <span
+                  class="list-layout__header__actions__list__dropdown__item"
+                  @click="
+                    showImportModal = true;
+                    showActionDropDown = false;
+                  "
+                >
+                  <i class="fa-solid fa-upload"></i>
+                  {{ $t("modules.actions.import") }}
+                </span>
+              </li>
+              <li>
+                <span
                   class="list-layout__header__actions__list__dropdown__item list-layout__header__actions__list__dropdown__item--delete"
                   @click.prevent="toggleDeleteZone()"
                 >
@@ -736,6 +763,16 @@ const isAdmin = computed(() => {
         showExportModal = false;
         resetActionZone();
       "
+    />
+
+    <ImportModal
+      v-if="showImportModal"
+      :module-slug="module.slug"
+      :fields="fields"
+      :max-file-size-kb="importMaxFileSizeKb"
+      :accepted-extensions="importAcceptedExtensions"
+      :excluded-field-types="importExcludedFieldTypes"
+      @close="handleImportModalClose"
     />
 
     <FilterZone

@@ -25,11 +25,15 @@ class ProcessImportJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public int $tries = config('import.tries');
+    public int $tries;
 
-    public int $timeout = config('import.timeout');
+    public int $timeout;
 
-    public function __construct(private readonly int $importId) {}
+    public function __construct(private readonly int $importId)
+    {
+        $this->tries = config('import.tries');
+        $this->timeout = config('import.timeout');
+    }
 
     public function handle(ImportFileReader $reader, ImportValueCoercer $coercer): void
     {

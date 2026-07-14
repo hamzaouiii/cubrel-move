@@ -614,7 +614,7 @@ return [
         'modal_title_done' => 'Import abgeschlossen',
         'modal_title_error' => 'Import fehlgeschlagen',
         'drop_zone_label' => 'CSV- oder JSON-Datei hierher ziehen oder klicken, um eine Datei auszuwählen',
-        'upload_hint' => 'CSV- und JSON-Dateien bis zu 10 MB werden unterstützt.',
+        'upload_hint' => 'CSV- und JSON-Dateien bis zu :size werden unterstützt.',
         'file_too_large' => 'Die Datei überschreitet die maximale Größe von :size.',
         'invalid_file_type' => 'Es werden nur CSV- und JSON-Dateien unterstützt.',
         'mislabeled_csv' => 'Diese Datei sieht wie JSON aus, nicht wie CSV — bitte Inhalt oder Dateiendung prüfen.',
