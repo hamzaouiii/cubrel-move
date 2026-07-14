@@ -6,6 +6,7 @@ use App\Models\Settings\SettingValue;
 use App\Support\Settings;
 use Database\Seeders\DashboardPresetSeeder;
 use Database\Seeders\DevSeeder;
+use Database\Seeders\LineItemsSeeder;
 use Database\Seeders\OwnerAssignmentSeeder;
 use Database\Seeders\RelationshipPopulationSeeder;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,7 @@ class OnboardingController extends Controller
 {
     protected const DEMO_SEEDERS = [
         DevSeeder::class,
+        LineItemsSeeder::class,
         RelationshipPopulationSeeder::class,
         OwnerAssignmentSeeder::class,
         DashboardPresetSeeder::class,
@@ -40,13 +42,9 @@ class OnboardingController extends Controller
         $data = $request->validate(['populate' => ['required', 'boolean']]);
 
         if ($data['populate']) {
+            // Seeding all four sets of demo data in one request comfortably
+            $this->ensureMinimumMemoryLimit('512M');
             try {
-                // Seeding all four sets of demo data in one request comfortably
-                // exceeds the default 128M CLI/web memory_limit and dies with an
-                // uncatchable fatal error (blank page, nothing in the log). Only
-                // this request gets the bump — not a global php.ini change.
-                ini_set('memory_limit', '512M');
-
                 foreach (self::DEMO_SEEDERS as $seeder) {
                     Artisan::call('db:seed', ['--class' => $seeder, '--force' => true]);
                 }
@@ -58,6 +56,32 @@ class OnboardingController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    private function ensureMinimumMemoryLimit(string $target): void
+    {
+        $current = ini_get('memory_limit');
+
+        if ($current === '-1') {
+            return;
+        }
+
+        if ($this->memoryLimitToBytes($current) < $this->memoryLimitToBytes($target)) {
+            ini_set('memory_limit', $target);
+        }
+    }
+
+    private function memoryLimitToBytes(string $value): int
+    {
+        $value = trim($value);
+        $number = (int) $value;
+
+        return match (strtolower(substr($value, -1))) {
+            'g' => $number * 1024 * 1024 * 1024,
+            'm' => $number * 1024 * 1024,
+            'k' => $number * 1024,
+            default => $number,
+        };
     }
 
     public function finish(Request $request): RedirectResponse
