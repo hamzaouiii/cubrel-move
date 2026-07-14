@@ -26,7 +26,7 @@ Homestead.yaml
 Thumbs.db
 .env.prod
 *.zip
-
+deploy.sh
 # app/console/*
 *.ps1
 package-lock.json
