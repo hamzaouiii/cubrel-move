@@ -51,6 +51,10 @@ function syncContentOffset() {
     "--sidebar-content-offset",
     hiddenSidebar.value ? "0px" : "80px",
   );
+  document.documentElement.classList.toggle(
+    "sidebar-hidden",
+    hiddenSidebar.value,
+  );
 }
 onMounted(syncContentOffset);
 watch(hiddenSidebar, syncContentOffset);
