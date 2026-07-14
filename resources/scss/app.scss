@@ -42,7 +42,8 @@ a {
   background-size: 24px 24px;
   &__content {
     flex-grow: 1;
-    padding-left: 80px;
+    padding-left: var(--sidebar-content-offset, 80px);
+    transition: padding-left var(--transition-speed, 0.3s) ease;
   }
 }
 .impersonating {

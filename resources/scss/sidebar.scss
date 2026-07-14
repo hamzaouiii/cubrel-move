@@ -11,7 +11,7 @@
 
 .sidebar {
   background: var(--sidebar-bg);
-  backdrop-filter: blur(12px); // Modern glassmorphism effect
+  backdrop-filter: blur(12px);
   border-right: 1px solid rgba(0, 0, 0, 0.05);
   position: fixed;
   top: 0;
@@ -19,12 +19,14 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+  transition:
+    width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+    transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 4px 0px 24px rgba(0, 0, 0, 0.04);
   z-index: 100;
-  overflow-x: hidden; // Prevents text spilling during animation
+  overflow-x: hidden;
 
-  // State Widths
   &--open {
     width: var(--sidebar-open-width);
   }
@@ -32,16 +34,31 @@
     width: var(--sidebar-collapsed-width);
   }
 
+  &--hidden {
+    transform: translateX(-100%);
+  }
+
+  &__header {
+    height: 80px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition-speed) ease;
+
+    &--open {
+      justify-content: flex-end;
+      padding-right: 25px;
+      gap: 0;
+    }
+  }
+
   &__collapser {
-    height: 80px; // Gives a generous hit area
-    width: var(
-      --sidebar-collapsed-width
-    ); // Keeps hamburger aligned with icons below
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: all var(--transition-speed) ease;
     color: var(--text-main);
 
     &__icon {
@@ -56,14 +73,25 @@
     }
   }
 
-  // When open, push the hamburger to the right side
-  &--open &__collapser {
-    width: 100%;
-    justify-content: flex-end;
-    padding-right: 25px;
+  &__hide-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-main);
+    font-size: 1.2rem;
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      color: var(--primary-color, var(--text-main));
+      transform: scale(
+        1.1
+      ); // Subtle pop interaction, matches the collapser icon
+    }
   }
 
-  // Styles for the new category labels
   &__category-label {
     padding: 12px 10px 4px 20px;
     font-size: 0.75rem;
@@ -82,11 +110,10 @@
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    padding: 0 10px; // Padding keeps hover backgrounds off the edges
-    gap: 4px; // Modern, consistent spacing between items
-    padding-bottom: 10px; // Reduced to account for the footer
+    padding: 0 10px;
+    gap: 4px;
+    padding-bottom: 10px;
 
-    // Refined Scrollbar
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 transparent;
     &::-webkit-scrollbar {
@@ -122,7 +149,7 @@
         &::before {
           content: "";
           position: absolute;
-          left: -10px; // Anchors to the far left of the sidebar
+          left: -10px;
           top: 50%;
           transform: translateY(-50%);
           height: 80%;
@@ -132,7 +159,7 @@
         }
       }
       &--home {
-        margin-bottom: 8px; // Extra space below home
+        margin-bottom: 8px;
       }
 
       &:hover {
@@ -140,7 +167,7 @@
         &::before {
           content: "";
           position: absolute;
-          left: -10px; // Anchors to the far left of the sidebar
+          left: -10px;
           top: 50%;
           transform: translateY(-50%);
           height: 80%;
@@ -159,8 +186,6 @@
         text-align: center;
 
         &__icon {
-          // THE MAGIC FIX: Fixed width keeps icons perfectly anchored
-          // 80px sidebar - 20px padding (10px each side) = 60px container
           width: 60px;
           min-width: 60px;
           display: flex;
@@ -171,7 +196,7 @@
         }
 
         &__text {
-          white-space: nowrap; // Prevents text wrapping during transition
+          white-space: nowrap;
           opacity: 1;
           transition: opacity var(--transition-speed) ease;
           font-weight: 500;
@@ -179,12 +204,11 @@
           &.hide {
             opacity: 0;
             pointer-events: none;
-            visibility: hidden; // Ensure it's not focusable when hidden
+            visibility: hidden;
           }
         }
       }
 
-      // Hover logic for the nested icon
       &:hover &__label {
         color: var(--module-color);
       }
@@ -196,12 +220,14 @@
       margin: 10px 0px;
     }
   }
-
-  // Position footer naturally at the bottom of the flex column container
   &__footer {
     margin-top: auto;
+    margin-bottom: 20px;
     padding: 0 10px 15px 10px;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   &__overlay {
@@ -210,9 +236,38 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(15, 23, 42, 0.4); // Slate overlay
+    background-color: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(2px);
     z-index: 99;
     transition: opacity var(--transition-speed) ease;
+  }
+}
+
+.sidebar__show-tab {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-left: none;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  box-shadow: 4px 0px 12px rgba(0, 0, 0, 0.06);
+  color: var(--text-main);
+  cursor: pointer;
+  z-index: 100;
+  transition:
+    width 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    width: 24px;
+    color: var(--primary-color, var(--text-main));
   }
 }

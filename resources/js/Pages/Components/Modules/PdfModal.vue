@@ -176,8 +176,11 @@ onMounted(() => {
           <!-- Generating phase -->
           <template v-else-if="phase === 'generating'">
             <div class="pdf-modal__spinner-wrap">
-              <div class="pdf-modal__spinner">
-                <i class="fa-solid fa-circle-notch"></i>
+              <div class="saving-loader import-modal__loader">
+                <div class="lds-ripple">
+                  <div></div>
+                  <div></div>
+                </div>
               </div>
               <div class="pdf-modal__spinner-label">
                 {{

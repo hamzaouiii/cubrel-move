@@ -1,5 +1,12 @@
 <script setup>
-import { computed, ref, reactive, getCurrentInstance } from "vue";
+import {
+  computed,
+  ref,
+  reactive,
+  getCurrentInstance,
+  watch,
+  onMounted,
+} from "vue";
 import { useForm, Link, usePage } from "@inertiajs/vue3";
 import AppTooltip from "./AppTooltip.vue";
 
@@ -11,12 +18,14 @@ const logout = () => {
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-const SIDEBAR_KEY = "sidebar-collapsed";
+const SIDEBAR_HIDDEN_KEY = "sidebar-hidden";
 const page = usePage();
 const modules = computed(() => page.props.modules ?? []);
 const currentUrl = computed(() => page.url);
 const appSettings = usePage().props.appSettings;
 const collapsedSidebar = ref(true);
+const hiddenSidebar = ref(localStorage.getItem(SIDEBAR_HIDDEN_KEY) === "true");
+
 function collapseSidebar() {
   collapsedSidebar.value = true;
 }
@@ -24,6 +33,27 @@ function collapseSidebar() {
 function toggleSidebar() {
   collapsedSidebar.value = !collapsedSidebar.value;
 }
+
+function hideSidebar() {
+  hiddenSidebar.value = true;
+  collapsedSidebar.value = true;
+  localStorage.setItem(SIDEBAR_HIDDEN_KEY, "true");
+}
+
+function showSidebar() {
+  hiddenSidebar.value = false;
+  collapsedSidebar.value = true;
+  localStorage.setItem(SIDEBAR_HIDDEN_KEY, "false");
+}
+
+function syncContentOffset() {
+  document.documentElement.style.setProperty(
+    "--sidebar-content-offset",
+    hiddenSidebar.value ? "0px" : "80px",
+  );
+}
+onMounted(syncContentOffset);
+watch(hiddenSidebar, syncContentOffset);
 // temporary since this can be user based also, set tup
 const categoryOrder = {
   sales: 1,
@@ -110,6 +140,34 @@ const onCollapserMouseEnter = (event) => {
 const onCollapserMouseLeave = () => {
   hideTooltip();
 };
+
+const onHideBtnMouseEnter = (event) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+
+  tooltip.text = t("globals.sidebar.hide");
+  tooltip.color = appSettings.primary_color;
+  tooltip.top = rect.top + rect.height / 2;
+  tooltip.left = rect.right + 10;
+  tooltip.show = true;
+};
+
+const onHideBtnMouseLeave = () => {
+  hideTooltip();
+};
+
+const onShowTabMouseEnter = (event) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+
+  tooltip.text = t("globals.sidebar.show");
+  tooltip.color = appSettings.primary_color;
+  tooltip.top = rect.top + rect.height / 2;
+  tooltip.left = rect.right + 10;
+  tooltip.show = true;
+};
+
+const onShowTabMouseLeave = () => {
+  hideTooltip();
+};
 </script>
 
 <template>
@@ -119,21 +177,29 @@ const onCollapserMouseLeave = () => {
       {
         'sidebar--open': !collapsedSidebar,
         'sidebar--collapsed': collapsedSidebar,
+        'sidebar--hidden': hiddenSidebar,
       },
     ]"
   >
-    <div @click="toggleSidebar" class="sidebar__collapser">
-      <div
-        class="sidebar__collapser__icon"
-        :style="{ '--primary-color': appSettings.primary_color }"
-        @mouseenter="onCollapserMouseEnter($event)"
-        @mouseleave="onCollapserMouseLeave"
-      >
-        <i
-          :class="
-            !collapsedSidebar ? 'fa-solid fa-angles-left' : 'fa-solid fa-bars'
-          "
-        ></i>
+    <div
+      :class="[
+        'sidebar__header',
+        { 'sidebar__header--open': !collapsedSidebar },
+      ]"
+    >
+      <div @click="toggleSidebar" class="sidebar__collapser">
+        <div
+          class="sidebar__collapser__icon"
+          :style="{ '--primary-color': appSettings.primary_color }"
+          @mouseenter="onCollapserMouseEnter($event)"
+          @mouseleave="onCollapserMouseLeave"
+        >
+          <i
+            :class="
+              !collapsedSidebar ? 'fa-solid fa-angles-left' : 'fa-solid fa-bars'
+            "
+          ></i>
+        </div>
       </div>
     </div>
 
@@ -207,40 +273,18 @@ const onCollapserMouseLeave = () => {
           </div>
         </Link>
       </template>
-      <!-- <div v-if="settingsModule && currentUrl.startsWith(settingsModule.path)">
-        <hr class="sidebar__module-list__divider" />
-        <div v-if="!collapsedSidebar" class="sidebar__category-label">
-          {{ settingsModule.category }}
-        </div>
-        <Link
-          :class="['sidebar__module-list__item active']"
-          :href="settingsModule.path"
-          @click="collapseSidebar()"
-          :style="
-            appSettings.use_individual_module_colors === '0'
-              ? { '--module-color': appSettings.primary_color }
-              : { '--module-color': settingsModule.color }
-          "
-          @mouseenter="onModuleMouseEnter($event, settingsModule)"
-          @mouseleave="onModuleMouseLeave"
-        >
-          <div class="sidebar__module-list__item__label">
-            <i
-              :class="[
-                'sidebar__module-list__item__label__icon',
-                'fa-solid',
-                settingsModule.icon,
-              ]"
-            ></i>
-            <span
-              v-if="!collapsedSidebar"
-              class="sidebar__module-list__item__label__text"
-            >
-              {{ settingsModule.label }}
-            </span>
-          </div>
-        </Link>
-      </div> -->
+    </div>
+
+    <div v-if="collapsedSidebar" class="sidebar__footer">
+      <div
+        @click.stop="hideSidebar"
+        class="sidebar__hide-btn"
+        :style="{ '--primary-color': appSettings.primary_color }"
+        @mouseenter="onHideBtnMouseEnter($event)"
+        @mouseleave="onHideBtnMouseLeave"
+      >
+        <i class="fa-solid fa-eye-slash"></i>
+      </div>
     </div>
   </aside>
 
@@ -249,6 +293,17 @@ const onCollapserMouseLeave = () => {
     @click="toggleSidebar"
     class="sidebar__overlay"
   ></div>
+
+  <div
+    v-if="hiddenSidebar"
+    @click="showSidebar"
+    class="sidebar__show-tab"
+    :style="{ '--primary-color': appSettings.primary_color }"
+    @mouseenter="onShowTabMouseEnter($event)"
+    @mouseleave="onShowTabMouseLeave"
+  >
+    <i class="fa-solid fa-angles-right"></i>
+  </div>
 
   <AppTooltip
     :show="tooltip.show"

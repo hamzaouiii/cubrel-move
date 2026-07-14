@@ -20,6 +20,8 @@ return [
     'sidebar' => [
         'expand' => 'Seitenleiste Öffnen',
         'close' => 'Seitenleiste Schließen',
+        'hide' => 'Seitenleiste Ausblenden',
+        'show' => 'Seitenleiste Einblenden',
         'home' => 'Startseite',
     ],
     'copied' => 'kopiert!',
