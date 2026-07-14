@@ -15,6 +15,7 @@ return new class extends Migration
 
     $table->string('name')->nullable();
     $table->string('slug')->unique();
+    $table->boolean('is_default')->default(true);
     $table->json('layout')->nullable();
     $table->integer('sort_order')->default(0);
     $table->timestamps();

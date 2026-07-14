@@ -147,7 +147,7 @@ abstract class BaseModule extends Model
         }
 
         // 3. Last Resort: Use a the first user found in DB
-        return User::query()->where('username', 'admin')->first() ?? User::first()?->id;
+        return User::query()->where('username', 'admin')->first()?->id ?? User::first()?->id;
     }
 
     /**
