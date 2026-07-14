@@ -133,7 +133,7 @@ class DashboardController extends Controller
     public function saveLayout(Request $request): JsonResponse
     {
         $request->validate([
-            'layout' => 'required|array',
+            'layout' => ['present', 'array'],
         ]);
 
         $user = Auth::user();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,25 +22,12 @@ class AuthController extends Controller
     return \Inertia\Inertia::render('Login');
   }
 
-  public function login(Request $request)
+  public function login(LoginRequest $request)
   {
-    $data = $request->validate([
-      'username' => ['required', 'string'],
-      'password' => ['required', 'string'],
-      'remember' => ['sometimes', 'boolean'],
-    ]);
+    $request->authenticate();
 
-
-    if (! Auth::attempt(['username' => $data['username'], 'password' => $data['password']], $data['remember'] ?? false)) {
-      return back()->withErrors([
-        'general' => __('globals.login.invalid_credentials')
-      ]);
-    }
-    if (Auth::user()->status === 'inactive') {
-      Auth::logout();
-      return back()->withErrors(['general' =>  __('globals.login.user_inactive')]);
-    }
     $request->session()->regenerate();
+
     return redirect()->intended('/');
   }
 

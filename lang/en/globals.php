@@ -62,6 +62,7 @@ return [
         'invalid_credentials' => 'Invalid credentials.',
         'invalid_email' => 'The email address is invalid.',
         'user_inactive' => 'User is inactive. Please contact your administrator',
+        'throttled' => 'Too many login attempts. Please try again in :seconds seconds.',
         'setup_title' => 'Set up your instance',
         'setup_subtitle' => 'Create the root account to finish setting up Cubrel.',
         'setup_invalid' => 'This setup link is invalid, expired, or has already been used.',

@@ -3,7 +3,6 @@
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureOnboardingComplete;
 use App\Http\Middleware\HandleInertiaRequests;
-use App\Http\Middleware\LocalAutoLogin;
 use App\Http\Middleware\SetLocaleFromSettings;
 use App\Providers\SearchServiceProvider;
 use Illuminate\Foundation\Application;
@@ -28,7 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             SetLocaleFromSettings::class,
             AddLinkHeadersForPreloadedAssets::class,
-            LocalAutoLogin::class,
         ]);
         $middleware->alias([
             'admin' => AdminMiddleware::class,

@@ -121,6 +121,10 @@ return [
     'no_shades_found'    => 'Keine Farbtöne gefunden.',
     'hex_input_error'    => 'Ungültiger Hex-Code (z. B. #RRGGBB oder #RGB)',
     'apply'              => 'Anwenden',
+    'tab_palette'        => 'Palette',
+    'tab_custom'         => 'Benutzerdefiniert',
+    'recent'             => 'Zuletzt verwendet',
+    'pick_from_screen'   => 'Vom Bildschirm auswählen',
     'shades' => [
       'blues'   => 'Blau & Indigo',
       'teals'   => 'Blaugrün & Cyan',

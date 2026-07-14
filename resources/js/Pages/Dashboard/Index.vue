@@ -101,7 +101,7 @@ const ghostLabel = computed(() => {
 
 // ── Widget refresh ────────────────────────────────────────────────────────────
 
-const widgetRefs = {}
+const widgetRefs = {};
 
 function setWidgetRef(id, el) {
   if (el) widgetRefs[id] = el;
@@ -231,7 +231,10 @@ function resetDrag() {
   draggingId.value = null;
   dropBeforeId.value = null;
   endDrag();
-  nextTick(() => { applyMasonrySpans(); observeCells(); });
+  nextTick(() => {
+    applyMasonrySpans();
+    observeCells();
+  });
 }
 
 // ── Masonry row spans ─────────────────────────────────────────────────────────
@@ -294,7 +297,10 @@ watch(previewWidgets, () =>
       </div>
       <div class="dashboard__actions">
         <template v-if="!editMode">
-          <button :title="$t('globals.dashboard.refresh_all')" @click="refreshAll">
+          <button
+            :title="$t('globals.dashboard.refresh_all')"
+            @click="refreshAll"
+          >
             <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
           </button>
           <button
@@ -378,9 +384,9 @@ watch(previewWidgets, () =>
 
     <!-- Empty state -->
     <div v-if="!activeWidgets.length" class="dashboard__empty">
-      <i class="fa-regular fa-grid-2" aria-hidden="true"></i>
+      <i class="fa-solid fa-border-none"></i>
       <p>{{ $t("globals.dashboard.empty_title") }}</p>
-      <button class="btn btn--primary" @click="showPanel = true">
+      <button class="" @click="showPanel = true">
         <i class="fa-solid fa-plus"></i>
         {{ $t("globals.dashboard.add_widgets") }}
       </button>
