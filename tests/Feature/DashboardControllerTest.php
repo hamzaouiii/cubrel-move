@@ -228,6 +228,26 @@ class DashboardControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_save_layout_accepts_empty_array_and_index_does_not_fall_back_to_default(): void
+    {
+        $user = $this->makeUser(['is_admin' => false, 'type' => 'sales_rep']);
+
+        $layout = [['instanceId' => 'abc', 'type' => 'metric', 'cols' => 1, 'config' => ['module' => 'leads']]];
+        $this->actingAs($user)->postJson('/dashboard/layout', ['layout' => $layout])->assertOk();
+
+        // Removing every widget persists as an empty array, not a validation error.
+        $response = $this->actingAs($user)->postJson('/dashboard/layout', ['layout' => []]);
+
+        $response->assertOk()->assertJson(['ok' => true]);
+        $this->assertSame([], Dashboard::where('user_id', $user->id)->first()->layout);
+
+        // Reloading the dashboard must reflect the empty layout, not the preset default.
+        $this->actingAs($user)->get('/')->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard/Index')
+            ->where('dashboardLayout', [])
+        );
+    }
+
     public function test_people_widget_returns_leaderboard_via_http(): void
     {
         $leads = $this->makeLeadsModule();
