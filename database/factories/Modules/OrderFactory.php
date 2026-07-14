@@ -13,7 +13,7 @@ class OrderFactory extends Factory
       'draft',
       'confirmed',
       'pending',
-      'procecessing',
+      'processing',
       'completed',
       'cancelled',
     ];
