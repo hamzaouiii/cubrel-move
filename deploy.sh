@@ -11,4 +11,3 @@ chown -R www-data:www-data .
 php artisan queue:restart
 php artisan storage:link
 echo "Deploy done."
-~                          
