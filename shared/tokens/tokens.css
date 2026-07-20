@@ -1,0 +1,37 @@
+:root {
+  /* Brand — #3498db is the app's real primary_color default (App\Support\Settings) */
+  --color-primary: #3498db;
+  --color-primary-dark: #217dbb;
+  --color-primary-light: #eaf4fc;
+
+  /* Neutrals */
+  --color-ink: #1b2733;
+  --color-body: #3d4a57;
+  --color-muted: #6b7785;
+  --color-border: #e2e8ee;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f7f9fb;
+
+  /* Typography */
+  --font-sans: "Fira Sans", "Heebo", sans-serif;
+  --font-heading: "Fira Sans", "Heebo", sans-serif;
+
+  /* Spacing (4px base) */
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 32, .06);
+  --shadow-md: 0 4px 16px rgba(16, 24, 32, .08);
+}
