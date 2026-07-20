@@ -237,6 +237,92 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | ACTIVITIES
+    |--------------------------------------------------------------------------
+    */
+
+    [
+        'name' => 'Tasks',
+        'slug' => 'tasks',
+        'label' => 'modules.tasks.label',
+        'single_label' => 'modules.tasks.single_label',
+        'icon' => 'fa-solid fa-list-check',
+        'color' => '#5387A0',
+        'path' => '/tasks',
+        'sort_order' => 100,
+        'category' => 'activities',
+        'is_active' => true,
+        'show_in_sidebar' => 1,
+        'handler_class' => 'App\\Handlers\\Modules\\TasksModuleHandler',
+        'description' => 'To-dos and follow-ups with a due date.',
+        'show_in_module_manager' => true,
+        'model_class' => 'App\\Models\\Modules\\Task',
+        'table_name' => 'tasks',
+        'is_custom' => 0,
+    ],
+
+    [
+        'name' => 'Calls',
+        'slug' => 'calls',
+        'label' => 'modules.calls.label',
+        'single_label' => 'modules.calls.single_label',
+        'icon' => 'fa-solid fa-phone',
+        'color' => '#DB9F5D',
+        'path' => '/calls',
+        'sort_order' => 110,
+        'category' => 'activities',
+        'is_active' => true,
+        'show_in_sidebar' => 1,
+        'handler_class' => 'App\\Handlers\\Modules\\CallsModuleHandler',
+        'description' => 'Logged and scheduled phone calls.',
+        'show_in_module_manager' => true,
+        'model_class' => 'App\\Models\\Modules\\Call',
+        'table_name' => 'calls',
+        'is_custom' => 0,
+    ],
+
+    [
+        'name' => 'Meetings',
+        'slug' => 'meetings',
+        'label' => 'modules.meetings.label',
+        'single_label' => 'modules.meetings.single_label',
+        'icon' => 'fa-solid fa-calendar-days',
+        'color' => '#22C55E',
+        'path' => '/meetings',
+        'sort_order' => 120,
+        'category' => 'activities',
+        'is_active' => true,
+        'show_in_sidebar' => 1,
+        'handler_class' => 'App\\Handlers\\Modules\\MeetingsModuleHandler',
+        'description' => 'Scheduled meetings with a start and end time.',
+        'show_in_module_manager' => true,
+        'model_class' => 'App\\Models\\Modules\\Meeting',
+        'table_name' => 'meetings',
+        'is_custom' => 0,
+    ],
+
+    [
+        'name' => 'Notes',
+        'slug' => 'notes',
+        'label' => 'modules.notes.label',
+        'single_label' => 'modules.notes.single_label',
+        'icon' => 'fa-solid fa-note-sticky',
+        'color' => '#65a30d',
+        'path' => '/notes',
+        'sort_order' => 130,
+        'category' => 'activities',
+        'is_active' => true,
+        'show_in_sidebar' => 1,
+        'handler_class' => 'App\\Handlers\\Modules\\NotesModuleHandler',
+        'description' => 'Freeform notes.',
+        'show_in_module_manager' => true,
+        'model_class' => 'App\\Models\\Modules\\Note',
+        'table_name' => 'notes',
+        'is_custom' => 0,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | SYSTEM
     |--------------------------------------------------------------------------
     */

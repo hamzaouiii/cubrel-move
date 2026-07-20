@@ -63,8 +63,9 @@ const categoryOrder = {
   sales: 1,
   revenue: 2,
   communication: 3,
-  support: 4,
-  general: 5,
+  activities: 4,
+  support: 5,
+  general: 6,
 };
 // Group modules by category, excluding 'settings'
 const groupedModules = computed(() => {
