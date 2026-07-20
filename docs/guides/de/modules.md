@@ -29,8 +29,7 @@ ausgeliefert wurde oder Sie es selbst erstellt haben:
 - **Beziehungen** — optionale Verknüpfungen zu anderen Modulen (eine
   Verkaufschance, die zu einer Firma gehört; eine Rechnung, die mit einem
   Kontakt verknüpft ist). Details dazu finden Sie im [Leitfaden zu
-  Beziehungen](../en/relationships-guide.md) (aktuell nur auf Englisch
-  verfügbar).
+  Beziehungen](./relationships-guide.md).
 
 Mitgelieferte Module (Interessenten, Firmen, Kontakte, Verkaufschancen,
 Angebote, Bestellungen, Rechnungen, Produkte, Tickets, sowie Systembereiche
