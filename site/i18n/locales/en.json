@@ -1,0 +1,255 @@
+{
+  "brand": {
+    "name": "Cubrel",
+    "tagline": "Power without complexity."
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "docs": "Docs",
+    "app": "Open App",
+    "start": "Start free",
+    "impressum": "Legal Notice",
+    "datenschutz": "Privacy Policy"
+  },
+  "footer": {
+    "copyright": "© 2026 Cubrel. All rights reserved."
+  },
+  "home": {
+    "badge": "Custom modules · dynamic dashboards · branded PDFs",
+    "heroTitle": "Power without complexity",
+    "heroSubtitle": "Cubrel connects leads, deals, quotes, orders, and invoices in one workspace , with a module builder, drag-and-drop layouts, and dashboards that are actually yours to arrange.",
+    "ctaPrimary": "Start building free",
+    "ctaSecondary": "See features",
+    "note": "No credit card required",
+    "highlightsLabel": "Every module your team needs, connected out of the box",
+    "highlights": [
+      {
+        "icon": "⚙",
+        "title": "Custom modules",
+        "body": "Model any process , projects, tickets, assets , with the module builder. Add fields, choose types, and go live without writing code."
+      },
+      {
+        "icon": "▤",
+        "title": "Drag-and-drop layouts",
+        "body": "Design list, record, related, and PDF views per module. Reorder fields, set required or read-only, and preview instantly."
+      },
+      {
+        "icon": "✎",
+        "title": "Quotes, orders & invoices",
+        "body": "Line items with automatic subtotals, discounts, and tax , and any module, not just the built-in three, can turn them on."
+      },
+      {
+        "icon": "⎘",
+        "title": "Branded PDF documents",
+        "body": "Section-based templates for every module , header, line items, totals , rendered with your logo and colors."
+      },
+      {
+        "icon": "◫",
+        "title": "Dashboards that are yours",
+        "body": "Add, resize, and rearrange widgets. Metrics, charts, pipelines, and record lists , saved per person, automatically."
+      },
+      {
+        "icon": "⚲",
+        "title": "Advanced filters & saved views",
+        "body": "Build multi-condition filters with AND/OR logic, then save and share them with your team."
+      }
+    ],
+    "howItWorksLabel": "How it works",
+    "howItWorksTitle": "From a blank workspace to your first invoice",
+    "steps": [
+      {
+        "num": "01",
+        "title": "Tell us about your company",
+        "body": "Add your logo, name, and contact details , they carry through to every quote, invoice, and PDF you send."
+      },
+      {
+        "num": "02",
+        "title": "Start with sample data or your own",
+        "body": "Seed a working CRM with demo leads, deals, and orders, or bring in a clean slate and add your own records."
+      },
+      {
+        "num": "03",
+        "title": "Invite your team",
+        "body": "Bring your team in by email, one at a time or in bulk. Everyone lands in a workspace that's already set up."
+      }
+    ],
+    "dashboardLabel": "Dashboards, your way",
+    "dashboardTitle": "Arrange the dashboard your team actually needs",
+    "dashboardBody": "Add metric tiles, revenue charts, pipelines, and record lists , resize and rearrange them, and Cubrel remembers the layout for every person, every time they log in.",
+    "dashboardPoints": [
+      "Five widget types: metrics, time series, breakdowns, record lists, people",
+      "Drag-and-drop layout, saved per person automatically",
+      "Every widget filterable with the same condition builder as your list views"
+    ],
+    "ctaTitle": "Run your sales process without the busywork",
+    "ctaBody": "Set up your modules, invite your team, and send your first quote , today."
+  },
+  "features": {
+    "eyebrow": "Everything in one workspace",
+    "title": "One CRM. Shaped like your business.",
+    "subtitle": "Stop bending your process to fit someone else's CRM. Cubrel is a set of connected modules you can extend, rearrange, and rebrand.",
+    "viewMore": "See it in action",
+    "areas": [
+      {
+        "navLabel": "Modules",
+        "eyebrow": "Data & Modules",
+        "title": "Every module your business runs on, out of the box",
+        "body": "Leads, Accounts, Contacts, Opportunities, Quotes, Orders, Invoices, Products, and Cases ship ready to use , and when something doesn't fit, the module builder lets you add your own, with its own fields, layouts, and line items, without writing code.",
+        "imageAlt": "Cubrel's module manager showing all available modules"
+      },
+      {
+        "navLabel": "Lists & Search",
+        "eyebrow": "Records, Search & Dashboard",
+        "title": "Find anything, sorted and filtered your way",
+        "body": "Every list is sortable, searchable, and pageable out of the box. Build multi-condition filters with AND/OR logic, save them, and share them with your team , right down to a one-click \"my records\" view.",
+        "imageAlt": "Cubrel's Opportunities list view with sortable columns"
+      },
+      {
+        "navLabel": "Records & Layouts",
+        "eyebrow": "Fields & Layouts",
+        "title": "Record pages shaped exactly like your process",
+        "body": "Group fields into sections, reorder them, and mark any field required or read-only , all with drag-and-drop, no code. 16 field types cover text, currency, dates, addresses, and status pills with their own colors.",
+        "imageAlt": "A Deal record page showing General and Financial field sections"
+      },
+      {
+        "navLabel": "Relationships",
+        "eyebrow": "Relationships & Line Items",
+        "title": "See how every record connects, right on the page",
+        "body": "Link Deals to Accounts, Products to Orders, and any custom module to any other , one-to-many, many-to-many, or one-to-one. Related records show up as live panels, right where you're already working.",
+        "imageAlt": "A Deal record's Related tab showing linked Account and Products panels"
+      },
+      {
+        "navLabel": "Dashboards",
+        "eyebrow": "Dashboards, your way",
+        "title": "A dashboard your team actually checks every morning",
+        "body": "Add metric tiles, revenue charts, pipelines, and record lists. Resize and rearrange them, and Cubrel remembers the layout for every person, every time they log in.",
+        "imageAlt": "Cubrel dashboard with metric tiles and charts"
+      }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "Simple pricing that scales with your team",
+    "subtitle": "Start free with up to 3 users. Upgrade as your pipeline, your team, and your paperwork grow.",
+    "tiers": [
+      {
+        "name": "Free",
+        "tagline": "For small teams getting organized.",
+        "price": "$0",
+        "period": "/forever",
+        "cta": "Start free",
+        "badge": null,
+        "features": [
+          "Up to 3 users",
+          "Leads, Accounts, Contacts & Deals",
+          "Quotes & invoices with line items",
+          "1 custom module",
+          "Community support"
+        ]
+      },
+      {
+        "name": "Team",
+        "tagline": "For teams running their full sales & billing cycle.",
+        "price": "$19",
+        "period": "/user/mo",
+        "cta": "Start free trial",
+        "badge": "Popular",
+        "features": [
+          "Unlimited users",
+          "Unlimited custom modules",
+          "Drag-and-drop dashboards",
+          "Saved & shared filters",
+          "Custom PDF templates",
+          "CSV & JSON import/export",
+          "Email support"
+        ]
+      },
+      {
+        "name": "Business",
+        "tagline": "For larger teams with dedicated onboarding needs.",
+        "price": "Custom",
+        "period": "",
+        "cta": "Talk to sales",
+        "badge": null,
+        "features": [
+          "Everything in Team",
+          "Dedicated onboarding",
+          "Self-hosted deployment available",
+          "Priority support"
+        ]
+      }
+    ],
+    "compareTitle": "Compare plans",
+    "compare": [
+      {
+        "label": "Users",
+        "free": "3",
+        "team": "Unlimited",
+        "business": "Unlimited"
+      },
+      {
+        "label": "Custom modules",
+        "free": "1",
+        "team": "Unlimited",
+        "business": "Unlimited"
+      },
+      {
+        "label": "Quotes, orders & invoices",
+        "free": "✓",
+        "team": "✓",
+        "business": "✓"
+      },
+      {
+        "label": "Dashboards & widgets",
+        "free": "Default layout",
+        "team": "Drag & drop",
+        "business": "Drag & drop"
+      },
+      {
+        "label": "Saved & shared filters",
+        "free": ",",
+        "team": "✓",
+        "business": "✓"
+      },
+      {
+        "label": "PDF templates",
+        "free": "1 per module",
+        "team": "Unlimited",
+        "business": "Unlimited"
+      },
+      { "label": "Import & export", "free": ",", "team": "✓", "business": "✓" },
+      {
+        "label": "Support",
+        "free": "Community",
+        "team": "Email",
+        "business": "Priority"
+      }
+    ],
+    "faqTitle": "Frequently asked",
+    "faqs": [
+      {
+        "q": "What counts as a user?",
+        "a": "Anyone who logs in to manage records , sales, support, or admin accounts. You're only billed for people who actually have an account."
+      },
+      {
+        "q": "Can I build my own modules?",
+        "a": "Yes. The module builder lets you define new record types with custom fields, layouts, and line items, all without writing code."
+      },
+      {
+        "q": "Can any module have line items?",
+        "a": "Yes , line items aren't locked to Quotes, Orders, and Invoices. Any module, including ones you build yourself, can enable them and choose which catalog they pull pricing from."
+      },
+      {
+        "q": "Is a self-hosted option available?",
+        "a": "Business customers can deploy Cubrel on their own infrastructure with the same feature set as the hosted plan."
+      }
+    ]
+  },
+  "legal": {
+    "impressumTitle": "Legal Notice",
+    "impressumBody": "This page will hold Cubrel's legal notice (Impressum) per §5 TMG before launch. Placeholder , do not treat as final legal content.",
+    "datenschutzTitle": "Privacy Policy",
+    "datenschutzBody": "This page will hold Cubrel's privacy policy before launch. Placeholder , do not treat as final legal content."
+  }
+}

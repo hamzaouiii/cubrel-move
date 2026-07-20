@@ -1,0 +1,21 @@
+@import "../../../../shared/tokens/tokens.css";
+@import "../../../../shared/tokens/fonts.css";
+
+:root {
+  --vp-c-brand-1: var(--color-primary);
+  --vp-c-brand-2: var(--color-primary-dark);
+  --vp-c-brand-3: var(--color-primary-dark);
+  --vp-c-brand-soft: var(--color-primary-light);
+
+  --vp-font-family-base: var(--font-sans);
+  --vp-font-family-mono: var(--font-sans);
+
+  --vp-code-block-radius: var(--radius-md);
+}
+
+.translation-notice.custom-block.tip {
+  border-color: var(--color-primary);
+}
+.translation-notice .custom-block-title {
+  color: var(--color-primary);
+}
