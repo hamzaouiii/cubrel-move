@@ -29,7 +29,7 @@ Thumbs.db
 deploy.sh
 # app/console/*
 *.ps1
-package-lock.json
+/package-lock.json
 .prettierrc
 /screenshots/*
 app/**/custom
