@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Verified 2026-07-08 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
+> Verified 2026-07-20 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -22,6 +22,7 @@
 14. [Authentication & Security](#14-authentication--security)
 15. [Onboarding & Setup](#15-onboarding--setup)
 16. [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)
+17. [Bulk Import](#17-bulk-import)
 
 ---
 
@@ -401,7 +402,11 @@ Admins manage per-module field definitions at `/settings/modules/{module}/fields
 
 Named dropdown option lists live at `/settings/dropdowns`. Lists can be created, edited inline, or created-and-immediately-attached to a field. Components: `DropdownSelector.vue`, `CreateNewDropdownListModal.vue`, `EditDropdownListModal.vue`.
 
-For `status`-type fields, each option additionally carries a color, background color, and icon, authored inline via a color picker and the shared icon picker (`StatusOptionRowFields.vue`), with drag-to-reorder for the option order. Status fields render these as colored pill badges (`StatusField.vue`).
+### Status Fields
+
+A `status`-typed field's dropdown list gets a richer editor than a plain `select` list: each option carries its own color, background color, and icon — authored inline via a color picker and the shared icon picker (`StatusOptionRowFields.vue`, with a live badge preview), with drag-to-reorder for option order. Status rows are edited in place (no separate staging/commit step); a row's `value` key auto-derives from its label and locks once saved, so later label edits never rewrite a key other records may reference. Status fields render the result as colored pill badges (`StatusField.vue`). Every option requires its own explicit color/background/icon — there is no predefined style palette to fall back on (a neutral gray/circle-icon default is used only when a value is genuinely unset).
+
+Whether a list gets this rich editor is a property of the **list itself**, not just the field that happens to be editing it: `DropdownList.is_status` decides which editor renders everywhere the list can be reached — the standalone Dropdown Manager (`List.vue`, which marks flagged lists with a "Status" badge, and `Record.vue`), and the field-creation modals (`CreateNewDropdownListModal.vue`/`EditDropdownListModal.vue`). A list edited in status context "sticks" as status from then on, and lists backing the stock status fields seeded at install are flagged automatically.
 
 ### PDF Templates
 
@@ -650,3 +655,43 @@ Within the per-record History modal itself, a bulk-batch entry the viewed record
 - `docs/dev/audit-trail-implementation.md` — full technical writeup.
 - `docs/guides/audit-trail-guide.md` — plain-language, user-facing guide.
 - `tests/Feature/Audit/` — automated test coverage (39 tests as of this writing).
+
+---
+
+## 17. Bulk Import
+
+### Import Wizard
+
+Any module's list view offers an **Import** option (next to Export in the actions dropdown) that creates or updates many records at once from an uploaded file, through a guided multi-step wizard: upload → map columns → optional match field → confirm → results.
+
+| Action | Route | Controller method |
+|---|---|---|
+| Upload & preview (parse headers/sample rows) | `POST /{module}/import/preview` | `ImportController@preview` |
+| Start import | `POST /{module}/import/{import}/start` | `ImportController@start` |
+| Poll progress | `GET /{module}/import/{import}/status` | `ImportController@status` |
+
+Frontend: `ImportModal.vue` (wizard flow) and `ImportFieldSelect.vue` (per-column field picker).
+
+### Supported files
+
+CSV (comma- or semicolon-separated, delimiter auto-detected via `CsvDelimiterDetector`) or JSON (an array of record objects). Limits are configurable in `config/import.php`: up to 10MB and 50,000 rows per file; files of 200 rows or fewer process synchronously and land straight on the results screen, larger files are queued (`ProcessImportJob`) with a polling progress bar.
+
+### Column mapping
+
+Every column detected in the file maps to a target field, or "Don't import" to skip it; any field required by the module must be mapped before the import can start. `Import::mappableFields()` scopes the offered targets to writable fields — readonly and calculated fields are excluded, as are field types with no single-column text mapping (`record`, `address`, `image` — configurable via `import.excluded_fields`).
+
+### Value coercion
+
+`ImportValueCoercer` normalizes incoming text per field type: dropdown/status fields match against the option's displayed label in any supported language, not just its raw stored value; checkbox fields accept common yes/no wordings (`config('import.checkbox_true_values')`/`checkbox_false_values`) in addition to Cubrel's own translated wording; dates are parsed flexibly; numbers tolerate currency symbols and thousands separators.
+
+### Matching to avoid duplicates
+
+An optional "match existing records on" field (e.g. Email) lets a row update an existing record — matched by that field's value, including custom fields — instead of creating a duplicate. Left unset, every row becomes a new record.
+
+### Results & error handling
+
+Per-row failures (a bad value, a violated required field) are skipped individually rather than failing the whole file, and recorded with the row number and reason, capped at 100 stored errors (`errors_truncated` flag beyond that). The results screen reports created/updated/skipped counts plus the per-row error list.
+
+### Reference
+
+- `docs/guides/en/import-guide.md` — plain-language, user-facing guide.

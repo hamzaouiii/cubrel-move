@@ -22,7 +22,14 @@
 - **Impact**: None functionally (dead code doesn't execute), but both are actively misleading to read — a future maintainer could reasonably assume `enforceCardinality()` is the enforcement mechanism and be confused when linking behavior doesn't change, or not realize `getRelationshipBetween()` already exists and write a duplicate inline query (which `RelationshipManagerController::store()` already does instead of reusing it).
 - **Fix**: Delete both, or wire `enforceCardinality()` in deliberately if the throwing behavior is actually preferred over silent re-parenting for some case; reuse `getRelationshipBetween()` in `RelationshipManagerController::store()`'s duplicate-check if keeping it.
 
-### 3. Two-factor authentication — dead, unused columns
+### 3. Standalone Dropdown Manager can't create a new status list from scratch
+
+- **Where**: `resources/js/Pages/Settings/Dropdowns/Create.vue`
+- **What**: `DropdownList.is_status` (added in `2026_07_09_130000_add_is_status_to_dropdown_lists_table.php`) is what makes a list use the rich color/icon status editor everywhere it's edited — but the standalone create page has no toggle to set it. A new status-flavored list can currently only be created from a `status`-typed field's own create/edit flow (`CreateNewDropdownListModal.vue`), not directly at `/settings/dropdowns/create`.
+- **Impact**: Minor UX gap, not a bug — the field-context path is a full workaround, just an extra hop.
+- **Fix**: Add the same `is_status` toggle `CreateNewDropdownListModal.vue` has to `Create.vue`.
+
+### 4. Two-factor authentication — dead, unused columns
 
 - **Where**: `users` table (`two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `failed_login_attempts`, `locked_until`)
 - **What**: 2FA isn't offered in this version by design. Confirmed these five columns are never read or written anywhere in `app/` (the only `locked_until` hits are an unrelated column on the `modules` table, used for the Module Builder's draft-editing lock). All nullable/defaulted — inert, not a risk.
