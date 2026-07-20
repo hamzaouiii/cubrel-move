@@ -31,6 +31,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: "Leitfaden", link: "/overview" },
+          { text: "Cubrel.com", link: "https://www.cubrel.com" },
           { text: "App öffnen", link: "https://app.cubrel.com" },
         ],
         sidebar: [
@@ -72,6 +73,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: "Guide", link: "/en/overview" },
+          { text: "Cubrel.com", link: "https://www.cubrel.com/en" },
           { text: "Open App", link: "https://app.cubrel.com" },
         ],
         sidebar: [

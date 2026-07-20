@@ -122,7 +122,7 @@ useHead({ title: () => `${t("pricing.title")} — ${t("brand.name")}` });
 .tier--highlight {
   background: var(--color-ink);
   border-color: var(--color-ink);
-  color: #fff;
+  color: var(--color-on-dark);
 }
 
 .tier__name-row {
@@ -143,7 +143,7 @@ useHead({ title: () => `${t("pricing.title")} — ${t("brand.name")}` });
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-dark);
 }
 
 .tier__tagline {
@@ -153,7 +153,7 @@ useHead({ title: () => `${t("pricing.title")} — ${t("brand.name")}` });
 }
 
 .tier--highlight .tier__tagline {
-  color: #94a3b8;
+  color: var(--color-on-dark-muted);
 }
 
 .tier__price-row {
@@ -175,7 +175,7 @@ useHead({ title: () => `${t("pricing.title")} — ${t("brand.name")}` });
 }
 
 .tier--highlight .tier__period {
-  color: #94a3b8;
+  color: var(--color-on-dark-muted);
 }
 
 .tier__cta {
@@ -201,12 +201,12 @@ useHead({ title: () => `${t("pricing.title")} — ${t("brand.name")}` });
 }
 
 .tier__check {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 700;
 }
 
 .tier--highlight .tier__check {
-  color: #6ee7b7;
+  color: var(--color-success-on-dark);
 }
 
 .section-title {

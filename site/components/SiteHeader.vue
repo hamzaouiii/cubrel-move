@@ -13,7 +13,7 @@ const { t } = useI18n();
       <nav class="site-header__nav">
         <NuxtLink :to="localePath('/features')">{{ t('nav.features') }}</NuxtLink>
         <NuxtLink :to="localePath('/pricing')">{{ t('nav.pricing') }}</NuxtLink>
-        <a href="https://app.cubrel.com">{{ t('nav.docs') }}<ExternalLinkIcon /></a>
+        <a href="https://docs.cubrel.com">{{ t('nav.docs') }}<ExternalLinkIcon /></a>
       </nav>
 
       <div class="site-header__actions">

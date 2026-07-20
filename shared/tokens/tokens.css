@@ -12,6 +12,14 @@
   --color-surface: #ffffff;
   --color-surface-alt: #f7f9fb;
 
+  /* Semantic */
+  --color-success: #10b981;
+  --color-success-on-dark: #6ee7b7;
+
+  /* Text on dark (--color-ink) backgrounds */
+  --color-on-dark: #ffffff;
+  --color-on-dark-muted: #94a3b8;
+
   /* Typography */
   --font-sans: "Fira Sans", "Heebo", sans-serif;
   --font-heading: "Fira Sans", "Heebo", sans-serif;

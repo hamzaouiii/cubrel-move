@@ -18,29 +18,65 @@
   "home": {
     "badge": "Individuelle Module · dynamische Dashboards · gebrandete PDFs",
     "heroTitle": "Leistung ohne Komplexität",
-    "heroSubtitle": "Cubrel verbindet Interessenten, Verkaufschancen, Angebote, Bestellungen und Rechnungen in einem Arbeitsbereich — mit Modul-Builder, Drag-and-Drop-Layouts und Dashboards, die Sie wirklich selbst gestalten.",
+    "heroSubtitle": "Cubrel verbindet Interessenten, Verkaufschancen, Angebote, Bestellungen und Rechnungen in einem Arbeitsbereich , mit Modul-Builder, Drag-and-Drop-Layouts und Dashboards, die Sie wirklich selbst gestalten.",
     "ctaPrimary": "Kostenlos loslegen",
     "ctaSecondary": "Funktionen ansehen",
     "note": "Keine Kreditkarte erforderlich · Kostenlos für bis zu 3 Nutzer",
-    "highlightsLabel": "Jedes Modul, das Ihr Team braucht — von Anfang an verbunden",
+    "highlightsLabel": "Jedes Modul, das Ihr Team braucht , von Anfang an verbunden",
     "highlights": [
-      { "icon": "⚙", "title": "Individuelle Module", "body": "Bilden Sie jeden Prozess ab — Projekte, Tickets, Ressourcen — mit dem Modul-Builder. Felder hinzufügen, Typen wählen und live gehen, ganz ohne Programmierung." },
-      { "icon": "▤", "title": "Drag-and-Drop-Layouts", "body": "Gestalten Sie Listen-, Datensatz-, Beziehungs- und PDF-Ansichten pro Modul. Felder neu anordnen, als Pflichtfeld oder schreibgeschützt markieren — mit sofortiger Vorschau." },
-      { "icon": "✎", "title": "Angebote, Bestellungen & Rechnungen", "body": "Positionen mit automatischer Zwischensumme, Rabatt und Steuer — und nicht nur die drei mitgelieferten Module, sondern jedes Modul kann das aktivieren." },
-      { "icon": "⎘", "title": "Gebrandete PDF-Dokumente", "body": "Abschnittsbasierte Vorlagen für jedes Modul — Kopfzeile, Positionen, Summen — gerendert mit Ihrem Logo und Ihren Farben." },
-      { "icon": "◫", "title": "Dashboards, die wirklich Ihre sind", "body": "Widgets hinzufügen, in der Größe anpassen und neu anordnen. Kennzahlen, Diagramme, Pipelines und Datensatzlisten — automatisch pro Person gespeichert." },
-      { "icon": "⚲", "title": "Erweiterte Filter & gespeicherte Ansichten", "body": "Erstellen Sie mehrstufige Filter mit UND/ODER-Logik und teilen Sie sie gespeichert mit Ihrem Team." }
+      {
+        "icon": "⚙",
+        "title": "Individuelle Module",
+        "body": "Bilden Sie jeden Prozess ab , Projekte, Tickets, Ressourcen , mit dem Modul-Builder. Felder hinzufügen, Typen wählen und live gehen, ganz ohne Programmierung."
+      },
+      {
+        "icon": "▤",
+        "title": "Drag-and-Drop-Layouts",
+        "body": "Gestalten Sie Listen-, Datensatz-, Beziehungs- und PDF-Ansichten pro Modul. Felder neu anordnen, als Pflichtfeld oder schreibgeschützt markieren , mit sofortiger Vorschau."
+      },
+      {
+        "icon": "✎",
+        "title": "Angebote, Bestellungen & Rechnungen",
+        "body": "Positionen mit automatischer Zwischensumme, Rabatt und Steuer , und nicht nur die drei mitgelieferten Module, sondern jedes Modul kann das aktivieren."
+      },
+      {
+        "icon": "⎘",
+        "title": "Gebrandete PDF-Dokumente",
+        "body": "Abschnittsbasierte Vorlagen für jedes Modul , Kopfzeile, Positionen, Summen , gerendert mit Ihrem Logo und Ihren Farben."
+      },
+      {
+        "icon": "◫",
+        "title": "Dashboards, die wirklich Ihre sind",
+        "body": "Widgets hinzufügen, in der Größe anpassen und neu anordnen. Kennzahlen, Diagramme, Pipelines und Datensatzlisten , automatisch pro Person gespeichert."
+      },
+      {
+        "icon": "⚲",
+        "title": "Erweiterte Filter & gespeicherte Ansichten",
+        "body": "Erstellen Sie mehrstufige Filter mit UND/ODER-Logik und teilen Sie sie gespeichert mit Ihrem Team."
+      }
     ],
     "howItWorksLabel": "So funktioniert's",
     "howItWorksTitle": "Vom leeren Arbeitsbereich zur ersten Rechnung",
     "steps": [
-      { "num": "01", "title": "Erzählen Sie uns von Ihrem Unternehmen", "body": "Logo, Name und Kontaktdaten hinterlegen — sie erscheinen automatisch auf jedem Angebot, jeder Rechnung und jedem PDF." },
-      { "num": "02", "title": "Mit Beispieldaten starten oder eigene Daten nutzen", "body": "Füllen Sie ein funktionierendes CRM mit Beispiel-Interessenten, -Verkaufschancen und -Bestellungen, oder beginnen Sie ganz von vorn." },
-      { "num": "03", "title": "Team einladen", "body": "Laden Sie Ihr Team per E-Mail ein — einzeln oder im Sammelversand. Alle landen direkt in einem bereits eingerichteten Arbeitsbereich." }
+      {
+        "num": "01",
+        "title": "Erzählen Sie uns von Ihrem Unternehmen",
+        "body": "Logo, Name und Kontaktdaten hinterlegen , sie erscheinen automatisch auf jedem Angebot, jeder Rechnung und jedem PDF."
+      },
+      {
+        "num": "02",
+        "title": "Mit Beispieldaten starten oder eigene Daten nutzen",
+        "body": "Füllen Sie ein funktionierendes CRM mit Beispiel-Interessenten, -Verkaufschancen und -Bestellungen, oder beginnen Sie ganz von vorn."
+      },
+      {
+        "num": "03",
+        "title": "Team einladen",
+        "body": "Laden Sie Ihr Team per E-Mail ein , einzeln oder im Sammelversand. Alle landen direkt in einem bereits eingerichteten Arbeitsbereich."
+      }
     ],
     "dashboardLabel": "Dashboards nach Ihren Wünschen",
     "dashboardTitle": "Gestalten Sie das Dashboard, das Ihr Team wirklich braucht",
-    "dashboardBody": "Kennzahlen-Kacheln, Umsatzdiagramme, Pipelines und Datensatzlisten hinzufügen — in der Größe anpassen und neu anordnen. Cubrel merkt sich das Layout für jede Person, bei jeder Anmeldung.",
+    "dashboardBody": "Kennzahlen-Kacheln, Umsatzdiagramme, Pipelines und Datensatzlisten hinzufügen , in der Größe anpassen und neu anordnen. Cubrel merkt sich das Layout für jede Person, bei jeder Anmeldung.",
     "dashboardPoints": [
       "Fünf Widget-Typen: Kennzahlen, Zeitreihen, Aufschlüsselungen, Datensatzlisten, Personen",
       "Drag-and-Drop-Layout, automatisch pro Person gespeichert",
@@ -58,36 +94,36 @@
       {
         "navLabel": "Module",
         "eyebrow": "Daten & Module",
-        "title": "Jedes Modul, das Ihr Unternehmen braucht — von Anfang an dabei",
-        "body": "Interessenten, Firmen, Kontakte, Verkaufschancen, Angebote, Bestellungen, Rechnungen, Produkte und Tickets sind sofort einsatzbereit. Passt etwas nicht, erstellen Sie mit dem Modul-Builder ein eigenes Modul — mit eigenen Feldern, Layouts und Positionen, ganz ohne Programmierung.",
+        "title": "Jedes Modul, das Ihr Unternehmen braucht , von Anfang an dabei",
+        "body": "Interessenten, Firmen, Kontakte, Verkaufschancen, Angebote, Bestellungen, Rechnungen, Produkte und Tickets sind sofort einsatzbereit. Passt etwas nicht, erstellen Sie mit dem Modul-Builder ein eigenes Modul , mit eigenen Feldern, Layouts und Positionen, ganz ohne Programmierung.",
         "imageAlt": "Cubrels Modulverwaltung mit allen verfügbaren Modulen"
       },
       {
         "navLabel": "Listen & Suche",
         "eyebrow": "Datensätze, Suche & Dashboard",
-        "title": "Alles finden — sortiert und gefiltert nach Ihren Regeln",
-        "body": "Jede Liste ist von Haus aus sortierbar, durchsuchbar und paginiert. Erstellen Sie mehrstufige Filter mit UND/ODER-Logik, speichern Sie sie und teilen Sie sie mit Ihrem Team — bis hin zur „Meine Datensätze\"-Ansicht per Klick.",
+        "title": "Alles finden , sortiert und gefiltert nach Ihren Regeln",
+        "body": "Jede Liste ist von Haus aus sortierbar, durchsuchbar und paginiert. Erstellen Sie mehrstufige Filter mit UND/ODER-Logik, speichern Sie sie und teilen Sie sie mit Ihrem Team , bis hin zur „Meine Datensätze\"-Ansicht per Klick.",
         "imageAlt": "Cubrels Listenansicht der Verkaufschancen mit sortierbaren Spalten"
       },
       {
         "navLabel": "Datensätze & Layouts",
         "eyebrow": "Felder & Layouts",
         "title": "Datensatzseiten, genau nach Ihrem Prozess geformt",
-        "body": "Felder in Abschnitten gruppieren, neu anordnen und als Pflichtfeld oder schreibgeschützt markieren — alles per Drag-and-Drop, ohne Programmierung. 16 Feldtypen decken Text, Währung, Datum, Adresse und Status-Badges mit eigenen Farben ab.",
+        "body": "Felder in Abschnitten gruppieren, neu anordnen und als Pflichtfeld oder schreibgeschützt markieren , alles per Drag-and-Drop, ohne Programmierung. 16 Feldtypen decken Text, Währung, Datum, Adresse und Status-Badges mit eigenen Farben ab.",
         "imageAlt": "Eine Verkaufschance-Seite mit den Abschnitten „Allgemein\" und „Finanzen\""
       },
       {
         "navLabel": "Beziehungen",
         "eyebrow": "Beziehungen & Positionen",
         "title": "Sehen Sie auf einen Blick, wie Datensätze zusammenhängen",
-        "body": "Verknüpfen Sie Verkaufschancen mit Firmen, Produkte mit Bestellungen und jedes individuelle Modul mit jedem anderen — 1:n, n:m oder 1:1. Verknüpfte Datensätze erscheinen als eigene Panels, direkt dort, wo Sie gerade arbeiten.",
+        "body": "Verknüpfen Sie Verkaufschancen mit Firmen, Produkte mit Bestellungen und jedes individuelle Modul mit jedem anderen , 1:n, n:m oder 1:1. Verknüpfte Datensätze erscheinen als eigene Panels, direkt dort, wo Sie gerade arbeiten.",
         "imageAlt": "Der Beziehungs-Tab einer Verkaufschance mit verknüpften Firmen- und Produkt-Panels"
       },
       {
         "navLabel": "Dashboards",
         "eyebrow": "Dashboards nach Ihren Wünschen",
         "title": "Ein Dashboard, das Ihr Team jeden Morgen wirklich nutzt",
-        "body": "Kennzahlen-Kacheln, Umsatzdiagramme, Pipelines und Datensatzlisten hinzufügen. In der Größe anpassen und neu anordnen — Cubrel merkt sich das Layout für jede Person, bei jeder Anmeldung.",
+        "body": "Kennzahlen-Kacheln, Umsatzdiagramme, Pipelines und Datensatzlisten hinzufügen. In der Größe anpassen und neu anordnen , Cubrel merkt sich das Layout für jede Person, bei jeder Anmeldung.",
         "imageAlt": "Cubrel-Dashboard mit Kennzahlen-Kacheln und Diagrammen"
       }
     ]
@@ -98,44 +134,122 @@
     "subtitle": "Kostenlos starten mit bis zu 3 Nutzern. Upgraden Sie, sobald Pipeline, Team und Papierkram wachsen.",
     "tiers": [
       {
-        "name": "Kostenlos", "tagline": "Für kleine Teams, die sich organisieren.", "price": "0 €", "period": "/dauerhaft",
-        "cta": "Kostenlos starten", "badge": null,
-        "features": ["Bis zu 3 Nutzer", "Interessenten, Firmen, Kontakte & Verkaufschancen", "Angebote & Rechnungen mit Positionen", "1 individuelles Modul", "Community-Support"]
+        "name": "Kostenlos",
+        "tagline": "Für kleine Teams, die sich organisieren.",
+        "price": "0 €",
+        "period": "/dauerhaft",
+        "cta": "Kostenlos starten",
+        "badge": null,
+        "features": [
+          "Bis zu 3 Nutzer",
+          "Interessenten, Firmen, Kontakte & Verkaufschancen",
+          "Angebote & Rechnungen mit Positionen",
+          "1 individuelles Modul",
+          "Community-Support"
+        ]
       },
       {
-        "name": "Team", "tagline": "Für Teams, die ihren vollständigen Vertriebs- und Abrechnungsprozess abbilden.", "price": "19 €", "period": "/Nutzer/Monat",
-        "cta": "Kostenlos testen", "badge": "Beliebt",
-        "features": ["Unbegrenzte Nutzer", "Unbegrenzte individuelle Module", "Drag-and-Drop-Dashboards", "Gespeicherte & geteilte Filter", "Individuelle PDF-Vorlagen", "CSV- & JSON-Import/-Export", "E-Mail-Support"]
+        "name": "Team",
+        "tagline": "Für Teams, die ihren vollständigen Vertriebs- und Abrechnungsprozess abbilden.",
+        "price": "19 €",
+        "period": "/Nutzer/Monat",
+        "cta": "Kostenlos testen",
+        "badge": "Beliebt",
+        "features": [
+          "Unbegrenzte Nutzer",
+          "Unbegrenzte individuelle Module",
+          "Drag-and-Drop-Dashboards",
+          "Gespeicherte & geteilte Filter",
+          "Individuelle PDF-Vorlagen",
+          "CSV- & JSON-Import/-Export",
+          "E-Mail-Support"
+        ]
       },
       {
-        "name": "Business", "tagline": "Für größere Teams mit individuellem Onboarding-Bedarf.", "price": "Individuell", "period": "",
-        "cta": "Vertrieb kontaktieren", "badge": null,
-        "features": ["Alles aus Team", "Persönliches Onboarding", "Self-Hosting verfügbar", "Priorisierter Support"]
+        "name": "Business",
+        "tagline": "Für größere Teams mit individuellem Onboarding-Bedarf.",
+        "price": "Individuell",
+        "period": "",
+        "cta": "Vertrieb kontaktieren",
+        "badge": null,
+        "features": [
+          "Alles aus Team",
+          "Persönliches Onboarding",
+          "Self-Hosting verfügbar",
+          "Priorisierter Support"
+        ]
       }
     ],
     "compareTitle": "Pläne vergleichen",
     "compare": [
-      { "label": "Nutzer", "free": "3", "team": "Unbegrenzt", "business": "Unbegrenzt" },
-      { "label": "Individuelle Module", "free": "1", "team": "Unbegrenzt", "business": "Unbegrenzt" },
-      { "label": "Angebote, Bestellungen & Rechnungen", "free": "✓", "team": "✓", "business": "✓" },
-      { "label": "Dashboards & Widgets", "free": "Standardlayout", "team": "Drag & Drop", "business": "Drag & Drop" },
-      { "label": "Gespeicherte & geteilte Filter", "free": "—", "team": "✓", "business": "✓" },
-      { "label": "PDF-Vorlagen", "free": "1 pro Modul", "team": "Unbegrenzt", "business": "Unbegrenzt" },
-      { "label": "Import & Export", "free": "—", "team": "✓", "business": "✓" },
-      { "label": "Support", "free": "Community", "team": "E-Mail", "business": "Priorisiert" }
+      {
+        "label": "Nutzer",
+        "free": "3",
+        "team": "Unbegrenzt",
+        "business": "Unbegrenzt"
+      },
+      {
+        "label": "Individuelle Module",
+        "free": "1",
+        "team": "Unbegrenzt",
+        "business": "Unbegrenzt"
+      },
+      {
+        "label": "Angebote, Bestellungen & Rechnungen",
+        "free": "✓",
+        "team": "✓",
+        "business": "✓"
+      },
+      {
+        "label": "Dashboards & Widgets",
+        "free": "Standardlayout",
+        "team": "Drag & Drop",
+        "business": "Drag & Drop"
+      },
+      {
+        "label": "Gespeicherte & geteilte Filter",
+        "free": ",",
+        "team": "✓",
+        "business": "✓"
+      },
+      {
+        "label": "PDF-Vorlagen",
+        "free": "1 pro Modul",
+        "team": "Unbegrenzt",
+        "business": "Unbegrenzt"
+      },
+      { "label": "Import & Export", "free": ",", "team": "✓", "business": "✓" },
+      {
+        "label": "Support",
+        "free": "Community",
+        "team": "E-Mail",
+        "business": "Priorisiert"
+      }
     ],
     "faqTitle": "Häufige Fragen",
     "faqs": [
-      { "q": "Was zählt als Nutzer?", "a": "Jede Person, die sich anmeldet, um Datensätze zu verwalten — Vertrieb, Support oder Administration. Abgerechnet wird nur, wer tatsächlich ein Konto hat." },
-      { "q": "Kann ich eigene Module erstellen?", "a": "Ja. Mit dem Modul-Builder definieren Sie neue Datensatztypen mit eigenen Feldern, Layouts und Positionen — ganz ohne Programmierung." },
-      { "q": "Kann jedes Modul Positionen haben?", "a": "Ja — Positionen sind nicht auf Angebote, Bestellungen und Rechnungen beschränkt. Jedes Modul, auch selbst erstellte, kann sie aktivieren und festlegen, aus welchem Katalog die Preise stammen." },
-      { "q": "Gibt es eine Self-Hosting-Option?", "a": "Business-Kunden können Cubrel mit demselben Funktionsumfang wie die gehostete Version auf eigener Infrastruktur betreiben." }
+      {
+        "q": "Was zählt als Nutzer?",
+        "a": "Jede Person, die sich anmeldet, um Datensätze zu verwalten , Vertrieb, Support oder Administration. Abgerechnet wird nur, wer tatsächlich ein Konto hat."
+      },
+      {
+        "q": "Kann ich eigene Module erstellen?",
+        "a": "Ja. Mit dem Modul-Builder definieren Sie neue Datensatztypen mit eigenen Feldern, Layouts und Positionen , ganz ohne Programmierung."
+      },
+      {
+        "q": "Kann jedes Modul Positionen haben?",
+        "a": "Ja , Positionen sind nicht auf Angebote, Bestellungen und Rechnungen beschränkt. Jedes Modul, auch selbst erstellte, kann sie aktivieren und festlegen, aus welchem Katalog die Preise stammen."
+      },
+      {
+        "q": "Gibt es eine Self-Hosting-Option?",
+        "a": "Business-Kunden können Cubrel mit demselben Funktionsumfang wie die gehostete Version auf eigener Infrastruktur betreiben."
+      }
     ]
   },
   "legal": {
     "impressumTitle": "Impressum",
-    "impressumBody": "Diese Seite enthält vor dem Launch das Impressum von Cubrel gemäß §5 TMG. Platzhalter — nicht als endgültiger Rechtstext zu verstehen.",
+    "impressumBody": "Diese Seite enthält vor dem Launch das Impressum von Cubrel gemäß §5 TMG. Platzhalter , nicht als endgültiger Rechtstext zu verstehen.",
     "datenschutzTitle": "Datenschutz",
-    "datenschutzBody": "Diese Seite enthält vor dem Launch die Datenschutzerklärung von Cubrel. Platzhalter — nicht als endgültiger Rechtstext zu verstehen."
+    "datenschutzBody": "Diese Seite enthält vor dem Launch die Datenschutzerklärung von Cubrel. Platzhalter , nicht als endgültiger Rechtstext zu verstehen."
   }
 }

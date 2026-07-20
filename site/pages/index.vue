@@ -13,15 +13,15 @@ useHead({ title: () => `${t("brand.name")} — ${t("home.heroTitle")}` });
   <div>
     <!-- HERO -->
     <section class="container hero">
-      <div class="hero__badge">
-        <span class="hero__badge-dot" />
-        {{ t("home.badge") }}
-      </div>
       <h1 class="hero__title">{{ t("home.heroTitle") }}</h1>
       <p class="hero__subtitle">{{ t("home.heroSubtitle") }}</p>
       <div class="hero__actions">
-        <a href="https://app.cubrel.com" class="btn btn--primary">{{ t("home.ctaPrimary") }}<ExternalLinkIcon /></a>
-        <NuxtLink :to="localePath('/features')" class="btn btn--secondary">{{ t("home.ctaSecondary") }}</NuxtLink>
+        <a href="https://app.cubrel.com" class="btn btn--primary"
+          >{{ t("home.ctaPrimary") }}<ExternalLinkIcon
+        /></a>
+        <NuxtLink :to="localePath('/features')" class="btn btn--secondary">{{
+          t("home.ctaSecondary")
+        }}</NuxtLink>
       </div>
       <p class="hero__note">{{ t("home.note") }}</p>
     </section>
@@ -42,7 +42,9 @@ useHead({ title: () => `${t("brand.name")} — ${t("home.heroTitle")}` });
     <section class="section-band">
       <div class="container">
         <p class="eyebrow eyebrow--center">{{ t("home.howItWorksLabel") }}</p>
-        <h2 class="section-title section-title--center">{{ t("home.howItWorksTitle") }}</h2>
+        <h2 class="section-title section-title--center">
+          {{ t("home.howItWorksTitle") }}
+        </h2>
         <div class="grid grid--3">
           <div v-for="(s, i) in steps" :key="i" class="card">
             <div class="card__num">{{ rt(s.num) }}</div>
@@ -79,8 +81,12 @@ useHead({ title: () => `${t("brand.name")} — ${t("home.heroTitle")}` });
         <h2 class="cta__title">{{ t("home.ctaTitle") }}</h2>
         <p class="cta__body">{{ t("home.ctaBody") }}</p>
         <div class="hero__actions">
-          <a href="https://app.cubrel.com" class="btn btn--primary">{{ t("home.ctaPrimary") }}<ExternalLinkIcon /></a>
-          <NuxtLink :to="localePath('/pricing')" class="btn btn--ghost">{{ t("nav.pricing") }}</NuxtLink>
+          <a href="https://app.cubrel.com" class="btn btn--primary"
+            >{{ t("home.ctaPrimary") }}<ExternalLinkIcon
+          /></a>
+          <NuxtLink :to="localePath('/pricing')" class="btn btn--ghost">{{
+            t("nav.pricing")
+          }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -110,7 +116,7 @@ useHead({ title: () => `${t("brand.name")} — ${t("home.heroTitle")}` });
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10b981;
+  background: var(--color-success);
 }
 
 .hero__title {
@@ -257,7 +263,7 @@ useHead({ title: () => `${t("brand.name")} — ${t("home.heroTitle")}` });
 }
 
 .checklist__check {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 700;
 }
 
@@ -282,19 +288,19 @@ useHead({ title: () => `${t("brand.name")} — ${t("home.heroTitle")}` });
 .cta__title {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--color-on-dark);
   margin-bottom: var(--space-4);
 }
 
 .cta__body {
-  color: #cbd5e1;
+  color: var(--color-on-dark-muted);
   max-width: 520px;
   margin: 0 auto var(--space-8);
 }
 
 .btn--ghost {
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: var(--color-on-dark);
   border-color: rgba(255, 255, 255, 0.16);
 }
 </style>

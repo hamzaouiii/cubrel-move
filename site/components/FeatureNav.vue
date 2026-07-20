@@ -53,6 +53,6 @@ const isActive = (slug) => route.path.endsWith(`/features/${slug}`);
 .feature-nav__pill--active {
   background: var(--color-ink);
   border-color: var(--color-ink);
-  color: #fff;
+  color: var(--color-on-dark);
 }
 </style>

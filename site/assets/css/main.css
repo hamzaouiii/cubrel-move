@@ -61,7 +61,7 @@ img {
 
 .btn--primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-dark);
   box-shadow: var(--shadow-sm);
 }
 
@@ -73,5 +73,5 @@ img {
 
 .btn--dark {
   background: var(--color-ink);
-  color: #fff;
+  color: var(--color-on-dark);
 }
