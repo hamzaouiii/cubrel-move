@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Verified 2026-07-20 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
+> Verified 2026-07-22 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -23,6 +23,7 @@
 15. [Onboarding & Setup](#15-onboarding--setup)
 16. [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)
 17. [Bulk Import](#17-bulk-import)
+18. [Activities](#18-activities)
 
 ---
 
@@ -43,6 +44,12 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Quotes** | `quotes` | number, status, valid_until, subtotal, discount_amount, tax_amount, total | Yes | Yes |
 | **Products** | `products` | sku, category, price, unit, tax_rate, is_active | No | Yes |
 | **Support Cases** | `cases` | subject, status, priority, opened_at, closed_at | No | Yes |
+| **Tasks** | `tasks` | due_at, status, priority, completed_at (auto-set on completion) | No | Yes |
+| **Calls** | `calls` | direction, call_at, duration_minutes, status, outcome | No | Yes |
+| **Meetings** | `meetings` | location (address), start_at, end_at, status | No | Yes |
+| **Notes** | `notes` | (default fields only) | No | Yes |
+
+Tasks, Calls, Meetings, and Notes are the **activity modules** — see [Activities](#18-activities) for the timeline sidebar, linking, and completion behavior built around them.
 
 ### Infrastructure Models
 
@@ -104,14 +111,14 @@ All module tables carry a `custom_fields` JSON column. Fields created through th
 
 ### Static Modules
 
-14 built-in modules are defined in `config/modules.php` and seeded via `ModulesTableSeeder`. Each module declares:
+18 built-in modules are defined in `config/modules.php` and seeded via `ModulesTableSeeder`. Each module declares:
 
 - `slug`, `name`, `label`, `single_label`, `icon`, `color`, `category`
 - `model_class` and `handler_class` (PHP class names)
 - `table_name`, `sort_order`, `is_active`, `show_in_sidebar`
-- Feature flags: `has_line_items`, `has_owner`, `is_product_like`, `line_item_source_module`
+- Feature flags: `has_line_items`, `has_owner`, `is_product_like`, `line_item_source_module`, `is_activity`, `has_activity` (see [Activities](#18-activities))
 
-**Categories:** `sales` (Leads, Accounts, Contacts, Deals) · `revenue` (Quotes, Orders, Invoices, Products, LineItems) · `support` (Cases) · `system` (Users, User Invites, Settings, Pdf Template)
+**Categories:** `sales` (Leads, Accounts, Contacts, Deals) · `revenue` (Quotes, Orders, Invoices, Products, LineItems) · `activities` (Tasks, Calls, Meetings, Notes) · `support` (Cases) · `system` (Users, User Invites, Settings, Pdf Template)
 
 ### Line Items Are Configurable Per Module
 
@@ -695,3 +702,47 @@ Per-row failures (a bad value, a violated required field) are skipped individual
 ### Reference
 
 - `docs/guides/en/import-guide.md` — plain-language, user-facing guide.
+
+---
+
+## 18. Activities
+
+Tasks, Calls, Meetings, and Notes are first-class core modules (see [Data Modeling](#1-data-modeling)) that plug into every other module through a dedicated activity timeline sidebar — a running, chronological record of what's happened on and around a given record.
+
+### Two Module Flags Drive It
+
+Any module can opt into this system through two boolean flags on `Module`, set when the module is created in the Module Builder:
+
+| Flag | Meaning |
+|---|---|
+| `is_activity` | Records of this module are activity items — they can be linked to other records and appear in their timelines. Set on Tasks, Calls, Meetings, Notes. |
+| `has_activity` | Records of this module get the timeline sidebar. Set on Leads, Accounts, Contacts, Deals, Support Cases, Quotes, Orders, Invoices. |
+
+Setting either flag on a module automatically generates the many-to-many relationships needed to link it to every module on the other side (`RelationshipService::syncActivityRelationships()`) — no manual relationship setup required. The same generation runs for every existing `is_activity`/`has_activity` module at install time.
+
+### The Activity Sidebar
+
+A collapsible panel appears on the record page of any `has_activity` module, positioned beneath the record header and sized to its own content:
+
+- **Tabs** — All, Activity (linked Tasks/Calls/Meetings/Notes only), Changes (field-level history only); the selected tab persists across page reloads.
+- **Add menu** — a single "+ Add" control opens a dropdown of every `is_activity` module, so the list of available activity types stays compact regardless of how many exist. Picking one opens the module's normal create form and automatically links the new record to the one being viewed on save.
+- **Timeline** — entries render on a connecting rail with a per-type icon, relative timestamps ("2h ago", "Today 14:30", "Yesterday 09:12", falling back to a plain date), and status/link changes rendered as the same colored pill badges used elsewhere in the app.
+- **Task completion** — a Task entry in the timeline renders as a live checkbox; checking it updates the real Task's status immediately, no page navigation required.
+- The sidebar refreshes automatically after saving the record itself or linking a record through the Related tab, in addition to right after creating a new linked activity.
+
+### What Powers the Timeline
+
+Each entry comes from one of two sources, merged and sorted chronologically by `RecordTimelineController`:
+
+- **Linked activity records** — live Task/Call/Meeting/Note rows linked to the record through the relationships above, fetched fresh (not a frozen snapshot), which is what makes the Task checkbox interactive.
+- **Audit history** — the same `audit_logs` entries that back the record's audit trail (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)), including field changes, linking/unlinking, and dedicated `line_item.added`/`line_item.removed` entries whenever a line item is added to or removed from the record.
+
+### Linking Activities to Records
+
+Activities use the same many-to-many relationship system as any other module relationship (see [Relationships](#6-relationships)) — a Meeting, for example, can be linked to more than one record at once (an attendee's Account alongside the Deal being discussed), not just a single parent. By default, activity relationships stay out of the standard Related-tab panel list so they don't duplicate what the timeline already shows; an admin can still add one to a module's Related layout through the Layout Builder if they want it to also appear there.
+
+### Route
+
+| Action | Route |
+|---|---|
+| Get a record's merged activity/audit timeline | `GET /modules/{module}/{recordId}/timeline` |
