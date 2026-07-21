@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Modules\LineItem;
+use App\Services\Audit\AuditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -46,6 +47,13 @@ class LineItemController extends Controller
         $item->id = Str::uuid();
         $item->calculateTotals()->save();
 
+        AuditService::log('line_item.added', $item->parent_type, $item->parent_id, [
+            'name' => $item->name,
+            'quantity' => $item->quantity,
+            'unit_price' => $item->unit_price,
+            'total' => $item->total,
+        ]);
+
         return response()->json($item, 201);
     }
 
@@ -72,6 +80,13 @@ class LineItemController extends Controller
 
     public function destroy(LineItem $lineItem): JsonResponse
     {
+        AuditService::log('line_item.removed', $lineItem->parent_type, $lineItem->parent_id, [
+            'name' => $lineItem->name,
+            'quantity' => $lineItem->quantity,
+            'unit_price' => $lineItem->unit_price,
+            'total' => $lineItem->total,
+        ]);
+
         $lineItem->delete();
 
         return response()->json(null, 204);

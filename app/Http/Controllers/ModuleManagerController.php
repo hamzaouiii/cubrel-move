@@ -74,13 +74,12 @@ class ModuleManagerController extends Controller
       'is_draft',
       'created_at',
       'updated_at',
-      'id'
+      'id',
+      'is_activity',
+      'has_activity',
     ]);
 
-    // The source module (and its associated snapshot mapping) may only be
-    // changed while no line items exist yet for this module — otherwise
-    // existing rows' product_id references and any configured field mapping
-    // would silently be left pointing at the wrong module.
+
     if (
       array_key_exists('line_item_source_module', $data)
       && $data['line_item_source_module'] !== $module->line_item_source_module

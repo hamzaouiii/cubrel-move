@@ -13,15 +13,7 @@ class RecordHistoryController extends Controller
     {
         Module::where('slug', $module)->where('is_active', true)->firstOrFail();
         $paginator = AuditLog::with(['user', 'impersonator'])
-            ->where('module_slug', $module)
-            ->where(function ($query) use ($recordId) {
-                $query->where('record_id', $recordId)
-                    ->orWhereIn('id', function ($sub) use ($recordId) {
-                        $sub->select('audit_log_id')
-                            ->from('audit_log_affected_records')
-                            ->where('record_id', $recordId);
-                    });
-            })
+            ->forRecord($module, $recordId)
             ->latest('created_at')
             ->paginate($request->get('perPage', 15));
 

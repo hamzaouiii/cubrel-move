@@ -386,6 +386,82 @@ return [
             'filterable' => true,
         ],
     ],
+    'tasks' => [
+        'due_at' => [
+            'name' => 'due_at',
+            'type' => 'datetime',
+            'required' => true,
+            'filterable' => true,
+        ],
+        'status' => [
+            'name' => 'status',
+            'type' => 'status',
+            'filterable' => true,
+        ],
+        'priority' => [
+            'name' => 'priority',
+            'type' => 'status',
+            'filterable' => true,
+        ],
+        'completed_at' => [
+            'name' => 'completed_at',
+            'type' => 'datetime',
+            'readonly' => true,
+            'filterable' => true,
+        ],
+    ],
+    'calls' => [
+        'direction' => [
+            'name' => 'direction',
+            'type' => 'select',
+            'filterable' => true,
+        ],
+        'call_at' => [
+            'name' => 'call_at',
+            'type' => 'datetime',
+            'filterable' => true,
+        ],
+        'duration_minutes' => [
+            'name' => 'duration_minutes',
+            'type' => 'integer',
+            'filterable' => true,
+        ],
+        'status' => [
+            'name' => 'status',
+            'type' => 'status',
+            'filterable' => true,
+        ],
+        'outcome' => [
+            'name' => 'outcome',
+            'type' => 'select',
+            'filterable' => true,
+        ],
+    ],
+    'meetings' => [
+        'location' => [
+            'name' => 'location',
+            'type' => 'address',
+            'searchable' => true,
+            'filterable' => true,
+        ],
+        'start_at' => [
+            'name' => 'start_at',
+            'type' => 'datetime',
+            'required' => true,
+            'filterable' => true,
+        ],
+        'end_at' => [
+            'name' => 'end_at',
+            'type' => 'datetime',
+            'required' => true,
+            'filterable' => true,
+        ],
+        'status' => [
+            'name' => 'status',
+            'type' => 'status',
+            'filterable' => true,
+        ],
+    ],
     'line_items' => [
         'parent_type' => [
             'name' => 'parent_type',

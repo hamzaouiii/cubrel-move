@@ -29,5 +29,7 @@ class DevSeeder extends Seeder
     Product::factory()->count(20)->create();
     Deal::factory()->count(100)->create();
     Order::factory()->count(10)->create();
+    // Tasks/Calls/Meetings/Notes are seeded (and linked to the records above)
+    // by ActivitySeeder, once relationships exist to link them through.
   }
 }

@@ -37,6 +37,8 @@ class Module extends Model
         'sort_order',
         'is_active',
         'is_relatable',
+        'is_activity',
+        'has_activity',
         'description',
         'model_class',
         'handler_class',
@@ -56,6 +58,8 @@ class Module extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_relatable' => 'boolean',
+        'is_activity' => 'boolean',
+        'has_activity' => 'boolean',
     ];
 
     protected $guarded = [];
@@ -79,6 +83,8 @@ class Module extends Model
                     'label' => $module->label,
                     'single_label' => $module->single_label,
                     'category' => $module->category,
+                    'is_activity' => $module->is_activity,
+                    'has_activity' => $module->has_activity,
                 ];
             })
             ->values();
@@ -226,6 +232,7 @@ class Module extends Model
                         'label',
                         'required',
                         'is_draft',
+                        'is_calculated',
                         'related_module',
                     ])
                     ->get();

@@ -143,6 +143,7 @@ const visibleFields = computed(() =>
             :header="visibleFields"
             :related_slug="relationship.related_slug"
             :key="parentRecord?.id"
+            :fields="fields"
             :color="color"
           >
           </PanelParentRecord>

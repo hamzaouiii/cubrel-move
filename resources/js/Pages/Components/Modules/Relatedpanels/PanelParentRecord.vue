@@ -13,11 +13,16 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  fields: Object,
   color: String,
 });
 
 const parentRecord = computed(() => props.record ?? null);
 const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
+
+const fieldResolver = (name) => {
+  return props.fields?.find((field) => field.name === name);
+};
 </script>
 
 <template>
@@ -54,7 +59,7 @@ const getRelatedRecordurl = (slug, id) => `/${slug}/${id}`;
           </div>
 
           <FieldRenderer
-            :field="field"
+            :field="fieldResolver(field.name)"
             v-model="parentRecord[field.name]"
             mode="related-panel"
             :module-color="color"

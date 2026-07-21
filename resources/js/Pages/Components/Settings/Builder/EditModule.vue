@@ -27,6 +27,9 @@ const editableModule = reactive({
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
 editableModule.has_line_items = Boolean(editableModule.has_line_items);
 editableModule.is_product_like = Boolean(editableModule.is_product_like);
+editableModule.is_relatable = Boolean(editableModule.is_relatable);
+editableModule.is_activity = Boolean(editableModule.is_activity);
+editableModule.has_activity = Boolean(editableModule.has_activity);
 const editableFields = computed(() => {
   const ignore = [
     "name",
@@ -91,6 +94,9 @@ const inputTypeFor = (key, value) => {
   if (key === "description") return "textarea";
   if (key === "has_line_items") return "checkbox";
   if (key === "is_product_like") return "checkbox";
+  if (key === "is_relatable") return "checkbox";
+  if (key === "is_activity") return "checkbox";
+  if (key === "has_activity") return "checkbox";
   return "text";
 };
 const emit = defineEmits([

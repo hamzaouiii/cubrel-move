@@ -31,6 +31,24 @@ class AuditLog extends Model
     }
 
     /**
+     * Matches a record's own direct audit rows plus any bulk-batch row that
+     * affected it (via audit_log_affected_records). Shared by the per-record
+     * History modal and the Activities timeline.
+     */
+    public function scopeForRecord($query, string $moduleSlug, string $recordId)
+    {
+        return $query->where('module_slug', $moduleSlug)
+            ->where(function ($query) use ($recordId) {
+                $query->where('record_id', $recordId)
+                    ->orWhereIn('id', function ($sub) use ($recordId) {
+                        $sub->select('audit_log_id')
+                            ->from('audit_log_affected_records')
+                            ->where('record_id', $recordId);
+                    });
+            });
+    }
+
+    /**
      * Shared shape for both the global Audit Trail endpoint and the
      * per-record history endpoint. Impersonator identity is always
      * included when present.

@@ -36,6 +36,38 @@ return [
         'high' => 'Hoch',
         'urgent' => 'Dringend',
     ],
+    'tasks_status_list' => [
+        'not_started' => 'Nicht begonnen',
+        'in_progress' => 'In Bearbeitung',
+        'completed' => 'Abgeschlossen',
+        'deferred' => 'Verschoben',
+    ],
+    'tasks_priority_list' => [
+        'low' => 'Niedrig',
+        'medium' => 'Mittel',
+        'high' => 'Hoch',
+    ],
+    'calls_direction_list' => [
+        'inbound' => 'Eingehend',
+        'outbound' => 'Ausgehend',
+    ],
+    'calls_status_list' => [
+        'planned' => 'Geplant',
+        'held' => 'Geführt',
+        'not_held' => 'Nicht geführt',
+    ],
+    'calls_outcome_list' => [
+        'connected' => 'Verbunden',
+        'no_answer' => 'Keine Antwort',
+        'voicemail' => 'Mailbox',
+        'busy' => 'Besetzt',
+    ],
+    'meetings_status_list' => [
+        'planned' => 'Geplant',
+        'held' => 'Stattgefunden',
+        'not_held' => 'Nicht stattgefunden',
+        'cancelled' => 'Abgesagt',
+    ],
     'quotes_status_list' => [
         'draft' => 'Entwurf',
         'sent' => 'Gesendet',

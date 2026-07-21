@@ -65,6 +65,12 @@ return [
         'line_item_source_module' => 'Line Item Source Module',
         'line_item_source_module_hint' => 'Which module line items on this module search and snapshot from. Only available while this module has no line items yet.',
         'line_item_source_locked' => 'This can no longer be changed because line items already exist for this module.',
+        'is_relatable' => 'Is Relatable',
+        'is_relatable_hint' => 'When enabled, other modules can link to records of this module through relationships, and its records can be picked in \'record\' type fields.',
+        'is_activity' => 'Is An Activity',
+        'is_activity_hint' => 'When enabled, records of this module (e.g. tasks, calls) can be linked to other records and will appear in their Activity sidebar timeline.',
+        'has_activity' => 'Has Activities',
+        'has_activity_hint' => 'When enabled, records of this module get a collapsible Activity sidebar showing linked activity records (tasks, calls, meetings, notes) alongside a history of changes.',
 
     ],
     // Note: Changing this to 'system_fields' is a good idea to avoid conflicts with modules.fields
