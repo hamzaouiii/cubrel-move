@@ -33,6 +33,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ImpersonationSessionController;
 use App\Http\Controllers\RecordHistoryController;
+use App\Http\Controllers\RecordTimelineController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -221,6 +222,7 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::post('{module}', [RecordController::class, 'store'])->name('record.store');
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/available', [RelationshipLinkController::class, 'getRecordsForLinking'])->name('relationships.available');
     Route::get('/modules/{module}/{recordId}/history', [RecordHistoryController::class, 'index'])->name('modules.record.history');
+    Route::get('/modules/{module}/{recordId}/timeline', [RecordTimelineController::class, 'index'])->name('modules.record.timeline');
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single-link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single-link');
     Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');

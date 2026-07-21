@@ -517,7 +517,10 @@ const productPickerPlaceholder = computed(
               @dragover="setDragOver(0, $event)"
               @drop="onDrop(0, $event)"
             >
-              <td :colspan="listColumns.length + 3" class="li-drop-zone__cell"></td>
+              <td
+                :colspan="listColumns.length + 3"
+                class="li-drop-zone__cell"
+              ></td>
             </tr>
 
             <template v-for="(item, index) in items" :key="item.id">
@@ -560,7 +563,10 @@ const productPickerPlaceholder = computed(
                 @dragover="setDragOver(index + 1, $event)"
                 @drop="onDrop(index + 1, $event)"
               >
-                <td :colspan="listColumns.length + 3" class="li-drop-zone__cell"></td>
+                <td
+                  :colspan="listColumns.length + 3"
+                  class="li-drop-zone__cell"
+                ></td>
               </tr>
             </template>
           </tbody>
@@ -670,7 +676,9 @@ const productPickerPlaceholder = computed(
             >
               <label
                 class="sheet-field__label"
-                :class="{ 'sheet-field__label--error': rowErrors[fieldEntry.name] }"
+                :class="{
+                  'sheet-field__label--error': rowErrors[fieldEntry.name],
+                }"
               >
                 {{ $t(getLineItemField(fieldEntry.name).label) }}
               </label>
@@ -789,7 +797,6 @@ const productPickerPlaceholder = computed(
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 32px 20px;
     color: #9ca3af;
   }
 

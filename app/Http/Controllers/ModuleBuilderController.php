@@ -6,6 +6,7 @@ use App\Models\Module;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Services\ModuleScaffolder;
+use App\Services\Relationships\RelationshipService;
 use Illuminate\Support\Str;
 use App\Support\RandomColorGenerator;
 use App\Support\RandomIconGenerator;
@@ -49,8 +50,8 @@ class ModuleBuilderController extends Controller
       ->where('is_active', true)
       ->where('id', '!=', $module->id)
       ->orderBy('name')
-      ->get(['slug', 'name'])
-      ->map(fn ($m) => ['value' => $m->slug, 'label' => $m->name])
+      ->get(['slug', 'label'])
+      ->map(fn ($m) => ['value' => $m->slug, 'label' => $m->label])
       ->values()
       ->all();
   }
@@ -75,6 +76,9 @@ class ModuleBuilderController extends Controller
       'show_in_sidebar' => ['boolean'],
       'has_line_items' => ['required', 'boolean'],
       'is_product_like' => ['boolean'],
+      'is_relatable' => ['boolean'],
+      'is_activity' => ['boolean'],
+      'has_activity' => ['boolean'],
       'line_item_source_module' => [
         'nullable',
         'string',
@@ -104,11 +108,17 @@ class ModuleBuilderController extends Controller
       'has_owner' => true,
       'show_in_module_manager' => true,
       'is_product_like' => $validated['is_product_like'] ?? false,
+      'is_relatable' => $validated['is_relatable'] ?? true,
+      'is_activity' => $validated['is_activity'] ?? false,
+      'has_activity' => $validated['has_activity'] ?? false,
       'line_item_source_module' => $validated['has_line_items']
         ? $validated['line_item_source_module']
         : null,
 
     ]);
+
+    RelationshipService::syncActivityRelationships($module);
+
     return back();
   }
   /**

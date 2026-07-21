@@ -1,9 +1,8 @@
 <script setup>
 import axios from "axios";
-import { ref, computed, onMounted, getCurrentInstance } from "vue";
-import { usePage } from "@inertiajs/vue3";
-import { formatDate, formatDateTime } from "@/utils/datetime";
+import { ref, computed, onMounted } from "vue";
 import ImpersonationBadge from "@/Pages/Components/Settings/AuditTrail/ImpersonationBadge.vue";
+import { useAuditFormatting } from "@/Composables/useAuditFormatting";
 
 const props = defineProps({
   moduleSlug: { type: String, required: true },
@@ -13,10 +12,17 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-const { proxy } = getCurrentInstance();
-const t = proxy.$t;
-const appSettings = usePage().props.appSettings;
-const allModules = computed(() => usePage().props.modules ?? []);
+const {
+  fieldLabel,
+  formatValue,
+  when,
+  diffValue,
+  isBulkChange,
+  hasRecordOldValue,
+  bulkSummary,
+  isLinkChange,
+  linkSummary,
+} = useAuditFormatting(props);
 
 // phases: loading | ready | error
 const phase = ref("loading");
@@ -27,76 +33,6 @@ const errorMessage = ref("");
 const loadingMore = ref(false);
 
 const canLoadMore = computed(() => page.value < lastPage.value);
-
-const fieldDef = (name) => props.fields?.find((f) => f.name === name);
-
-const fieldLabel = (name) => {
-  const field = fieldDef(name);
-  return field?.label ? t(field.label) : name;
-};
-
-const dropdownLabel = (name, rawValue) => {
-  const values = fieldDef(name)?.dropdown_list?.values;
-  if (!values) return null;
-  const match = values.find((v) => String(v.value) === String(rawValue));
-  return match ? t(match.label) : null;
-};
-
-const formatValue = (name, value) => {
-  if (value === null || value === undefined || value === "") {
-    return t("globals.audit_trail.empty_value");
-  }
-  const type = fieldDef(name)?.type;
-  if (type === "date") return formatDate(value, appSettings);
-  if (type === "datetime") return formatDateTime(value, appSettings);
-  if (["bool", "boolean", "checkbox"].includes(type)) {
-    return value ? t("globals.audit_trail.yes") : t("globals.audit_trail.no");
-  }
-  if (["select", "dropdown", "status"].includes(type)) {
-    return dropdownLabel(name, value) ?? String(value);
-  }
-  return String(value);
-};
-
-const when = (value) => formatDateTime(value, appSettings);
-
-// 'record' type fields (e.g. owner_id) carry a resolved *_label alongside
-// the raw id — prefer that, since a bare id means nothing to a viewer.
-const diffValue = (name, diff, which) => {
-  const label = diff[`${which}_label`];
-  if (label !== undefined) {
-    return label ?? t("globals.audit_trail.empty_value");
-  }
-  return formatValue(name, diff[which]);
-};
-
-const isBulkChange = (changes) => !!changes && changes.count !== undefined;
-
-const hasRecordOldValue = (changes) =>
-  !!changes && changes.old_value !== undefined;
-
-const bulkSummary = (entry) => {
-  const c = entry.changes;
-  return t("globals.audit_trail.bulk_summary_detail", {
-    count: c.count,
-    field: fieldLabel(c.field),
-    value: formatValue(c.field, c.value),
-  });
-};
-
-const isLinkChange = (entry) =>
-  entry.action === "linked" || entry.action === "unlinked";
-
-const relatedModuleLabel = (slug) =>
-  allModules.value.find((m) => m.slug === slug)?.label ?? slug;
-
-const linkSummary = (entry) => {
-  const c = entry.changes;
-  return t("globals.audit_trail.link_summary", {
-    related: c.related_label ?? c.related_id,
-    module: relatedModuleLabel(c.related_module),
-  });
-};
 
 const load = async (nextPage = 1) => {
   if (nextPage === 1) {

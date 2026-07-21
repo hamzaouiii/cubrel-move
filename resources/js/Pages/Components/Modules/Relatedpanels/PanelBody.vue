@@ -20,9 +20,9 @@ const records = ref([]);
 const isLoading = ref(false);
 
 watch(
-  () => props.relationship?.records,
+  () => props.relationship.records,
   (newVal) => {
-    records.value = newVal != undefined ?? [...newVal];
+    records.value = [...newVal];
   },
   { immediate: true },
 );

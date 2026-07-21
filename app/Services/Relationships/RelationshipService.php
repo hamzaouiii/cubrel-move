@@ -19,6 +19,48 @@ class RelationshipService
   protected static array $moduleCache = [];
 
   /**
+   * Generates a many-to-many relationship (e.g. orders_tasks) for every pairing
+   * this module's is_activity/has_activity flags call for, so the two flags stay
+   * the single source of truth instead of needing manual relationship config.
+   * Idempotent (firstOrCreate) — safe to call every time a module is saved.
+   * Shared by database/seeders/RelationshipSeeder.php (all modules, at seed
+   * time) and ModuleBuilderController (a single module, right after it's
+   * created/updated in the Module Builder).
+   */
+  public static function syncActivityRelationships(Module $module): void
+  {
+    if ($module->has_activity) {
+      foreach (Module::where('is_activity', true)->get() as $activity) {
+        self::createActivityRelationship($module->slug, $activity->slug);
+      }
+    }
+
+    if ($module->is_activity) {
+      foreach (Module::where('has_activity', true)->get() as $parent) {
+        self::createActivityRelationship($parent->slug, $module->slug);
+      }
+    }
+  }
+
+  private static function createActivityRelationship(string $parentSlug, string $activitySlug): void
+  {
+    if ($parentSlug === $activitySlug) {
+      return;
+    }
+
+    Relationship::firstOrCreate(
+      ['name' => "{$parentSlug}_{$activitySlug}"],
+      [
+        'label' => "modules.{$activitySlug}.label",
+        'left_module' => $parentSlug,
+        'right_module' => $activitySlug,
+        'type' => 'many-to-many',
+        'is_system' => true,
+      ]
+    );
+  }
+
+  /**
    * Resolves the full Module model from a slug and caches it in memory.
    */
   protected static function getModuleBySlug(string $slug): Module

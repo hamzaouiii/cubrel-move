@@ -104,7 +104,7 @@ return [
         'error_lodaing_related_records' => 'Fehler beim Laden verfügbarer Datensätze',
         'info_linking' => 'Datensätze werden verknüpft',
         'create_record' => 'Datensatz erstellen',
-        'new_record' => 'Neu: :label',
+        'new_record' => 'Neu :label',
         'link_count' => 'Verknüpfen :count :label',
         'no_records_found' => 'Keine Datensätze gefunden',
     ],

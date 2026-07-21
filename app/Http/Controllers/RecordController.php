@@ -147,7 +147,7 @@ class RecordController extends Controller
         $modelClass = $moduleModel->model_class;
 
         $record = $modelClass::create(
-            $request->except('_token')
+            $request->except('_token', '_method', 'related', 'owner_id__label')
         );
 
         if ($request->wantsJson()) {

@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('path');
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_relatable')->default(true);
+            $table->boolean('is_activity')->default(false);
+            $table->boolean('has_activity')->default(false);
             $table->boolean('show_in_module_manager')->default(true);
             $table->boolean('show_in_sidebar')->default(true);
             $table->string('handler_class')->nullable();
@@ -35,7 +38,7 @@ return new class extends Migration
             $table->uuid('locked_by')->nullable();
             $table->timestamp('locked_until')->nullable();
             $table->boolean('has_line_items')->default(false);
-             $table->boolean('is_product_like')->default(false);
+            $table->boolean('is_product_like')->default(false);
             $table->string('line_item_source_module')->nullable();
             $table->index('locked_until');
             $table->timestamps();

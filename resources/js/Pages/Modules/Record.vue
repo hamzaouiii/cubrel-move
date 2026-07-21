@@ -21,6 +21,7 @@ import LineItemsPanel from "../Components/Modules/LineItemsPanel.vue";
 import PdfModal from "@/Pages/Components/Modules/PdfModal.vue";
 import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
 import HistoryModal from "@/Pages/Components/Modules/HistoryModal.vue";
+import RecordActivitySidebar from "@/Pages/Components/Modules/RecordActivitySidebar.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -58,6 +59,7 @@ const showPdfModal = ref(false);
 const showExportModal = ref(false);
 const showHistoryModal = ref(false);
 const actionDropDownref = ref(null);
+const activitySidebarRef = ref(null);
 const getInitialTab = () => {
   const params = new URLSearchParams(window.location.search);
   const relatedAvailable =
@@ -303,6 +305,7 @@ const saveRecord = () => {
         isEditing.value = false;
         clearAllAlerts();
         success(t("modules.actions.update_success"));
+        activitySidebarRef.value?.loadTimeline();
       },
       onError: () => {
         clearAllAlerts();
@@ -449,6 +452,7 @@ const handleSaved = (p) => {
     preserveScroll: true,
     preserveState: true,
   });
+  activitySidebarRef.value?.loadTimeline();
 };
 
 const showRelatedTab = computed(() => {
@@ -680,139 +684,151 @@ const handleTotalsUpdated = (totals) => {
         </ul>
       </div>
     </div>
-    <div class="record-layout__scroll">
-      <div v-show="currentTab === 'overview'" class="record-layout__sections">
-        <div
-          class="record-layout__sections__item"
-          v-for="s in visibleSections"
-        >
-          <!-- In Record.vue, inside the sections loop -->
-          <template v-if="s.has_line_items">
-            <div class="record-layout__sections__item__title">
-              {{ s.name }}
-            </div>
-            <LineItemsPanel
-              :parent-id="record.id"
-              :parent-type="module.slug"
-              :mode="mode"
-              :module-color="module_color"
-              :product-fields="productFields"
-              :line-item-fields="lineItemFields"
-              :source-module="lineItemSourceModule"
-              :list-columns="lineItemsListColumns"
-              :snapshot-layout="lineItemsSnapshotLayout"
-              @totals-updated="handleTotalsUpdated"
-            />
-          </template>
-          <template v-else>
-            <div class="record-layout__sections__item__title">
-              {{ s.name }}
-            </div>
-            <div class="record-layout__sections__item__layout">
-              <div
-                v-for="f in Object.values(s.layout || {}).filter(
-                  (field) => getField(field),
-                )"
-                class="record-layout__sections__item__layout__field"
-              >
-                <span
-                  class="record-layout__sections__item__layout__field__label"
-                >
-                  {{ $t(f.label) }}:
-                </span>
-                <FieldRenderer
-                  :field="getField(f)"
-                  v-model="form[f.name]"
-                  :related_label="form[f.name + '__label'] ?? null"
-                  :mode="getMode(f)"
-                  :read-only="getField(f)?.readonly"
-                  :module-color="module_color"
-                  :icon="getIcon(getField(f)?.related_module || null)"
-                  :has-error="hasError(f)"
-                  @open-link-overlay="openFieldOverlay"
-                />
+
+    <div class="record-layout__body">
+      <div class="record-layout__scroll">
+        <div v-show="currentTab === 'overview'" class="record-layout__sections">
+          <div
+            class="record-layout__sections__item"
+            v-for="s in visibleSections"
+          >
+            <!-- In Record.vue, inside the sections loop -->
+            <template v-if="s.has_line_items">
+              <div class="record-layout__sections__item__title">
+                {{ s.name }}
               </div>
-            </div>
-          </template>
+              <LineItemsPanel
+                :parent-id="record.id"
+                :parent-type="module.slug"
+                :mode="mode"
+                :module-color="module_color"
+                :product-fields="productFields"
+                :line-item-fields="lineItemFields"
+                :source-module="lineItemSourceModule"
+                :list-columns="lineItemsListColumns"
+                :snapshot-layout="lineItemsSnapshotLayout"
+                @totals-updated="handleTotalsUpdated"
+              />
+            </template>
+            <template v-else>
+              <div class="record-layout__sections__item__title">
+                {{ s.name }}
+              </div>
+              <div class="record-layout__sections__item__layout">
+                <div
+                  v-for="f in Object.values(s.layout || {}).filter((field) =>
+                    getField(field),
+                  )"
+                  class="record-layout__sections__item__layout__field"
+                >
+                  <span
+                    class="record-layout__sections__item__layout__field__label"
+                  >
+                    {{ $t(f.label) }}:
+                  </span>
+                  <FieldRenderer
+                    :field="getField(f)"
+                    v-model="form[f.name]"
+                    :related_label="form[f.name + '__label'] ?? null"
+                    :mode="getMode(f)"
+                    :read-only="getField(f)?.readonly"
+                    :module-color="module_color"
+                    :icon="getIcon(getField(f)?.related_module || null)"
+                    :has-error="hasError(f)"
+                    @open-link-overlay="openFieldOverlay"
+                  />
+                </div>
+              </div>
+            </template>
+          </div>
         </div>
-      </div>
 
-      <div v-show="currentTab === 'related'" class="record-layout__subpanels">
-        <PanelList
-          :relationships="record.related"
-          :layout="relatedLayout"
-          @open-overlay="openOverlay"
-          @panel-update="handleSaved"
-          :expand-panel="expandPanel"
-        ></PanelList>
-        <RelatedLinksOverlay
-          v-if="overlayOpen && !isSingleSelectRelationship"
-          :layout="activeLayout(activePanel)"
-          :panel="activePanel"
-          :relationship="relationship(activePanel.name)"
-          @close="overlayOpen = false"
-          @saved="handleSaved"
-          :selected-parent="activeParentRecord"
+        <div v-show="currentTab === 'related'" class="record-layout__subpanels">
+          <PanelList
+            :relationships="record.related"
+            :layout="relatedLayout"
+            @open-overlay="openOverlay"
+            @panel-update="handleSaved"
+            :expand-panel="expandPanel"
+          ></PanelList>
+          <RelatedLinksOverlay
+            v-if="overlayOpen && !isSingleSelectRelationship"
+            :layout="activeLayout(activePanel)"
+            :panel="activePanel"
+            :relationship="relationship(activePanel.name)"
+            @close="overlayOpen = false"
+            @saved="handleSaved"
+            :selected-parent="activeParentRecord"
+          />
+          <RecordSelectorDrawer
+            :open="overlayOpen && isSingleSelectRelationship"
+            :search-endpoint="singleLinkSearchEndpoint"
+            :related-module="relationship(activePanel?.name)?.related_slug"
+            :icon="getIcon(relationship(activePanel?.name)?.related_slug)"
+            :accent-color="
+              getRelatedColor(relationship(activePanel?.name)?.related_slug)
+            "
+            :selected-record="activeParentRecord?.id"
+            :layout="activeLayout(activePanel)"
+            :fields="
+              Object.values(relationship(activePanel?.name)?.fields || {})
+            "
+            :relationship-name="activePanel?.name"
+            @saved="handleSaved"
+            @close="overlayOpen = false"
+          />
+        </div>
+
+        <PdfModal
+          v-if="showPdfModal"
+          :module-slug="module.slug"
+          :record-id="record.id"
+          :record-name="record.name ?? record.number ?? record.id"
+          :templates="pdfTemplates"
+          @close="showPdfModal = false"
         />
+
+        <ExportModal
+          v-if="showExportModal"
+          :module-slug="module.slug"
+          :record-id="record.id"
+          :record-name="record.name ?? record.number ?? record.id"
+          @close="showExportModal = false"
+        />
+
+        <HistoryModal
+          v-if="showHistoryModal"
+          :module-slug="module.slug"
+          :record-id="record.id"
+          :fields="fields"
+          @close="showHistoryModal = false"
+        />
+
         <RecordSelectorDrawer
-          :open="overlayOpen && isSingleSelectRelationship"
-          :search-endpoint="singleLinkSearchEndpoint"
-          :related-module="relationship(activePanel?.name)?.related_slug"
-          :icon="getIcon(relationship(activePanel?.name)?.related_slug)"
-          :accent-color="
-            getRelatedColor(relationship(activePanel?.name)?.related_slug)
+          :open="fieldOverlayOpen"
+          :search-endpoint="
+            activeField
+              ? `/relatedfield/search/${activeField.related_module}`
+              : ''
           "
-          :selected-record="activeParentRecord?.id"
-          :layout="activeLayout(activePanel)"
-          :fields="Object.values(relationship(activePanel?.name)?.fields || {})"
-          :relationship-name="activePanel?.name"
-          @saved="handleSaved"
-          @close="overlayOpen = false"
+          :related-module="activeField?.related_module"
+          :icon="getIcon(activeField?.related_module || null)"
+          @select="onFieldRecordSelect"
+          @close="
+            fieldOverlayOpen = false;
+            activeField = null;
+          "
+          :selected-record="form[activeField?.name]"
+          :active-field="activeField"
+          :layout="getLinkingLayout(activeField?.related_module || null)"
+          :fields="fields"
         />
       </div>
-
-      <PdfModal
-        v-if="showPdfModal"
-        :module-slug="module.slug"
+      <RecordActivitySidebar
+        v-if="module.has_activity"
+        ref="activitySidebarRef"
+        :module="module"
         :record-id="record.id"
-        :record-name="record.name ?? record.number ?? record.id"
-        :templates="pdfTemplates"
-        @close="showPdfModal = false"
-      />
-
-      <ExportModal
-        v-if="showExportModal"
-        :module-slug="module.slug"
-        :record-id="record.id"
-        :record-name="record.name ?? record.number ?? record.id"
-        @close="showExportModal = false"
-      />
-
-      <HistoryModal
-        v-if="showHistoryModal"
-        :module-slug="module.slug"
-        :record-id="record.id"
-        :fields="fields"
-        @close="showHistoryModal = false"
-      />
-
-      <RecordSelectorDrawer
-        :open="fieldOverlayOpen"
-        :search-endpoint="
-          activeField
-            ? `/relatedfield/search/${activeField.related_module}`
-            : ''
-        "
-        :related-module="activeField?.related_module"
-        :icon="getIcon(activeField?.related_module || null)"
-        @select="onFieldRecordSelect"
-        @close="
-          fieldOverlayOpen = false;
-          activeField = null;
-        "
-        :selected-record="form[activeField?.name]"
-        :active-field="activeField"
-        :layout="getLinkingLayout(activeField?.related_module || null)"
         :fields="fields"
       />
     </div>

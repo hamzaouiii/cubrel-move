@@ -37,6 +37,7 @@ const editableModule = reactive({
 });
 editableModule.show_in_sidebar = Boolean(editableModule.show_in_sidebar);
 editableModule.is_product_like = Boolean(editableModule.is_product_like);
+editableModule.is_relatable = Boolean(editableModule.is_relatable);
 
 const lineItemSourceOptions = computed(() => ({ values: props.moduleOptions }));
 
@@ -70,6 +71,9 @@ const editableFields = computed(() => {
     "has_owner",
     "show_in_module_manager",
     "is_relatable",
+    // for now this feature is only avialable in the module builder
+    "is_activity",
+    "has_activity",
   ];
   return Object.entries(editableModule).filter(
     ([key]) => !ignore.includes(key),
@@ -86,6 +90,7 @@ const inputTypeFor = (key, value) => {
   if (key === "color") return "color";
   if (key === "description") return "textarea";
   if (key === "is_product_like") return "checkbox";
+  if (key === "is_relatable") return "checkbox";
   return "text";
 };
 

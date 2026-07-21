@@ -64,6 +64,12 @@ return [
         'line_item_source_module' => 'Positions-Quellmodul',
         'line_item_source_module_hint' => 'Aus welchem Modul die Positionen dieses Moduls suchen und Daten übernehmen. Nur änderbar, solange für dieses Modul noch keine Positionen existieren.',
         'line_item_source_locked' => 'Dies kann nicht mehr geändert werden, da für dieses Modul bereits Positionen existieren.',
+        'is_relatable' => 'Verknüpfbar',
+        'is_relatable_hint' => 'Wenn aktiviert, können andere Module über Beziehungen auf Datensätze dieses Moduls verweisen, und seine Datensätze können in Feldern vom Typ \'Datensatz\' ausgewählt werden.',
+        'is_activity' => 'Ist Ein Aktivität',
+        'is_activity_hint' => 'Wenn aktiviert, können Datensätze dieses Moduls (z. B. Aufgaben, Anrufe) mit anderen Datensätzen verknüpft werden und erscheinen dort im Aktivitätsverlauf.',
+        'has_activity' => 'Hat Aktivitäten',
+        'has_activity_hint' => 'Wenn aktiviert, erhalten Datensätze dieses Moduls eine einklappbare Aktivitätsleiste mit verknüpften Aktivitäten (Aufgaben, Anrufe, Termine, Notizen) sowie einem Änderungsverlauf.',
     ],
     'fields' => [
         'app_locale' => 'Anwendungssprache',
