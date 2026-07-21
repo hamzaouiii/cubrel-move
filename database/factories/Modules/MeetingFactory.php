@@ -9,9 +9,24 @@ class MeetingFactory extends Factory
 {
   protected $model = \App\Models\Modules\Meeting::class;
 
+  // Realistic meeting titles paired with a short agenda note.
+  protected array $templates = [
+    ['title' => 'Kickoff meeting', 'description' => 'Introduce the team and align on project scope and timeline.'],
+    ['title' => 'Quarterly business review', 'description' => 'Review results from the last quarter and plan ahead.'],
+    ['title' => 'Product demo', 'description' => 'Walk the evaluation team through the platform live.'],
+    ['title' => 'Contract negotiation', 'description' => 'Work through open items in the contract before signing.'],
+    ['title' => 'Onboarding session', 'description' => 'Get the team set up and comfortable with the basics.'],
+    ['title' => 'Strategy planning session', 'description' => 'Map out priorities and next steps for the coming months.'],
+    ['title' => 'Stakeholder alignment meeting', 'description' => 'Make sure everyone involved is on the same page before moving forward.'],
+    ['title' => 'Renewal discussion', 'description' => 'Go over renewal terms and any changes needed for next year.'],
+    ['title' => 'Technical requirements review', 'description' => "Confirm integration requirements with their engineering team."],
+    ['title' => 'Budget planning meeting', 'description' => 'Discuss budget scope for the upcoming project phase.'],
+  ];
+
   public function definition(): array
   {
     $statuses = ['planned', 'held', 'not_held', 'cancelled'];
+    $template = $this->faker->randomElement($this->templates);
 
     $startAt = $this->faker->dateTimeBetween('-2 months', '+2 months');
     $endAt = (clone $startAt)->modify('+' . $this->faker->numberBetween(30, 120) . ' minutes');
@@ -19,8 +34,8 @@ class MeetingFactory extends Factory
     return [
       'id' => (string) Str::uuid(),
 
-      'name' => ucfirst($this->faker->words(4, true)) . ' Meeting',
-      'description' => $this->faker->realText(120),
+      'name' => $template['title'],
+      'description' => $template['description'],
 
       'location' => $this->faker->boolean(70) ? [
         'street'      => $this->faker->streetAddress(),
