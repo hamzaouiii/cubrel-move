@@ -46,7 +46,7 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Support Cases** | `cases` | subject, status, priority, opened_at, closed_at | No | Yes |
 | **Tasks** | `tasks` | due_at, status, priority, completed_at (auto-set on completion) | No | Yes |
 | **Calls** | `calls` | direction, call_at, duration_minutes, status, outcome | No | Yes |
-| **Meetings** | `meetings` | location (address), start_at, end_at, status | No | Yes |
+| **Meetings** | `meetings` | location (address), start_at, end_at, duration (auto-computed), status | No | Yes |
 | **Notes** | `notes` | (default fields only) | No | Yes |
 
 Tasks, Calls, Meetings, and Notes are the **activity modules** — see [Activities](#18-activities) for the timeline sidebar, linking, and completion behavior built around them.
@@ -63,6 +63,7 @@ Tasks, Calls, Meetings, and Notes are the **activity modules** — see [Activiti
 | `RelationshipLink` | Join record connecting two module records through a `Relationship` |
 | `UserInvite` | Pending invitation token with expiry and status |
 | `LineItem` | Child row on any module with line items enabled (polymorphic `parent_type`/`parent_id`) |
+| `MeetingAttendee` | Person (linked Contact/Lead/User, or external guest) attending a Meeting, with role/RSVP/attendance (see [Activities](#18-activities)) |
 | `Settings` / `SettingValue` | Key-value system settings with group and autoload support |
 | `Dashboard` | Per-user dashboard widget configuration (JSON) |
 | `PdfTemplate` | Module-scoped PDF template; owns its section `definition` JSON directly; `is_default` flag per module |
@@ -96,10 +97,15 @@ Defined in `config/default_field_types.php` and mapped to database column types 
 | `address` | `json` | `AddressField.vue` | all sub-fields non-empty |
 | `record` | `string` | `RelatedRecord.vue` | UUID format |
 | `image` | `string` | `ImageField.vue` | image upload validation |
+| `duration` | `integer` | `DurationField.vue` | read-only — no edit-mode input at all |
 
 ### Composite Field: Address
 
 The `address` type stores a JSON object with sub-fields (street, city, postal_code, country, etc.). It is flagged `isComposite: true` in the registry, meaning the field renderer handles it differently from flat types.
+
+### Computed Field: Duration
+
+The `duration` type stores an integer number of minutes and is read-only in every mode — `DurationField.vue` has no edit-mode input branch at all, so it can only ever be set by the model itself, never typed in directly. On Meetings, `Meeting`'s `saving` hook recomputes it automatically from `start_at`/`end_at` (`start_at->diffInMinutes(end_at)`) every time either changes. Display formats the stored minutes as `1d 2h 30m`-style shorthand, omitting any zero-valued unit.
 
 ### Custom Field Storage
 
@@ -115,10 +121,30 @@ All module tables carry a `custom_fields` JSON column. Fields created through th
 
 - `slug`, `name`, `label`, `single_label`, `icon`, `color`, `category`
 - `model_class` and `handler_class` (PHP class names)
-- `table_name`, `sort_order`, `is_active`, `show_in_sidebar`
-- Feature flags: `has_line_items`, `has_owner`, `is_product_like`, `line_item_source_module`, `is_activity`, `has_activity` (see [Activities](#18-activities))
+- `table_name`, `sort_order`
+- A set of boolean feature flags — see [Module Flags Reference](#module-flags-reference) below.
 
 **Categories:** `sales` (Leads, Accounts, Contacts, Deals) · `revenue` (Quotes, Orders, Invoices, Products, LineItems) · `activities` (Tasks, Calls, Meetings, Notes) · `support` (Cases) · `system` (Users, User Invites, Settings, Pdf Template)
+
+### Module Flags Reference
+
+Every module — stock or custom — carries the same set of boolean flags on its `Module` record. This is the single source of truth for what each one means and where it can be changed; other sections link back here instead of redefining them.
+
+| Flag | Meaning | Where it's set |
+|---|---|---|
+| `is_active` | Module is live and queryable — nearly every controller gates on it. A module built through the Module Builder starts `false` and only flips to `true` once the deploy pipeline's final step completes. | Deployment pipeline only — no manual toggle |
+| `is_custom` | Distinguishes a Module Builder-created module from a static, built-in one. | Set once at creation, never edited afterward |
+| `show_in_sidebar` | Module appears in the left-nav sidebar. | Module Builder (create/edit) and Module Manager |
+| `show_in_module_manager` | Module is listed in the admin Module Manager at all. Always `true` for modules created through the Module Builder. | Not user-editable |
+| `is_relatable` | Other modules can link to this module's records through relationships, and its records can be picked in `record`-type fields. | Module Builder only (defaults to `true`) |
+| `has_owner` | Attaches an `owner_id` (FK → users) to each record for ownership scoping (see [Permissions & Roles](#11-permissions--roles)). Forced `true` for every module created through the Module Builder — not currently configurable. | Not user-editable |
+| `has_line_items` | Module supports child line-item rows (see [Line Items](#7-line-items)). | Module Builder (create/edit, before deploy) |
+| `is_product_like` | Module is eligible to be picked as a line-item source by other modules (e.g. Products). | Module Builder only |
+| `line_item_source_module` | Which `is_product_like` module this module's line items search and snapshot from; falls back to `products`. | Module Builder (before deploy) or Module Manager (after — until `canChangeLineItemSourceModule()` locks it once a line item exists) |
+| `is_activity` | Records of this module are activity items — linkable to other records, appear in their timelines (see [Activities](#18-activities)). | Module Builder only, not editable after creation |
+| `has_activity` | Records of this module get the activity timeline sidebar (see [Activities](#18-activities)). | Module Builder only, not editable after creation |
+
+While a module is mid-creation in the Module Builder (`is_draft = true`), it's soft-locked to the editing admin (`locked_by`/`locked_until`, a rolling 2-hour window) so two admins can't clobber the same draft concurrently.
 
 ### Line Items Are Configurable Per Module
 
@@ -443,7 +469,7 @@ The system has two role levels:
 
 Whether a regular (non-admin) user can see a module at all is a single binary split:
 
-- `is_active` (module enabled/disabled) and `show_in_sidebar`/`show_in_module_manager` control visibility, evaluated the same way for every non-admin user.
+- `is_active` and `show_in_sidebar`/`show_in_module_manager` (see [Module Flags Reference](#module-flags-reference)) control visibility, evaluated the same way for every non-admin user.
 - The `users` and `settings` modules are always hidden from non-admins; admins see everything.
 - Once a module is visible to a regular user, that user has full create/edit/delete on its records and can link/unlink it via relationships.
 
@@ -453,7 +479,7 @@ Admins can impersonate any user via `POST /users/{user}/impersonate`. A persiste
 
 ### Record Ownership
 
-`has_owner = true` modules attach `owner_id` (FK → users) to each record. Dashboard widgets and list queries can be scoped to the authenticated user's owned records via `OwnershipService`.
+`has_owner` modules (see [Module Flags Reference](#module-flags-reference)) attach `owner_id` (FK → users) to each record. Dashboard widgets and list queries can be scoped to the authenticated user's owned records via `OwnershipService`.
 
 ---
 
@@ -711,12 +737,10 @@ Tasks, Calls, Meetings, and Notes are first-class core modules (see [Data Modeli
 
 ### Two Module Flags Drive It
 
-Any module can opt into this system through two boolean flags on `Module`, set when the module is created in the Module Builder:
+Any module can opt into this system through the `is_activity`/`has_activity` flags on `Module` (see [Module Flags Reference](#module-flags-reference)), set when the module is created in the Module Builder:
 
-| Flag | Meaning |
-|---|---|
-| `is_activity` | Records of this module are activity items — they can be linked to other records and appear in their timelines. Set on Tasks, Calls, Meetings, Notes. |
-| `has_activity` | Records of this module get the timeline sidebar. Set on Leads, Accounts, Contacts, Deals, Support Cases, Quotes, Orders, Invoices. |
+- `is_activity` — set on Tasks, Calls, Meetings, Notes.
+- `has_activity` — set on Leads, Accounts, Contacts, Deals, Support Cases, Quotes, Orders, Invoices.
 
 Setting either flag on a module automatically generates the many-to-many relationships needed to link it to every module on the other side (`RelationshipService::syncActivityRelationships()`) — no manual relationship setup required. The same generation runs for every existing `is_activity`/`has_activity` module at install time.
 
@@ -746,3 +770,60 @@ Activities use the same many-to-many relationship system as any other module rel
 | Action | Route |
 |---|---|
 | Get a record's merged activity/audit timeline | `GET /modules/{module}/{recordId}/timeline` |
+
+### Meeting Attendees
+
+**Meetings is a special case.** Everything else in this document that's per-module — line items, activity linking, the timeline sidebar — is a flag any module can opt into through the Module Builder (see [Module Flags Reference](#module-flags-reference)). Attendees is not: it is built specifically for the Meetings module (a dedicated `meeting_attendees` table, `MeetingOrganizerObserver`, `AttendeesPanel.vue`, and a dedicated Layout Builder section), not a general capability, and there's no flag that turns it on for another module.
+
+Meetings carry a dedicated attendee list, separate from the generic activity-linking relationships above — it tracks *who* is invited and their individual RSVP/attendance, not just which records the meeting relates to.
+
+#### Data
+
+`meeting_attendees` is a plain FK to `meetings`, not polymorphic — this is Meetings-only, not a general per-module capability like line items:
+
+| Column | Purpose |
+|---|---|
+| `source_type` / `source_id` | Nullable link to a Contact, Lead, or User record. Null on both means an external guest. |
+| `name` / `email` | Snapshotted at add time for linked attendees; typed directly for external guests. |
+| `role` | `organizer` \| `required` \| `optional` |
+| `rsvp_status` | `invited` \| `accepted` \| `declined` \| `tentative` |
+| `attendance_status` | `attended` \| `no_show`, null until recorded |
+| `responded_at` | Set automatically whenever `rsvp_status` moves off `invited` |
+
+Valid values for `role`, `rsvp_status`, and `attendance_status`, plus which modules can be picked as an attendee source, are defined once in `config/meeting_attendees.php` and shared to the frontend via Inertia (`meetingAttendeeOptions`) — the option lists shown in the UI and the values accepted by server-side validation read from the same source.
+
+#### Auto-organizer, single-organizer enforcement
+
+- `MeetingOrganizerObserver` fires on every `Meeting` creation and adds the meeting's owner as an attendee with `role: organizer`, `rsvp_status: accepted` — every meeting has at least one attendee from the moment it's created.
+- Only one attendee can hold `role: organizer` at a time. `MeetingAttendeeController::demoteOtherOrganizers()` runs after any create/update that sets a new organizer, demoting whoever held it before to `required`. This is enforced server-side and mirrored client-side while attendees are still staged (unsaved), so picking a second "Organizer" in the same batch gives immediate feedback instead of silently losing the earlier one on save.
+
+#### Adding attendees — internal, external, or mixed, in one batch
+
+`AttendeeOverlay.vue` stages attendees into a single list before saving, regardless of source:
+
+- **Internal** — pick a source module (Contact, Lead, or User), then search and multi-select via `RecordMultiSelectorDrawer.vue`, a generic checkbox-based multi-select record picker (not specific to this feature).
+- **External** — a small inline form (name, email, role) with an "Add another guest" action. Email is required and format-validated (`emailValidate`) here, since it's the only way to reach someone with no linked record.
+- Both feed the same staged list, shown beneath either tab regardless of which is active, so one save can mix internal picks and external guests together. Each staged entry keeps its own editable role.
+- Saving loops through the staged list and posts each attendee individually; a partial failure leaves only the failed entries staged for retry rather than losing the whole batch.
+
+#### Record view panel
+
+`AttendeesPanel.vue` lists attendees sorted Organizer → Required → Optional (rank driven by `config/meeting_attendees.php`, re-applied client-side so a new or edited row lands correctly without a refetch):
+
+- Avatar and highlight color reflect the *linked module's* color (Contact/Lead/User), not the Meeting's own — external guests get a neutral gray. Colors respect the `use_individual_module_colors` setting the same way every other related-record display does.
+- RSVP and attendance render as colored pill badges. Their edit controls stay hidden until a row is hovered (or actively mid-edit), toggled by a pen/check icon rather than a persistent inline dropdown.
+- "Mark all attended" bulk-sets every attendee with no recorded attendance to `attended`.
+
+#### Layout Builder integration
+
+The Attendees section is a fixed, non-field layout section (`has_attendees: true` in `config/module_layouts/meetings.php`). In `LayoutRecordEditor.vue` it renders as a locked placeholder ("Attendees will be generated automatically") rather than an editable drop zone, so no field can be dragged into it. It can still be removed or re-added via its own "Attendees" button next to "Line Items", mirroring that existing pattern.
+
+#### API
+
+| Action | Route |
+|---|---|
+| List a meeting's attendees | `GET /meeting-attendees?meeting_id=X` |
+| Add an attendee | `POST /meeting-attendees` |
+| Update an attendee | `PUT /meeting-attendees/{id}` |
+| Remove an attendee | `DELETE /meeting-attendees/{id}` |
+| Mark all unrecorded attendees as attended | `POST /meeting-attendees/mark-all-attended` |
