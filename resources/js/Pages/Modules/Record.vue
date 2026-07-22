@@ -18,6 +18,7 @@ import RelatedLinksOverlay from "@/Pages/Components/Modules/RelatedLinksOverlay.
 import { useFieldValidation } from "@/Composables/useFieldValidation";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
 import LineItemsPanel from "../Components/Modules/LineItemsPanel.vue";
+import AttendeesPanel from "../Components/Modules/AttendeesPanel.vue";
 import PdfModal from "@/Pages/Components/Modules/PdfModal.vue";
 import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
 import HistoryModal from "@/Pages/Components/Modules/HistoryModal.vue";
@@ -408,6 +409,7 @@ const visibleSections = computed(() =>
   Object.values(props.overviewLayout?.sections || {}).filter(
     (s) =>
       s.has_line_items ||
+      s.has_attendees ||
       Object.values(s.layout || {}).some((f) => getField(f)),
   ),
 );
@@ -708,6 +710,15 @@ const handleTotalsUpdated = (totals) => {
                 :list-columns="lineItemsListColumns"
                 :snapshot-layout="lineItemsSnapshotLayout"
                 @totals-updated="handleTotalsUpdated"
+              />
+            </template>
+            <template v-else-if="s.has_attendees">
+              <div class="record-layout__sections__item__title">
+                {{ s.name }}
+              </div>
+              <AttendeesPanel
+                :meeting-id="record.id"
+                :module-color="module_color"
               />
             </template>
             <template v-else>

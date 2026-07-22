@@ -32,18 +32,16 @@
 
     @include shell.field-focus-within(".long-text-icon");
     @include shell.field-error-state("long-text-field", ".long-text-icon");
-    @include shell.field-readonly-state("long-text-field", ".long-text-icon", "textarea");
+    @include shell.field-readonly-state(
+      "long-text-field",
+      ".long-text-icon",
+      "textarea"
+    );
   }
 
   // ===== DETAIL MODE =====
   &--detail {
     font-size: 1rem;
-
-    &:hover {
-      background: linear-gradient(135deg, #f1f5f9 0%, #e9eef3 100%);
-      border-color: #cbd5e1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
 
     .long-text-detail-content {
       flex: 1;

@@ -515,6 +515,7 @@ const moduleColor = computed(() =>
           :field-by-key="fieldByName"
           :has-line-items="!!module.has_line_items"
           :line-item-fields="lineItemFields"
+          :has-attendees="module.slug === 'meetings'"
         />
       </div>
       <div v-else-if="type === 'related'">

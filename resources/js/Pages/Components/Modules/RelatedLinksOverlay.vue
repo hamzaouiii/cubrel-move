@@ -220,8 +220,7 @@ const toggleRow = (id) => {
 };
 
 // Only pre-select the already-linked parent when it's actually the record
-// shown in the list (role !== "parent", matching displayedRecords below) —
-// otherwise the footer button reports a selection the user never made.
+// shown in the list
 const canPreselectParent = computed(
   () =>
     props.relationship.role !== "parent" &&

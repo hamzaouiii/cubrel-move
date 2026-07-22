@@ -496,6 +496,11 @@ return [
             'deleted' => 'Deleted',
             'linked' => 'Linked',
             'unlinked' => 'Unlinked',
+            'meeting_attendee' => [
+                'added' => 'Attendee added',
+                'removed' => 'Attendee removed',
+                'marked_all_attended' => 'All attendees marked as attended',
+            ],
         ],
         'link_summary' => ':related (:module)',
         'columns' => [

@@ -25,6 +25,7 @@ use App\Http\Controllers\SetupController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
+use App\Http\Controllers\MeetingAttendeeController;
 use App\Http\Controllers\PdfTemplatesController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
@@ -74,6 +75,12 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::post('/line-items/reorder', [LineItemController::class, 'reorder'])->name('line-items.reorder');
     Route::put('/line-items/{lineItem}', [LineItemController::class, 'update'])->name('line-items.update');
     Route::delete('/line-items/{lineItem}', [LineItemController::class, 'destroy'])->name('line-items.destroy');
+
+    Route::get('/meeting-attendees', [MeetingAttendeeController::class, 'index'])->name('meeting-attendees.index');
+    Route::post('/meeting-attendees', [MeetingAttendeeController::class, 'store'])->name('meeting-attendees.store');
+    Route::post('/meeting-attendees/mark-all-attended', [MeetingAttendeeController::class, 'markAllAttended'])->name('meeting-attendees.mark-all-attended');
+    Route::put('/meeting-attendees/{meetingAttendee}', [MeetingAttendeeController::class, 'update'])->name('meeting-attendees.update');
+    Route::delete('/meeting-attendees/{meetingAttendee}', [MeetingAttendeeController::class, 'destroy'])->name('meeting-attendees.destroy');
 
 
 

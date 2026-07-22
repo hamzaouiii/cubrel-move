@@ -32,7 +32,7 @@ $metricField = fn (string $module, string $aggregate, string $field, string $lab
 
 $timeSeries = fn (string $module, string $chartType, string $dateRange, string $interval, string $label, array $filters = []) => [
     'type' => 'time-series',
-    'cols' => 4,
+    'cols' => 2,
     'config' => [
         'module'    => $module,
         'dateField' => 'created_at',
@@ -88,8 +88,8 @@ return [
         $metric('deals',  'count', 'Open Deals',   'fa-regular fa-clock',             '#fff3e0', '#e65100', $openFilters),
         $metric('deals',  'count', 'Lost Deals',   'fa-regular fa-circle-xmark',      '#fce4ec', '#c62828', $lostFilter),
         'my-records',
-        $recordList('leads',  [],                                    'created_at', 'Recent Leads',  10),
-        $timeSeries('deals',  'bar',  'last_6_months', 'month', 'Deals over time'),
+        $recordList('leads',  [],'created_at', 'Recent Leads',  10),
+        $timeSeries('deals',  'line',  'last_6_months', 'month', 'Deals over time'),
         $breakdown( 'deals',  'sales_stage', 'donut',               'Deal Stages'),
         $recordList('orders', ['order_number', 'status', 'order_date', 'total'], 'order_date', 'Recent Orders', 5),
     ],

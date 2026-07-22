@@ -27,12 +27,17 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  hasAttendees: Boolean,
 });
 
 const emit = defineEmits(["update:sections"]);
 
 const hasLineItemsSection = computed(() =>
   internalSections.value.some((s) => s.has_line_items),
+);
+
+const hasAttendeesSection = computed(() =>
+  internalSections.value.some((s) => s.has_attendees),
 );
 
 const internalSections = ref([...props.sections]);
@@ -132,6 +137,17 @@ const addLineItemsSection = () => {
   internalSections.value.push({
     name: "Line Items",
     has_line_items: true,
+    layout: [],
+  });
+  emitUpdatedSections();
+  scrollSectionsToBottom();
+};
+
+const addAttendeesSection = () => {
+  if (hasAttendeesSection.value) return;
+  internalSections.value.push({
+    name: "Attendees",
+    has_attendees: true,
     layout: [],
   });
   emitUpdatedSections();
@@ -566,6 +582,16 @@ onBeforeUnmount(() => {
             <i class="fa-solid fa-plus"></i>
             {{ $t("layouts.add_line_items_section") }}
           </button>
+          <button
+            v-if="hasAttendees"
+            @click="addAttendeesSection"
+            :disabled="hasAttendeesSection"
+            class="editor__container__main__header__btn btn"
+            type="button"
+          >
+            <i class="fa-solid fa-plus"></i>
+            {{ $t("layouts.add_attendees_section") }}
+          </button>
         </div>
 
         <div class="editor__sections">
@@ -652,6 +678,10 @@ onBeforeUnmount(() => {
                       (cols) => updateLineItemsColumns(sectionIndex, cols)
                     "
                   />
+                </div>
+
+                <div v-else-if="section.has_attendees" class="rle-line-items">
+                  <p>{{ $t("layouts.attendees_message") }}</p>
                 </div>
 
                 <div

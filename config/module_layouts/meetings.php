@@ -87,6 +87,11 @@ return [
                 ],
             ],
             1 => [
+                'name' => 'Attendees',
+                'has_attendees' => true,
+                'layout' => [],
+            ],
+            2 => [
                 'name' => 'Timeline',
                 'layout' => [
                     0 => [
