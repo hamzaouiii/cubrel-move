@@ -12,7 +12,7 @@ class RelationshipLinkController extends Controller
   public function getRecordsForLinking(Request $request, string $module, string $record_id, string $relationship)
   {
     $relationshipObj = RelationshipService::get($relationship);
-    $limit = Settings::get('linking_panel_limit');
+    $limit = Settings::getPersonal('linking_panel_limit');
     return RelationshipService::getRecordsForLinking(
       $relationshipObj,
       $module,
@@ -24,7 +24,7 @@ class RelationshipLinkController extends Controller
   public function getRecordsForUpdateSingleLinking(Request $request, string $module, string $record_id, string $relationship)
   {
     $relationshipObj = RelationshipService::get($relationship);
-    $limit = Settings::get('linking_panel_limit');
+    $limit = Settings::getPersonal('linking_panel_limit');
 
     return RelationshipService::getRecordsForUpdateSingleLinking($relationshipObj, $module, $record_id, $limit, $request->get('search', $request->get('q')));
   }
@@ -65,7 +65,7 @@ class RelationshipLinkController extends Controller
   {
     $page = (int) $request->get('page', 1);
 
-    $perPage = (int) Settings::get('related_panel_limit');
+    $perPage = (int) Settings::getPersonal('related_panel_limit');
 
     $offset = ($page - 1) * $perPage;
 

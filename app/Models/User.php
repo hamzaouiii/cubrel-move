@@ -40,6 +40,7 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
         'password',
         'is_admin',
         'username',
+        'preferences',
     ];
 
     public function toSearchResult(): array
@@ -72,6 +73,7 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_root' => 'boolean',
+            'preferences' => 'array',
         ];
     }
 

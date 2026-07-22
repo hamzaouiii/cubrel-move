@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Settings\SettingValue;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class Settings
@@ -28,6 +29,14 @@ class Settings
   public static function get(string $key, $default = null)
   {
     return static::load()[$key] ?? $default;
+  }
+
+  // Like get(), but let's users settings take prio - if no user defined fallback on default
+  public static function getPersonal(string $key, $default = null)
+  {
+    $override = Auth::user()?->preferences[$key] ?? null;
+
+    return $override ?? static::get($key, $default);
   }
 
   public static function set(string $key, $value): void

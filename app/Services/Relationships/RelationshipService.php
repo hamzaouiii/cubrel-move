@@ -498,7 +498,7 @@ class RelationshipService
       $count = $relatedIds->count();
       $records = collect();
       $pagination = null;
-      $panel_limit = Settings::get('related_panel_limit');
+      $panel_limit = Settings::getPersonal('related_panel_limit');
 
       $relatedClass = self::resolveClassFromSlug($rel->related_slug);
 

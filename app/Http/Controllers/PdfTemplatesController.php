@@ -21,7 +21,7 @@ class PdfTemplatesController extends Controller
     public function index(Request $request)
     {
         $search  = $request->get('search');
-        $perPage = $request->get('perPage', Settings::get('list_view_limit', 15));
+        $perPage = $request->get('perPage', Settings::getPersonal('list_view_limit', 15));
 
         $modules = Module::where('is_active', true)
             ->orderBy('sort_order')

@@ -22,7 +22,7 @@ public function __invoke(Request $request, string $related_module): \Illuminate\
         return response()->json(['error' => 'Module not found'], 404);
     }
 
-    $perPage    = Settings::get('linking_panel_limit', 15);
+    $perPage    = Settings::getPersonal('linking_panel_limit', 15);
     $search     = $request->string('q')->trim()->toString();
     $selectedId = $request->input('selected');
 

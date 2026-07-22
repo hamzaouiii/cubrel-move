@@ -15,7 +15,7 @@ class AuditLogController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->get('perPage', Settings::get('list_view_limit', 15));
+        $perPage = $request->get('perPage', Settings::getPersonal('list_view_limit', 15));
 
         $query = AuditLog::query()->with(['user', 'impersonator'])->latest('created_at');
 

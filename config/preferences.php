@@ -1,0 +1,87 @@
+<?php
+
+
+return [
+  'tabs' => [
+    'general' => [
+      'label' => 'preferences.tabs.general',
+      'fields' => [
+        'app_locale' => [
+          'type' => 'lang_switcher',
+          'label' => 'settings.fields.app_locale',
+          'validation' => 'nullable|string|in:en,de',
+        ],
+        'date_format' => [
+          'type' => 'date',
+          'label' => 'settings.fields.date_format',
+          'validation' => 'nullable|string',
+        ],
+        'datetime_format' => [
+          'type' => 'datetime',
+          'label' => 'settings.fields.datetime_format',
+          'validation' => 'nullable|string',
+        ],
+      ],
+    ],
+    'style' => [
+      'label' => 'preferences.tabs.style',
+      'fields' => [
+       
+        'primary_color' => [
+          'type' => 'color',
+          'label' => 'settings.fields.primary_color',
+          'validation' => 'nullable|string',
+        ],
+        'secondary_color' => [
+          'type' => 'color',
+          'label' => 'settings.fields.secondary_color',
+          'validation' => 'nullable|string',
+        ],
+        'success_color' => [
+          'type' => 'color',
+          'label' => 'settings.fields.success_color',
+          'validation' => 'nullable|string',
+        ],
+        'danger_color' => [
+          'type' => 'color',
+          'label' => 'settings.fields.danger_color',
+          'validation' => 'nullable|string',
+        ],
+             'use_individual_module_colors' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.use_individual_module_colors',
+          'validation' => 'nullable|boolean',
+        ],
+      ],
+    ],
+    'lists' => [
+      'label' => 'preferences.tabs.lists',
+      'fields' => [
+        'related_panel_limit' => [
+          'type' => 'int',
+          'label' => 'settings.fields.related_panel_limit',
+          'validation' => 'nullable|integer',
+        ],
+        'list_view_limit' => [
+          'type' => 'int',
+          'label' => 'settings.fields.list_view_limit',
+          'validation' => 'nullable|integer',
+        ],
+        'linking_panel_limit' => [
+          'type' => 'int',
+          'label' => 'settings.fields.linking_panel_limit',
+          'validation' => 'nullable|integer',
+        ],
+      ],
+    ],
+    'notifications' => [
+      'label' => 'preferences.tabs.notifications',
+      'fields' => [],
+    ],
+  ],
+
+  'theme_options' => [
+    ['label' => 'Light', 'value' => 'light'],
+    ['label' => 'Dark', 'value' => 'dark'],
+  ],
+];

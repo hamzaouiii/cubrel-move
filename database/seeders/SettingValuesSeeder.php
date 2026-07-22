@@ -255,7 +255,7 @@ class SettingValuesSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'setting_item' => 'preferences',
+                'setting_item' => 'display-defaults',
                 'key' => 'related_panel_limit',
                 'value' => 5,
                 'label' => 'settings.fields.related_panel_limit',
@@ -267,7 +267,7 @@ class SettingValuesSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'setting_item' => 'preferences',
+                'setting_item' => 'display-defaults',
                 'key' => 'list_view_limit',
                 'value' => 31,
                 'label' => 'settings.fields.list_view_limit',
@@ -279,7 +279,7 @@ class SettingValuesSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'setting_item' => 'preferences',
+                'setting_item' => 'display-defaults',
                 'key' => 'linking_panel_limit',
                 'value' => 25,
                 'label' => 'settings.fields.linking_panel_limit',
