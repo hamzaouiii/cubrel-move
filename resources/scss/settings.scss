@@ -305,7 +305,6 @@
     padding: 1.5rem;
     background-color: #ffffff;
     border-radius: 12px;
-    // Modern, softer shadow
     box-shadow:
       0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -335,15 +334,16 @@
         }
 
         label {
-          flex: 0 0 450px; // Fixed width on desktop for perfect alignment
+          flex: 0 0 450px;
           font-size: 0.95rem;
           font-weight: 500;
           color: #475569;
           line-height: 1.4;
 
-          @media (max-width: 950px) {
+          @media (max-width: 1250px) {
             flex: none;
             max-width: 100%;
+            flex: 0 0 250px;
           }
         }
 
