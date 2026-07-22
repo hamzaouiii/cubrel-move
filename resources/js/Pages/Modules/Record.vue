@@ -267,28 +267,15 @@ const saveRecord = () => {
       return { ...data };
     })
     .put(url, {
-      // A save (and its potential 419 recovery redirect, or a forced reload if
-      // Inertia detects a stale asset version mid-flight) is a known, in-progress
-      // write, the unsaved-changes guard shouldn't second-guess it with a "leave
-      // page?" prompt while it's settling.
       onBefore: () => {
         unsavedGuardActive.value = false;
       },
       onFinish: () => {
-        // Delayed re-arm: if Inertia falls back to a hard `window.location`
-        // reload (e.g. stale asset version), that navigation is processed by the
-        // browser after this microtask, so flipping the guard back on immediately
-        // would still let it catch (and block) that in-flight reload.
         setTimeout(() => {
           unsavedGuardActive.value = true;
         }, 100);
       },
       onSuccess: (page) => {
-        // A 419 bounce redirects back here (still-authenticated branch, same
-        // component, no remount) or to Login (logged-out branch) instead of the
-        // controller ever running, either way flash.warning is set instead of
-        // flash.success, so the write never actually happened. Don't report success,
-        // and don't clear alerts (the flash-toast watcher owns showing the warning).
         if (page.props.flash?.warning) {
           if (page.component === "Login") {
             sessionStorage.setItem(
@@ -296,10 +283,7 @@ const saveRecord = () => {
               JSON.stringify(form.data()),
             );
           }
-          // Inertia always resets the form's dirty baseline to the current data
-          // after any successful visit, which would disable Save even though
-          // nothing was persisted. form.defaults() with no real change suppresses
-          // that auto-reset so isDirty (and the Save button) stays accurate.
+
           form.defaults({});
           return;
         }
@@ -307,6 +291,9 @@ const saveRecord = () => {
         clearAllAlerts();
         success(t("modules.actions.update_success"));
         activitySidebarRef.value?.loadTimeline();
+
+        Object.assign(form, props.record);
+        form.defaults({ ...props.record });
       },
       onError: () => {
         clearAllAlerts();

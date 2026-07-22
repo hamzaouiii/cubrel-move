@@ -469,11 +469,18 @@ useUnsavedChangesGuard({
   getIsDirty: () => isDirty.value,
 });
 
-const moduleColor = computed(() =>
-  appSettings.use_individual_module_colors
-    ? props.module.color
-    : appSettings.primary_color,
-);
+const moduleColor = computed(() => {
+  const useIndividual =
+    appSettings.use_individual_module_colors === true ||
+    appSettings.use_individual_module_colors === 1 ||
+    appSettings.use_individual_module_colors === "1";
+
+  return useIndividual
+    ? (props.module.color ?? appSettings.primary_color)
+    : appSettings.primary_color;
+});
+
+console.log(moduleColor.value);
 </script>
 
 <template>

@@ -456,6 +456,14 @@ return [
             'required' => true,
             'filterable' => true,
         ],
+        'duration' => [
+            'name' => 'duration',
+            'type' => 'duration',
+            'readonly' => true,
+            'is_calculated' => true,
+            'filterable' => true,
+            'sortable' => true,
+        ],
         'status' => [
             'name' => 'status',
             'type' => 'status',

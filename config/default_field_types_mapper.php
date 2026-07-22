@@ -18,4 +18,5 @@ return [
   'address' => 'json',
   'currency' => 'decimal',
   'image' => 'string',
+  'duration' => 'integer',
 ];

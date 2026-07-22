@@ -19,11 +19,16 @@ return [
                 'label' => 'modules.meetings.fields.end_at',
             ],
             3 => [
+                'name' => 'duration',
+                'type' => 'duration',
+                'label' => 'modules.meetings.fields.duration',
+            ],
+            4 => [
                 'name' => 'status',
                 'type' => 'select',
                 'label' => 'modules.meetings.fields.status',
             ],
-            4 => [
+            5 => [
                 'name' => 'owner_id',
                 'type' => 'record',
                 'label' => 'modules.defaults.owner_id',
@@ -105,11 +110,16 @@ return [
                         'label' => 'modules.meetings.fields.end_at',
                     ],
                     2 => [
+                        'name' => 'duration',
+                        'type' => 'duration',
+                        'label' => 'modules.meetings.fields.duration',
+                    ],
+                    3 => [
                         'name' => 'created_at',
                         'type' => 'datetime',
                         'label' => 'modules.meetings.fields.created_at',
                     ],
-                    3 => [
+                    4 => [
                         'name' => 'updated_at',
                         'type' => 'datetime',
                         'label' => 'modules.meetings.fields.updated_at',

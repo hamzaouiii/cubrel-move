@@ -19,6 +19,10 @@ class OwnerAssignmentSeeder extends Seeder
     'products',
     'deals',
     'orders',
+    'meetings',
+    'tasks',
+    'notes',
+    'calls'
   ];
 
   public function run(): void
