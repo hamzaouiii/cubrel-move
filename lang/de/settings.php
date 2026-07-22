@@ -141,7 +141,7 @@ return [
         'layouts' => 'Layouts',
         'system_email_settings' => 'System-E-Mail-Einstellungen',
         'dropdowns' => 'Dropdown Editor',
-        'preferences' => 'Präferenzen',
+        'display_defaults' => 'Anzeigestandards',
         'manage_invites' => 'Benutzereinladungen',
         'company_info' => 'Unternehmensdaten',
     ],

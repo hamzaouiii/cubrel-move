@@ -15,6 +15,7 @@ use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\ModuleManagerController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\RelatedFieldController;
 use App\Http\Controllers\RelationshipLinkController;
@@ -69,6 +70,8 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::get('/preferences', [PreferencesController::class, 'index'])->name('preferences.index');
+    Route::put('/preferences', [PreferencesController::class, 'update'])->name('preferences.update');
     Route::get('/search', SearchController::class)->name('search');
     Route::get('/line-items', [LineItemController::class, 'index'])->name('line-items.index');
     Route::post('/line-items', [LineItemController::class, 'store'])->name('line-items.store');
@@ -245,6 +248,6 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::put('/{module}', [RecordController::class, 'updateMany'])->name('modules.records.updateMany');
     Route::delete('/{module}/{record}', [RecordController::class, 'destroy'])->name('modules.records.destroy');
 
-    Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$).+')->name('modules.index');
+    Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$|preferences$).+')->name('modules.index');
 });
 

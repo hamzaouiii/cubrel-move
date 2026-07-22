@@ -30,7 +30,7 @@ class UserController extends Controller
 
     $handler = new UserModuleHandler();
             $params = request()->all();
-        $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
+        $params['perPage'] = $params['perPage'] ?? Settings::getPersonal('list_view_limit');
     $props = $handler->getListData($moduleModel, $params);
 
     $listLayout = config("module_layouts.users.list");
@@ -164,7 +164,7 @@ class UserController extends Controller
 
   public function getUsersForLinking()
   {
-    $limit = Settings::get('linking_panel_limit');
+    $limit = Settings::getPersonal('linking_panel_limit');
 
     return User::getRecordsForLinking($limit);
   }
@@ -175,7 +175,7 @@ class UserController extends Controller
    */
   public function search(Request $request): \Illuminate\Http\JsonResponse
   {
-    $perPage    = Settings::get('linking_panel_limit');
+    $perPage    = Settings::getPersonal('linking_panel_limit');
     $search     = $request->string('q')->trim()->toString();
     $selectedId = $request->input('selected');
 

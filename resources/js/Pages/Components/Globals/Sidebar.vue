@@ -22,7 +22,7 @@ const SIDEBAR_HIDDEN_KEY = "sidebar-hidden";
 const page = usePage();
 const modules = computed(() => page.props.modules ?? []);
 const currentUrl = computed(() => page.url);
-const appSettings = usePage().props.appSettings;
+const appSettings = computed(() => page.props.appSettings ?? {});
 const collapsedSidebar = ref(true);
 const hiddenSidebar = ref(localStorage.getItem(SIDEBAR_HIDDEN_KEY) === "true");
 
@@ -108,12 +108,12 @@ const onModuleMouseEnter = (event, mod) => {
   if (!collapsedSidebar.value) return;
   if (mod === "home") {
     text = t("globals.sidebar.home");
-    color = appSettings.primary_color;
+    color = appSettings.value.primary_color;
   } else {
     text = mod.label;
     color =
-      appSettings.use_individual_module_colors === "0"
-        ? appSettings.primary_color
+      appSettings.value.use_individual_module_colors === "0"
+        ? appSettings.value.primary_color
         : mod.color;
   }
   const rect = event.currentTarget.getBoundingClientRect();
@@ -136,7 +136,7 @@ const onCollapserMouseEnter = (event) => {
   tooltip.text = collapsedSidebar.value
     ? t("globals.sidebar.expand")
     : t("globals.sidebar.close");
-  tooltip.color = appSettings.primary_color;
+  tooltip.color = appSettings.value.primary_color;
   tooltip.top = rect.top + rect.height / 2;
   tooltip.left = rect.right + 10;
   tooltip.show = true;
@@ -150,7 +150,7 @@ const onHideBtnMouseEnter = (event) => {
   const rect = event.currentTarget.getBoundingClientRect();
 
   tooltip.text = t("globals.sidebar.hide");
-  tooltip.color = appSettings.primary_color;
+  tooltip.color = appSettings.value.primary_color;
   tooltip.top = rect.top + rect.height / 2;
   tooltip.left = rect.right + 10;
   tooltip.show = true;
@@ -164,7 +164,7 @@ const onShowTabMouseEnter = (event) => {
   const rect = event.currentTarget.getBoundingClientRect();
 
   tooltip.text = t("globals.sidebar.show");
-  tooltip.color = appSettings.primary_color;
+  tooltip.color = appSettings.value.primary_color;
   tooltip.top = rect.top + rect.height / 2;
   tooltip.left = rect.right + 10;
   tooltip.show = true;

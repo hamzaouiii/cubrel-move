@@ -71,6 +71,12 @@ const user = computed(() => page.props.auth?.user || {});
                   {{ user?.name || user?.name || $t("globals.topbar.profile") }}
                 </Link>
               </li>
+              <li>
+                <Link href="/preferences">
+                  <i class="fa-solid fa-sliders"></i>
+                  {{ $t("preferences.label") }}
+                </Link>
+              </li>
               <li @click="logout">
                 <a href="#">
                   <i class="fa-solid fa-arrow-right-from-bracket"></i>

@@ -22,7 +22,7 @@ abstract class BaseModuleHandler implements ModuleHandler
 
     protected function getPerPage(array $params): int
     {
-        return $params['perPage'] ?? Settings::get('list_view_limit');
+        return $params['perPage'] ?? Settings::getPersonal('list_view_limit');
     }
 
     public function getRecordData(string $module_slug, string $recordId, Module $module, array $params = []): array

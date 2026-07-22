@@ -44,11 +44,11 @@ return [
         'isActive' => 0,
         'icon' => 'fa-solid fa-language'
       ],
-      'preferences' => [
-        'name' => 'preferences',
-        'slug' => 'preferences',
-        'label' => 'settings.items.preferences',
-        'path' => '/settings/system/preferences',
+      'display-defaults' => [
+        'name' => 'Display Defaults',
+        'slug' => 'display-defaults',
+        'label' => 'settings.items.display_defaults',
+        'path' => '/settings/system/display-defaults',
         'isActive' => 1,
         'icon' => 'fa-solid fa-sliders'
       ]
