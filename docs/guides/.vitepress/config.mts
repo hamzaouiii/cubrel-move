@@ -8,8 +8,24 @@ export default defineConfig({
   },
   head: [
     ["link", { rel: "icon", href: "/favicon.ico", sizes: "any" }],
-    ["link", { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" }],
-    ["link", { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" }],
+    [
+      "link",
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
+    ],
+    [
+      "link",
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+    ],
   ],
 
   // German content lives in de/, served unprefixed at '/'
@@ -47,9 +63,11 @@ export default defineConfig({
             items: [
               { text: "Module", link: "/modules" },
               { text: "Beziehungen", link: "/relationships-guide" },
-              { text: "Aktivitäten", link: "/activities-guide" },
               { text: "Datenimport", link: "/import-guide" },
-              { text: "Module vs. BaseModule", link: "/module-basemodule-guide" },
+              {
+                text: "Module vs. BaseModule",
+                link: "/module-basemodule-guide",
+              },
             ],
           },
           {
@@ -90,14 +108,17 @@ export default defineConfig({
             items: [
               { text: "Modules", link: "/en/modules" },
               { text: "Relationships", link: "/en/relationships-guide" },
-              { text: "Activities", link: "/en/activities-guide" },
               { text: "Importing Data", link: "/en/import-guide" },
-              { text: "Module vs. BaseModule", link: "/en/module-basemodule-guide" },
+              {
+                text: "Module vs. BaseModule",
+                link: "/en/module-basemodule-guide",
+              },
             ],
           },
           {
             text: "Administration & Security",
             items: [
+              { text: "Users, Invites & Passwords", link: "/en/users-guide" },
               { text: "Audit Trail", link: "/en/audit-trail-guide" },
               { text: "Sessions", link: "/en/session-timeout-guide" },
             ],
