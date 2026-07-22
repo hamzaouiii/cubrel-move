@@ -47,6 +47,7 @@ export default defineConfig({
             items: [
               { text: "Module", link: "/modules" },
               { text: "Beziehungen", link: "/relationships-guide" },
+              { text: "Aktivitäten", link: "/activities-guide" },
               { text: "Datenimport", link: "/import-guide" },
               { text: "Module vs. BaseModule", link: "/module-basemodule-guide" },
             ],
@@ -89,6 +90,7 @@ export default defineConfig({
             items: [
               { text: "Modules", link: "/en/modules" },
               { text: "Relationships", link: "/en/relationships-guide" },
+              { text: "Activities", link: "/en/activities-guide" },
               { text: "Importing Data", link: "/en/import-guide" },
               { text: "Module vs. BaseModule", link: "/en/module-basemodule-guide" },
             ],

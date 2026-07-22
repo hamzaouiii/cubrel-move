@@ -827,3 +827,7 @@ The Attendees section is a fixed, non-field layout section (`has_attendees: true
 | Update an attendee | `PUT /meeting-attendees/{id}` |
 | Remove an attendee | `DELETE /meeting-attendees/{id}` |
 | Mark all unrecorded attendees as attended | `POST /meeting-attendees/mark-all-attended` |
+
+### Reference
+
+- `docs/guides/en/activities-guide.md` — plain-language, user-facing guide.

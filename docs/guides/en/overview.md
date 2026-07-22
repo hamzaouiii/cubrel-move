@@ -79,6 +79,10 @@ Quotes, Orders, and Invoices (and any custom module set up the same way) don't j
 
 Which of a product's fields autofill which line-item fields (for example, its price filling in the line item's unit price) is configurable per module, as is which columns show up on the line-items table itself.
 
+## Activities: a timeline of what's happened
+
+Tasks, Calls, Meetings, and Notes are activity modules: creating one and linking it to another record (a Lead, an Account, a Deal, and so on) adds it to that record's **Activity** timeline, a running history shown right on the record page, alongside its field-change history. Meetings additionally track their own attendee list, RSVP status, and attendance. See the [activities guide](activities-guide.md) for the full picture.
+
 ## Search and filters
 
 ### Finding anything, from anywhere
@@ -149,5 +153,6 @@ Every create, update, and delete on any record, and every link or unlink between
 - New to Cubrel's vocabulary? Start with [Cubrel Terminology](terminology.md).
 - Building your own module? See the [modules guide](modules.md).
 - Connecting modules together? See the [relationships guide](relationships-guide.md).
+- Logging tasks, calls, meetings, and notes against a record? See the [activities guide](activities-guide.md).
 - Curious what's tracked automatically? See the [Audit Trail guide](audit-trail-guide.md).
 - Wondering how sign-in and sessions behave? See the [session guide](session-timeout-guide.md).

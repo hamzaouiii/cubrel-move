@@ -108,6 +108,14 @@ prices that automatically roll up into a Subtotal, Tax, Discount, and Total
 on the record. You can enable this for a custom module too, and choose which
 module its line items are picked from.
 
+### Activity
+
+A Task, Call, Meeting, or Note, once it's linked to another record. Linking one adds it to that record's Activity timeline. See the [activities guide](activities-guide.md).
+
+### Activity Timeline
+
+The panel on a record's page showing its linked activities and its field-change history together, newest first. Only shown on modules set up to have one (Leads, Accounts, Contacts, Deals, Support Cases, Quotes, Orders, Invoices). See the [activities guide](activities-guide.md).
+
 ### Dashboard
 
 The landing page you see after signing in — a customizable set of widgets
@@ -238,6 +246,8 @@ own concepts:
 | Label | The human-readable name shown for something |
 | Dropdown List | A reusable, centrally-managed set of options for select fields |
 | Relationship | A link between two modules |
+| Activity | A Task, Call, Meeting, or Note linked to another record |
+| Activity Timeline | A record's panel showing its linked activities and change history |
 | Line items | A priced list within a record (Quotes/Orders/Invoices-style) |
 | Dashboard | The customizable overview page you land on after signing in |
 | Admin | A user with access to Settings |
