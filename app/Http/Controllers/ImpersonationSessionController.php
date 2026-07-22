@@ -12,7 +12,7 @@ class ImpersonationSessionController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->get('perPage', Settings::get('list_view_limit', 15));
+        $perPage = $request->get('perPage', Settings::getPersonal('list_view_limit', 15));
 
         $query = ImpersonationSession::query()->with(['impersonator', 'targetUser'])->latest('started_at');
 

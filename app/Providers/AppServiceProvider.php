@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -45,10 +46,15 @@ class AppServiceProvider extends ServiceProvider
 
     Vite::prefetch(concurrency: 3);
 
+    // overriding system wide settings by the preferences array passed along with auth::user
     Inertia::share([
       'locale'       => fn() => app()->getLocale(),
       'translations' => fn() => TranslationService::all(),
-      'appSettings'  => Settings::all(...),
+      'appSettings'  => function () {
+        $overrides = array_filter(Auth::user()?->preferences ?? [], fn ($v) => $v !== null);
+
+        return array_merge(Settings::all(), $overrides);
+      },
       'modules'      => fn() => Module::forSidebar(),
       'layouts'      => fn() => Layout::getAllLayouts(),
       'meetingAttendeeOptions' => fn() => config('meeting_attendees'),

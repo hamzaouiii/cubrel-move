@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Settings\Settings;
 use App\Models\Settings\SettingValue;
 use App\Models\DropdownList;
-use Carbon\Carbon;
+use App\Support\FormatOptions;
 use Carbon\CarbonTimeZone;
 
 class SettingsController extends Controller
@@ -38,8 +38,8 @@ class SettingsController extends Controller
     return Inertia::render('Settings/Page', [
       'item' => $settingsItem,
       'values' => $values,
-      'dateFormatOptions' => $this->dateFormatOptions($tz),
-      'datetimeFormatOptions' => $this->datetimeFormatOptions($tz),
+      'dateFormatOptions' => FormatOptions::dateFormatOptions($tz),
+      'datetimeFormatOptions' => FormatOptions::datetimeFormatOptions($tz),
       'timezoneOptions' => $this->timezoneOptions($tz),
       'currencyOptions' => DropdownList::get('currency_list')->values ?? []
     ]);
@@ -67,25 +67,6 @@ class SettingsController extends Controller
     return redirect()->back()->with('success', __('settings.setting_update_success'));
   }
 
-  private function datetimeFormatOptions(string $tz): array
-  {
-    $formatsMap = config('datetime_formats');
-    $example = Carbon::create(2025, 12, 11, 14, 30, 0);
-
-    $example->locale(app()->getLocale())->setTimezone($tz);
-
-    return collect($formatsMap)->map(function ($previewFormat, $phpFormat) use ($example) {
-      $preview = $example->copy()->isoFormat($previewFormat);
-
-      return [
-        'value'       => $phpFormat,
-        'label'       => $preview,
-        'description' => "({$phpFormat})",
-      ];
-    })->values()->all();
-  }
-
-
   private function timezoneOptions(string $currentTz): array
   {
     $options = [];
@@ -110,24 +91,6 @@ class SettingsController extends Controller
     usort($options, fn($a, $b) => strcmp($a['label'], $b['label']));
 
     return $options;
-  }
-
-  private function dateFormatOptions(String $tz): array
-  {
-    $formatsMap = config('date_formats');
-    $example = Carbon::create(2025, 12, 11);
-
-    $example->locale(app()->getLocale())->setTimezone($tz);
-
-    return collect($formatsMap)->map(function ($previewFormat, $phpFormat) use ($example) {
-      $preview = $example->copy()->isoFormat($previewFormat);
-
-      return [
-        'value'       => $phpFormat,
-        'label'       => $preview,
-        'description' => "({$phpFormat})",
-      ];
-    })->values()->all();
   }
 
 }

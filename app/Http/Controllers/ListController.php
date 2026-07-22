@@ -36,7 +36,7 @@ class ListController extends Controller
 
             if ($handler instanceof ModuleHandler) {
                 $params = request()->all();
-                $params['perPage'] = $params['perPage'] ?? Settings::get('list_view_limit');
+                $params['perPage'] = $params['perPage'] ?? Settings::getPersonal('list_view_limit');
                 $params['sort'] = request()->input('sort');
                 $params['direction'] = request()->input('direction', 'asc');
                 $props = $handler->getListData($moduleModel, $params);

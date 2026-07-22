@@ -42,11 +42,7 @@ return new class extends Migration
       $table->string('phone', 30)->nullable();
       $table->string('mobile', 30)->nullable();
       $table->string('avatar')->nullable();              // path or URL
-      $table->string('locale', 10)->default('en');
-      $table->string('timezone', 64)->default('UTC');
-      $table->string('date_format', 20)->default('Y-m-d');
-      $table->string('time_format', 10)->default('H:i');
-      $table->enum('theme', ['light', 'dark', 'system'])->default('system');
+      $table->json('preferences')->nullable();           // personal overrides of System settings
 
 
       // Soft delete + timestamps

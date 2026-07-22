@@ -145,7 +145,7 @@ return [
         'layouts' => 'Layouts',
         'system_email_settings' => 'System Email Settings',
         'dropdowns' => 'Dropdown Editor',
-        'preferences' => 'Preferences',
+        'display_defaults' => 'Display Defaults',
          'company_info'        => 'Company Info',
     ],
     'dropdown' => [
