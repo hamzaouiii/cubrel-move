@@ -33,4 +33,5 @@ deploy.sh
 .prettierrc
 /screenshots/*
 app/**/custom
-.claude/settings.local.json
+.claude/*
+.github/*
