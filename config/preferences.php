@@ -76,7 +76,43 @@ return [
     ],
     'notifications' => [
       'label' => 'preferences.tabs.notifications',
-      'fields' => [],
+      'fields' => [
+        'notify_email_record_assigned' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_record_assigned',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_email_meeting_invite' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_meeting_invite',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_email_task_due_soon' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_task_due_soon',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_email_invite_accepted' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_invite_accepted',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_email_invite_expired' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_invite_expired',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_email_record_activity' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_record_activity',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_email_impersonated' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_impersonated',
+          'validation' => 'nullable|boolean',
+        ],
+      ],
     ],
   ],
 

@@ -374,7 +374,24 @@ class SettingValuesSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
-
         ]);
+
+        $sortOrder = 0;
+        foreach (config('default_notification_settings') as $key => $value) {
+            $sortOrder++;
+
+            DB::table('setting_values')->insert([
+                'id' => Str::uuid(),
+                'setting_item' => 'notifications',
+                'key' => $key,
+                'value' => $value,
+                'label' => "settings.fields.{$key}",
+                'type' => 'bool',
+                'sort_order' => $sortOrder,
+                'autoload' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
     }
 }
