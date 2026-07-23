@@ -11,5 +11,6 @@ class Note extends BaseModule
     protected $fillable = [
         'name',
         'description',
+        'owner_id',
     ];
 }
