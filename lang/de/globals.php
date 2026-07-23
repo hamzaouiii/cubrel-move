@@ -103,9 +103,9 @@ return [
         'user_inactive' => 'Benutzer ist nicht aktiv. Bitte kontaktieren Sie Ihren Administrator',
         'throttled' => 'Zu viele Anmeldeversuche. Bitte versuchen Sie es in :seconds Sekunden erneut.',
         'setup_title' => 'Instanz einrichten',
-        'setup_subtitle' => 'Erstellen Sie das Root-Konto, um die Einrichtung von Cubrel abzuschließen.',
+        'setup_subtitle' => 'Erstellen Sie das Super-Admin-Konto, um die Einrichtung von Cubrel abzuschließen.',
         'setup_invalid' => 'Dieser Einrichtungslink ist ungültig, abgelaufen oder wurde bereits verwendet.',
-        'setup_button' => 'Root-Konto erstellen',
+        'setup_button' => 'Super-Admin-Konto erstellen',
     ],
     'onboarding' => [
         'title' => 'Loslegen mit Cubrel',

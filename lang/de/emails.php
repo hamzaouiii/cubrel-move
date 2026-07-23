@@ -39,7 +39,7 @@ return [
         'subject' => ':app-Instanz einrichten',
         'title' => ':app-Instanz einrichten',
         'heading' => 'Willkommen bei :app ',
-        'body' => 'Schön, dass du dich für :app entschieden hast. Klicke auf den Button unten, um dein Root-Konto zu erstellen und die Einrichtung abzuschließen.',
+        'body' => 'Schön, dass du dich für :app entschieden hast. Klicke auf den Button unten, um dein Super-Admin-Konto zu erstellen und die Einrichtung abzuschließen.',
         'cta' => 'Einrichtung abschließen',
         'expires' => 'Dieser Link läuft am :date ab.',
         'fallback' => 'Wenn die Schaltfläche nicht funktioniert, kopiere diese URL in deinen Browser:',

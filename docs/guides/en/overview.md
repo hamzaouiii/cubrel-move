@@ -126,7 +126,7 @@ Cubrel keeps access simple, with two levels above a regular user:
 
 - **Regular users** see whichever modules are turned on for everyone, and have full create/edit/delete access on records within them, including linking and unlinking related records. Settings, Users, and other admin-only areas stay out of their way entirely.
 - **Admins** additionally get access to Settings — modules, fields, layouts, dropdowns, company info, PDF templates, and user management.
-- **Root users** can do everything an admin can, plus one extra thing: sign in *as* another user (impersonation) to help troubleshoot something from their exact point of view. This is always fully visible afterward, never hidden — see [the Audit Trail guide](audit-trail-guide.md#impersonation-is-always-transparent-never-hidden).
+- **Super admins** can do everything an admin can, plus one extra thing: sign in *as* another user (impersonation) to help troubleshoot something from their exact point of view. This is always fully visible afterward, never hidden — see [the Audit Trail guide](audit-trail-guide.md#impersonation-is-always-transparent-never-hidden).
 
 Most modules also track an **owner** — the user a record is assigned to — which is what powers "my records" filters and owner-scoped dashboard widgets.
 

@@ -459,7 +459,7 @@ The system has two role levels:
 
 | Flag | Meaning |
 |---|---|
-| `is_root = true` | Superuser — cannot be demoted; bypasses all checks |
+| `is_root = true` | Super admin — cannot be demoted; bypasses all checks |
 | `is_admin = true` | Admin — accesses settings, user management, impersonation |
 | neither | Regular user |
 

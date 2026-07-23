@@ -39,7 +39,7 @@ return [
         'subject' => 'Set up your :app instance',
         'title' => 'Set up your :app instance',
         'heading' => 'Welcome to :app',
-        'body' => 'Thanks for choosing :app. Click the button below to create your root account and finish setting up your instance.',
+        'body' => 'Thanks for choosing :app. Click the button below to create your super admin account and finish setting up your instance.',
         'cta' => 'Complete setup',
         'expires' => 'This link expires on :date.',
         'fallback' => "If the button doesn't work, copy the following URL into your browser:",

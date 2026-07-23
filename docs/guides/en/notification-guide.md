@@ -18,7 +18,7 @@ The badge count refreshes automatically about once a minute while you have the a
 | **A user invite you sent was accepted** | Someone you invited finishes creating their account. |
 | **A user invite you sent expired** | An invite you sent goes unanswered past its expiry date. Checked automatically once an hour. |
 | **Activity on a record you own** | Someone else edits, deletes, or links a new activity (a Task, Call, Meeting, or Note) to a record you own. You won't be notified about your own changes to your own records. |
-| **Your account was accessed** | A root administrator impersonates your account (signs in as you) to help troubleshoot something. |
+| **Your account was accessed** | A super admin impersonates your account (signs in as you) to help troubleshoot something. |
 
 Clicking a notification (where applicable) takes you straight to the relevant record or page, and marks it as read. "Mark all as read" at the top of the dropdown clears every unread notification at once.
 
