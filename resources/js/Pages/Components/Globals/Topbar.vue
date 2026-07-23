@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useForm, Link, usePage } from "@inertiajs/vue3";
 import GlobalSearch from "@/Pages/Components/Globals/GlobalSearch.vue";
+import NotificationBell from "@/Pages/Components/Globals/NotificationBell.vue";
 
 const form = useForm({});
 const logout = () => {
@@ -43,6 +44,7 @@ const user = computed(() => page.props.auth?.user || {});
 
     <div class="topbar__actions">
       <div class="topbar__actions__icons">
+        <NotificationBell />
         <div
           class="topbar__actions__icons__item profile"
           :class="{ 'profile--open': showProfile }"
