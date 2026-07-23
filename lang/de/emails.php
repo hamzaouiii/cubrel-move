@@ -68,4 +68,40 @@ return [
     'common' => [
         'all_rights_reserved' => 'Alle Rechte vorbehalten.',
     ],
+
+    'notifications' => [
+        'view_action' => 'Ansehen',
+        'record_assigned' => [
+            'subject' => 'Dir wurde ein Datensatz zugewiesen',
+            'body' => ':user hat dir :record zugewiesen.',
+        ],
+        'meeting_invite' => [
+            'subject' => 'Du wurdest zu einem Termin eingeladen',
+            'body' => ':user hat dich zu :meeting eingeladen.',
+        ],
+        'task_due_soon' => [
+            'subject' => 'Aufgabe bald fällig',
+            'body' => ':task ist fällig :due.',
+        ],
+        'invite_accepted' => [
+            'subject' => 'Deine Einladung wurde angenommen',
+            'body' => ':user hat die Einladung angenommen und ein Konto erstellt.',
+        ],
+        'invite_expired' => [
+            'subject' => 'Deine Einladung ist abgelaufen',
+            'body' => 'Die an :email gesendete Einladung ist abgelaufen.',
+        ],
+        'record_activity' => [
+            'subject' => 'Aktivität bei einem Datensatz, der dir gehört',
+            'body' => [
+                'updated' => ':user hat :record aktualisiert.',
+                'deleted' => ':user hat :record gelöscht.',
+                'linked' => ':user hat eine neue Aktivität mit :record verknüpft.',
+            ],
+        ],
+        'impersonated' => [
+            'subject' => 'Auf dein Konto wurde zugegriffen',
+            'body' => ':user hat dein Konto am :time imitiert.',
+        ],
+    ],
 ];

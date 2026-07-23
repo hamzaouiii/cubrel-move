@@ -15,6 +15,45 @@ return [
         'settings' => 'Settings',
         'profile' => 'Profile',
         'logout' => 'Logout',
+        'notifications' => 'Notifications',
+    ],
+    'notifications' => [
+        'someone' => 'Someone',
+        'empty' => 'No notifications yet.',
+        'mark_all_read' => 'Mark all as read',
+        'a_meeting' => 'a Meeting',
+        'record_assigned' => [
+            'title' => ':module assigned to you',
+            'body' => ':user assigned :record to you.',
+        ],
+        'meeting_invite' => [
+            'title' => 'Meeting invitation',
+            'body' => ':user invited you to :meeting.',
+        ],
+        'task_due_soon' => [
+            'title' => 'Task due soon',
+            'body' => ':task is due :due.',
+        ],
+        'invite_accepted' => [
+            'title' => 'Invite accepted',
+            'body' => ':user accepted their invitation and created an account.',
+        ],
+        'invite_expired' => [
+            'title' => 'Invite expired',
+            'body' => 'The invitation sent to :email has expired.',
+        ],
+        'record_activity' => [
+            'title' => 'Activity on your :module',
+            'body' => [
+                'updated' => ':user updated :record.',
+                'deleted' => ':user deleted :record.',
+                'linked' => ':user linked a new activity to :record.',
+            ],
+        ],
+        'impersonated' => [
+            'title' => 'Your account was accessed by a Super Admin',
+            'body' => ':user impersonated your account on :time.',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Open Sidebar',

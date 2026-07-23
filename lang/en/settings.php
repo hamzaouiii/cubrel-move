@@ -105,6 +105,13 @@ return [
         'company_phone'     => 'Company Phone',
         'company_website'   => 'Company Website',
         'company_logo_url'  => 'Company Logo URL',
+        'notify_email_record_assigned' => 'Email me when a record is assigned to me',
+        'notify_email_meeting_invite' => 'Email me when I am invited to a meeting',
+        'notify_email_task_due_soon' => 'Email me when a task is due soon',
+        'notify_email_invite_accepted' => 'Email me when a user invite I sent is accepted',
+        'notify_email_invite_expired' => 'Email me when a user invite I sent expires',
+        'notify_email_record_activity' => 'Email me about activity on records I own',
+        'notify_email_impersonated' => 'Email me when my account is impersonated',
     ],
     'groups' => [
         'email' => 'Email Settings',

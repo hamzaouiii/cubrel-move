@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\ImpersonationSession;
 use App\Handlers\Modules\UserModuleHandler;
 use App\Notifications\SetPasswordNotification;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use Inertia\Inertia;
@@ -225,6 +226,8 @@ class UserController extends Controller
           'started_at' => now(),
       ]);
       Session::put('impersonation_session_id', $session->id);
+
+      NotificationService::notifyImpersonated($user, $currentUser->name, $session->started_at);
 
       return redirect()->route('dashboard');
   }

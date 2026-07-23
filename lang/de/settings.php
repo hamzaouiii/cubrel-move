@@ -102,6 +102,13 @@ return [
         'company_email'      => 'Firmen-E-Mail',
         'company_website'    => 'Firmenwebseite',
         'company_logo_url'   => 'Firmenlogo-URL',
+        'notify_email_record_assigned' => 'E-Mail senden, wenn mir ein Datensatz zugewiesen wird',
+        'notify_email_meeting_invite' => 'E-Mail senden, wenn ich zu einem Termin eingeladen werde',
+        'notify_email_task_due_soon' => 'E-Mail senden, wenn eine Aufgabe bald fällig ist',
+        'notify_email_invite_accepted' => 'E-Mail senden, wenn eine von mir gesendete Einladung angenommen wird',
+        'notify_email_invite_expired' => 'E-Mail senden, wenn eine von mir gesendete Einladung abläuft',
+        'notify_email_record_activity' => 'E-Mail senden bei Aktivität auf Datensätzen, die mir gehören',
+        'notify_email_impersonated' => 'E-Mail senden, wenn mein Konto imitiert wird',
     ],
     'groups' => [
         'email' => 'E-Mail Einstellungen',

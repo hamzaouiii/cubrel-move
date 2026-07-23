@@ -68,4 +68,40 @@ return [
     'common' => [
         'all_rights_reserved' => 'All rights reserved.',
     ],
+
+    'notifications' => [
+        'view_action' => 'View',
+        'record_assigned' => [
+            'subject' => 'A record was assigned to you',
+            'body' => ':user assigned :record to you.',
+        ],
+        'meeting_invite' => [
+            'subject' => "You've been invited to a meeting",
+            'body' => ':user invited you to :meeting.',
+        ],
+        'task_due_soon' => [
+            'subject' => 'Task due soon',
+            'body' => ':task is due :due.',
+        ],
+        'invite_accepted' => [
+            'subject' => 'Your invite was accepted',
+            'body' => ':user accepted their invitation and created an account.',
+        ],
+        'invite_expired' => [
+            'subject' => 'Your invite has expired',
+            'body' => 'The invitation sent to :email has expired.',
+        ],
+        'record_activity' => [
+            'subject' => 'Activity on a record you own',
+            'body' => [
+                'updated' => ':user updated :record.',
+                'deleted' => ':user deleted :record.',
+                'linked' => ':user linked a new activity to :record.',
+            ],
+        ],
+        'impersonated' => [
+            'subject' => 'Your account was accessed',
+            'body' => ':user impersonated your account on :time.',
+        ],
+    ],
 ];

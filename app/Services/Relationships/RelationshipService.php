@@ -8,6 +8,7 @@ use App\Models\Relationship;
 use App\Models\RelationshipLink;
 use App\Models\Module;
 use App\Services\Audit\AuditService;
+use App\Services\Notifications\NotificationService;
 use RuntimeException;
 use App\Support\Settings;
 
@@ -19,13 +20,8 @@ class RelationshipService
   protected static array $moduleCache = [];
 
   /**
-   * Generates a many-to-many relationship (e.g. orders_tasks) for every pairing
-   * this module's is_activity/has_activity flags call for, so the two flags stay
-   * the single source of truth instead of needing manual relationship config.
-   * Idempotent (firstOrCreate) — safe to call every time a module is saved.
-   * Shared by database/seeders/RelationshipSeeder.php (all modules, at seed
-   * time) and ModuleBuilderController (a single module, right after it's
-   * created/updated in the Module Builder).
+   * Generates a many-to-many relationship for every pairing
+   * this module's is_activity/has_activity flags call for. Safe to call every time a module is saved.
    */
   public static function syncActivityRelationships(Module $module): void
   {
@@ -209,6 +205,34 @@ class RelationshipService
     });
 
     self::logLinkChange('linked', $relationship, $module_slug, $module_id, $related_id);
+    self::notifyActivityLinked($module_slug, $module_id, $relationship->related_slug, $related_id);
+  }
+
+  /**
+   * When an is_activity record (Task/Call/Meeting/Note) gets linked to a
+   * has_activity parent record, notifies the parent's owner ( part of the
+   * "all activity on an owned record" notification type ) do nothing unless one side is has_activity and the other is_activity.
+   */
+  private static function notifyActivityLinked(string $moduleSlug, string $moduleId, string $relatedModuleSlug, string $relatedId): void
+  {
+    $module = self::getModuleBySlug($moduleSlug);
+    $related = self::getModuleBySlug($relatedModuleSlug);
+
+    if ($related->has_activity && $module->is_activity) {
+      self::notifyParentOwner($related, $relatedId);
+    } elseif ($module->has_activity && $related->is_activity) {
+      self::notifyParentOwner($module, $moduleId);
+    }
+  }
+
+  private static function notifyParentOwner(Module $parentModule, string $parentId): void
+  {
+    $parentClass = self::resolveClassFromSlug($parentModule->slug);
+    $parent = $parentClass::find($parentId);
+
+    if ($parent) {
+      NotificationService::notifyRecordActivity($parent, $parentModule, 'linked');
+    }
   }
 
   /**

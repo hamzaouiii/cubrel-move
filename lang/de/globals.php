@@ -16,6 +16,44 @@ return [
         'settings' => 'Einstellungen',
         'profile' => 'Profile',
         'logout' => 'Abmelden',
+        'notifications' => 'Benachrichtigungen',
+    ],
+    'notifications' => [
+        'someone' => 'Jemand',
+        'empty' => 'Noch keine Benachrichtigungen.',
+        'mark_all_read' => 'Alle als gelesen markieren',
+        'record_assigned' => [
+            'title' => ':module dir zugewiesen',
+            'body' => ':user hat dir :record zugewiesen.',
+        ],
+        'meeting_invite' => [
+            'title' => 'Termineinladung',
+            'body' => ':user hat dich zu :meeting eingeladen.',
+        ],
+        'task_due_soon' => [
+            'title' => 'Aufgabe bald fällig',
+            'body' => ':task ist fällig :due.',
+        ],
+        'invite_accepted' => [
+            'title' => 'Einladung angenommen',
+            'body' => ':user hat die Einladung angenommen und ein Konto erstellt.',
+        ],
+        'invite_expired' => [
+            'title' => 'Einladung abgelaufen',
+            'body' => 'Die an :email gesendete Einladung ist abgelaufen.',
+        ],
+        'record_activity' => [
+            'title' => 'Aktivität bei deinem :module',
+            'body' => [
+                'updated' => ':user hat :record aktualisiert.',
+                'deleted' => ':user hat :record gelöscht.',
+                'linked' => ':user hat eine neue Aktivität mit :record verknüpft.',
+            ],
+        ],
+        'impersonated' => [
+            'title' => 'Auf dein Konto wurde zugegriffen',
+            'body' => ':user hat dein Konto am :time imitiert.',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Seitenleiste Öffnen',
