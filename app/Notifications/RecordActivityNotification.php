@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Support\NotificationPresenter;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
@@ -38,9 +39,12 @@ class RecordActivityNotification extends BaseAppNotification
 
     public function toMail($notifiable): MailMessage
     {
+        $module = NotificationPresenter::moduleLabel($this->moduleSlug) ?? $this->moduleSlug;
+
         return (new MailMessage)
-            ->subject(__('emails.notifications.record_activity.subject'))
+            ->subject(__('emails.notifications.record_activity.subject', ['module' => $module]))
             ->line(__("emails.notifications.record_activity.body.{$this->action}", [
+                'module' => $module,
                 'record' => $this->recordLabel ?? $this->recordId,
                 'user' => $this->actorName ?? __('globals.notifications.someone'),
             ]))

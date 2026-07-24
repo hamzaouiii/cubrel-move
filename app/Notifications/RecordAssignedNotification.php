@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Support\NotificationPresenter;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
@@ -37,9 +38,12 @@ class RecordAssignedNotification extends BaseAppNotification
 
     public function toMail($notifiable): MailMessage
     {
+        $module = NotificationPresenter::moduleLabel($this->moduleSlug) ?? $this->moduleSlug;
+
         return (new MailMessage)
-            ->subject(__('emails.notifications.record_assigned.subject'))
+            ->subject(__('emails.notifications.record_assigned.subject', ['module' => $module]))
             ->line(__('emails.notifications.record_assigned.body', [
+                'module' => $module,
                 'record' => $this->recordLabel ?? $this->recordId,
                 'user' => $this->assignedByName ?? __('globals.notifications.someone'),
             ]))

@@ -74,10 +74,10 @@ class NotificationPresenter
         return '<span class="notification-highlight">'.e($value).'</span>';
     }
 
-    // n+1 solution
+    // n+1 solution - public so toMail() implementations can reuse the same  memoized lookup for the module label shown in emails
     private static array $moduleLabelCache = [];
 
-    private static function moduleLabel(?string $slug): ?string
+    public static function moduleLabel(?string $slug): ?string
     {
         if (! $slug) {
             return null;

@@ -72,36 +72,36 @@ return [
     'notifications' => [
         'view_action' => 'Ansehen',
         'record_assigned' => [
-            'subject' => 'Dir wurde ein Datensatz zugewiesen',
-            'body' => ':user hat dir :record zugewiesen.',
+            'subject' => ':module wurde dir zugewiesen',
+            'body' => '**:user** hat dir **:module** **„:record"** zugewiesen.',
         ],
         'meeting_invite' => [
             'subject' => 'Du wurdest zu einem Termin eingeladen',
-            'body' => ':user hat dich zu :meeting eingeladen.',
+            'body' => '**:user** hat dich zu **:meeting** eingeladen.',
         ],
         'task_due_soon' => [
             'subject' => 'Aufgabe bald fällig',
-            'body' => ':task ist fällig :due.',
+            'body' => '**:task** ist fällig **:due**.',
         ],
         'invite_accepted' => [
             'subject' => 'Deine Einladung wurde angenommen',
-            'body' => ':user hat die Einladung angenommen und ein Konto erstellt.',
+            'body' => '**:user** hat die Einladung angenommen und ein Konto erstellt.',
         ],
         'invite_expired' => [
             'subject' => 'Deine Einladung ist abgelaufen',
-            'body' => 'Die an :email gesendete Einladung ist abgelaufen.',
+            'body' => 'Die an **:email** gesendete Einladung ist abgelaufen.',
         ],
         'record_activity' => [
-            'subject' => 'Aktivität bei einem Datensatz, der dir gehört',
+            'subject' => 'Aktivität bei „:module"',
             'body' => [
-                'updated' => ':user hat :record aktualisiert.',
-                'deleted' => ':user hat :record gelöscht.',
-                'linked' => ':user hat eine neue Aktivität mit :record verknüpft.',
+                'updated' => '**:user** hat **:module** **„:record"** aktualisiert.',
+                'deleted' => '**:user** hat **:module** **„:record"** gelöscht.',
+                'linked' => '**:user** hat eine neue Aktivität mit **:module** **„:record"** verknüpft.',
             ],
         ],
         'impersonated' => [
             'subject' => 'Auf dein Konto wurde zugegriffen',
-            'body' => ':user hat dein Konto am :time verwendet.',
+            'body' => '**:user** hat dein Konto am **:time** verwendet.',
         ],
     ],
 ];

@@ -72,36 +72,36 @@ return [
     'notifications' => [
         'view_action' => 'View',
         'record_assigned' => [
-            'subject' => 'A record was assigned to you',
-            'body' => ':user assigned :record to you.',
+            'subject' => ':module assigned to you',
+            'body' => '**:user** assigned you the **:module**: **:record**.',
         ],
         'meeting_invite' => [
             'subject' => "You've been invited to a meeting",
-            'body' => ':user invited you to :meeting.',
+            'body' => '**:user** invited you to **:meeting**.',
         ],
         'task_due_soon' => [
             'subject' => 'Task due soon',
-            'body' => ':task is due :due.',
+            'body' => '**:task** is due **:due**.',
         ],
         'invite_accepted' => [
             'subject' => 'Your invite was accepted',
-            'body' => ':user accepted their invitation and created an account.',
+            'body' => '**:user** accepted their invitation and created an account.',
         ],
         'invite_expired' => [
             'subject' => 'Your invite has expired',
-            'body' => 'The invitation sent to :email has expired.',
+            'body' => 'The invitation sent to **:email** has expired.',
         ],
         'record_activity' => [
-            'subject' => 'Activity on a record you own',
+            'subject' => 'Activity on your :module',
             'body' => [
-                'updated' => ':user updated :record.',
-                'deleted' => ':user deleted :record.',
-                'linked' => ':user linked a new activity to :record.',
+                'updated' => '**:user** updated the **:module**: **:record**.',
+                'deleted' => '**:user** deleted the **:module**: **:record**.',
+                'linked' => '**:user** linked a new activity to the **:module**: **:record**.',
             ],
         ],
         'impersonated' => [
             'subject' => 'Your account was accessed',
-            'body' => ':user impersonated your account on :time.',
+            'body' => '**:user** impersonated your account on **:time**.',
         ],
     ],
 ];
