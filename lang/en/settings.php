@@ -119,6 +119,10 @@ return [
         'notify_inapp_invite_expired' => 'Show an in-app notification when a user invite I sent expires',
         'notify_inapp_record_activity' => 'Show an in-app notification about activity on records I own',
         'notify_inapp_impersonated' => 'Show an in-app notification when my account is impersonated',
+        'retention_notifications_days' => 'Notification Retention (days)',
+        'retention_audit_logs_days' => 'Audit Log Retention (days)',
+        'retention_userinvites_days' => 'User Invite Retention (days)',
+        'retention_failed_jobs_days' => 'Failed Job Retention (days)',
     ],
     'groups' => [
         'email' => 'Email Settings',
@@ -162,6 +166,7 @@ return [
         'display_defaults' => 'Display Defaults',
          'company_info'        => 'Company Info',
         'notifications' => 'Notifications',
+        'data_retention' => 'Data Retention',
     ],
     'dropdown' => [
         'create' => 'New List',

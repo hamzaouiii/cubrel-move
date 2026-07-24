@@ -116,6 +116,10 @@ return [
         'notify_inapp_invite_expired' => 'In-App-Benachrichtigung anzeigen, wenn eine von mir gesendete Einladung abläuft',
         'notify_inapp_record_activity' => 'In-App-Benachrichtigung anzeigen bei Aktivität auf Datensätzen, die mir gehören',
         'notify_inapp_impersonated' => 'In-App-Benachrichtigung anzeigen, wenn mein Konto verwendet wird',
+        'retention_notifications_days' => 'Aufbewahrung von Benachrichtigungen (Tage)',
+        'retention_audit_logs_days' => 'Aufbewahrung des Audit-Verlaufs (Tage)',
+        'retention_userinvites_days' => 'Aufbewahrung von Benutzereinladungen (Tage)',
+        'retention_failed_jobs_days' => 'Aufbewahrung fehlgeschlagener Jobs (Tage)',
     ],
     'groups' => [
         'email' => 'E-Mail Einstellungen',
@@ -159,6 +163,7 @@ return [
         'manage_invites' => 'Benutzereinladungen',
         'company_info' => 'Unternehmensdaten',
         'notifications' => 'Benachrichtigungen',
+        'data_retention' => 'Datenaufbewahrung',
     ],
     'dropdown' => [
         'create' => 'Neue Liste',

@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Models\BaseModule;
+use App\Support\Settings;
+use Illuminate\Database\Eloquent\Prunable;
 
 class UserInvite extends BaseModule
 {
+  use Prunable;
+
   protected $table = 'userinvites';
 
   protected $fillable = [
@@ -47,5 +51,22 @@ class UserInvite extends BaseModule
     }
 
     return $dbStatus;
+  }
+
+  /**
+   * Only prunes resolved invites (accepted, or expired past the notification
+   * job's expired_notified_at stamp) — pending invites are never touched.
+   */
+  public function prunable()
+  {
+    $cutoff = now()->subDays(Settings::get('retention_userinvites_days', 365));
+
+    return static::where(function ($query) use ($cutoff) {
+      $query->where('accepted_at', '<=', $cutoff)
+        ->orWhere(function ($query) use ($cutoff) {
+          $query->where('status', 'expired')
+            ->where('expired_notified_at', '<=', $cutoff);
+        });
+    });
   }
 }

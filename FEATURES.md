@@ -413,8 +413,24 @@ Settings are organized into groups, each with one or more items, each holding ke
 | | `table_striped_rows` | Checkbox |
 | | `use_individual_module_colors` | Checkbox |
 | **Display Defaults** | `list_view_limit`, `linking_panel_limit`, `related_panel_limit` | Integer |
+| **Data Retention** | `retention_notifications_days`, `retention_audit_logs_days`, `retention_userinvites_days`, `retention_failed_jobs_days` | Integer (days) |
 
 The `SettingsController` provides live preview options for date/datetime formats based on the selected timezone. These are organization-wide defaults set by an admin — see [User Preferences](#20-user-preferences) for the separate, per-user override of these same settings.
+
+### Data Retention & Automatic Cleanup
+
+Old, no-longer-relevant rows are pruned automatically on a daily schedule rather than accumulating indefinitely:
+
+| What's cleaned | Configurable window (default) |
+|---|---|
+| In-app/email notifications | `retention_notifications_days` (180 days) |
+| Audit log entries (and their bulk-batch affected-record rows, removed together automatically) | `retention_audit_logs_days` (730 days) |
+| Resolved user invites — accepted or expired | `retention_userinvites_days` (365 days) |
+| Failed queue jobs | `retention_failed_jobs_days` (30 days) |
+
+Each window is an organization-wide default editable at `/settings/system/data-retention`, following the same admin-configurable settings pattern used throughout [Settings](#10-settings). Pending user invites are never pruned regardless of age — only ones already accepted or expired are eligible. Expired, unused password-reset tokens are cleared daily as well, governed by the existing password-reset expiry window rather than a separate retention setting.
+
+
 
 ### Customisation
 
