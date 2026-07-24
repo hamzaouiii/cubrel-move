@@ -32,34 +32,50 @@ app/Console/Commands/
 routes/console.php                # Schedule::command(...) entries
 
 resources/js/
-  Composables/useNotifications.js       # polling (unread count) + list/mark-read
-  Pages/Components/Globals/NotificationBell.vue   # bell + dropdown, mounted in Topbar.vue
+  Composables/useNotifications.js       # live (websocket) state + fallback poll, list/mark-read — see §7
+  Composables/useLiveToasts.js          # toast stack state — see §7
+  Pages/Components/Globals/NotificationBell.vue      # bell + dropdown, mounted in Topbar.vue
+  Pages/Components/Globals/NotificationToasts.vue    # bottom-left toast stack — see §7
+  Pages/Preferences/Index.vue           # personal overrides, incl. paired email/in-app table — see §8
+  Pages/Settings/Notifications.vue      # admin-wide defaults, same paired table — see §8
 
-config/preferences.php            # 'notifications' tab — 7 email opt-in bool fields
-config/default_notification_settings.php  # org-wide defaults, consumed by SettingValuesSeeder
+config/preferences.php            # 'notifications' tab — 14 fields (7 email + 7 in-app) — see §8
+config/settings.php               # admin Settings registry — 'notifications' item under 'system' — see §8
+config/default_notification_settings.php  # org-wide defaults (14 keys), single source of truth for seeder + migration
+config/default_settings.php       # org-wide defaults for every OTHER setting_values row — see §8.4
 lang/{en,de}/globals.php           # 'notifications' key — bell strings
 lang/{en,de}/emails.php            # 'notifications' key — email strings (separate wording)
+lang/{en,de}/preferences.php       # 'notification_types' — shared row labels for both paired tables — see §8
 ```
 
 ### Why a `BaseAppNotification` base class
 
-All 7 notification types need the exact same channel logic: always write to the database, and additionally send mail only if the recipient opted in for that specific type. Rather than repeat that in each class, `BaseAppNotification` defines `via()` once and each subclass only implements `typeKey(): string`:
+All 7 notification types need the exact same channel logic. Rather than repeat that in each class, `BaseAppNotification` defines `via()` once and each subclass only implements `typeKey(): string`. As of §8, both the in-app channel (database + live broadcast, bundled as one toggle) and mail are independently opt-out, not just mail:
 
 ```php
-abstract class BaseAppNotification extends Notification implements ShouldQueue
+abstract class BaseAppNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     abstract public function typeKey(): string;
 
     public function via($notifiable): array
     {
-        $channels = ['database'];
+        $channels = [];
+
+        if ($notifiable->wantsInAppFor($this->typeKey())) {
+            $channels[] = 'database';
+            $channels[] = 'broadcast';
+        }
+
         if ($notifiable->wantsEmailFor($this->typeKey())) {
             $channels[] = 'mail';
         }
+
         return $channels;
     }
 }
 ```
+
+A type with both toggles off simply sends nothing — Laravel handles an empty channel list fine, no error.
 
 ### Why `toArray()` stores raw data, not rendered text
 
@@ -233,7 +249,79 @@ Reverb needs a persistent process in production (a systemd unit, `Restart=always
 - `resources/scss/globals.scss` — `.notification-toasts`, `.notification-highlight`
 - `package.json` — `laravel-echo`, `pusher-js`, `@laravel/echo-vue`
 
-## 8. Manual verification
+## 8. Per-type in-app toggle + system-wide admin defaults
+
+Branch: `Notifications` (same branch, later addition, after §7)
+
+### 8.1 Why
+
+§1-§8 made every type's in-app delivery (bell + live toast) unconditional — only *email* was ever opt-out. That's inconsistent: a user could mute an email but never mute the bell/toast itself for a noisy type. This addition makes in-app delivery an independent per-type toggle, exactly like email already was, at two levels: a personal override (Preferences) and an organization-wide default (admin Settings) — the same "system default with a personal override" pattern already used for every other setting in this app (`Settings::bool()`/`Settings::get()`).
+
+### 8.2 New toggle: `notify_inapp_<type>`
+
+- `User::wantsInAppFor(string $type): bool` — mirrors `wantsEmailFor()` exactly (checks `$this->preferences[$key]` first, falls back to `Settings::bool($key, ...)`), with one deliberate difference: it defaults to **`true`**, not `false`, so accounts that predate this setting (or a `setting_values` row that hasn't been backfilled yet) keep today's always-on behavior rather than going silent.
+- `BaseAppNotification::via()` now gates `database`+`broadcast` behind `wantsInAppFor()` (see the updated snippet in §2), independently of `wantsEmailFor()`.
+- 7 new keys (`notify_inapp_record_assigned`, …`_impersonated`) added everywhere the 7 `notify_email_*` keys already existed: `config/default_notification_settings.php` (defaults, all `'1'`), `config/preferences.php`'s `notifications` tab, `settings.fields.notify_inapp_*` labels in both lang files.
+
+### 8.3 Two UIs, one data source
+
+Both surfaces read/write the same 14 `setting_values` rows (`setting_item = 'notifications'`), rendered as a two-column (Email / In-App) toggle table per notification type rather than the generic single-toggle field list used elsewhere:
+
+| Surface | Who | Route | Component |
+|---|---|---|---|
+| Personal override | Any user | `/preferences?tab=notifications` | `Preferences/Index.vue` — a special-cased branch (`isNotificationsTab`) replacing the generic per-tab field list |
+| Organization-wide default | Admin | `/settings/system/notifications` | `Settings/Notifications.vue` (new, bespoke — the generic `Settings/Page.vue` only renders one toggle per row, not a paired pair) |
+
+Both derive their row list the same way — strip `notify_email_`/`notify_inapp_` off each key to get the type, dedupe, preserve order — rather than hardcoding the 7 type names, so a new type just needs its two config/lang entries, no template change.
+
+`SettingsController::notifications()` is a small dedicated action (not the generic `show($category, $slug)`) since the payload/page differ, but **saving still goes through the existing generic `PUT /settings/{item}`** — no special-casing needed there, since it's already keyed by `setting_item`+`key`. The route (`GET /settings/system/notifications`) is registered *before* the generic `/settings/{category}/{item}` catch-all in `routes/web.php`, otherwise the catch-all would win and 404 via `Settings::getItem()` looking for a config-registered item under the wrong shape.
+
+Row labels (`preferences.notification_types.<type>`) are shared between both UIs — a neutral event description ("A record is assigned to me"), distinct from the field-specific `settings.fields.notify_email_*`/`notify_inapp_*` labels (used for admin field-list contexts and accessibility, not as the paired-table row label).
+
+### 8.4 Config/seeder refactor — and the bug that forced it
+
+Adding `notify_inapp_*` required backfilling `setting_values` for **already-deployed** databases, since `deploy.sh` only ever runs `php artisan migrate --force` — never `db:seed`. A migration is the only mechanism that reaches an existing install.
+
+First pass wrote the migration with its own hardcoded key list, duplicating what `SettingValuesSeeder` already inserts for fresh installs. That produced a real bug on `migrate:fresh --seed` (which runs migrations against an empty DB *then* seeds): the migration inserted the 7 rows first, then the seeder's unconditional `insert()` inserted the same 7 keys again — `setting_values.key` has no unique constraint, so duplicates silently coexisted, breaking `SettingsController::update()`'s `updateOrCreate` (patches only one of two duplicate rows) and doubling every row in `Settings/Notifications.vue`.
+
+**Fix, and the rule going forward: every migration must survive `migrate:fresh --seed`, and any seeder touching the same rows must be idempotent against it too — no one-off/non-idempotent migrations, ever.**
+
+The actual fix went further than just guarding the notifications loop — the whole seeder was hardcoding data inline instead of deferring to config, which is the same anti-pattern that caused the bug in the first place:
+
+- **`config/default_settings.php`** (new) — every previously-hardcoded `setting_values` row (`languages`, `locale`, `style`, `display-defaults`, `system`, plus the disabled `company-info` block, preserved commented-out) moved here as plain data. This is now the single source of truth for those rows, the same role `config/default_notification_settings.php` already played for the 7 (now 14) notification keys.
+- **`SettingValuesSeeder::seedDefaultSettings()`** — loops over `config('default_settings')`, guarded per-key (`->exists()` check) exactly like `seedNotificationDefaults()`.
+- **`SettingValuesSeeder::seedNotificationDefaults()`** — public/static specifically so the backfill migration can call this exact method instead of maintaining its own copy of the key list. `config/default_notification_settings.php` stays the source of truth for values; this method is the source of truth for the insert *logic*.
+- **`database/migrations/2026_07_24_150000_add_notify_inapp_setting_defaults.php`** — now just `SettingValuesSeeder::seedNotificationDefaults();` in `up()`. No hardcoded keys left anywhere outside the two config files.
+
+Verified: `migrate:fresh --seed` → 38 total `setting_values` rows (24 general + 14 notification), zero duplicate keys; running the seeder a second time on top of that adds nothing.
+
+### 8.5 `NotificationPresenter` N+1 fix
+
+Unrelated bug found while reviewing this addition: `NotificationPresenter::moduleLabel()` ran a fresh `Module::where('slug', ...)->first()` query per notification. `NotificationController::index()` calls `present()` in a loop over up to 20 notifications per page, so a page full of `record_assigned`/`record_activity` items was up to 20 queries for what's a small, mostly-static table. Fixed with a static per-process memoization cache (`self::$moduleLabelCache`) keyed by slug — one query per unique slug per process, not per notification. Tradeoff worth knowing: since queue workers are long-running, a module rename mid-process could serve a stale label until the worker restarts (`queue:restart` already runs on every deploy, so a non-issue in practice); request-scoped contexts like `NotificationController::index()` have no such concern since the cache is fresh every request.
+
+### 8.6 Files touched (this addition)
+
+**Backend**
+- `app/Models/User.php` — `wantsInAppFor()`
+- `app/Notifications/BaseAppNotification.php` — `via()` gates in-app behind `wantsInAppFor()`
+- `app/Support/NotificationPresenter.php` — `moduleLabel()` memoization
+- `app/Http/Controllers/SettingsController.php` — `notifications()` action
+- `routes/web.php` — `GET /settings/system/notifications`, registered before the generic catch-all
+- `config/default_notification_settings.php` — 7 new `notify_inapp_*` keys
+- `config/default_settings.php` (new) — extracted from `SettingValuesSeeder`
+- `config/preferences.php` — 7 new `notify_inapp_*` fields
+- `config/settings.php` — new `notifications` item under the `system` group
+- `database/seeders/SettingValuesSeeder.php` — refactored to `seedDefaultSettings()` + `seedNotificationDefaults()`, both idempotent
+- `database/migrations/2026_07_24_150000_add_notify_inapp_setting_defaults.php` (new)
+- `lang/{en,de}/settings.php` — `notify_inapp_*` field labels, `items.notifications`
+- `lang/{en,de}/preferences.php` — `notification_types.*` row labels, `notifications_email_column`/`notifications_inapp_column`
+
+**Frontend**
+- `resources/js/Pages/Preferences/Index.vue` — paired email/in-app table for the notifications tab, URL-linked tabs (`?tab=`), per-row reset, top-level "discard unsaved changes" Reset button
+- `resources/js/Pages/Settings/Notifications.vue` (new) — admin-facing equivalent
+- `resources/js/Pages/Components/Globals/NotificationBell.vue` — settings-icon tooltip (`AppTooltip.vue`) linking to `/preferences?tab=notifications`
+
+## 9. Manual verification
 
 - Full test suite (273 tests) passing throughout — this feature added no new test files, so regressions were caught via `ModuleCrudTest`/`RelationshipManyToOneLinkingTest` (which exercise `AuditObserver`/`RelationshipService` generically) and the existing `InviteAcceptanceTest`/`ImpersonationAuditTest`/`PreferencesControllerTest` suites.
 - `php artisan tinker` round-trips for each of the 7 types: confirmed a `notifications` row is created, the unread count increments, and mail is (or isn't) queued based on the recipient's `wantsEmailFor()` result.

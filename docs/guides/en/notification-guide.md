@@ -22,27 +22,29 @@ New notifications arrive live while you have the app open — the bell's badge u
 
 Clicking a notification (where applicable) takes you straight to the relevant record or page, and marks it as read. "Mark all as read" at the top of the dropdown clears every unread notification at once. The bottom-left popup works the same way — click it to jump to the record and mark it read, or just hover over it for a couple of seconds and it'll mark itself as read without navigating anywhere.
 
-## Email notifications
+## Notification channels
 
-Every notification above always appears in the bell — that part isn't optional. Whether a notification is **also emailed** to you is a separate, per-type setting you control yourself.
+Each of the seven event types has two independent on/off switches: whether it shows up **in-app** (the bell and the popup) and whether it's **also emailed** to you. Turning off in-app for a type doesn't just hide it — it stops being delivered there entirely, the same as turning off email stops it being sent.
 
-Go to **Preferences > Notifications** to see a toggle for each of the seven event types above. By default:
+Go to **Preferences > Notifications** to see both toggles for each event type, side by side. By default:
 
 - **Emailed by default**: your account was accessed (impersonation), an invite you sent was accepted, an invite you sent expired.
-- **In-app only by default**: record assigned, meeting invite, task due soon, activity on your records.
+- **Email off by default**: record assigned, meeting invite, task due soon, activity on your records.
+- **In-app on by default**: all seven types.
 
-Turn any of them on or off to suit how closely you want to follow along — for example, if you own a lot of records and don't want an inbox full of "activity on your record" emails, leave that one off and just check the bell when convenient. If you'd rather never miss a task deadline even when you're not logged in, turn on task due soon.
+Turn any of them on or off to suit how closely you want to follow along — for example, if you own a lot of records and don't want an inbox full of "activity on your record" emails, leave that one off and just check the bell when convenient. If you'd rather never miss a task deadline even when you're not logged in, turn on email for task due soon.
 
-These settings are personal to your account — turning email on or off for yourself doesn't change what anyone else sees or receives.
+These are personal to your account — changing them for yourself doesn't change what anyone else sees or receives. If you leave a toggle exactly as shown, it follows your organization's default setting instead, which an admin controls separately (Settings > Notifications) — so your organization can set sensible defaults for everyone, and you can still fine-tune any of them for yourself.
 
 ## In short
 
 | Question | Answer |
 | --- | --- |
 | Where do notifications show up? | The bell icon in the top bar, on every page, plus a popup in the bottom-left corner as they happen. |
-| Do I need to turn notifications on? | No — all seven types are always active in-app. |
+| Do I need to turn notifications on? | No — all seven types are on in-app by default; you can turn any of them off. |
 | How often does the unread count refresh? | Instantly, as each notification happens. |
 | Can I get these by email too? | Yes, per type, in Preferences > Notifications. |
 | Which are emailed by default? | Impersonation, invite accepted, invite expired. |
+| Can my organization set different defaults? | Yes — an admin sets organization-wide defaults in Settings > Notifications; your personal Preferences override those for your own account. |
 | Will I be notified about my own actions? | No — actions you take on your own records never notify you. |
 | How do I clear my notifications? | Click one (in the bell or the popup) to mark it read, hover over a popup for a couple seconds, or use "Mark all as read" for everything at once. |

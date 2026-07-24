@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Verified 2026-07-22 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
+> Verified 2026-07-24 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -24,6 +24,8 @@
 16. [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)
 17. [Bulk Import](#17-bulk-import)
 18. [Activities](#18-activities)
+19. [Notifications](#19-notifications)
+20. [User Preferences](#20-user-preferences)
 
 ---
 
@@ -410,9 +412,9 @@ Settings are organized into groups, each with one or more items, each holding ke
 | | `border_radius` | Integer/slider |
 | | `table_striped_rows` | Checkbox |
 | | `use_individual_module_colors` | Checkbox |
-| **Preferences** | `list_view_limit`, `linking_panel_limit`, `related_panel_limit` | Integer |
+| **Display Defaults** | `list_view_limit`, `linking_panel_limit`, `related_panel_limit` | Integer |
 
-The `SettingsController` provides live preview options for date/datetime formats based on the selected timezone.
+The `SettingsController` provides live preview options for date/datetime formats based on the selected timezone. These are organization-wide defaults set by an admin — see [User Preferences](#20-user-preferences) for the separate, per-user override of these same settings.
 
 ### Customisation
 
@@ -448,6 +450,10 @@ See [PDF Generation](#13-pdf-generation).
 ### Audit
 
 See [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
+
+### Notifications
+
+See [Notifications](#19-notifications).
 
 ---
 
@@ -831,3 +837,73 @@ The Attendees section is a fixed, non-field layout section (`has_attendees: true
 ### Reference
 
 - `docs/guides/en/activities-guide.md` — plain-language, user-facing guide.
+
+---
+
+## 19. Notifications
+
+Seven event types notify the relevant user automatically — no per-module setup required, the same way [Audit Trail](#16-audit-trail--impersonation-sessions) captures every record change without opt-in. Delivery is live: a bell icon in the top bar and a bottom-left toast popup both update the instant an event happens, over a private WebSocket channel (`laravel/reverb`), with a slow background poll as a fallback if the connection ever drops.
+
+### Triggers
+
+| Type | Triggered from | Notified |
+|---|---|---|
+| Record assigned | `AuditObserver` — record created/updated with `owner_id` set to someone else | New owner |
+| Activity on a record you own | `AuditObserver` (update/delete) and `RelationshipService::link()` (activity linked) | Record owner, unless they're the actor |
+| Meeting invite | `MeetingAttendeeController::store()` | The invited user |
+| Task due soon | `NotifyTasksDueSoon` (scheduled hourly) | Task owner |
+| User invite accepted | `InviteService::accept()` | Whoever sent the invite |
+| User invite expired | `NotifyExpiredInvites` (scheduled hourly) | Whoever sent the invite |
+| Account impersonated | `UserController::impersonate()` | The impersonated user |
+
+### Delivery channels
+
+Each type broadcasts over up to three independent channels, controlled by `BaseAppNotification::via()`:
+
+| Channel | Surface | Toggle |
+|---|---|---|
+| `database` + `broadcast` | Bell dropdown + live toast (bundled as one "in-app" toggle) | `notify_inapp_<type>` |
+| `mail` | Email | `notify_email_<type>` |
+
+A live push renders its title/body server-side at broadcast time, in the recipient's own saved language (`HasLocalePreference`) — not the actor's locale or the queue worker's default — so a German-language user always sees a clean, single-language notification regardless of who triggered it or what locale the background job happens to run under.
+
+### Personal and system-wide control
+
+Both toggles exist at two levels, the same "system default with a personal override" pattern used throughout [Settings](#10-settings):
+
+| Level | Location | Scope |
+|---|---|---|
+| System-wide default | `/settings/system/notifications` (admin) | Organization default for every type/channel pair |
+| Personal override | Preferences → Notifications | This user only; unset falls back to the system default |
+
+Both pages render the same 14 email/in-app pairs as a two-column toggle table (`Settings/Notifications.vue`, `Preferences/Index.vue`), reading from and writing to the same 14 `setting_values` rows (`setting_item = notifications`) — an admin sets the organization's defaults, a user can independently override either channel for any type on their own account.
+
+### Reference
+
+- `docs/dev/notifications-implementation.md` — full technical writeup.
+- `docs/guides/en/notification-guide.md` — plain-language, user-facing guide.
+
+---
+
+## 20. User Preferences
+
+Every user has a `/preferences` page (`PreferencesController`, `Preferences/Index.vue`) where they can personally override any of the organization's system-wide defaults (see [Settings](#10-settings)) for their own account only — no admin access required, and it never affects what anyone else sees.
+
+### Tabs
+
+| Tab | Fields |
+|---|---|
+| General | App language, date format, datetime format |
+| Style | Primary/secondary/success/danger colors, "use individual module colors" |
+| Lists & Panels | Related panel limit, list view limit, linking panel limit |
+| Notifications | All 14 email/in-app toggles — see [Notifications](#19-notifications) |
+
+Tabs are reflected in the URL (`?tab=general`), so any tab can be linked to directly and the browser's back/forward buttons move between them — `NotificationBell.vue`'s settings icon, for example, opens straight to `/preferences?tab=notifications`.
+
+### Config-driven, not hardcoded per field
+
+`config/preferences.php` defines every tab and field (type, label, validation rule) once; `PreferencesController::overridableKeys()` derives the full set of valid keys and validation rules straight from that config, so adding a new overridable setting is a config change, not a new controller method. The same config also drives which fields render with which input component (`Checkbox`, `ColorPicker`, `Switcher`, a format-aware `DropdownField`, or a plain number input).
+
+### Override mechanism
+
+A user's overrides are stored as a single JSON `preferences` column on `User`. Saving a field writes an override; explicitly resetting a field back to "System default" removes that key from the JSON entirely rather than storing a duplicate of the default — so a later change to the organization's own default is picked up automatically for anyone who never overrode it. Every field shows the current system default inline (`current_system_value`) so a user can see what they're diverging from before they touch it, and a top-level "Reset" clears all unsaved edits (not saved overrides) back to what's currently on the account.
