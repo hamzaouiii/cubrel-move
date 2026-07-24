@@ -48,6 +48,7 @@ return [
     'status' => 'Status',
     'address' => 'Address',
     'image' => 'Image',
+    'duration' => 'Duration',
   ],
   'metadata' => [
     'name' => 'System Name',

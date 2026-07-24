@@ -91,11 +91,11 @@ const isDirty = () => form.isDirty;
             <span class="settings__notifications__header__label"></span>
             <span class="settings__notifications__header__col">
               <i class="fa-solid fa-envelope"></i>
-              {{ $t("preferences.notifications_email_column") }}
+              {{ $t("globals.preferences.notifications_email_column") }}
             </span>
             <span class="settings__notifications__header__col">
               <i class="fa-solid fa-bell"></i>
-              {{ $t("preferences.notifications_inapp_column") }}
+              {{ $t("globals.preferences.notifications_inapp_column") }}
             </span>
           </div>
 
@@ -105,7 +105,7 @@ const isDirty = () => form.isDirty;
             class="settings__notifications__row"
           >
             <div class="settings__notifications__row__label">
-              <label>{{ $t(`preferences.notification_types.${type}`) }}</label>
+              <label>{{ $t(`globals.preferences.notification_types.${type}`) }}</label>
             </div>
 
             <div class="settings__notifications__row__col">

@@ -76,7 +76,7 @@ const user = computed(() => page.props.auth?.user || {});
               <li>
                 <Link href="/preferences">
                   <i class="fa-solid fa-sliders"></i>
-                  {{ $t("preferences.label") }}
+                  {{ $t("globals.preferences.label") }}
                 </Link>
               </li>
               <li @click="logout">

@@ -54,7 +54,7 @@ class PreferencesController extends Controller
 
     $user->update(['preferences' => $preferences]);
 
-    return redirect()->back()->with('success', __('preferences.update_success'));
+    return redirect()->back()->with('success', __('globals.preferences.update_success'));
   }
 
   private static function overridableKeys()

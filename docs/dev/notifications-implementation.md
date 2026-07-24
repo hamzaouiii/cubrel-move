@@ -43,9 +43,8 @@ config/preferences.php            # 'notifications' tab — 14 fields (7 email +
 config/settings.php               # admin Settings registry — 'notifications' item under 'system' — see §8
 config/default_notification_settings.php  # org-wide defaults (14 keys), single source of truth for seeder + migration
 config/default_settings.php       # org-wide defaults for every OTHER setting_values row — see §8.4
-lang/{en,de}/globals.php           # 'notifications' key — bell strings
+lang/{en,de}/globals.php           # 'notifications' key — bell strings; 'preferences.notification_types' — shared row labels for both paired tables — see §8
 lang/{en,de}/emails.php            # 'notifications' key — email strings (separate wording)
-lang/{en,de}/preferences.php       # 'notification_types' — shared row labels for both paired tables — see §8
 ```
 
 ### Why a `BaseAppNotification` base class
@@ -181,7 +180,7 @@ This requires the server's OS cron to actually run `php artisan schedule:run` ev
 - `resources/js/Pages/Components/Globals/Topbar.vue` — mounts the bell
 - `resources/scss/globals.scss` — bell/badge/dropdown styling
 
-**Lang** — `globals.notifications`, `emails.notifications`, `settings.fields.notify_email_*`, `preferences.tabs.notifications` in both `lang/en/` and `lang/de/`.
+**Lang** — `globals.notifications`, `emails.notifications`, `settings.fields.notify_email_*`, `globals.preferences.tabs.notifications` in both `lang/en/` and `lang/de/`.
 
 ## 7. Live delivery (WebSocket toast + live bell) via Reverb
 
@@ -276,7 +275,7 @@ Both derive their row list the same way — strip `notify_email_`/`notify_inapp_
 
 `SettingsController::notifications()` is a small dedicated action (not the generic `show($category, $slug)`) since the payload/page differ, but **saving still goes through the existing generic `PUT /settings/{item}`** — no special-casing needed there, since it's already keyed by `setting_item`+`key`. The route (`GET /settings/system/notifications`) is registered *before* the generic `/settings/{category}/{item}` catch-all in `routes/web.php`, otherwise the catch-all would win and 404 via `Settings::getItem()` looking for a config-registered item under the wrong shape.
 
-Row labels (`preferences.notification_types.<type>`) are shared between both UIs — a neutral event description ("A record is assigned to me"), distinct from the field-specific `settings.fields.notify_email_*`/`notify_inapp_*` labels (used for admin field-list contexts and accessibility, not as the paired-table row label).
+Row labels (`globals.preferences.notification_types.<type>`) are shared between both UIs — a neutral event description ("A record is assigned to me"), distinct from the field-specific `settings.fields.notify_email_*`/`notify_inapp_*` labels (used for admin field-list contexts and accessibility, not as the paired-table row label).
 
 ### 8.4 Config/seeder refactor — and the bug that forced it
 

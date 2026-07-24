@@ -162,7 +162,7 @@ const notificationRowDefaultLabel = (type) => {
     type: "bool",
   });
 
-  return `${t("preferences.notifications_email_column")}: ${emailDefault} · ${t("preferences.notifications_inapp_column")}: ${inappDefault}`;
+  return `${t("globals.preferences.notifications_email_column")}: ${emailDefault} · ${t("globals.preferences.notifications_inapp_column")}: ${inappDefault}`;
 };
 
 const savePreferences = () => {
@@ -179,11 +179,11 @@ const savePreferences = () => {
       preserveScroll: true,
       onSuccess: () => {
         clearAllAlerts();
-        success(t("preferences.update_success"));
+        success(t("globals.preferences.update_success"));
       },
       onError: () => {
         clearAllAlerts();
-        error(t("preferences.update_error"));
+        error(t("globals.preferences.update_error"));
       },
     });
 };
@@ -197,7 +197,7 @@ const tooltip = reactive({
 
 const onResetMouseEnter = (event) => {
   const rect = event.currentTarget.getBoundingClientRect();
-  tooltip.text = t("preferences.use_system_default");
+  tooltip.text = t("globals.preferences.use_system_default");
   tooltip.top = rect.top + rect.height / 2;
   tooltip.left = rect.left - 10;
   tooltip.show = true;
@@ -210,7 +210,7 @@ const hideTooltip = () => {
 
 <template>
   <Head>
-    <title>{{ $t("preferences.label") }} - Cubrel</title>
+    <title>{{ $t("globals.preferences.label") }} - Cubrel</title>
   </Head>
 
   <div
@@ -223,7 +223,7 @@ const hideTooltip = () => {
     <div class="settings__header">
       <div class="settings__header__title">
         <h3 class="settings__header__title__text">
-          {{ $t("preferences.label") }}
+          {{ $t("globals.preferences.label") }}
         </h3>
       </div>
     </div>
@@ -248,11 +248,11 @@ const hideTooltip = () => {
             <span class="settings__notifications__header__label"> </span>
             <span class="settings__notifications__header__col">
               <i class="fa-solid fa-envelope"></i>
-              {{ $t("preferences.notifications_email_column") }}
+              {{ $t("globals.preferences.notifications_email_column") }}
             </span>
             <span class="settings__notifications__header__col">
               <i class="fa-solid fa-bell"></i>
-              {{ $t("preferences.notifications_inapp_column") }}
+              {{ $t("globals.preferences.notifications_inapp_column") }}
             </span>
             <span class="settings__notifications__header__reset"></span>
           </div>
@@ -263,10 +263,10 @@ const hideTooltip = () => {
             class="settings__notifications__row"
           >
             <div class="settings__notifications__row__label">
-              <label>{{ $t(`preferences.notification_types.${type}`) }}</label>
+              <label>{{ $t(`globals.preferences.notification_types.${type}`) }}</label>
               <span class="settings__optional-label">
                 {{
-                  $t("preferences.current_system_value", {
+                  $t("globals.preferences.current_system_value", {
                     value: notificationRowDefaultLabel(type),
                   })
                 }}
@@ -312,7 +312,7 @@ const hideTooltip = () => {
             @click="discardChanges"
             :disabled="!isDirty"
           >
-            {{ $t("preferences.reset") }}
+            {{ $t("globals.preferences.reset") }}
           </button>
 
           <button
@@ -320,7 +320,7 @@ const hideTooltip = () => {
             class="settings__actions__save"
             :disabled="!isDirty || form.processing"
           >
-            {{ $t("preferences.save") }}
+            {{ $t("globals.preferences.save") }}
           </button>
         </div>
       </div>
@@ -328,7 +328,7 @@ const hideTooltip = () => {
       <!-- Other tabs (unchanged) -->
       <div v-else-if="currentFields.length === 0" class="settings__empty">
         <i class="fa-solid fa-bell"></i>
-        <p>{{ $t("preferences.notifications_placeholder") }}</p>
+        <p>{{ $t("globals.preferences.notifications_placeholder") }}</p>
       </div>
 
       <div v-else class="settings__system">
@@ -342,7 +342,7 @@ const hideTooltip = () => {
               <label>{{ $t(f.label) }}</label>
               <span v-if="!overridden[f.key]" class="settings__optional-label">
                 {{
-                  $t("preferences.current_system_value", {
+                  $t("globals.preferences.current_system_value", {
                     value: systemDefaultLabel(f),
                   })
                 }}
@@ -419,7 +419,7 @@ const hideTooltip = () => {
             @click="discardChanges"
             :disabled="!isDirty"
           >
-            {{ $t("preferences.reset") }}
+            {{ $t("globals.preferences.reset") }}
           </button>
 
           <button
@@ -427,7 +427,7 @@ const hideTooltip = () => {
             class="settings__actions__save"
             :disabled="!isDirty || form.processing"
           >
-            {{ $t("preferences.save") }}
+            {{ $t("globals.preferences.save") }}
           </button>
         </div>
       </div>
