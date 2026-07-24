@@ -109,6 +109,13 @@ return [
         'notify_email_invite_expired' => 'E-Mail senden, wenn eine von mir gesendete Einladung abläuft',
         'notify_email_record_activity' => 'E-Mail senden bei Aktivität auf Datensätzen, die mir gehören',
         'notify_email_impersonated' => 'E-Mail senden, wenn mein Konto verwendet wird',
+        'notify_inapp_record_assigned' => 'In-App-Benachrichtigung anzeigen, wenn mir ein Datensatz zugewiesen wird',
+        'notify_inapp_meeting_invite' => 'In-App-Benachrichtigung anzeigen, wenn ich zu einem Termin eingeladen werde',
+        'notify_inapp_task_due_soon' => 'In-App-Benachrichtigung anzeigen, wenn eine Aufgabe bald fällig ist',
+        'notify_inapp_invite_accepted' => 'In-App-Benachrichtigung anzeigen, wenn eine von mir gesendete Einladung angenommen wird',
+        'notify_inapp_invite_expired' => 'In-App-Benachrichtigung anzeigen, wenn eine von mir gesendete Einladung abläuft',
+        'notify_inapp_record_activity' => 'In-App-Benachrichtigung anzeigen bei Aktivität auf Datensätzen, die mir gehören',
+        'notify_inapp_impersonated' => 'In-App-Benachrichtigung anzeigen, wenn mein Konto verwendet wird',
     ],
     'groups' => [
         'email' => 'E-Mail Einstellungen',
@@ -151,6 +158,7 @@ return [
         'display_defaults' => 'Anzeigestandards',
         'manage_invites' => 'Benutzereinladungen',
         'company_info' => 'Unternehmensdaten',
+        'notifications' => 'Benachrichtigungen',
     ],
     'dropdown' => [
         'create' => 'Neue Liste',

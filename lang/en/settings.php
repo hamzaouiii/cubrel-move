@@ -112,6 +112,13 @@ return [
         'notify_email_invite_expired' => 'Email me when a user invite I sent expires',
         'notify_email_record_activity' => 'Email me about activity on records I own',
         'notify_email_impersonated' => 'Email me when my account is impersonated',
+        'notify_inapp_record_assigned' => 'Show an in-app notification when a record is assigned to me',
+        'notify_inapp_meeting_invite' => 'Show an in-app notification when I am invited to a meeting',
+        'notify_inapp_task_due_soon' => 'Show an in-app notification when a task is due soon',
+        'notify_inapp_invite_accepted' => 'Show an in-app notification when a user invite I sent is accepted',
+        'notify_inapp_invite_expired' => 'Show an in-app notification when a user invite I sent expires',
+        'notify_inapp_record_activity' => 'Show an in-app notification about activity on records I own',
+        'notify_inapp_impersonated' => 'Show an in-app notification when my account is impersonated',
     ],
     'groups' => [
         'email' => 'Email Settings',
@@ -154,6 +161,7 @@ return [
         'dropdowns' => 'Dropdown Editor',
         'display_defaults' => 'Display Defaults',
          'company_info'        => 'Company Info',
+        'notifications' => 'Notifications',
     ],
     'dropdown' => [
         'create' => 'New List',
