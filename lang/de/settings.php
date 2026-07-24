@@ -27,7 +27,7 @@ return [
     'back_to_settings' => 'Zurück zu Einstellungen',
     'collapse_menu' => 'Menü einklappen',
     'expand_menu' => 'Menü ausklappen',
-    'currency_hint' => 'Sie können diese Liste erweitern, indem Sie die Dropdown-Liste \'currency_list\' unter Einstellungen → Dropdown-Editor bearbeiten.',
+    'currency_hint' => 'Du kannst diese Liste erweitern, indem du die Dropdown-Liste \'currency_list\' unter Einstellungen → Dropdown-Editor bearbeitest.',
     'search_placeholder' => 'In dieser Liste suchen...',
     'no_results' => 'Keine Einstellungen gefunden',
     'tabs' => [
@@ -128,11 +128,11 @@ return [
         'description' => [
             'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
-            'users' => 'Laden Sie Benutzer in Cubrel ein und verwalten Sie sie.',
+            'users' => 'Lade Benutzer in Cubrel ein und verwalte sie.',
             'customisations' => 'Erstelle und verwalte Module, Layouts, Felder und Beziehungen.',
-            'pdf_templates' => 'Erstellen und verwalten Sie die PDF-Layouts, die beim Generieren von Dokumenten für Ihre Datensätze verwendet werden.',
-            'company' => 'Verwalten Sie die Identität Ihres Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
-            'audit' => 'Überprüfen Sie den Änderungsverlauf von Datensätzen und Impersonation-Sitzungen.',
+            'pdf_templates' => 'Erstelle und verwalte die PDF-Layouts, die beim Generieren von Dokumenten für deine Datensätze verwendet werden.',
+            'company' => 'Verwalte die Identität deines Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
+            'audit' => 'Überprüfe den Änderungsverlauf von Datensätzen und Impersonation-Sitzungen.',
         ],
     ],
     'items' => [
@@ -199,8 +199,8 @@ return [
             'failed' => 'Modul-Bereitstellung fehlgeschlagen',
         ],
         'subtitle' => [
-            'wait' => 'Bitte warten Sie, während wir alles für Sie einrichten',
-            'success' => 'Ihr Modul wurde erfolgreich bereitgestellt und ist einsatzbereit',
+            'wait' => 'Bitte warte, während wir alles für dich einrichten',
+            'success' => 'Dein Modul wurde erfolgreich bereitgestellt und ist einsatzbereit',
         ],
         'steps_completed' => 'Schritte abgeschlossen',
         'status' => [
@@ -223,10 +223,10 @@ return [
         'deploying' => 'Wird bereitgestellt',
         'deploy_success' => 'Modul wurde erfolgreich bereitgestellt',
         'confirm_rollback' => 'Rollback bestätigen',
-        'rollback_message' => 'Dadurch werden alle teilweise erstellten Dateien und Datenbanktabellen gelöscht. Sind Sie sicher?',
+        'rollback_message' => 'Dadurch werden alle teilweise erstellten Dateien und Datenbanktabellen gelöscht. Bist du sicher?',
         'errors' => [
             'unexpected' => 'Ein unerwarteter Fehler ist aufgetreten.',
-            'cleanup_failed' => 'Bereinigung fehlgeschlagen. Sie müssen Dateien möglicherweise manuell löschen.',
+            'cleanup_failed' => 'Bereinigung fehlgeschlagen. Du musst Dateien möglicherweise manuell löschen.',
         ],
         'steps' => [
             'initialize' => ['label' => 'Validierung & Initialisierung...', 'desc' => 'Modulkonfigurationen werden gespeichert'],

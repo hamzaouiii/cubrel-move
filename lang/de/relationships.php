@@ -52,7 +52,7 @@ return [
         'delete_title' => 'Beziehung löschen',
         'delete_msg' => 'Diese Beziehung enthält :count verknüpfte Datensätze. Beim Löschen werden alle bestehenden Verknüpfungen entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
         'delete_msg_singular' => 'Diese Beziehung enthält :count verknüpften Datensatz. Beim Löschen werden alle bestehenden Verknüpfungen entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
-        'delete_msg_no_count' => 'Sind Sie sicher, dass Sie diese Beziehung löschen möchten?',
+        'delete_msg_no_count' => 'Bist du sicher, dass du diese Beziehung löschen möchtest?',
         'delete_confirm' => 'Beziehung löschen',
         'delete_cancel' => 'Abbrechen',
     ],

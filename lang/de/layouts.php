@@ -84,7 +84,7 @@ return [
     'linkingPanel' => 'Verbindungspanel',
     'has_empty_layouts_error' => 'Bitte alle Leere Abschnitte entfernen',
     'create_first_relationship' => 'Neue Beziehung erstellen',
-    'no_relationships_warning' => 'Dieses Modul hat keine Beziehungen. Sie müssen Beziehungen erstellen, bevor Sie Layouts für verknüpfte Panels konfigurieren können.',
+    'no_relationships_warning' => 'Dieses Modul hat keine Beziehungen. Du musst Beziehungen erstellen, bevor du Layouts für verknüpfte Panels konfigurieren kannst.',
     'pdf_label' => 'PDF',
     'pdf' => [
         'label' => 'PDF',
@@ -121,7 +121,7 @@ return [
     'pdf_text_placeholder' => 'Statischen Textinhalt eingeben...',
     'pdf_section_name_placeholder' => 'Abschnittsname (optional)',
     'template_modal_title' => 'Mit einer Vorlage beginnen?',
-    'template_modal_subtitle' => 'Sie können danach alles anpassen.',
+    'template_modal_subtitle' => 'Du kannst danach alles anpassen.',
     'template_invoice' => 'Standard-Rechnung',
     'template_invoice_desc' => 'Datum, Kontakte, Positionen, Summen, Zahlungsblock.',
     'template_blank' => 'Leer beginnen',

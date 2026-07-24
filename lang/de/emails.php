@@ -31,8 +31,8 @@ return [
         'body' => 'Du wurdest zu :app eingeladen. Klick auf den Button unten, um dein Konto einzurichten und loszulegen.',
         'cta' => 'Einladung annehmen',
         'expires' => 'Dieser Link läuft am :date ab.',
-        'fallback' => 'Wenn die Schaltfläche nicht funktioniert, kopieren Sie diese URL in Ihren Browser:',
-        'disclaimer' => 'Wenn Sie diese Einladung nicht erwartet haben, können Sie diese E-Mail ignorieren.',
+        'fallback' => 'Wenn die Schaltfläche nicht funktioniert, kopiere diese URL in deinen Browser:',
+        'disclaimer' => 'Wenn du diese Einladung nicht erwartet hast, kannst du diese E-Mail ignorieren.',
     ],
 
     'setup' => [
@@ -57,11 +57,11 @@ return [
     ],
 
     'contact_confirmation' => [
-        'subject' => 'Bestätigung: Ihre Nachricht wurde erhalten',
-        'heading' => 'Vielen Dank für Ihre Nachricht',
+        'subject' => 'Bestätigung: Deine Nachricht wurde erhalten',
+        'heading' => 'Vielen Dank für deine Nachricht',
         'greeting' => 'Hallo :name,',
-        'body' => 'Wir haben Ihre Nachricht erhalten und melden uns so bald wie möglich bei Ihnen.',
-        'label' => 'Ihre Nachricht:',
+        'body' => 'Wir haben deine Nachricht erhalten und melden uns so bald wie möglich bei dir.',
+        'label' => 'Deine Nachricht:',
         'regards' => 'Mit freundlichen Grüßen,',
     ],
 
