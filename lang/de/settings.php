@@ -108,7 +108,7 @@ return [
         'notify_email_invite_accepted' => 'E-Mail senden, wenn eine von mir gesendete Einladung angenommen wird',
         'notify_email_invite_expired' => 'E-Mail senden, wenn eine von mir gesendete Einladung abläuft',
         'notify_email_record_activity' => 'E-Mail senden bei Aktivität auf Datensätzen, die mir gehören',
-        'notify_email_impersonated' => 'E-Mail senden, wenn mein Konto imitiert wird',
+        'notify_email_impersonated' => 'E-Mail senden, wenn mein Konto verwendet wird',
     ],
     'groups' => [
         'email' => 'E-Mail Einstellungen',
@@ -140,7 +140,7 @@ return [
         'email_queue' => 'E-Mail-Warteschlange',
         'locale' => 'Region und Sprachoptionen',
         'style' => 'Stil',
-        'modules' => 'Module',
+        'modules' => 'Modul-Manager',
         'modulebuilder' => 'Modul-Ersteller',
         'list_users' => 'Benutzerliste',
         'system_settings' => 'Systemeinstellungen',

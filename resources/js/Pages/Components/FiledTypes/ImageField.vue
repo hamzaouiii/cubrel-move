@@ -88,10 +88,12 @@ const removeImage = () => {
     >
       <div class="image-field__preview" @click="triggerFileInput">
         <img v-if="localValue" :src="localValue" alt="" />
-        <span v-else-if="initials" class="image-field__initials">{{ initials }}</span>
+        <span v-else-if="initials" class="image-field__initials">{{
+          initials
+        }}</span>
         <i v-else class="fa-solid fa-image image-field__placeholder-icon"></i>
         <div v-if="uploading" class="image-field__uploading">
-          <i class="fa-solid fa-spinner fa-spin"></i>
+          <i class="fa-solid fa-atom fa-spin"></i>
         </div>
       </div>
       <div class="image-field__actions" v-if="!readOnly">
@@ -131,7 +133,10 @@ const removeImage = () => {
       ]"
     >
       <img v-if="localValue" :src="localValue" alt="" />
-      <div v-else-if="initials" class="image-field__placeholder image-field__initials">
+      <div
+        v-else-if="initials"
+        class="image-field__placeholder image-field__initials"
+      >
         {{ initials }}
       </div>
       <div v-else class="image-field__placeholder">

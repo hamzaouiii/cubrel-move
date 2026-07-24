@@ -143,7 +143,7 @@ return [
         'email_queue' => 'Email Queue',
         'locale' => 'Region & Language',
         'style' => 'Style',
-        'modules' => 'Modules',
+        'modules' => 'Modules Manager',
         'modulebuilder' => 'Module Builder',
         'list_users' => 'List Users',
         'manage_invites' => 'Manage User Invites',

@@ -1,7 +1,9 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import axios from "axios";
 
-const POLL_MS = 60 * 1000;
+// live updates arrive over the websocket this poll is
+// just a fallback for dropped connections
+const POLL_MS = 5 * 60 * 1000;
 
 const unreadCount = ref(0);
 const notifications = ref([]);
@@ -14,7 +16,7 @@ async function fetchUnreadCount() {
     const { data } = await axios.get("/notifications/unread-count");
     unreadCount.value = data.count;
   } catch {
-    // keep last known count on transient failure
+    // do nothing - fail silently
   }
 }
 
@@ -43,6 +45,20 @@ async function markAllRead() {
   });
   unreadCount.value = 0;
   await axios.post("/notifications/read-all");
+}
+
+// called from the Echo notification listener wired in AppLayout.vue
+function applyLiveNotification(payload) {
+  unreadCount.value += 1;
+  notifications.value = [
+    {
+      id: payload.id,
+      data: payload,
+      read_at: null,
+      created_at: new Date().toISOString(),
+    },
+    ...notifications.value,
+  ].slice(0, 20);
 }
 
 export function useNotifications() {
@@ -74,5 +90,6 @@ export function useNotifications() {
     fetchList,
     markRead,
     markAllRead,
+    applyLiveNotification,
   };
 }

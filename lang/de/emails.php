@@ -101,7 +101,7 @@ return [
         ],
         'impersonated' => [
             'subject' => 'Auf dein Konto wurde zugegriffen',
-            'body' => ':user hat dein Konto am :time imitiert.',
+            'body' => ':user hat dein Konto am :time verwendet.',
         ],
     ],
 ];

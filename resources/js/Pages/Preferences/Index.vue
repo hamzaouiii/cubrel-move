@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref, getCurrentInstance } from "vue";
+import { computed, reactive, ref, getCurrentInstance, onUnmounted } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -28,7 +28,29 @@ const props = defineProps({
   datetimeFormatOptions: { type: Array, default: () => [] },
 });
 
-const currentTab = ref(Object.keys(props.tabs)[0] ?? "general");
+// tabs are reflected in the URL (?tab=key) so a specific tab can be linked
+
+const tabFromUrl = () => {
+  const key = new URLSearchParams(window.location.search).get("tab");
+  return key && props.tabs[key]
+    ? key
+    : (Object.keys(props.tabs)[0] ?? "general");
+};
+
+const currentTab = ref(tabFromUrl());
+
+const selectTab = (key) => {
+  currentTab.value = key;
+  const url = new URL(window.location.href);
+  url.searchParams.set("tab", key);
+  window.history.pushState({}, "", url);
+};
+
+const onPopState = () => {
+  currentTab.value = tabFromUrl();
+};
+window.addEventListener("popstate", onPopState);
+onUnmounted(() => window.removeEventListener("popstate", onPopState));
 
 const currentFields = computed(() =>
   Object.entries(props.tabs[currentTab.value]?.fields ?? {}).map(
@@ -149,7 +171,7 @@ const savePreferences = () => {
         type="button"
         class="settings__module__tabs__item"
         :class="{ 'settings__module__tabs__item--active': currentTab === key }"
-        @click="currentTab = key"
+        @click="selectTab(key)"
       >
         {{ $t(tab.label) }}
       </button>
