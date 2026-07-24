@@ -882,6 +882,7 @@ Both pages render the same 14 email/in-app pairs as a two-column toggle table (`
 
 - `docs/dev/notifications-implementation.md` — full technical writeup.
 - `docs/guides/en/notification-guide.md` — plain-language, user-facing guide.
+- **No automated test coverage yet.** An initial test suite was written and then discarded (too many assumptions about the codebase baked in without verifying against real behavior first) — this feature currently has no dedicated tests, only incidental coverage from unrelated suites exercising `AuditObserver`/`RelationshipService` generically.
 
 ---
 
