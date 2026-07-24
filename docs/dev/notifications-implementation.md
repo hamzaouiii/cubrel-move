@@ -167,7 +167,73 @@ This requires the server's OS cron to actually run `php artisan schedule:run` ev
 
 **Lang** — `globals.notifications`, `emails.notifications`, `settings.fields.notify_email_*`, `preferences.tabs.notifications` in both `lang/en/` and `lang/de/`.
 
-## 7. Manual verification
+## 7. Live delivery (WebSocket toast + live bell) via Reverb
+
+Branch: `Notifications` (same branch, later addition)
+
+### 7.1 Why
+
+The original feature (§1-§6) was 60s-poll only: the bell badge updated up to a minute late, and there was no toast — nothing appeared until the user opened the dropdown. This addition pushes notifications to the browser the moment they're created, via a private WebSocket channel per user, and adds a bottom-left toast alongside the existing bell.
+
+### 7.2 The three new packages — crash course
+
+**Backend**
+
+- **`laravel/reverb`** — Laravel's own first-party WebSocket server. It's a long-running PHP process (`php artisan reverb:start`) that speaks the Pusher protocol: browsers connect to it directly over `ws://`/`wss://`, and the Laravel app (web requests or queue workers) pushes events *into* it over a small HTTP API whenever something calls `event()->broadcast()` or a notification implements `ShouldBroadcast`. Chosen over Pusher/Ably because it's free and self-hosted, fitting this app's single-VPS bare-metal deploy with no new vendor bill. It needs its own persistent process, separate from PHP-FPM and the queue worker.
+
+**Frontend**
+
+- **`pusher-js`** — the actual WebSocket client library. Reverb deliberately speaks the same wire protocol as Pusher's hosted service, so this is the "dumb" transport: opens the socket, handles ping/pong keepalive and reconnect, sends `pusher:subscribe` frames. It's a dependency of `laravel-echo`, not something this app calls directly.
+- **`laravel-echo`** — a thin wrapper around `pusher-js` (or other transports) that adds Laravel-specific conventions: private/presence channel auth against `/broadcasting/auth`, and a `.notification()` helper that listens for the specific event Laravel's notification system broadcasts (`.Illuminate\Notifications\Events\BroadcastNotificationCreated`) without needing to know Pusher's raw event-naming rules.
+- **`@laravel/echo-vue`** — a small Vue-specific layer on top of `laravel-echo`: `configureEcho()` sets up one shared Echo instance app-wide from `VITE_REVERB_*` env vars (called once in `resources/js/bootstrap.js`), and `echo()` returns that singleton so any component can attach `.private(channel).notification(callback)` without re-instantiating Pusher/Echo itself. Used here instead of hand-rolling an Echo composable since it ships with the framework's own conventions already correct.
+
+### 7.3 How a notification reaches the browser
+
+1. `$user->notify(new XxxNotification(...))` is called from the same choke points as §3 — unchanged.
+2. `BaseAppNotification::via()` now includes `'broadcast'` alongside `'database'`/`'mail'`, so every one of the 7 types broadcasts automatically — no per-subclass change needed.
+3. `BaseAppNotification::toBroadcast($notifiable)` builds the payload. This is the one place broadcasting couldn't just reuse the existing read-time rendering: `NotificationController::index()` renders `title`/`body` inside a real request, in the *viewer's* locale, but a broadcast fires once, on the queue worker, with no such request. So `toBroadcast()` temporarily swaps `App::setLocale($notifiable->preferredLocale())`, calls the same `NotificationPresenter::present()` used for the database list, then restores the previous locale — the same `HasLocalePreference` mechanism `toMail()` already relies on (§2), applied at broadcast time instead of read time.
+4. Laravel dispatches this on a **private channel named `App.Models.User.{id}`** (`routes/channels.php`), authorized by session auth via `/broadcasting/auth` — no Sanctum/API tokens needed since this is a same-origin Inertia session app. Note `User`'s primary key is a UUID (`HasUuids`), so `{id}` in the channel name and in `routes/channels.php`'s authorization check is a UUID string, not an integer.
+5. The queue worker (`ShouldQueue`, same `database` queue connection as everything else) processes the notification, then a second small queued job (`BroadcastNotificationCreated`) makes the actual HTTP call into Reverb, which pushes the frame down the matching browser socket(s).
+6. `AppLayout.vue` subscribes once per session (`onMounted`, via `echo().private(...).notification(callback)`) and fans the payload out to two places: `useNotifications.js`'s `applyLiveNotification()` (increments `unreadCount`, prepends to the list — the same shared singleton `NotificationBell.vue` reads) and `useLiveToasts.js`'s `pushToast()` (renders in `NotificationToasts.vue`, bottom-left, auto-dismissing after 6s).
+7. The old 60s poll (`useNotifications.js`) still runs, just slowed to 5 minutes — a fallback for a dropped socket, not the primary path anymore.
+
+### 7.4 Highlighted text in notification bodies
+
+`NotificationPresenter::present()` wraps each dynamic value (record name, actor name, module label, etc.) in `<span class="notification-highlight">…</span>` via a `highlight()` helper, escaping the value first with `e()`. The frontend (`NotificationBell.vue`, `NotificationToasts.vue`) renders `title`/`body` with `v-html` instead of text interpolation so that span actually renders. **Any future addition to these translation strings that isn't already escaped through `highlight()` must not be interpolated raw** — `v-html` means an unescaped value here is a real stored-XSS path, not just a display bug.
+
+### 7.5 Mark-as-read from the toast
+
+Independent of the bell dropdown's existing click-to-read (§1-§6), the toast (`NotificationToasts.vue`) now also calls `markRead()` on click (item body or the × close button), and on a **1.8s continuous hover** (a per-toast `setTimeout`, cleared on `mouseleave` so a quick pass-by doesn't count). Both go through the same `useNotifications.js` singleton `markRead()` already used by the bell, so bell/toast state never drifts apart — there's no separate "toast read" state to keep in sync.
+
+### 7.6 Local dev environment
+
+Two more long-running processes are required beyond `serve`/`vite`: a queue worker (`php artisan queue:listen`) and Reverb itself (`php artisan reverb:start --debug`). `composer.json`'s `dev` script now starts all of them together via `concurrently`. Env vars added to `.env`/`.env.example`: `BROADCAST_CONNECTION=reverb`, `REVERB_APP_ID`/`REVERB_APP_KEY`/`REVERB_APP_SECRET` (generated once, arbitrary values — not secrets shared with any third party since Reverb is self-hosted), `REVERB_HOST`/`REVERB_PORT`/`REVERB_SCHEME` (what the server binds to — loopback locally), and `VITE_REVERB_*` (what the browser connects to — baked into the frontend bundle at build time, so **changing them requires restarting `npm run dev`**, and additionally clearing Vite's dependency pre-bundle cache, `node_modules/.vite`, if `@laravel/echo-vue`/`laravel-echo`/`pusher-js` were already optimized before the env vars existed — Vite doesn't auto-invalidate that cache on `.env` changes).
+
+### 7.7 Not yet done — production deployment
+
+Reverb needs a persistent process in production (a systemd unit, `Restart=always`), a reverse-proxy path exposing it as `wss://` on the public domain (Nginx/Apache config outside this repo), and a `deploy.sh` step to restart that process on deploy (`systemctl restart`, since unlike the queue worker there's no graceful `artisan reverb:restart` signal). None of this is wired up yet — deliberately deferred pending the actual server's reverse-proxy config.
+
+### 7.8 Files touched (this addition)
+
+**Backend**
+- `app/Notifications/BaseAppNotification.php` — `ShouldBroadcast` + `toBroadcast()`
+- `app/Support/NotificationPresenter.php` — `highlight()` wrapping
+- `config/broadcasting.php`, `routes/channels.php` (new)
+- `bootstrap/app.php` — `channels:` wired into `withRouting()`
+- `composer.json` — `laravel/reverb` dependency, `dev` script gains `reverb:start`
+- `.env`, `.env.example` — Reverb/broadcast env vars
+
+**Frontend**
+- `resources/js/bootstrap.js` — `configureEcho()`
+- `resources/js/Layouts/AppLayout.vue` — subscribes to the user's private channel, fans out to bell + toast
+- `resources/js/Composables/useNotifications.js` — `applyLiveNotification()`, slower fallback poll
+- `resources/js/Composables/useLiveToasts.js` (new)
+- `resources/js/Pages/Components/Globals/NotificationToasts.vue` (new)
+- `resources/js/Pages/Components/Globals/NotificationBell.vue` — `v-html` for title/body
+- `resources/scss/globals.scss` — `.notification-toasts`, `.notification-highlight`
+- `package.json` — `laravel-echo`, `pusher-js`, `@laravel/echo-vue`
+
+## 8. Manual verification
 
 - Full test suite (273 tests) passing throughout — this feature added no new test files, so regressions were caught via `ModuleCrudTest`/`RelationshipManyToOneLinkingTest` (which exercise `AuditObserver`/`RelationshipService` generically) and the existing `InviteAcceptanceTest`/`ImpersonationAuditTest`/`PreferencesControllerTest` suites.
 - `php artisan tinker` round-trips for each of the 7 types: confirmed a `notifications` row is created, the unread count increments, and mail is (or isn't) queued based on the recipient's `wantsEmailFor()` result.

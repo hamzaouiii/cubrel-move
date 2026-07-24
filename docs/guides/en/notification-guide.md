@@ -6,7 +6,7 @@ In this article we cover where notifications live in Cubrel, what actions trigge
 
 A bell icon sits in the top bar, next to your profile menu. A small red badge on it shows how many notifications you haven't read yet. Clicking it opens a dropdown with your most recent notifications, newest first — each one shows an icon, a short description, and how long ago it happened.
 
-The badge count refreshes automatically about once a minute while you have the app open, so you don't need to reload the page to see new ones arrive.
+New notifications arrive live while you have the app open — the bell's badge updates the moment something happens, no reload needed, and a small popup also appears in the bottom-left corner of the screen for a few seconds so you don't have to be looking at the bell to notice it.
 
 ## What triggers a notification
 
@@ -20,7 +20,7 @@ The badge count refreshes automatically about once a minute while you have the a
 | **Activity on a record you own** | Someone else edits, deletes, or links a new activity (a Task, Call, Meeting, or Note) to a record you own. You won't be notified about your own changes to your own records. |
 | **Your account was accessed** | A super admin impersonates your account (signs in as you) to help troubleshoot something. |
 
-Clicking a notification (where applicable) takes you straight to the relevant record or page, and marks it as read. "Mark all as read" at the top of the dropdown clears every unread notification at once.
+Clicking a notification (where applicable) takes you straight to the relevant record or page, and marks it as read. "Mark all as read" at the top of the dropdown clears every unread notification at once. The bottom-left popup works the same way — click it to jump to the record and mark it read, or just hover over it for a couple of seconds and it'll mark itself as read without navigating anywhere.
 
 ## Email notifications
 
@@ -39,10 +39,10 @@ These settings are personal to your account — turning email on or off for your
 
 | Question | Answer |
 | --- | --- |
-| Where do notifications show up? | The bell icon in the top bar, on every page. |
+| Where do notifications show up? | The bell icon in the top bar, on every page, plus a popup in the bottom-left corner as they happen. |
 | Do I need to turn notifications on? | No — all seven types are always active in-app. |
-| How often does the unread count refresh? | About once a minute automatically. |
+| How often does the unread count refresh? | Instantly, as each notification happens. |
 | Can I get these by email too? | Yes, per type, in Preferences > Notifications. |
 | Which are emailed by default? | Impersonation, invite accepted, invite expired. |
 | Will I be notified about my own actions? | No — actions you take on your own records never notify you. |
-| How do I clear my notifications? | Click one to mark it read, or "Mark all as read" for everything at once. |
+| How do I clear my notifications? | Click one (in the bell or the popup) to mark it read, hover over a popup for a couple seconds, or use "Mark all as read" for everything at once. |
