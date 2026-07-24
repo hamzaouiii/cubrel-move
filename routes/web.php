@@ -222,6 +222,7 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
         // System Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
+        Route::get('/settings/system/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
         Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
     });
     Route::post('/leaveimpersonate', [UserController::class, 'leaveImpersonation'])->name('leave-impersonate');

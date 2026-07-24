@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\App;
 /**
  * All notification types extend this class
  * shared via() logic
- * database is always the default channel
- * email is optional and is selectable via user preferences
- * broadcast is always on, for the live bell/toast
+ * Database (Bell) and Braodcast (Live toast) are in-app 
+ * mail is email
+ * all notifications are selectable and toggable both system wide and per user 
  */
 abstract class BaseAppNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
@@ -25,7 +25,12 @@ abstract class BaseAppNotification extends Notification implements ShouldQueue, 
 
     public function via($notifiable): array
     {
-        $channels = ['database', 'broadcast'];
+        $channels = [];
+
+        if ($notifiable->wantsInAppFor($this->typeKey())) {
+            $channels[] = 'database';
+            $channels[] = 'broadcast';
+        }
 
         if ($notifiable->wantsEmailFor($this->typeKey())) {
             $channels[] = 'mail';

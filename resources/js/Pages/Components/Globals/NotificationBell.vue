@@ -223,7 +223,6 @@ const hideTooltip = () => {
             >
               <div class="notification-dropdown__group-label">
                 {{ group.label }}
-                <span v-if="group.hasUnread" class="new-pill">New</span>
               </div>
 
               <component
@@ -249,13 +248,6 @@ const hideTooltip = () => {
                   ></div>
                   <div class="notification-item__time">
                     {{ relativeTime(n.created_at) }}
-                    <button
-                      v-if="!n.read_at"
-                      class="mark-read-btn"
-                      @click.stop="markAsRead(n)"
-                    >
-                      Mark read
-                    </button>
                   </div>
                 </div>
               </component>

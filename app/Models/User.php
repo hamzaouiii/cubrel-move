@@ -145,6 +145,20 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
     }
 
     /**
+     * Whether this user wants an in-app (bell + live toast) notification for a given type
+     */
+    public function wantsInAppFor(string $type): bool
+    {
+        $key = "notify_inapp_{$type}";
+        $override = $this->preferences[$key] ?? null;
+
+        if ($override !== null) {
+            return (bool) $override;
+        }
+        return Settings::bool($key, true);
+    }
+
+    /**
      * always THIS user's own preference, never the acting user's session locale or the queue
      * worker's default. 
      */

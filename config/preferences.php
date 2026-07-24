@@ -112,6 +112,41 @@ return [
           'label' => 'settings.fields.notify_email_impersonated',
           'validation' => 'nullable|boolean',
         ],
+        'notify_inapp_record_assigned' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_record_assigned',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_meeting_invite' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_meeting_invite',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_task_due_soon' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_task_due_soon',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_invite_accepted' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_invite_accepted',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_invite_expired' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_invite_expired',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_record_activity' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_record_activity',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_impersonated' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_impersonated',
+          'validation' => 'nullable|boolean',
+        ],
       ],
     ],
   ],

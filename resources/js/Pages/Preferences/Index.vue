@@ -7,7 +7,7 @@ import DropdownField from "../Components/FiledTypes/SettingDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
-
+import AppTooltip from "../Components/Globals/AppTooltip.vue";
 const { success, error, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -97,6 +97,38 @@ const resetField = (key) => {
 
 const isDirty = computed(() => form.isDirty);
 
+// snapshot of overridden flags as loaded from the server, so "discard
+// changes" can revert them alongside form.reset() (which only covers values)
+const initialOverridden = { ...overridden };
+
+const discardChanges = () => {
+  form.reset();
+  allKeys.forEach((key) => {
+    overridden[key] = initialOverridden[key];
+  });
+};
+
+const isNotificationsTab = computed(() => currentTab.value === "notifications");
+
+const notificationTypeKeys = computed(() => {
+  const fields = Object.keys(props.tabs.notifications?.fields ?? {});
+  const types = [];
+  fields.forEach((key) => {
+    const type = key.startsWith("notify_email_")
+      ? key.slice("notify_email_".length)
+      : key.startsWith("notify_inapp_")
+        ? key.slice("notify_inapp_".length)
+        : null;
+    if (type && !types.includes(type)) types.push(type);
+  });
+  return types;
+});
+
+const resetType = (type) => {
+  resetField(`notify_email_${type}`);
+  resetField(`notify_inapp_${type}`);
+};
+
 // Fields backed by an options list (dropdowns/switchers) store a raw value
 // (e.g. "l, d.m.Y") — show the matching option's human label instead.
 const optionsForType = (type) => {
@@ -120,6 +152,19 @@ const systemDefaultLabel = (f) => {
   return match ? match.label : value;
 };
 
+const notificationRowDefaultLabel = (type) => {
+  const emailDefault = systemDefaultLabel({
+    key: `notify_email_${type}`,
+    type: "bool",
+  });
+  const inappDefault = systemDefaultLabel({
+    key: `notify_inapp_${type}`,
+    type: "bool",
+  });
+
+  return `${t("preferences.notifications_email_column")}: ${emailDefault} · ${t("preferences.notifications_inapp_column")}: ${inappDefault}`;
+};
+
 const savePreferences = () => {
   clearAllAlerts();
   form
@@ -141,6 +186,25 @@ const savePreferences = () => {
         error(t("preferences.update_error"));
       },
     });
+};
+
+const tooltip = reactive({
+  show: false,
+  text: "",
+  top: 0,
+  left: 0,
+});
+
+const onResetMouseEnter = (event) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  tooltip.text = t("preferences.use_system_default");
+  tooltip.top = rect.top + rect.height / 2;
+  tooltip.left = rect.left - 10;
+  tooltip.show = true;
+};
+
+const hideTooltip = () => {
+  tooltip.show = false;
 };
 </script>
 
@@ -178,7 +242,91 @@ const savePreferences = () => {
     </div>
 
     <form @submit.prevent="savePreferences">
-      <div v-if="currentFields.length === 0" class="settings__empty">
+      <div v-if="isNotificationsTab" class="settings__system">
+        <div class="settings__notifications">
+          <div class="settings__notifications__header">
+            <span class="settings__notifications__header__label"> </span>
+            <span class="settings__notifications__header__col">
+              <i class="fa-solid fa-envelope"></i>
+              {{ $t("preferences.notifications_email_column") }}
+            </span>
+            <span class="settings__notifications__header__col">
+              <i class="fa-solid fa-bell"></i>
+              {{ $t("preferences.notifications_inapp_column") }}
+            </span>
+            <span class="settings__notifications__header__reset"></span>
+          </div>
+
+          <div
+            v-for="type in notificationTypeKeys"
+            :key="type"
+            class="settings__notifications__row"
+          >
+            <div class="settings__notifications__row__label">
+              <label>{{ $t(`preferences.notification_types.${type}`) }}</label>
+              <span class="settings__optional-label">
+                {{
+                  $t("preferences.current_system_value", {
+                    value: notificationRowDefaultLabel(type),
+                  })
+                }}
+              </span>
+            </div>
+
+            <div class="settings__notifications__row__col">
+              <Checkbox
+                v-model="form[`notify_email_${type}`]"
+                @update:model-value="markOverridden(`notify_email_${type}`)"
+              />
+            </div>
+
+            <div class="settings__notifications__row__col">
+              <Checkbox
+                v-model="form[`notify_inapp_${type}`]"
+                @update:model-value="markOverridden(`notify_inapp_${type}`)"
+              />
+            </div>
+
+            <div class="settings__notifications__row__reset">
+              <button
+                v-if="
+                  overridden[`notify_email_${type}`] ||
+                  overridden[`notify_inapp_${type}`]
+                "
+                type="button"
+                class="preferences__reset-btn"
+                @click="resetType(type)"
+                @mouseenter="onResetMouseEnter"
+                @mouseleave="hideTooltip"
+              >
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings__actions">
+          <button
+            type="button"
+            class="settings__actions__reset"
+            @click="discardChanges"
+            :disabled="!isDirty"
+          >
+            {{ $t("preferences.reset") }}
+          </button>
+
+          <button
+            type="submit"
+            class="settings__actions__save"
+            :disabled="!isDirty || form.processing"
+          >
+            {{ $t("preferences.save") }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Other tabs (unchanged) -->
+      <div v-else-if="currentFields.length === 0" class="settings__empty">
         <i class="fa-solid fa-bell"></i>
         <p>{{ $t("preferences.notifications_placeholder") }}</p>
       </div>
@@ -255,14 +403,25 @@ const savePreferences = () => {
                 type="button"
                 class="preferences__reset-btn"
                 @click="resetField(f.key)"
+                @mouseenter="onResetMouseEnter"
+                @mouseleave="hideTooltip"
               >
-                {{ $t("preferences.use_system_default") }}
+                <i class="fa-solid fa-rotate-left"></i>
               </button>
             </div>
           </div>
         </div>
 
         <div class="settings__actions">
+          <button
+            type="button"
+            class="settings__actions__reset"
+            @click="discardChanges"
+            :disabled="!isDirty"
+          >
+            {{ $t("preferences.reset") }}
+          </button>
+
           <button
             type="submit"
             class="settings__actions__save"
@@ -274,15 +433,17 @@ const savePreferences = () => {
       </div>
     </form>
   </div>
+
+  <AppTooltip
+    :show="tooltip.show"
+    :text="tooltip.text"
+    :top="tooltip.top"
+    :left="tooltip.left"
+    placement="left"
+  />
 </template>
 
-<style scoped>
-.preferences__subtitle {
-  margin: -12px 24px 20px;
-  color: #9ba3bc;
-  font-size: 0.85rem;
-}
-
+<style lang="scss" scoped>
 .preferences__field-label {
   display: flex;
   flex-direction: column;
@@ -307,6 +468,33 @@ const savePreferences = () => {
   }
 }
 
+.settings__system__form__field {
+  .preferences__reset-btn {
+    margin-left: 10px;
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    i {
+      font-size: 0.65rem;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* ----- tabs (no changes, but kept for completeness) ----- */
 .settings__module__tabs__item {
   border: none;
   background: transparent;
@@ -319,20 +507,78 @@ const savePreferences = () => {
   background: color-mix(in srgb, var(--module-color) 10%, transparent);
 }
 
-.preferences__reset-btn {
-  margin-left: 10px;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--primary-color);
-  cursor: pointer;
-  white-space: nowrap;
+/* ----- responsive adjustments for notifications grid ----- */
+@media (max-width: 820px) {
+  .settings__notifications {
+    &__header,
+    &__row {
+      grid-template-columns: 1fr 60px 60px 80px;
+      gap: 10px;
+      padding: 12px 16px;
+    }
 
-  &:hover {
-    text-decoration: underline;
+    &__header__col {
+      font-size: 0.7rem;
+      justify-content: center;
+    }
+
+    &__row__reset .preferences__reset-btn {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .settings__notifications {
+    border-radius: 12px;
+    margin: 0 -8px 24px;
+
+    &__header {
+      display: none; /* hide header on small screens */
+    }
+
+    &__row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+      &__label {
+        order: 1;
+      }
+
+      &__col {
+        justify-content: flex-start;
+        gap: 8px;
+        order: 2;
+
+        &:first-of-type {
+          margin-top: 4px;
+        }
+
+        &::before {
+          content: attr(data-label);
+          font-size: 0.7rem;
+          font-weight: 500;
+          color: #6b7280;
+          min-width: 70px;
+        }
+      }
+
+      &__col[data-label="Email"]::before {
+        content: "📧 Email";
+      }
+      &__col[data-label="In-app"]::before {
+        content: "🔔 In-app";
+      }
+
+      &__reset {
+        order: 3;
+        justify-content: flex-start;
+        margin-top: 4px;
+      }
+    }
   }
 }
 </style>
