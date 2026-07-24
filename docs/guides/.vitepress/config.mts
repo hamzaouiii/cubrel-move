@@ -107,6 +107,8 @@ export default defineConfig({
             text: "Modules & Data",
             items: [
               { text: "Modules", link: "/en/modules" },
+              { text: "Fields", link: "/en/fields-guide" },
+              { text: "Layouts", link: "/en/layouts-guide" },
               { text: "Relationships", link: "/en/relationships-guide" },
               { text: "Importing Data", link: "/en/import-guide" },
               {
