@@ -139,10 +139,10 @@ dieser Seite behandelt wird. Reguläre Benutzer ohne Administratorrechte
 sehen nur das alltägliche CRM: ihre Module, Datensätze und persönlichen
 Präferenzen.
 
-### Root-Benutzer
+### Super-Admin
 
 Die höchste Zugriffsstufe in einer Cubrel-Instanz. Zusätzlich zu allem, was
-ein Administrator kann, kann sich ein Root-Benutzer *als* ein anderer
+ein Administrator kann, kann sich ein Super-Admin *als* ein anderer
 Benutzer anmelden (Impersonation), um ein Problem genau aus dessen
 Perspektive nachzuvollziehen. Eine solche Impersonation ist immer sichtbar
 im Audit-Verlauf, wenn sie stattfindet, niemals verborgen.
@@ -210,7 +210,7 @@ Administratoren.
 
 ### Impersonation-Sitzung
 
-Der Eintrag darüber, dass sich ein Root-Benutzer als ein anderer Benutzer
+Der Eintrag darüber, dass sich ein Super-Admin als ein anderer Benutzer
 angemeldet hat, aufgelistet unter **Einstellungen >
 Impersonation-Sitzungen**: wer, von welcher IP-Adresse aus, und wie lange.
 Wird getrennt vom Audit-Verlauf geführt, der stattdessen die während einer
@@ -267,11 +267,11 @@ einen eigenen Begriff benötigen:
 | Positionen | Eine bepreiste Liste innerhalb eines Datensatzes (Angebote/Bestellungen/Rechnungen) |
 | Dashboard | Die anpassbare Übersichtsseite nach der Anmeldung |
 | Administrator | Ein Benutzer mit Zugriff auf Einstellungen |
-| Root-Benutzer | Ein Administrator, der zusätzlich andere Benutzer imitieren kann |
+| Super-Admin | Ein Administrator, der zusätzlich andere Benutzer imitieren kann |
 | Besitzer | Der Benutzer, dem ein Datensatz zugewiesen ist |
 | Datensatz | Ein einzelner Eintrag innerhalb eines Moduls |
 | Listenfilter | Eine gespeicherte, wiederverwendbare Suche |
 | Audit-Verlauf | Das automatische Protokoll jeder Änderung, überall |
-| Impersonation-Sitzung | Der Eintrag darüber, dass sich ein Root-Benutzer als jemand anderes angemeldet hat |
+| Impersonation-Sitzung | Der Eintrag darüber, dass sich ein Super-Admin als jemand anderes angemeldet hat |
 | Sitzung | Cubrels Art, sich Ihre Anmeldung zu merken |
 | PDF-Vorlage | Ein wiederverwendbares Layout zum Erzeugen eines Datensatzes als PDF |

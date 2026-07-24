@@ -21,6 +21,7 @@ class SupportCase extends BaseModule
     'priority',
     'opened_at',
     'closed_at',
+    'owner_id',
   ];
 
   protected $moduleCasts  = [

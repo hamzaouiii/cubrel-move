@@ -2,19 +2,25 @@
 import Sidebar from "@/Pages/Components/Globals/Sidebar.vue";
 import Topbar from "@/Pages/Components/Globals/Topbar.vue";
 import Alerts from "@/Pages/Components/Globals/Alerts.vue";
+import NotificationToasts from "@/Pages/Components/Globals/NotificationToasts.vue";
 import ConfirmOverlay from "@/Pages/Components/Globals/ConfirmOverlay.vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed, provide, ref, onMounted, onUnmounted } from "vue";
+import { echo } from "@laravel/echo-vue";
 import ImpersonationBanner from "@/Pages/Components/Globals/ImpersonationBanner.vue";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useFlashToasts } from "@/Composables/useFlashToasts";
 import { useKeepAlive } from "@/Composables/useKeepAlive";
+import { useNotifications } from "@/Composables/useNotifications";
+import { useLiveToasts } from "@/Composables/useLiveToasts";
 
 const { alerts, info, error, warning, success } = useAlerts();
 useFlashToasts();
 useKeepAlive();
 const page = usePage();
 const user = page.props.auth?.user ?? null;
+const { applyLiveNotification } = useNotifications();
+const { pushToast } = useLiveToasts();
 const csrf =
   page.props.csrf_token ??
   document
@@ -37,13 +43,28 @@ function dismissSmallScreenWarning() {
   showSmallScreenOverlay.value = false;
 }
 
+let notificationChannel = null;
+
 onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
+
+  if (user) {
+    notificationChannel = echo()
+      .private(`App.Models.User.${user.id}`)
+      .notification((payload) => {
+        applyLiveNotification(payload);
+        pushToast(payload);
+      });
+  }
 });
 
 onUnmounted(() => {
   window.removeEventListener("resize", checkScreenSize);
+
+  if (notificationChannel) {
+    echo().leave(`App.Models.User.${user.id}`);
+  }
 });
 
 const appSettings = computed(() => page.props.appSettings || {});
@@ -59,6 +80,17 @@ provide("useModuleColors", useModuleColors);
 // error("Failed to connect to the database", { timeout: 0 });
 // warning("Disk space is running low", { timeout: 0, progressable: true });
 // success("Your changes have been saved", { timeout: 0 });
+
+// test live notification toast
+// pushToast(
+//   {
+//     icon: "fa-solid fa-bell",
+//     title: "Record assigned",
+//     body: "Acme Corp was assigned to you by Jane Doe",
+//     url: "#",
+//   },
+//   { persist: true },
+// );
 </script>
 
 <template>
@@ -76,6 +108,7 @@ provide("useModuleColors", useModuleColors);
     <ConfirmOverlay />
     <Sidebar></Sidebar>
     <Alerts :alerts="alerts" />
+    <NotificationToasts />
     <ImpersonationBanner v-if="page.props.auth.impersonating" />
     <main class="root__content">
       <Topbar></Topbar>

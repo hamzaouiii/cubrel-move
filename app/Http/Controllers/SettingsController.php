@@ -45,6 +45,20 @@ class SettingsController extends Controller
     ]);
   }
 
+
+  public function notifications()
+  {
+    $values = SettingValue::where('setting_item', 'notifications')
+      ->where('autoload', 1)
+      ->orderBy('sort_order')
+      ->get();
+
+    return Inertia::render('Settings/Notifications', [
+      'item' => Settings::getItem('system', 'notifications'),
+      'values' => $values,
+    ]);
+  }
+
   public function update(Request $request, string $item)
   {
     $data = $request->validate([

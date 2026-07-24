@@ -39,7 +39,7 @@ return [
         'subject' => 'Set up your :app instance',
         'title' => 'Set up your :app instance',
         'heading' => 'Welcome to :app',
-        'body' => 'Thanks for choosing :app. Click the button below to create your root account and finish setting up your instance.',
+        'body' => 'Thanks for choosing :app. Click the button below to create your super admin account and finish setting up your instance.',
         'cta' => 'Complete setup',
         'expires' => 'This link expires on :date.',
         'fallback' => "If the button doesn't work, copy the following URL into your browser:",
@@ -67,5 +67,41 @@ return [
 
     'common' => [
         'all_rights_reserved' => 'All rights reserved.',
+    ],
+
+    'notifications' => [
+        'view_action' => 'View',
+        'record_assigned' => [
+            'subject' => ':module assigned to you',
+            'body' => '**:user** assigned you the **:module**: **:record**.',
+        ],
+        'meeting_invite' => [
+            'subject' => "You've been invited to a meeting",
+            'body' => '**:user** invited you to **:meeting**.',
+        ],
+        'task_due_soon' => [
+            'subject' => 'Task due soon',
+            'body' => '**:task** is due **:due**.',
+        ],
+        'invite_accepted' => [
+            'subject' => 'Your invite was accepted',
+            'body' => '**:user** accepted their invitation and created an account.',
+        ],
+        'invite_expired' => [
+            'subject' => 'Your invite has expired',
+            'body' => 'The invitation sent to **:email** has expired.',
+        ],
+        'record_activity' => [
+            'subject' => 'Activity on your :module',
+            'body' => [
+                'updated' => '**:user** updated the **:module**: **:record**.',
+                'deleted' => '**:user** deleted the **:module**: **:record**.',
+                'linked' => '**:user** linked a new activity to the **:module**: **:record**.',
+            ],
+        ],
+        'impersonated' => [
+            'subject' => 'Your account was accessed',
+            'body' => '**:user** impersonated your account on **:time**.',
+        ],
     ],
 ];

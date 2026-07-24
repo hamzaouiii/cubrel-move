@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MeetingAttendee;
 use App\Services\Audit\AuditService;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -93,6 +94,8 @@ class MeetingAttendeeController extends Controller
             'name' => $attendee->name,
             'role' => $attendee->role,
         ]);
+
+        NotificationService::notifyMeetingInvite($attendee);
 
         return response()->json($attendee, 201);
     }

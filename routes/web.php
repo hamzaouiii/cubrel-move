@@ -27,6 +27,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\LineItemController;
 use App\Http\Controllers\MeetingAttendeeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PdfTemplatesController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
@@ -72,6 +73,10 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::get('/preferences', [PreferencesController::class, 'index'])->name('preferences.index');
     Route::put('/preferences', [PreferencesController::class, 'update'])->name('preferences.update');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::get('/search', SearchController::class)->name('search');
     Route::get('/line-items', [LineItemController::class, 'index'])->name('line-items.index');
     Route::post('/line-items', [LineItemController::class, 'store'])->name('line-items.store');
@@ -217,6 +222,7 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
         // System Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{item}', [SettingsController::class, 'update'])->name('settings.update');
+        Route::get('/settings/system/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
         Route::get('/settings/{category}/{item}', [SettingsController::class, 'show'])->name('settings.show');
     });
     Route::post('/leaveimpersonate', [UserController::class, 'leaveImpersonation'])->name('leave-impersonate');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Module;
+use App\Scopes\AdminOnlyModuleScope;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,7 +13,9 @@ class RelatedFieldController extends Controller
 {
 public function __invoke(Request $request, string $related_module): \Illuminate\Http\JsonResponse
 {
+
     $moduleModel = Module::query()
+        ->withoutGlobalScope(AdminOnlyModuleScope::class)
         ->select('id', 'model_class', 'slug')
         ->where('slug', $related_module)
         ->where('is_active', true)

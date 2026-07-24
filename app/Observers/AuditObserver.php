@@ -6,6 +6,7 @@ use App\Models\BaseModule;
 use App\Models\Module;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Audit\AuditService;
+use App\Services\Notifications\NotificationService;
 
 class AuditObserver
 {
@@ -17,6 +18,9 @@ class AuditObserver
         }
 
         AuditService::log('created', $module->slug, $model->id, null);
+
+        // if a user other than creator is the owner then that is an assignment and should be covered by a notification
+        NotificationService::notifyIfAssigned($model, $module, $model->getAttribute('owner_id'));
     }
 
     public function updated(BaseModule $model): void
@@ -42,6 +46,12 @@ class AuditObserver
         }
 
         AuditService::log('updated', $module->slug, $model->id, $changes);
+
+        if (array_key_exists('owner_id', $changes)) {
+            NotificationService::notifyIfAssigned($model, $module, $model->owner_id);
+        } else {
+            NotificationService::notifyRecordActivity($model, $module, 'updated');
+        }
     }
 
     private function buildFieldChange(Module $module, string $key, $old, $new): array
@@ -93,5 +103,7 @@ class AuditObserver
         AuditService::log('deleted', $module->slug, $model->id, [
             'record_label' => $model->name ?? $model->number ?? $model->id,
         ]);
+
+        NotificationService::notifyRecordActivity($model, $module, 'deleted');
     }
 }

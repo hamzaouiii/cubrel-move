@@ -7,6 +7,7 @@ namespace App\Models;
 
 // Auth Interfaces (Contracts)
 use App\Notifications\ResetPasswordNotification;
+use App\Support\Settings;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -15,15 +16,16 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 
 //  Extend BaseModule and implement the Auth Contracts
-class User extends BaseModule implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
+class User extends BaseModule implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, HasLocalePreference
 {
-    // 5. Use the Auth Traits inside the class
+    //  Use the Auth Traits inside the class
     use Authenticatable, Authorizable, CanResetPassword;
 
     /** @use HasFactory<UserFactory> */
@@ -127,14 +129,53 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
         return ! $this->is_root && $this->status === 'active';
     }
 
+    /**
+     * Whether this user wants an email for a given notification type
+     */
+    public function wantsEmailFor(string $type): bool
+    {
+        $key = "notify_email_{$type}";
+        $override = $this->preferences[$key] ?? null;
+
+        if ($override !== null) {
+            return (bool) $override;
+        }
+
+        return Settings::bool($key, false);
+    }
+
+    /**
+     * Whether this user wants an in-app (bell + live toast) notification for a given type
+     */
+    public function wantsInAppFor(string $type): bool
+    {
+        $key = "notify_inapp_{$type}";
+        $override = $this->preferences[$key] ?? null;
+
+        if ($override !== null) {
+            return (bool) $override;
+        }
+        return Settings::bool($key, true);
+    }
+
+    /**
+     * always THIS user's own preference, never the acting user's session locale or the queue
+     * worker's default. 
+     */
+    public function preferredLocale(): string
+    {
+        $locale = $this->preferences['app_locale'] ?? Settings::get('app_locale', config('app.locale'));
+
+        return in_array($locale, ['de', 'en'], true) ? $locale : config('app.locale');
+    }
+
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotification($token));
     }
 
     /**
-     * Build a User from a self-service account form (invite acceptance,
-     * setup bootstrap, etc.) — shared so those flows don't duplicate the
+     * Build a User from a self-service account. Shared so those flows don't duplicate the
      * field mapping. $overrides goes through forceFill so privileged flags
      * like is_admin/is_root can be set regardless of $fillable, without
      * making them mass-assignable from arbitrary form input.

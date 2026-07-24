@@ -15,6 +15,7 @@ class Task extends BaseModule
         'status',
         'priority',
         'completed_at',
+        'owner_id',
     ];
 
     protected $moduleCasts = [

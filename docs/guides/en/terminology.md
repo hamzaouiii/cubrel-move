@@ -132,10 +132,10 @@ company settings, and the rest of what's covered in this page. Regular
 (non-admin) users only see the day-to-day CRM: their modules, records, and
 personal preferences.
 
-### Root user
+### Super admin
 
 The highest level of access in a Cubrel instance. In addition to everything
-an admin can do, a root user can sign in *as* another user (impersonation)
+an admin can do, a super admin can sign in *as* another user (impersonation)
 to help troubleshoot something from that person's exact point of view.
 Impersonation is always visible in the Audit Trail when it happens, never
 hidden, see the [Audit Trail guide](audit-trail-guide.md#impersonation-is-always-transparent-never-hidden).
@@ -196,7 +196,7 @@ admins. See the [Audit Trail guide](audit-trail-guide.md).
 
 ### Impersonation Session
 
-A record of a root user signing in as another user, listed under
+A record of a super admin signing in as another user, listed under
 **Settings > Impersonation Sessions**: who, from what IP address, and for
 how long. Kept separately from the Audit Trail, which instead flags any
 *changes* made during such a session.
@@ -251,11 +251,11 @@ own concepts:
 | Line items | A priced list within a record (Quotes/Orders/Invoices-style) |
 | Dashboard | The customizable overview page you land on after signing in |
 | Admin | A user with access to Settings |
-| Root user | An admin who can also impersonate other users |
+| Super admin | An admin who can also impersonate other users |
 | Owner | The user a record is assigned to |
 | Record | One individual entry within a module |
 | List Filter | A saved, reusable search |
 | Audit Trail | The automatic log of every change, everywhere |
-| Impersonation Session | A record of a root user signing in as someone else |
+| Impersonation Session | A record of a super admin signing in as someone else |
 | Session | Cubrel remembering you're signed in |
 | PDF Template | A reusable layout for generating a record as a PDF |

@@ -1,16 +1,25 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import axios from "axios";
 
 const props = defineProps({
   instance: { type: Object, required: true },
 });
 
+const appSettings = usePage().props.appSettings;
+
 const state = ref("loading");
 const rows = ref([]);
 const moduleSlug = ref("");
 const moduleIcon = ref("");
 const moduleColor = ref("");
+
+const displayColor = computed(() => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : moduleColor.value;
+});
 
 async function load() {
   state.value = "loading";
@@ -58,7 +67,7 @@ defineExpose({ load });
         <li v-for="row in rows" :key="row.id" class="rl-list__item">
           <span
             class="rl-list__icon"
-            :style="{ background: moduleColor + '20', color: moduleColor }"
+            :style="{ background: displayColor + '20', color: displayColor }"
           >
             <i :class="moduleIcon"></i>
           </span>

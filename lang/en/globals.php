@@ -15,6 +15,54 @@ return [
         'settings' => 'Settings',
         'profile' => 'Profile',
         'logout' => 'Logout',
+        'notifications' => 'Notifications',
+    ],
+    'notifications' => [
+        'someone' => 'Someone',
+        'empty' => 'No notifications yet.',
+        'mark_all_read' => 'Mark all as read',
+        'open_preferences' => 'Open notification preferences',
+        'just_now' => 'just now',
+        'minutes_ago' => ':count m ago',
+        'hours_ago' => ':count h ago',
+        'days_ago' => ':count d ago',
+        'group_unread' => 'Unread',
+        'group_today' => 'Today',
+        'group_yesterday' => 'Yesterday',
+        'group_earlier' => 'Earlier',
+        'a_meeting' => 'a Meeting',
+        'record_assigned' => [
+            'title' => ':module assigned to you',
+            'body' => ':user assigned :record to you.',
+        ],
+        'meeting_invite' => [
+            'title' => 'Meeting invitation',
+            'body' => ':user invited you to :meeting.',
+        ],
+        'task_due_soon' => [
+            'title' => 'Task due soon',
+            'body' => ':task is due :due.',
+        ],
+        'invite_accepted' => [
+            'title' => 'Invite accepted',
+            'body' => ':user accepted their invitation and created an account.',
+        ],
+        'invite_expired' => [
+            'title' => 'Invite expired',
+            'body' => 'The invitation sent to :email has expired.',
+        ],
+        'record_activity' => [
+            'title' => 'Activity on your :module',
+            'body' => [
+                'updated' => ':user updated :record.',
+                'deleted' => ':user deleted :record.',
+                'linked' => ':user linked a new activity to :record.',
+            ],
+        ],
+        'impersonated' => [
+            'title' => 'Your account was accessed by a Super Admin',
+            'body' => ':user impersonated your account on :time.',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Open Sidebar',
@@ -64,9 +112,9 @@ return [
         'user_inactive' => 'User is inactive. Please contact your administrator',
         'throttled' => 'Too many login attempts. Please try again in :seconds seconds.',
         'setup_title' => 'Set up your instance',
-        'setup_subtitle' => 'Create the root account to finish setting up Cubrel.',
+        'setup_subtitle' => 'Create the super admin account to finish setting up Cubrel.',
         'setup_invalid' => 'This setup link is invalid, expired, or has already been used.',
-        'setup_button' => 'Create root account',
+        'setup_button' => 'Create super admin account',
 
     ],
     'onboarding' => [

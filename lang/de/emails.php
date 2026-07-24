@@ -39,7 +39,7 @@ return [
         'subject' => ':app-Instanz einrichten',
         'title' => ':app-Instanz einrichten',
         'heading' => 'Willkommen bei :app ',
-        'body' => 'Schön, dass du dich für :app entschieden hast. Klicke auf den Button unten, um dein Root-Konto zu erstellen und die Einrichtung abzuschließen.',
+        'body' => 'Schön, dass du dich für :app entschieden hast. Klicke auf den Button unten, um dein Super-Admin-Konto zu erstellen und die Einrichtung abzuschließen.',
         'cta' => 'Einrichtung abschließen',
         'expires' => 'Dieser Link läuft am :date ab.',
         'fallback' => 'Wenn die Schaltfläche nicht funktioniert, kopiere diese URL in deinen Browser:',
@@ -67,5 +67,41 @@ return [
 
     'common' => [
         'all_rights_reserved' => 'Alle Rechte vorbehalten.',
+    ],
+
+    'notifications' => [
+        'view_action' => 'Ansehen',
+        'record_assigned' => [
+            'subject' => ':module wurde dir zugewiesen',
+            'body' => '**:user** hat dir **:module** **„:record"** zugewiesen.',
+        ],
+        'meeting_invite' => [
+            'subject' => 'Du wurdest zu einem Termin eingeladen',
+            'body' => '**:user** hat dich zu **:meeting** eingeladen.',
+        ],
+        'task_due_soon' => [
+            'subject' => 'Aufgabe bald fällig',
+            'body' => '**:task** ist fällig **:due**.',
+        ],
+        'invite_accepted' => [
+            'subject' => 'Deine Einladung wurde angenommen',
+            'body' => '**:user** hat die Einladung angenommen und ein Konto erstellt.',
+        ],
+        'invite_expired' => [
+            'subject' => 'Deine Einladung ist abgelaufen',
+            'body' => 'Die an **:email** gesendete Einladung ist abgelaufen.',
+        ],
+        'record_activity' => [
+            'subject' => 'Aktivität bei „:module"',
+            'body' => [
+                'updated' => '**:user** hat **:module** **„:record"** aktualisiert.',
+                'deleted' => '**:user** hat **:module** **„:record"** gelöscht.',
+                'linked' => '**:user** hat eine neue Aktivität mit **:module** **„:record"** verknüpft.',
+            ],
+        ],
+        'impersonated' => [
+            'subject' => 'Auf dein Konto wurde zugegriffen',
+            'body' => '**:user** hat dein Konto am **:time** verwendet.',
+        ],
     ],
 ];

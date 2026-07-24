@@ -18,6 +18,7 @@ class Meeting extends BaseModule
         'end_at',
         'duration',
         'status',
+        'owner_id',
     ];
 
     protected $moduleCasts = [

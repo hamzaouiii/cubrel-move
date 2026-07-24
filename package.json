@@ -7,11 +7,14 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@laravel/echo-vue": "^2.4.0",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
         "cssnano": "^7.1.1",
+        "laravel-echo": "^2.4.0",
         "laravel-vite-plugin": "^2.0.0",
         "postcss": "^8.5.6",
+        "pusher-js": "^8.6.0",
         "sass": "^1.93.2",
         "vite": "^7.0.7"
     },

@@ -17,4 +17,15 @@ return [
         'notifications' => 'Benachrichtigungen',
     ],
     'notifications_placeholder' => 'Benachrichtigungseinstellungen folgen in Kürze.',
+    'notifications_email_column' => 'E-Mail',
+    'notifications_inapp_column' => 'In-App',
+    'notification_types' => [
+        'record_assigned' => 'Datensatz wird mir zugewiesen',
+        'meeting_invite' => 'Ich werde zu einem Termin eingeladen',
+        'task_due_soon' => 'Aufgabe ist bald fällig',
+        'invite_accepted' => 'Gesendete Einladung wird angenommen',
+        'invite_expired' => 'Gesendete Einladung läuft ab',
+        'record_activity' => 'Aktivität auf Datensätzen, die mir gehören',
+        'impersonated' => 'Mein Konto wird verwendet',
+    ],
 ];

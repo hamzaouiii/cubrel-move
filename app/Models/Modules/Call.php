@@ -16,6 +16,7 @@ class Call extends BaseModule
         'duration_minutes',
         'status',
         'outcome',
+        'owner_id',
     ];
 
     protected $moduleCasts = [

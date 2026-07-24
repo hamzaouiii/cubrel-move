@@ -24,10 +24,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  // 'right' anchors the tooltip's left edge at `left` (grows rightward, the
-  // original/default behavior); 'left' anchors its right edge at `left`
-  // instead (grows leftward) — for triggers near the right edge of the
-  // viewport where a rightward tooltip would run off-screen.
   placement: {
     type: String,
     default: "right",

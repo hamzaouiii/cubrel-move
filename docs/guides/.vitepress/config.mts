@@ -120,6 +120,7 @@ export default defineConfig({
             items: [
               { text: "Users, Invites & Passwords", link: "/en/users-guide" },
               { text: "Audit Trail", link: "/en/audit-trail-guide" },
+              { text: "Notifications", link: "/en/notification-guide" },
               { text: "Sessions", link: "/en/session-timeout-guide" },
             ],
           },

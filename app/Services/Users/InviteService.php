@@ -4,6 +4,7 @@ namespace App\Services\Users;
 
 use App\Models\UserInvite;
 use App\Models\User;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Support\Str;
 use App\Mail\InvitationMail;
 use Illuminate\Support\Facades\Mail;
@@ -61,6 +62,8 @@ class InviteService
         'status' => 'accepted'
       ]
     );
+
+    NotificationService::notifyInviteAccepted($invite, $user->name);
 
     return $user;
   }

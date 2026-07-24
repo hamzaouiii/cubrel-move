@@ -51,6 +51,14 @@ return [
         'path' => '/settings/system/display-defaults',
         'isActive' => 1,
         'icon' => 'fa-solid fa-sliders'
+      ],
+      'notifications' => [
+        'name' => 'Notifications',
+        'slug' => 'notifications',
+        'label' => 'settings.items.notifications',
+        'path' => '/settings/system/notifications',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-bell'
       ]
     ]
   ],

@@ -393,7 +393,7 @@ const auditFieldTitle = (field) =>
         <div class="activity-sidebar__timeline">
           <div v-if="phase === 'loading'" class="activity-sidebar__loading">
             <i
-              class="fa-solid fa-circle-notch fa-spin"
+              class="fa-solid fa-atom fa-spin"
               :style="{ color: moduleColor }"
             ></i>
           </div>
