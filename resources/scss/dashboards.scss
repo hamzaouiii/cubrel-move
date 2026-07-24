@@ -13,41 +13,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 28px;
     flex-wrap: wrap;
     border: 1px solid;
     padding: 24px;
     gap: 16px;
-    button {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      border: none;
+    &__dismiss {
       cursor: pointer;
-      transition: all 0.2s ease;
-
+      transition: all 0.15 ease-in-out;
       &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      &.primary {
-        background: var(--primary-color);
-        color: #ffffff;
-        &:hover {
-          background: color-mix(
-            in srgb,
-            var(--primary-color, #3b8bff) 85%,
-            #ffffff
-          );
-        }
-      }
-
-      i {
-        font-size: 13px;
+        transform: scale(1.1);
       }
     }
   }
@@ -72,6 +46,37 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    margin: 14px;
+    justify-content: flex-end;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &.primary {
+        background: var(--primary-color);
+        color: #ffffff;
+        &:hover {
+          background: color-mix(
+            in srgb,
+            var(--primary-color, #3b8bff) 85%,
+            #ffffff
+          );
+        }
+      }
+
+      i {
+        font-size: 13px;
+      }
+    }
   }
 
   &__grid {

@@ -25,8 +25,10 @@ const showPanel = ref(false);
 const editMode = ref(false);
 const savedLayout = ref([]);
 const editingInstance = ref(null);
-
-// ── Ghost animation (from composable) ────────────────────────────────────────
+const SESSION_KEY = "dismissed_dashboard_header";
+const showDashboardHeader = ref(
+  sessionStorage.getItem(SESSION_KEY) !== "true",
+);
 const {
   originOffset,
   ghostWidth,
@@ -36,11 +38,8 @@ const {
   onGlobalDragOver,
 } = useLayoutDragDrop();
 
-// ── Drag state ────────────────────────────────────────────────────────────────
 const draggingId = ref(null); // id of the widget being dragged
 const dropBeforeId = ref(null); // id of the widget the placeholder appears before (null = append)
-
-// ── Widgets ───────────────────────────────────────────────────────────────────
 
 const activeWidgets = computed(() =>
   layout.value
@@ -72,8 +71,7 @@ const activeWidgets = computed(() =>
     .filter(Boolean),
 );
 
-// During drag: remove the dragged widget from its slot and re-insert it as a
-// placeholder before `dropBeforeId` so the other widgets visually shift.
+// During drag: remove the dragged widget from its slot and re-insert it as a placeholder before `dropBeforeId` so the other widgets visually shift.
 const previewWidgets = computed(() => {
   if (!draggingId.value) return activeWidgets.value;
 
@@ -99,8 +97,6 @@ const ghostLabel = computed(() => {
   );
 });
 
-// ── Widget refresh ────────────────────────────────────────────────────────────
-
 const widgetRefs = {};
 
 function setWidgetRef(id, el) {
@@ -111,8 +107,6 @@ function setWidgetRef(id, el) {
 function refreshAll() {
   Object.values(widgetRefs).forEach((w) => w?.load?.());
 }
-
-// ── Layout persistence ────────────────────────────────────────────────────────
 
 function enterEdit() {
   savedLayout.value = [...layout.value];
@@ -174,12 +168,9 @@ async function persistLayout() {
   }
 }
 
-// ── Drag handlers ─────────────────────────────────────────────────────────────
-
-let hoveredDropWidget = null; // track which widget the cursor is currently over
+let hoveredDropWidget = null;
 
 function startDrag(widgetId, event) {
-  // Start placeholder at the natural position (before the next sibling)
   const idx = activeWidgets.value.findIndex((w) => w.id === widgetId);
   const nextSibling = activeWidgets.value[idx + 1];
 
@@ -193,11 +184,11 @@ function startDrag(widgetId, event) {
 function setDropTarget(widgetId, event) {
   event.preventDefault(); // always needed so the browser allows dropping
   if (widgetId === draggingId.value) return;
-  if (widgetId === hoveredDropWidget) return; // same widget — skip to avoid feedback loop
+  if (widgetId === hoveredDropWidget) return; // same widget - skip to avoid feedback loop
 
   hoveredDropWidget = widgetId;
 
-  // Split the cell horizontally: left half → insert before, right half → insert after
+  // Split the cell horizontally: left half -> insert before, right half -> insert after
   const rect = event.currentTarget.getBoundingClientRect();
   const isRightHalf = event.clientX - rect.left > rect.width / 2;
 
@@ -237,8 +228,6 @@ function resetDrag() {
   });
 }
 
-// ── Masonry row spans ─────────────────────────────────────────────────────────
-
 const ROW_UNIT = 8;
 let resizeObs = null;
 
@@ -273,6 +262,10 @@ watch(previewWidgets, () =>
     observeCells();
   }),
 );
+const hideDashboardHeader = () => {
+  showDashboardHeader.value = false;
+  sessionStorage.setItem(SESSION_KEY, "true");
+};
 </script>
 
 <template>
@@ -285,49 +278,53 @@ watch(previewWidgets, () =>
     @dragover="onGlobalDragOver"
     @drop.prevent="handleDrop"
   >
-    <!-- Header -->
-    <div class="dashboard__header dashboard__card">
-      <div class="dashboard__header-left">
-        <h1 class="dashboard__title">
-          {{ $t("globals.dashboard.hi") }} {{ user.first_name }}!
-        </h1>
-        <p class="dashboard__subtitle">
-          {{ $t("globals.dashboard.subtitle") }}
-        </p>
+    <Transition name="slide-right" appear>
+      <div
+        v-show="showDashboardHeader"
+        class="dashboard__header dashboard__card"
+      >
+        <div class="dashboard__header-left">
+          <h1 class="dashboard__title">
+            {{ $t("globals.dashboard.hi") }} {{ user.first_name }}!
+          </h1>
+          <p class="dashboard__subtitle">
+            {{ $t("globals.dashboard.subtitle") }}
+          </p>
+        </div>
+        <div class="dashboard__header__dismiss" @click="hideDashboardHeader">
+          <i class="fa-solid fa-xmark"></i>
+        </div>
       </div>
-      <div class="dashboard__actions">
-        <template v-if="!editMode">
-          <button
-            :title="$t('globals.dashboard.refresh_all')"
-            @click="refreshAll"
-          >
-            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
-          </button>
-          <button
-            :title="$t('globals.dashboard.customize_title')"
-            @click="showPanel = true"
-          >
-            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-          </button>
-          <button
-            class="primary"
-            :title="$t('globals.dashboard.edit_layout')"
-            @click="enterEdit"
-          >
-            <i class="fa-solid fa-pen" aria-hidden="true"></i>
-          </button>
-        </template>
-        <template v-else>
-          <button @click="cancelEdit">
-            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          </button>
-          <button class="primary" @click="saveLayout">
-            <i class="fa-solid fa-check" aria-hidden="true"></i>
-          </button>
-        </template>
-      </div>
+    </Transition>
+    <div class="dashboard__actions">
+      <template v-if="!editMode">
+        <button
+          :title="$t('globals.dashboard.refresh_all')"
+          @click="refreshAll"
+        >
+          <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+        </button>
+        <button @click="enterEdit" :title="$t('globals.dashboard.edit_layout')">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+        <button
+          class="primary"
+          :title="$t('globals.dashboard.customize_title')"
+          @click="showPanel = true"
+        >
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          {{ $t("globals.dashboard.customize_title") }}
+        </button>
+      </template>
+      <template v-else>
+        <button @click="cancelEdit">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+        <button class="primary" @click="saveLayout">
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+        </button>
+      </template>
     </div>
-
     <TransitionGroup name="w-move" tag="div" class="dashboard__grid">
       <div
         v-for="widget in previewWidgets"
@@ -345,13 +342,11 @@ watch(previewWidgets, () =>
         @drop.prevent="editMode && handleDrop($event)"
       >
         <div class="w-cell__inner">
-          <!-- Placeholder: visible drop zone, no content -->
           <div v-if="widget.isPlaceholder" class="w-cell__drop-zone">
             <i class="fa-solid fa-grip-vertical"></i>
             <span>{{ ghostLabel ? $t(ghostLabel) : "" }}</span>
           </div>
 
-          <!-- Normal widget -->
           <template v-else>
             <component
               :is="widget.component"

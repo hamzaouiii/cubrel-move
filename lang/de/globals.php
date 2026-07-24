@@ -244,7 +244,7 @@ return [
         'widget_people_desc' => 'Eine Rangliste von Personen nach Summe, Anzahl oder Durchschnitt',
 
         // Add widget panel
-        'customize_title' => 'Dashboard anpassen',
+        'customize_title' => 'Neues Dashboard',
         'customize_subtitle' => 'Widgets zu Ihrer Ansicht hinzufügen oder entfernen',
         'configure_subtitle' => 'Widget konfigurieren',
         'section_active' => 'Aktiv',

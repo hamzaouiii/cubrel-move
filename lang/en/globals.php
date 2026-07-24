@@ -248,7 +248,7 @@ return [
         'widget_people_desc' => 'A leaderboard of people ranked by a sum, count, or average',
 
         // Add widget panel
-        'customize_title' => 'Customize Dashboard',
+        'customize_title' => 'New Dashboard',
         'customize_subtitle' => 'Add or remove widgets from your view',
         'configure_subtitle' => 'Configure your widget',
         'section_active' => 'Active',
