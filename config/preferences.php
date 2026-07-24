@@ -4,7 +4,7 @@
 return [
   'tabs' => [
     'general' => [
-      'label' => 'preferences.tabs.general',
+      'label' => 'globals.preferences.tabs.general',
       'fields' => [
         'app_locale' => [
           'type' => 'lang_switcher',
@@ -24,7 +24,7 @@ return [
       ],
     ],
     'style' => [
-      'label' => 'preferences.tabs.style',
+      'label' => 'globals.preferences.tabs.style',
       'fields' => [
        
         'primary_color' => [
@@ -55,7 +55,7 @@ return [
       ],
     ],
     'lists' => [
-      'label' => 'preferences.tabs.lists',
+      'label' => 'globals.preferences.tabs.lists',
       'fields' => [
         'related_panel_limit' => [
           'type' => 'int',
@@ -75,7 +75,7 @@ return [
       ],
     ],
     'notifications' => [
-      'label' => 'preferences.tabs.notifications',
+      'label' => 'globals.preferences.tabs.notifications',
       'fields' => [
         'notify_email_record_assigned' => [
           'type' => 'bool',

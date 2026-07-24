@@ -20,8 +20,7 @@ class TranslationService
         'fields',
         'globals',
         'dropdowns',
-        'relationships',
-        'preferences'
+        'relationships'
       ];
 
       $translations = [];
