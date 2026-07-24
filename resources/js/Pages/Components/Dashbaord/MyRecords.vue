@@ -19,8 +19,16 @@ const total = computed(() =>
   modules.value.reduce((sum, m) => sum + m.count, 0),
 );
 
+const appSettings = usePage().props.appSettings;
+
 const getModuleBySlug = (slug) => {
   return usePage().props.modules.find((m) => m.slug === slug);
+};
+
+const getModuleColor = (slug) => {
+  return appSettings.use_individual_module_colors == "0"
+    ? appSettings.primary_color
+    : getModuleBySlug(slug).color;
 };
 </script>
 
@@ -42,7 +50,7 @@ const getModuleBySlug = (slug) => {
           v-for="mod in modules"
           :key="mod.key"
           class="mod-list__item"
-          :style="{ '--mod-color-dash': getModuleBySlug(mod.slug).color }"
+          :style="{ '--mod-color-dash': getModuleColor(mod.slug) }"
         >
           <span class="mod-list__link">
             <i :class="getModuleBySlug(mod.slug).icon"></i>
