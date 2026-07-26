@@ -3,9 +3,10 @@
 # the branch, templates .env, builds/migrates, starts the per-tenant systemd
 # services, and writes+enables the nginx vhost.
 #
-# Usage: provision-tenant.sh <name> [branch] [domain]
+# Usage: provision-tenant.sh <name> [branch] [domain] [app_name]
 #   branch defaults to <name>
 #   domain defaults to <name>.cubrel.com
+#   app_name (APP_NAME in .env) defaults to "Cubrel"
 #
 # Requires deploy/install-systemd-units.sh to have been run once already,
 # and deploy/provision.env to exist (copy from provision.env.example).
@@ -19,6 +20,7 @@ fi
 NAME="${1:-}"
 BRANCH="${2:-$NAME}"
 DOMAIN="${3:-$NAME.cubrel.com}"
+APP_NAME="${4:-Cubrel}"
 
 if [ -z "$NAME" ]; then
   echo "Usage: $0 <name> [branch] [domain]" >&2
@@ -71,14 +73,27 @@ REVERB_APP_SECRET=$(openssl rand -hex 20)
 DB_DATABASE="cubrel_${NAME}"
 
 set_env() {
+  # Rewrites .env line-by-line instead of using sed, so values containing
+  # sed-special characters (#, &, /, etc. — anything a password might have)
+  # can't corrupt the substitution.
   local key="$1" value="$2"
-  if grep -q "^${key}=" .env; then
-    sed -i "s#^${key}=.*#${key}=${value}#" .env
-  else
-    echo "${key}=${value}" >> .env
+  local tmp found=0
+  tmp=$(mktemp)
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [[ "$line" == "${key}="* || "$line" == "# ${key}="* ]]; then
+      printf '%s=%s\n' "$key" "$value" >> "$tmp"
+      found=1
+    else
+      printf '%s\n' "$line" >> "$tmp"
+    fi
+  done < .env
+  if [ "$found" -eq 0 ]; then
+    printf '%s=%s\n' "$key" "$value" >> "$tmp"
   fi
+  mv "$tmp" .env
 }
 
+set_env "APP_NAME" "\"${APP_NAME}\""
 set_env "APP_ENV" "production"
 set_env "APP_DEBUG" "false"
 set_env "APP_URL" "https://${DOMAIN}"
