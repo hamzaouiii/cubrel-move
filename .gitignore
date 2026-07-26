@@ -27,6 +27,7 @@ Thumbs.db
 .env.prod
 *.zip
 deploy.sh
+deploy/provision.env
 # app/console/*
 *.ps1
 /package-lock.json

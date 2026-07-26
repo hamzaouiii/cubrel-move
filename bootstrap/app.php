@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (HttpException $e, $request) {
+        $exceptions->render(function (\Throwable $e, $request) {
 
             // If it's an HTTP exception, get the actual status code.
             // Otherwise, it's a code bug/fatal error, so default to 500.
@@ -46,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($status === 419) {
                 // 303 (not 302): the request that hit this may have been a PUT/PATCH/DELETE
-                // (e.g. a record save), and only 303 forces the browser to follow up with GET.
+                // and only 303 forces the browser to follow up with GET.
                 // Auto-retry-with-token-refresh seam: this is where a silent replay of the
                 // original request would go before falling back to the flash+redirect below.
                 if ($request->user()) {
