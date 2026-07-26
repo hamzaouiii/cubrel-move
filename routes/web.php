@@ -177,6 +177,9 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
 
             Route::delete('modulebuilder/{module}/field/{field}', [ModuleBuilderController::class, 'deleteDraftField'])
                 ->name('modules.builder.deleteDraftField');
+
+            Route::delete('modulebuilder/{module}/discard', [ModuleBuilderController::class, 'discard'])
+                ->name('modules.builder.discard');
             Route::prefix('modulebuilder/{module}/deploy')->controller(ModuleDeploymentController::class)->group(function () {
                 Route::post('/initialize', 'initialize');
                 Route::post('/generate-files', 'generateFiles');

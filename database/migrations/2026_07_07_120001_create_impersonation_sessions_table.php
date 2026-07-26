@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignUuid('impersonator_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('target_user_id')->constrained('users')->cascadeOnDelete();
             $table->string('ip_address')->nullable();
+            $table->string('laravel_session_id')->nullable()->index();
             $table->timestamp('started_at');
             $table->timestamp('ended_at')->nullable();
 

@@ -105,12 +105,7 @@ const emit = defineEmits([
   "missing-fields",
   "is-form-dirty",
 ]);
-const requiredFields = [
-  "display_label",
-  "single_label",
-  "category",
-  "line_item_source_module",
-];
+const requiredFields = ["display_label", "single_label", "category"];
 // 1. Validation: Checks if required fields are empty
 const hasMissingRequired = computed(() => {
   return requiredFields.some((field) => {

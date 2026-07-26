@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -11,377 +10,73 @@ class SettingValuesSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('setting_values')->insert([
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'languages',
-                'key' => 'show_language_switcher',
-                'value' => '1',
-                'label' => 'settings.fields.show_language_switcher',
-                'type' => 'bool',
-                'sort_order' => 1,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
+        self::seedDefaultSettings();
+        self::seedNotificationDefaults();
+        self::seedDataRetentionDefaults();
+    }
 
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'languages',
-                'key' => 'enabled_languages',
-                'value' => json_encode(['de', 'en']),
-                'label' => 'settings.fields.enabled_languages',
-                'type' => 'json',
-                'sort_order' => 2,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'languages',
-                'key' => 'default_language',
-                'value' => 'de',
-                'label' => 'settings.fields.default_language',
-                'type' => 'string',
-                'sort_order' => 3,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'languages',
-                'key' => 'fallback_language',
-                'value' => 'en',
-                'label' => 'settings.fields.fallback_language',
-                'type' => 'string',
-                'sort_order' => 4,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'app_locale',
-                'value' => 'en',
-                'label' => 'settings.fields.app_locale',
-                'type' => 'lang_switcher',
-                'sort_order' => 1,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'default_locale',
-                'value' => 'de_DE',
-                'label' => 'settings.fields.default_locale',
-                'type' => 'string',
-                'sort_order' => 2,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'date_format',
-                'value' => 'l, d.m.Y',
-                'label' => 'settings.fields.date_format',
-                'type' => 'date',
-                'sort_order' => 3,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'datetime_format',
-                'value' => 'l, d.m.Y H:i',
-                'label' => 'settings.fields.datetime_format',
-                'type' => 'datetime',
-                'sort_order' => 4,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'timezone',
-                'value' => 'Europe/Berlin',
-                'label' => 'settings.fields.timezone',
-                'type' => 'timezone',
-                'sort_order' => 5,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'default_currency',
-                'value' => 'EUR',
-                'label' => 'settings.fields.default_currency',
-                'type' => 'currency',
-                'sort_order' => 6,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'multi_currency_mode',
-                'value' => '0',
-                'label' => 'settings.fields.multi_currency_mode',
-                'type' => 'bool',
-                'sort_order' => 7,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'locale',
-                'key' => 'first_day_of_week',
-                'value' => '1',
-                'label' => 'settings.fields.first_day_of_week',
-                'type' => 'int',
-                'sort_order' => 6,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'theme',
-                'value' => 'dark',
-                'label' => 'settings.fields.theme',
-                'type' => 'theme_switcher',
-                'sort_order' => 1,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'primary_color',
-                'value' => '#3498db',
-                'label' => 'settings.fields.primary_color',
-                'type' => 'color',
-                'sort_order' => 2,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'secondary_color',
-                'value' => '#64748B',
-                'label' => 'settings.fields.secondary_color',
-                'type' => 'color',
-                'sort_order' => 3,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'success_color',
-                'value' => '#10b981',
-                'label' => 'settings.fields.success_color',
-                'type' => 'color',
-                'sort_order' => 5,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'danger_color',
-                'value' => '#fa8072',
-                'label' => 'settings.fields.danger_color',
-                'type' => 'color',
-                'sort_order' => 4,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'border_radius',
-                'value' => '10',
-                'label' => 'settings.fields.border_radius',
-                'type' => 'int',
-                'sort_order' => 5,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'table_striped_rows',
-                'value' => '1',
-                'label' => 'settings.fields.table_striped_rows',
-                'type' => 'bool',
-                'sort_order' => 6,
-                'autoload' => 0,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'style',
-                'key' => 'use_individual_module_colors',
-                'value' => '1',
-                'label' => 'settings.fields.use_individual_module_colors',
-                'type' => 'bool',
-                'sort_order' => 7,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'display-defaults',
-                'key' => 'related_panel_limit',
-                'value' => 5,
-                'label' => 'settings.fields.related_panel_limit',
-                'type' => 'int',
-                'sort_order' => 1,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'display-defaults',
-                'key' => 'list_view_limit',
-                'value' => 31,
-                'label' => 'settings.fields.list_view_limit',
-                'type' => 'int',
-                'sort_order' => 1,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'display-defaults',
-                'key' => 'linking_panel_limit',
-                'value' => 25,
-                'label' => 'settings.fields.linking_panel_limit',
-                'type' => 'int',
-                'sort_order' => 1,
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'setting_item' => 'company-info',
-                'key' => 'company_name',
-                'label' => 'settings.fields.company_name',
-                'type' => 'string',
-                'sort_order' => 1,
-                'value' => 'Cubrel GmbH',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'key' => 'company_address',
-                'setting_item' => 'company-info',
-                'label' => 'settings.fields.company_address',
-                'type' => 'string',
-                'sort_order' => 2,
-                'value' => 'Ahornstraße  25, 19008 Berlin',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'key' => 'company_phone',
-                'setting_item' => 'company-info',
-                'label' => 'settings.fields.company_phone',
-                'type' => 'string',
-                'sort_order' => 3,
-                'value' => '+491265654651',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+    public static function seedDefaultSettings(): void
+    {
+        foreach (config('default_settings') as $row) {
+            if (DB::table('setting_values')->where('key', $row['key'])->exists()) {
+                continue;
+            }
 
-            ],
-            [
-                'id' => Str::uuid(),
-                'key' => 'company_email',
-                'setting_item' => 'company-info',
-                'label' => 'settings.fields.company_email',
-                'type' => 'string',
-                'sort_order' => 4,
-                'value' => 'info@cubrel.com',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'key' => 'company_website',
-                'setting_item' => 'company-info',
-                'label' => 'settings.fields.company_website',
-                'type' => 'string',
-                'sort_order' => 5,
-                'value' => 'https://cubrel.com',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'key' => 'company_logo_url',
-                'setting_item' => 'company-info',
-                'label' => 'settings.fields.company_logo_url',
-                'type' => 'image',
-                'sort_order' => 6,
-                'value' => 'https://i.ibb.co/Gfnzq5cw/cover.png',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'id' => Str::uuid(),
-                'key' => 'onboarding_completed',
-                'setting_item' => 'system',
-                'label' => null,
-                'type' => 'bool',
-                'sort_order' => 1,
-                'value' => '0',
-                'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+            DB::table('setting_values')->insert([
+                'id' => (string) Str::uuid(),
+                'setting_item' => $row['setting_item'],
+                'key' => $row['key'],
+                'value' => $row['value'],
+                'label' => $row['label'],
+                'type' => $row['type'],
+                'sort_order' => $row['sort_order'],
+                'autoload' => $row['autoload'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
 
+
+    public static function seedDataRetentionDefaults(): void
+    {
+        $rows = array_filter(
+            config('default_settings'),
+            fn (array $row) => $row['setting_item'] === 'data-retention'
+        );
+
+        foreach ($rows as $row) {
+            if (DB::table('setting_values')->where('key', $row['key'])->exists()) {
+                continue;
+            }
+
+            DB::table('setting_values')->insert([
+                'id' => (string) Str::uuid(),
+                'setting_item' => $row['setting_item'],
+                'key' => $row['key'],
+                'value' => $row['value'],
+                'label' => $row['label'],
+                'type' => $row['type'],
+                'sort_order' => $row['sort_order'],
+                'autoload' => $row['autoload'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    public static function seedNotificationDefaults(): void
+    {
         $sortOrder = 0;
         foreach (config('default_notification_settings') as $key => $value) {
             $sortOrder++;
 
+            if (DB::table('setting_values')->where('key', $key)->exists()) {
+                continue;
+            }
+
             DB::table('setting_values')->insert([
-                'id' => Str::uuid(),
+                'id' => (string) Str::uuid(),
                 'setting_item' => 'notifications',
                 'key' => $key,
                 'value' => $value,
@@ -389,8 +84,8 @@ class SettingValuesSeeder extends Seeder
                 'type' => 'bool',
                 'sort_order' => $sortOrder,
                 'autoload' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }

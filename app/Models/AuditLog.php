@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Support\Settings;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 
 class AuditLog extends Model
 {
+    use Prunable;
+
     public $timestamps = false;
 
     protected $guarded = ['id'];
@@ -14,6 +18,11 @@ class AuditLog extends Model
         'diff' => 'array',
         'created_at' => 'datetime',
     ];
+
+    public function prunable()
+    {
+        return static::where('created_at', '<=', now()->subDays(Settings::get('retention_audit_logs_days', 730)));
+    }
 
     public function user()
     {

@@ -222,13 +222,6 @@ class ModuleBuilderController extends Controller
         'dropdown_list_id' => $dropdown_list,
       ]);
     } else {
-      // CREATE
-      // Not is_custom: this field gets a real column from
-      // ModuleScaffolder::createTable() (keyed by draftFields()), unlike
-      // fields added later via FieldsManagerController::store() on an
-      // already-deployed module, which have no backing column and rely on
-      // is_custom routing their value into the custom_fields JSON blob
-      // (see HasCustomFields::isCustomField() / RecordController::updateMany()).
       $module->fields()->create([
         ...$data,
         'dropdown_list_id' => $dropdown_list,
@@ -237,6 +230,29 @@ class ModuleBuilderController extends Controller
     }
 
     return back()->with('success');
+  }
+
+  /**
+   * Explicitly abandons a draft module — generated files/table/labels are
+   * cleaned up, its fields and the module row itself are deleted.
+   */
+  public function discard(Module $module)
+  {
+    if (! $module->is_draft) {
+      return response()->json(['message' => 'Module is not a draft.'], 422);
+    }
+
+    $user = Auth::user();
+    $isOwner = $module->locked_by === $user->id;
+    $isAdmin = $user->is_admin || $user->is_root;
+
+    if (! $isOwner && ! $isAdmin) {
+      return response()->json(['message' => 'You do not have permission to discard this draft.'], 403);
+    }
+
+    app(ModuleScaffolder::class)->discardDraft($module);
+
+    return redirect()->route('settings.index')->with('success', 'Draft discarded successfully.');
   }
 
   public function getOrCreateDraftModule(string $userId): Module

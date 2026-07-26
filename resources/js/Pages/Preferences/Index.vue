@@ -8,6 +8,8 @@ import Switcher from "../Components/FiledTypes/Switcher.vue";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
 import AppTooltip from "../Components/Globals/AppTooltip.vue";
+import IntegerField from "../Components/FiledTypes/IntegerField.vue";
+
 const { success, error, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -263,7 +265,9 @@ const hideTooltip = () => {
             class="settings__notifications__row"
           >
             <div class="settings__notifications__row__label">
-              <label>{{ $t(`globals.preferences.notification_types.${type}`) }}</label>
+              <label>{{
+                $t(`globals.preferences.notification_types.${type}`)
+              }}</label>
               <span class="settings__optional-label">
                 {{
                   $t("globals.preferences.current_system_value", {
@@ -369,6 +373,9 @@ const hideTooltip = () => {
                   :options="datetimeFormatOptions"
                   @update:model-value="markOverridden(f.key)"
                 />
+              </template>
+              <template v-else-if="f.type === 'int'">
+                <IntegerField v-model="form[f.key]" />
               </template>
               <template v-else-if="f.type === 'lang_switcher'">
                 <Switcher

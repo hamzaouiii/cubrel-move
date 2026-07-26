@@ -11,6 +11,7 @@ import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
 import SettingsBreadcrumb from "../Components/Settings/SettingsBreadcrumb.vue";
 import ExplainTip from "../Components/Globals/ExplainTip.vue";
 import ImageField from "../Components/FiledTypes/ImageField.vue";
+import IntegerField from "../Components/FiledTypes/IntegerField.vue";
 const { success, error, info, clearAllAlerts } = useAlerts();
 
 defineOptions({
@@ -52,12 +53,12 @@ const inputTypeFor = (type) => {
   if (type === "bool") return "checkbox";
   if (type === "color") return "color";
   if (type === "json") return "multiselect";
-  if (type === "int") return "number";
   if (type === "date") return "date";
   if (type === "datetime") return "datetime";
   if (type === "timezone") return "timezone";
   if (type === "currency") return "currency";
   if (type === "image") return "image";
+  if (type === "int") return "integer";
   return "text";
 };
 
@@ -138,6 +139,9 @@ const isDirty = () => form.isDirty;
                 :options="timezoneOptions"
               />
             </template>
+            <template v-else-if="inputTypeFor(i.type) === 'integer'">
+              <IntegerField v-model="form.values[index].value" />
+            </template>
             <template v-else-if="inputTypeFor(i.type) === 'currency'">
               <DropdownField
                 v-model="form.values[index].value"
@@ -166,7 +170,11 @@ const isDirty = () => form.isDirty;
               <ColorPicker v-model="form.values[index].value"></ColorPicker>
             </template>
             <template v-else-if="inputTypeFor(i.type) === 'image'">
-              <ImageField v-model="form.values[index].value" mode="edit" size="lg" />
+              <ImageField
+                v-model="form.values[index].value"
+                mode="edit"
+                size="lg"
+              />
             </template>
             <template v-else>
               <input

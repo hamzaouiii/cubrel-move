@@ -59,6 +59,14 @@ return [
         'path' => '/settings/system/notifications',
         'isActive' => 1,
         'icon' => 'fa-solid fa-bell'
+      ],
+      'data-retention' => [
+        'name' => 'Data Retention',
+        'slug' => 'data-retention',
+        'label' => 'settings.items.data_retention',
+        'path' => '/settings/system/data-retention',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-recycle'
       ]
     ]
   ],

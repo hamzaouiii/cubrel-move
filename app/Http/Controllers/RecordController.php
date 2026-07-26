@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use App\Models\PdfTemplate;
 use App\Services\Audit\AuditService;
+use App\Services\ImageCleanupService;
 
 class RecordController extends Controller
 {
@@ -54,9 +55,7 @@ class RecordController extends Controller
         // current module's fields definitions
         $fields = $moduleModel->allFields();
 
-        // Line items are only relevant for modules that actually have them enabled —
-        // everything below is skipped entirely otherwise, instead of the previous
-        // unconditional lookup that ran (and could fatal) on every single module.
+        // Line items are only relevant for modules that actually have them enabled, everything below is skipped entirely otherwise.
         $lineItemFields = collect();
         $sourceFields = collect();
         $sourceModuleSlug = null;
@@ -69,11 +68,7 @@ class RecordController extends Controller
                 ->firstOrFail();
             $lineItemFields = $line_itemsModel->allFields();
 
-            // The module line items snapshot/search from is configurable per host
-            // module (see Module::lineItemSourceModuleSlug()); it falls back to
-            // 'products' for modules that predate this setting. Resolved leniently
-            // (not firstOrFail) so a since-deactivated source module degrades to an
-            // empty picker instead of a hard 500 on every record view.
+
             $sourceModuleSlug = $moduleModel->lineItemSourceModuleSlug();
             $sourceModel = Module::query()
                 ->where('slug', $sourceModuleSlug)
@@ -81,8 +76,7 @@ class RecordController extends Controller
                 ->first();
             $sourceFields = $sourceModel?->allFields() ?? collect();
 
-            // The line-items table's columns live inside the record layout's own
-            // "has_line_items" placeholder section (configured via the Layouts editor).
+
             $lineItemsSection = collect($recordLayout['sections'] ?? [])
                 ->first(fn ($section) => ($section['has_line_items'] ?? false) === true);
             $lineItemsListColumns = $lineItemsSection['layout'] ?? [];
@@ -218,6 +212,16 @@ class RecordController extends Controller
 
         $baseQuery = $modelClass::query();
 
+   
+        // deleting many records leaves the image fields in the system without a cleanup path
+        // get all image fields
+        $table = (new $modelClass)->getTable();
+        $imageFields = $moduleModel->allFields()->where('type', 'image');
+        $imageSelectColumns = array_unique(array_merge(
+            ['id', 'name', 'custom_fields'],
+            $imageFields->filter(fn ($field) => Schema::hasColumn($table, $field->name))->pluck('name')->all()
+        ));
+
         if ($allMatchingSelected) {
             // Apply search filter if present
             if (class_exists($handlerClass)) {
@@ -246,13 +250,18 @@ class RecordController extends Controller
 
             $count = 0;
             $recordLabels = [];
-            DB::transaction(function () use ($baseQuery, &$count, &$recordLabels) {
-                $baseQuery->select(['id', 'name'])->chunkById(500, function ($chunk) use (&$count, &$recordLabels) {
+            DB::transaction(function () use ($baseQuery, &$count, &$recordLabels, $moduleModel, $imageFields, $imageSelectColumns) {
+                $baseQuery->select($imageSelectColumns)->chunkById(500, function ($chunk) use (&$count, &$recordLabels, $moduleModel, $imageFields) {
                     $ids = $chunk->pluck('id')->all();
                     $count += count($ids);
                     if (! empty($ids)) {
                         foreach ($chunk as $model) {
                             $recordLabels[(string) $model->id] = $model->name ?? (string) $model->id;
+
+                            if ($imageFields->isNotEmpty()) {
+                              // use the cleanupservice to also remove orphaned images
+                                ImageCleanupService::cleanupAllForRecord($moduleModel, $model);
+                            }
                         }
                         (clone $chunk)->first()->newQuery()->whereIn('id', $ids)->delete();
                     }
@@ -268,9 +277,16 @@ class RecordController extends Controller
         // unrecoverable afterward (see AuditObserver::deleted() for the
         // single-record equivalent).
 
-        // TODO: Offer recovering deleted records (Bin system)
-        $recordLabels = $modelClass::whereIn('id', $selectedIds)->pluck('name', 'id')
+        $selectedRecords = $modelClass::whereIn('id', $selectedIds)->get($imageSelectColumns);
+        $recordLabels = $selectedRecords->pluck('name', 'id')
             ->mapWithKeys(fn ($label, $id) => [(string) $id => $label]);
+
+        if ($imageFields->isNotEmpty()) {
+            foreach ($selectedRecords as $record) {
+                ImageCleanupService::cleanupAllForRecord($moduleModel, $record);
+            }
+        }
+
         $deleted = $modelClass::whereIn('id', $selectedIds)->delete();
 
         AuditService::log('deleted', $moduleModel->slug, null, [

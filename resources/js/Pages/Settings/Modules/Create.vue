@@ -16,8 +16,10 @@ import SettingsLayout from "@/Layouts/SettingsLayout.vue";
 import DeployProgressModal from "@/Pages/Components/Settings/Builder/DeployProgressModal.vue";
 import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
 import { Head, usePage, useForm, router } from "@inertiajs/vue3";
+import { useConfirm } from "@/Composables/useConfirm";
 
 const { error, success, info, clearAllAlerts } = useAlerts();
+const { confirm } = useConfirm();
 
 defineOptions({
   layout: [AppLayout, SettingsLayout],
@@ -195,6 +197,32 @@ const handleUpdateList = () => {
     },
   });
 };
+
+const discardDraft = async () => {
+  const ok = await confirm({
+    title: t("settings.modulebuilder.discard_draft_title"),
+    message: t("settings.modulebuilder.discard_draft_message"),
+    confirmText: t("settings.modulebuilder.discard_draft_confirm"),
+    cancelText: t("settings.cancel"),
+    danger: true,
+  });
+  if (!ok) return;
+
+  router.delete(`/settings/modulebuilder/${props.settingModule.id}/discard`, {
+    onStart: () => {
+      clearAllAlerts();
+      info(t("settings.modulebuilder.discarding"));
+    },
+    onSuccess: () => {
+      clearAllAlerts();
+      success(t("settings.modulebuilder.discard_success"));
+    },
+    onError: () => {
+      clearAllAlerts();
+      error(t("settings.modulebuilder.errors.unexpected"));
+    },
+  });
+};
 </script>
 
 <template>
@@ -252,6 +280,13 @@ const handleUpdateList = () => {
         />
 
         <div class="settings__actions">
+          <button
+            type="button"
+            class="settings__actions__discard"
+            @click="discardDraft"
+          >
+            {{ $t("settings.modulebuilder.discard_draft") }}
+          </button>
           <button v-if="tabs.indexOf(currentStep) > 0" @click="back()">
             {{ $t("settings.back") }}
           </button>

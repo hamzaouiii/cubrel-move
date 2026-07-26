@@ -96,6 +96,10 @@
           color: #9ca3af;
           cursor: not-allowed;
         }
+        &:focus {
+          outline: none;
+          box-shadow: 0;
+        }
       }
     }
 

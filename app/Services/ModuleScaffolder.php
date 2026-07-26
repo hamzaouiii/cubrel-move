@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Field;
 use App\Models\Label;
 use App\Models\Module;
 use Illuminate\Database\Schema\Blueprint;
@@ -220,13 +221,21 @@ class ModuleScaffolder
 
     public function rollback(Module $module): void
     {
-        $baseName = class_basename($module->model_class);
+        // A draft discarded before ever reaching the deploy pipeline's
+        // initialize step has neither a model_class nor a scaffolded table
+        // nothing to unlink/drop in that case.
+        if ($module->model_class) {
+            $baseName = class_basename($module->model_class);
+
+            $this->files->delete(app_path("Models/Modules/Custom/{$baseName}.php"));
+            $this->files->delete(app_path("Handlers/Modules/Custom/{$baseName}ModuleHandler.php"));
+        }
+
         $table = $module->table_name;
 
-        $this->files->delete(app_path("Models/Modules/Custom/{$baseName}.php"));
-        $this->files->delete(app_path("Handlers/Modules/Custom/{$baseName}ModuleHandler.php"));
-
-        Schema::dropIfExists($table);
+        if ($table) {
+            Schema::dropIfExists($table);
+        }
 
         Label::where('module_id', $module->id)->delete();
 
@@ -235,5 +244,19 @@ class ModuleScaffolder
             'is_draft' => true,
             'table_name' => null,
         ]);
+    }
+
+    /**
+     * Abandons a draft module entirely. which resets a
+     * module back to draft state, this removes the row itself so it stops
+     * occupying a lock slot / showing up in future draft recycling.
+     */
+    public function discardDraft(Module $module): void
+    {
+        $this->rollback($module);
+
+        Field::where('module_id', $module->id)->delete();
+
+        $module->delete();
     }
 }
