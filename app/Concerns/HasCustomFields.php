@@ -32,7 +32,7 @@ trait HasCustomFields
     }
 
     if ($this->isCustomField($key)) {
-      return $this->getCustomFieldValue($key);
+      return $this->setAttribute($key, $value);
     }
 
     return parent::__set($key, $value);
