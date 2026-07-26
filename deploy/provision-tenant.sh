@@ -52,7 +52,7 @@ if grep -q "^${NAME}=" "$PORTS_FILE"; then
 fi
 
 # --- 1. Assign the next free Reverb port ---------------------------------
-LAST_PORT=$(grep -oE '=[0-9]+$' "$PORTS_FILE" | tr -d '=' | sort -n | tail -1)
+LAST_PORT=$( { grep -oE '=[0-9]+$' "$PORTS_FILE" | tr -d '=' | sort -n | tail -1; } || true )
 PORT=$(( ${LAST_PORT:-8080} + 1 ))
 echo "==> Assigning Reverb port $PORT to tenant '$NAME'"
 
