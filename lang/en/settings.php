@@ -123,6 +123,9 @@ return [
         'retention_audit_logs_days' => 'Audit Log Retention (days)',
         'retention_userinvites_days' => 'User Invite Retention (days)',
         'retention_failed_jobs_days' => 'Failed Job Retention (days)',
+        'retention_setup_tokens_days' => 'Setup Token Retention (days)',
+        'retention_imports_days' => 'Import History Retention (days)',
+        'retention_draft_modules_days' => 'Abandoned Draft Module Retention (days)',
     ],
     'groups' => [
         'email' => 'Email Settings',
@@ -231,6 +234,12 @@ return [
         'deploy_success' => 'Module was deployed successfully',
         'confirm_rollback' => 'Confirm Rollback',
         'rollback_message' => 'This will delete all partially created files and database tables. Are you sure?',
+        'discard_draft' => 'Discard Draft',
+        'discard_draft_title' => 'Discard this draft?',
+        'discard_draft_message' => 'This will permanently delete this draft module and all of its unsaved fields. This cannot be undone.',
+        'discard_draft_confirm' => 'Discard Draft',
+        'discarding' => 'Discarding draft...',
+        'discard_success' => 'Draft discarded successfully',
         'errors' => [
             'unexpected' => 'An unexpected error occurred.',
             'cleanup_failed' => 'Cleanup failed. You may need to delete files manually.',

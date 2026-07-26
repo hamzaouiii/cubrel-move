@@ -120,6 +120,9 @@ return [
         'retention_audit_logs_days' => 'Aufbewahrung des Audit-Verlaufs (Tage)',
         'retention_userinvites_days' => 'Aufbewahrung von Benutzereinladungen (Tage)',
         'retention_failed_jobs_days' => 'Aufbewahrung fehlgeschlagener Jobs (Tage)',
+        'retention_setup_tokens_days' => 'Aufbewahrung von Setup-Tokens (Tage)',
+        'retention_imports_days' => 'Aufbewahrung des Importverlaufs (Tage)',
+        'retention_draft_modules_days' => 'Aufbewahrung verwaister Modul-Entwürfe (Tage)',
     ],
     'groups' => [
         'email' => 'E-Mail Einstellungen',
@@ -229,6 +232,12 @@ return [
         'deploy_success' => 'Modul wurde erfolgreich bereitgestellt',
         'confirm_rollback' => 'Rollback bestätigen',
         'rollback_message' => 'Dadurch werden alle teilweise erstellten Dateien und Datenbanktabellen gelöscht. Bist du sicher?',
+        'discard_draft' => 'Entwurf verwerfen',
+        'discard_draft_title' => 'Diesen Entwurf verwerfen?',
+        'discard_draft_message' => 'Dadurch werden dieser Modul-Entwurf und alle nicht gespeicherten Felder endgültig gelöscht. Dies kann nicht rückgängig gemacht werden.',
+        'discard_draft_confirm' => 'Entwurf verwerfen',
+        'discarding' => 'Entwurf wird verworfen...',
+        'discard_success' => 'Entwurf erfolgreich verworfen',
         'errors' => [
             'unexpected' => 'Ein unerwarteter Fehler ist aufgetreten.',
             'cleanup_failed' => 'Bereinigung fehlgeschlagen. Du musst Dateien möglicherweise manuell löschen.',

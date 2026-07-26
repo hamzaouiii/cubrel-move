@@ -51,6 +51,11 @@ class ProcessImportJob implements ShouldQueue
                 'failed_reason' => Str::limit($e->getMessage(), 500),
                 'completed_at' => now(),
             ]);
+
+            if ($import->file_path) {
+                Storage::disk('local')->delete($import->file_path);
+            }
+
             report($e);
         }
     }

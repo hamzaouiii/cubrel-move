@@ -6,6 +6,7 @@ use App\Models\BaseModule;
 use App\Models\Module;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Audit\AuditService;
+use App\Services\ImageCleanupService;
 use App\Services\Notifications\NotificationService;
 
 class AuditObserver
@@ -46,6 +47,8 @@ class AuditObserver
         }
 
         AuditService::log('updated', $module->slug, $model->id, $changes);
+
+        ImageCleanupService::cleanupReplacedFields($module, $model);
 
         if (array_key_exists('owner_id', $changes)) {
             NotificationService::notifyIfAssigned($model, $module, $model->owner_id);
@@ -92,6 +95,16 @@ class AuditObserver
         $record = $module->model_class::find($id);
 
         return $record ? ($record->name ?? $record->number ?? $id) : null;
+    }
+
+    public function deleting(BaseModule $model): void
+    {
+        $module = $this->resolveModule($model);
+        if (! $module) {
+            return;
+        }
+
+        ImageCleanupService::cleanupAllForRecord($module, $model);
     }
 
     public function deleted(BaseModule $model): void

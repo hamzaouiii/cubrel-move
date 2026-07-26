@@ -219,11 +219,13 @@ class UserController extends Controller
       // login as target user
       Auth::login($user);
 
+      // Auth::login() regenerates the session ID, so this must be read after it, not before. it's the ID that will actually persist in the `sessions` table for the impersonated session's lifetime.
       $session = ImpersonationSession::create([
           'impersonator_id' => $currentUser->id,
           'target_user_id' => $user->id,
           'ip_address' => $request->ip(),
           'started_at' => now(),
+          'laravel_session_id' => Session::getId(),
       ]);
       Session::put('impersonation_session_id', $session->id);
 
