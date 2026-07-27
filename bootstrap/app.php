@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (\Throwable $e, $request) {
+        $exceptions->render(function (HttpException $e, $request) {
 
             // If it's an HTTP exception, get the actual status code.
             // Otherwise, it's a code bug/fatal error, so default to 500.
