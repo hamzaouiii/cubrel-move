@@ -22,12 +22,12 @@ class DevSeeder extends Seeder
   {
     Account::factory(10)->create();
     Contact::factory(20)->create();
-    Lead::factory(100)->create();
+    Lead::factory(12)->create();
     Quote::factory(10)->create();
-    Invoice::factory(50)->create();
+    Invoice::factory(10)->create();
     SupportCase::factory(12)->create();
     Product::factory()->count(20)->create();
-    Deal::factory()->count(100)->create();
+    Deal::factory()->count(15)->create();
     Order::factory()->count(10)->create();
     // Tasks/Calls/Meetings/Notes are seeded (and linked to the records above)
     // by ActivitySeeder, once relationships exist to link them through.
