@@ -24,7 +24,10 @@ tenant #4 is a checklist, not new config to invent from scratch.
 ## 1. Port registry
 
 Keep one file as the source of truth for which port belongs to which
-tenant — `/var/www/cubrel/tenants/reverb-ports.conf`:
+tenant — `/var/www/cubrel/ops/reverb-ports.conf` (next to the provisioning
+scripts, not inside `tenants/` — it's ops bookkeeping, not a tenant, and
+`provision-tenant.sh` derives this path as a sibling of wherever it's
+running from, not a hardcoded one):
 
 ```
 app=8081
@@ -223,7 +226,7 @@ Cloudflare and the wildcard cert already covers any subdomain.
 
 ```bash
 # 0. Register the port first
-echo "test=8084" >> /var/www/cubrel/tenants/reverb-ports.conf
+echo "test=8084" >> /var/www/cubrel/ops/reverb-ports.conf
 
 # 1. Clone the right branch
 git clone --branch test git@your-git-host:you/cubrel.git /var/www/cubrel/tenants/test

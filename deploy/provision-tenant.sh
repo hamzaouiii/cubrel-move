@@ -15,13 +15,27 @@
 # and deploy/provision.env to exist (copy from provision.env.example).
 set -euo pipefail
 
+# Colors only when stdout is an actual terminal — plain text if redirected
+# to a file or piped, so logs don't fill up with escape codes.
+if [ -t 1 ]; then
+  C_RESET=$'\033[0m'; C_BOLD=$'\033[1m'
+  C_CYAN=$'\033[36m'; C_GREEN=$'\033[32m'; C_YELLOW=$'\033[33m'; C_RED=$'\033[31m'
+else
+  C_RESET=''; C_BOLD=''; C_CYAN=''; C_GREEN=''; C_YELLOW=''; C_RED=''
+fi
+
+step() { echo "${C_CYAN}${C_BOLD}==>${C_RESET} $*"; }
+ok()   { echo "${C_GREEN}${C_BOLD}==>${C_RESET} $*"; }
+warn() { echo "${C_YELLOW}${C_BOLD}==>${C_RESET} $*"; }
+err()  { echo "${C_RED}${C_BOLD}Error:${C_RESET} $*" >&2; }
+
 usage() {
-  echo "Usage: $0 <name> [--branch B] [--domain D] [--app-name A] [--email E]" >&2
+  echo "${C_YELLOW}Usage: $0 <name> [--branch B] [--domain D] [--app-name A] [--email E]${C_RESET}" >&2
   exit 1
 }
 
 if [ "$(id -u)" -ne 0 ]; then
-  echo "Must run as root (needs to write to /etc/nginx, /etc/systemd, chown www-data)." >&2
+  err "Must run as root (needs to write to /etc/nginx, /etc/systemd, chown www-data)."
   exit 1
 fi
 
@@ -40,28 +54,36 @@ while [ $# -gt 0 ]; do
     --domain) DOMAIN="${2:-}"; shift 2 ;;
     --app-name) APP_NAME="${2:-}"; shift 2 ;;
     --email) EMAIL="${2:-}"; shift 2 ;;
-    *) echo "Unknown argument: $1" >&2; usage ;;
+    *) err "Unknown argument: $1"; usage ;;
   esac
 done
 
 BRANCH="${BRANCH:-$NAME}"
 DOMAIN="${DOMAIN:-$NAME.cubrel.com}"
 
+# SCRIPT_DIR is wherever this script actually lives (the "ops" directory —
+# e.g. /var/www/cubrel/ops). TENANTS_DIR is derived as its sibling rather
+# than hardcoded, so this still works if /var/www/cubrel ever moves.
+# reverb-ports.conf lives next to this script, not inside tenants/ — it's
+# ops bookkeeping (root-owned, read/written only by this script), not a
+# tenant, and mixing it into tenants/ made that directory's contents
+# ambiguous ("is this a tenant folder or not?").
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TENANTS_DIR="/var/www/cubrel/tenants"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
+TENANTS_DIR="$BASE_DIR/tenants"
 TENANT_DIR="$TENANTS_DIR/$NAME"
-PORTS_FILE="$TENANTS_DIR/reverb-ports.conf"
+PORTS_FILE="$SCRIPT_DIR/reverb-ports.conf"
 CONFIG_FILE="$SCRIPT_DIR/provision.env"
 
 if [ ! -f "$CONFIG_FILE" ]; then
-  echo "Missing $CONFIG_FILE — copy provision.env.example and fill it in first." >&2
+  err "Missing $CONFIG_FILE — copy provision.env.example and fill it in first."
   exit 1
 fi
 # shellcheck disable=SC1090
 source "$CONFIG_FILE"
 
 if [ -d "$TENANT_DIR" ]; then
-  echo "Tenant directory already exists: $TENANT_DIR" >&2
+  err "Tenant directory already exists: $TENANT_DIR"
   exit 1
 fi
 
@@ -69,17 +91,17 @@ mkdir -p "$TENANTS_DIR"
 touch "$PORTS_FILE"
 
 if grep -q "^${NAME}=" "$PORTS_FILE"; then
-  echo "Tenant '$NAME' already has a port registered in $PORTS_FILE" >&2
+  err "Tenant '$NAME' already has a port registered in $PORTS_FILE"
   exit 1
 fi
 
 # --- 1. Assign the next free Reverb port ---------------------------------
 LAST_PORT=$( { grep -oE '=[0-9]+$' "$PORTS_FILE" | tr -d '=' | sort -n | tail -1; } || true )
 PORT=$(( ${LAST_PORT:-8080} + 1 ))
-echo "==> Assigning Reverb port $PORT to tenant '$NAME'"
+step "Assigning Reverb port $PORT to tenant '$NAME'"
 
 # --- 2. Clone the branch ---------------------------------------------------
-echo "==> Cloning branch '$BRANCH' into $TENANT_DIR"
+step "Cloning branch '$BRANCH' into $TENANT_DIR"
 git clone --branch "$BRANCH" "$REPO_URL" "$TENANT_DIR"
 cd "$TENANT_DIR"
 
@@ -91,7 +113,7 @@ cd "$TENANT_DIR"
 git config core.fileMode false
 
 # --- 3. Template .env -------------------------------------------------------
-echo "==> Writing .env"
+step "Writing .env"
 cp .env.example .env
 
 REVERB_APP_ID=$(openssl rand -hex 8)
@@ -168,13 +190,13 @@ set_env "VITE_REVERB_SCHEME" "https"
 
 # --- 4. Optional: create the database --------------------------------------
 if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
-  echo "==> Creating database $DB_DATABASE"
+  step "Creating database $DB_DATABASE"
   mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e \
     "CREATE DATABASE IF NOT EXISTS \`${DB_DATABASE}\`; \
      GRANT ALL PRIVILEGES ON \`${DB_DATABASE}\`.* TO '${DB_USERNAME}'@'localhost'; \
      FLUSH PRIVILEGES;"
 else
-  echo "==> MYSQL_ROOT_PASSWORD not set — skipping DB creation."
+  warn "MYSQL_ROOT_PASSWORD not set — skipping DB creation."
   echo "    Create it manually: CREATE DATABASE \`${DB_DATABASE}\`; GRANT ALL ON \`${DB_DATABASE}\`.* TO '${DB_USERNAME}'@'localhost';"
   read -rp "Press enter once the database exists and is reachable... "
 fi
@@ -183,10 +205,10 @@ fi
 # Full install, not --no-dev: fakerphp/faker is a require-dev package but
 # Database\Factories\*::fake() is used at runtime for onboarding/demo data
 # seeding, so it has to be present in production too.
-echo "==> composer install"
+step "composer install"
 composer install --optimize-autoloader
 php artisan key:generate --force
-echo "==> npm build"
+step "npm build"
 npm ci && npm run build
 # migrate:fresh --seed, not plain migrate: this only runs once, at
 # provisioning time, against a database that's guaranteed empty — it builds
@@ -194,7 +216,7 @@ npm ci && npm run build
 # etc.) a new tenant actually needs to be usable. Routine deploys
 # (deploy.sh) keep using plain `migrate --force` — never fresh --seed
 # against a database with real data in it.
-echo "==> migrate:fresh --seed"
+step "migrate:fresh --seed"
 php artisan migrate:fresh --seed --force
 php artisan storage:link
 
@@ -205,11 +227,11 @@ chown -R www-data:www-data "$TENANT_DIR"
 echo "${NAME}=${PORT}" >> "$PORTS_FILE"
 
 # --- 7. Start per-tenant systemd services -----------------------------------
-echo "==> Starting queue worker + Reverb"
+step "Starting queue worker + Reverb"
 systemctl enable --now "cubrel-queue@${NAME}" "cubrel-reverb@${NAME}"
 
 # --- 8. nginx vhost -----------------------------------------------------------
-echo "==> Writing nginx vhost"
+step "Writing nginx vhost"
 VHOST_FILE="/etc/nginx/sites-available/${DOMAIN}"
 sed -e "s/__NAME__/${NAME}/g" -e "s/__DOMAIN__/${DOMAIN}/g" -e "s/__PORT__/${PORT}/g" \
   "$SCRIPT_DIR/templates/tenant.nginx.conf.tmpl" > "$VHOST_FILE"
@@ -220,20 +242,14 @@ nginx -t && systemctl reload nginx
 # Run as www-data (not root) since the tree was just chowned to it — this
 # writes a setup token to the DB and, if $EMAIL is set, sends real mail
 # using the MAIL_* values templated into .env back in step 3.
-echo "==> Generating first-setup link"
+step "Generating first-setup link"
 if [ -n "$EMAIL" ]; then
   sudo -u www-data php artisan cubrel:bootstrap "$EMAIL"
 else
   sudo -u www-data php artisan cubrel:bootstrap
 fi
 
-cat <<EOF
-
-==> Done. Tenant '$NAME' is live at https://${DOMAIN}
-    Reverb port: $PORT (registered in $PORTS_FILE)
-    Queue/Reverb: systemctl status cubrel-queue@${NAME} cubrel-reverb@${NAME}
-
-Still needs a manual look before this is really production-ready:
-  - Confirm DNS for ${DOMAIN} is resolving (Cloudflare wildcard should already cover it)
-  - AWS_* in $TENANT_DIR/.env is untouched (S3 isn't used) — fill in by hand if that ever changes
-EOF
+echo
+ok "Done. Tenant '$NAME' is live at ${C_BOLD}https://${DOMAIN}${C_RESET}"
+echo "    Reverb port: $PORT (registered in $PORTS_FILE)"
+echo "    Queue/Reverb: systemctl status cubrel-queue@${NAME} cubrel-reverb@${NAME}"
