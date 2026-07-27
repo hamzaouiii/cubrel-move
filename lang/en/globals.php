@@ -182,6 +182,11 @@ return [
         ],
 
     ],
+    'setup_required' => [
+        'title' => 'Setup required',
+        'heading' => 'This instance is not set up yet',
+        'description' => 'Check your email for the setup link to finish creating the first account, or contact whoever provisioned this instance.',
+    ],
     'impersonate' => [
         'is_logged_in_as' => 'is logged in as',
         'return_to_original_session' => 'Return to original session',

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\EnsureInstanceBootstrapped;
 use App\Http\Middleware\EnsureOnboardingComplete;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocaleFromSettings;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            EnsureInstanceBootstrapped::class,
             HandleInertiaRequests::class,
             SetLocaleFromSettings::class,
             AddLinkHeadersForPreloadedAssets::class,

@@ -178,6 +178,11 @@ return [
             'description' => 'Der Dienst ist derzeit nicht verfügbar. Bitte versuche es später erneut:',
         ],
     ],
+    'setup_required' => [
+        'title' => 'Einrichtung erforderlich',
+        'heading' => 'Diese Instanz ist noch nicht eingerichtet',
+        'description' => 'Prüfe deine E-Mails auf den Einrichtungslink, um das erste Konto einzurichten, oder wende dich an die Person, die diese Instanz bereitgestellt hat.',
+    ],
     'impersonate' => [
         'is_logged_in_as' => 'ist angemeldet als',
         'return_to_original_session' => 'Account wechseln zurück',

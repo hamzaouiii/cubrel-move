@@ -238,7 +238,18 @@ sed -e "s/__NAME__/${NAME}/g" -e "s/__DOMAIN__/${DOMAIN}/g" -e "s/__PORT__/${POR
 ln -sf "$VHOST_FILE" "/etc/nginx/sites-enabled/${DOMAIN}"
 nginx -t && systemctl reload nginx
 
-# --- 9. First-setup link ------------------------------------------------------
+# --- 9. Laravel scheduler cron entry ------------------------------------------
+# routes/console.php's Schedule::*() calls only fire if something calls
+# `php artisan schedule:run` every minute — Laravel decides internally what's
+# actually due. One crontab line per tenant, under www-data (same user
+# Reverb/queue already run as). Filtered by tenant dir first so re-running
+# this against an existing crontab never duplicates the line.
+echo "==> Registering cron schedule"
+systemctl enable --now cron >/dev/null 2>&1 || true
+CRON_LINE="* * * * * cd $TENANT_DIR && php artisan schedule:run >> /dev/null 2>&1"
+( crontab -u www-data -l 2>/dev/null | grep -vF "cd $TENANT_DIR &&"; echo "$CRON_LINE" ) | crontab -u www-data -
+
+# --- 10. First-setup link ------------------------------------------------------
 # Run as www-data (not root) since the tree was just chowned to it — this
 # writes a setup token to the DB and, if $EMAIL is set, sends real mail
 # using the MAIL_* values templated into .env back in step 3.
