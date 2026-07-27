@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 git config core.fileMode false
-git pull origin main
+git pull
 composer install --optimize-autoloader
 php artisan migrate --force
 php artisan optimize
