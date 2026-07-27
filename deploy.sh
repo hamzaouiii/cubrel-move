@@ -2,7 +2,7 @@
 set -e
 git config core.fileMode false
 git pull origin main
-composer install --no-dev --optimize-autoloader
+composer install --optimize-autoloader
 php artisan migrate --force
 php artisan optimize
 npm ci && npm run build
