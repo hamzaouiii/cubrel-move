@@ -170,28 +170,38 @@ nano deploy/provision.env                           # REPO_URL, DB_USERNAME, DB_
 `deploy/provision.env` is gitignored (like `deploy.sh` itself) — it holds
 real credentials and never gets committed.
 
-**Per new tenant** (example: a tenant called `test` on branch `test`,
-domain defaults to `test.cubrel.com`):
+**Per new tenant** (example: a tenant called `test`; only `<name>` is
+required, everything else is an optional flag):
 
 ```bash
 sudo bash deploy/provision-tenant.sh test
-# or, if the branch/domain don't follow the name:
-sudo bash deploy/provision-tenant.sh test test-branch test.cubrel.com
+# or, with everything spelled out:
+sudo bash deploy/provision-tenant.sh test \
+  --branch test-branch \
+  --domain test.cubrel.com \
+  --app-name "Cubrel" \
+  --email you@example.com
 ```
 
+`--email` is where the first-setup link gets sent once the tenant is live
+(via `php artisan cubrel:bootstrap`) — omit it and the link is printed to
+the terminal instead.
+
 What it does, in order: picks the next free Reverb port from
-`reverb-ports.conf` (Section 1) → clones the branch → writes `.env` with
-tenant-specific `APP_URL`/`DB_DATABASE`/Reverb keys+port/`VITE_REVERB_*` →
-optionally creates the database (if `MYSQL_ROOT_PASSWORD` is set in
-`provision.env`, otherwise it pauses and asks you to create it by hand) →
-`composer install` + `npm run build` + `migrate` → starts
+`reverb-ports.conf` (Section 1) → clones the branch → sets
+`git config core.fileMode false` (before anything touches permissions) →
+writes `.env` with tenant-specific `APP_URL`/`DB_*`/`MAIL_*`/Reverb
+keys+port/`VITE_REVERB_*` → optionally creates the database (if
+`MYSQL_ROOT_PASSWORD` is set in `provision.env`, otherwise it pauses and
+asks you to create it by hand) → `composer install` + `npm run build` →
+`migrate:fresh --seed` (safe here — this only ever runs once, against a
+database guaranteed empty) → `chmod`/`chown` → starts
 `cubrel-queue@test` and `cubrel-reverb@test` → renders and enables the
 nginx vhost from `deploy/templates/tenant.nginx.conf.tmpl` → `nginx -t &&
-systemctl reload nginx`.
+systemctl reload nginx` → generates the first-setup link.
 
-It deliberately does **not** touch `MAIL_*`/`AWS_*` in `.env` — those need
-real per-tenant credentials that aren't safe to template automatically, and
-it prints a reminder to fill them in at the end.
+It deliberately does **not** touch `AWS_*` in `.env` — S3 isn't used, so
+those keys are left as whatever `.env.example` ships with.
 
 No DNS or cert work needed per tenant — `*.cubrel.com` already resolves via
 Cloudflare and the wildcard cert already covers any subdomain.
@@ -222,7 +232,7 @@ nano .env
 php artisan key:generate
 
 # 3. Build & migrate
-composer install --no-dev --optimize-autoloader
+composer install --optimize-autoloader
 npm ci && npm run build
 php artisan migrate --force
 php artisan storage:link
@@ -252,7 +262,7 @@ hot-reload):
 set -e
 git config core.fileMode false
 git pull
-composer install --no-dev --optimize-autoloader
+composer install --optimize-autoloader
 php artisan migrate --force
 php artisan optimize
 npm ci && npm run build
