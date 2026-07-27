@@ -150,9 +150,17 @@ set_env "BROADCAST_CONNECTION" "reverb"
 set_env "REVERB_APP_ID" "$REVERB_APP_ID"
 set_env "REVERB_APP_KEY" "$REVERB_APP_KEY"
 set_env "REVERB_APP_SECRET" "$REVERB_APP_SECRET"
+# REVERB_HOST/PORT: what Laravel's server-side broadcaster uses to reach
+# Reverb's internal REST API (publishing events).
 set_env "REVERB_HOST" "127.0.0.1"
 set_env "REVERB_PORT" "$PORT"
 set_env "REVERB_SCHEME" "http"
+# REVERB_SERVER_HOST/PORT: what `reverb:start` actually binds to. Distinct
+# from REVERB_HOST/PORT above — laravel/reverb's default config.php falls
+# back to REVERB_SERVER_PORT=8080 if this isn't set, regardless of
+# REVERB_PORT, which silently collided every tenant onto the same port.
+set_env "REVERB_SERVER_HOST" "127.0.0.1"
+set_env "REVERB_SERVER_PORT" "$PORT"
 set_env "VITE_REVERB_APP_KEY" '"${REVERB_APP_KEY}"'
 set_env "VITE_REVERB_HOST" "$DOMAIN"
 set_env "VITE_REVERB_PORT" "443"
