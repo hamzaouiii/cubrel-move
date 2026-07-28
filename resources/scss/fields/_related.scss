@@ -292,7 +292,7 @@
 
           &:hover {
             background: #fee2e2;
-            color: #ef4444;
+            color: var(--danger-color);
           }
         }
       }

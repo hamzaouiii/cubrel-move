@@ -150,7 +150,6 @@
     &:focus-within {
       border-color: var(--module-color);
       background: white;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
     }
 
     // Error state
@@ -159,7 +158,7 @@
       background: #fef2f2;
 
       .input-label {
-        color: #ef4444;
+        color: var(--danger-color);
       }
     }
 

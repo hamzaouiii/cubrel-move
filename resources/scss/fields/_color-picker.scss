@@ -14,7 +14,7 @@
   --cp-text: #1f2937;
   --cp-text-muted: #64748b;
   --cp-icon: #94a3b8;
-  --cp-danger: #ef4444;
+  --cp-danger: var(--danger-color);
   --cp-radius: 12px;
 
   position: relative;
@@ -43,7 +43,6 @@
     }
     &.is-open {
       border-color: var(--cp-accent-open);
-      box-shadow: 0 0 0 3px var(--cp-accent-ring);
     }
   }
 
@@ -177,7 +176,6 @@
 
     &:focus {
       border-color: var(--cp-accent);
-      box-shadow: 0 0 0 3px var(--cp-accent-ring);
     }
   }
 
@@ -275,7 +273,6 @@
     outline: none;
 
     &:focus-visible {
-      box-shadow: 0 0 0 3px var(--cp-accent-ring);
     }
   }
 
@@ -403,7 +400,6 @@
 
     &:focus {
       border-color: var(--cp-accent);
-      box-shadow: 0 0 0 3px var(--cp-accent-ring);
     }
   }
   &__hex-preview {

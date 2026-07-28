@@ -16,19 +16,14 @@
     &.is-open {
       border: 1px solid var(--module-color);
       background-color: white;
-      box-shadow: 0 0 0 3px rgba(var(--module-color), 0.1);
     }
 
     &.is-invalid {
-      border-color: #ef4444;
-      color: #ef4444;
-
-      &:focus-within {
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-      }
+      border-color: var(--danger-color);
+      color: var(--danger-color);
 
       .text-field__error-icon {
-        color: #ef4444;
+        color: var(--danger-color);
         margin-right: 8px;
       }
     }

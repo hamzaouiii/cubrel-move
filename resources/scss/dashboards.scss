@@ -656,7 +656,7 @@
     font-weight: 600;
     color: #10b981;
     &--cancelled {
-      color: #ef4444;
+      color: var(--danger-color);
       text-decoration: line-through;
     }
   }
@@ -733,7 +733,7 @@
       background: var(--primary-color, #3b8bff);
     }
     &--lost {
-      background: #ef4444;
+      background: var(--danger-color);
     }
   }
 
@@ -813,7 +813,7 @@
       color: #10b981;
     }
     &--down {
-      color: #ef4444;
+      color: var(--danger-color);
     }
   }
 }
