@@ -196,6 +196,20 @@ return [
       ]
     ]
   ],
+  'automation' => [
+    'label' => 'settings.groups.automation',
+    'description' => 'settings.groups.description.automation',
+    'items' => [
+      'transformations' => [
+        'name' => 'Transformations',
+        'slug' => 'transformations',
+        'label' => 'settings.items.transformations',
+        'path' => '/settings/transformations',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-arrow-right-arrow-left'
+      ]
+    ]
+  ],
   'audit' => [
     'label' => 'settings.groups.audit',
     'description' => 'settings.groups.description.audit',

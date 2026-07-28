@@ -132,6 +132,7 @@ return [
         'company' => 'Unternehmen',
         'pdf_templates' => 'PDF-Vorlagen',
         'audit' => 'Audit',
+        'automation' => 'Automatisierung',
         'description' => [
             'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
@@ -140,9 +141,11 @@ return [
             'pdf_templates' => 'Erstelle und verwalte die PDF-Layouts, die beim Generieren von Dokumenten für deine Datensätze verwendet werden.',
             'company' => 'Verwalte die Identität deines Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
             'audit' => 'Überprüfe den Änderungsverlauf von Datensätzen und Impersonation-Sitzungen.',
+            'automation' => 'Erstelle Transformationen, die einen Datensatz manuell oder automatisch in einen anderen umwandeln.',
         ],
     ],
     'items' => [
+        'transformations' => 'Transformationen',
         'pdf_templates' => 'PDF-Vorlagen',
         'audit_trail' => 'Audit-Verlauf',
         'impersonation_sessions' => 'Impersonation-Sitzungen',
