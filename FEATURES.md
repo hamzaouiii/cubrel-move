@@ -952,7 +952,11 @@ Because there is no confirmation step for an automatic run, enabling both "link 
 
 ### Field mapping & relationship copying
 
-Each target field's value is configured once in Studio as source-field / static value / expression (literal text plus a source field and/or a small set of helpers — today's date, the acting user's name, a new UUID). Which of the source record's relationships get copied onto the new record — including line items — is likewise configured once in Studio and applies identically to every run, manual or automatic; there is no per-run override or per-run relationship checkbox.
+Each target field's value is configured once in Studio as source-field / static value / expression (literal text plus a source field and/or a small set of helpers — today's date, the acting user's name, a new UUID). A static value on a record-type target field opens a record picker (search and select) instead of a raw id field, with "Current user" offered as a one-click shortcut. Which of the source record's relationships get copied onto the new record — including line items — is likewise configured once in Studio and applies identically to every run, manual or automatic; there is no per-run override or per-run relationship checkbox.
+
+### Save-time validation
+
+Users and User Invites can never be picked as a source or target module. Before a rule can be saved, Cubrel checks: every field-mode mapping points at a source field of the same type as its target (and, for record-type fields, the same related module); the one-line expression mode is only offered — and only accepted — for text-like target fields; every condition field and every relationship-to-copy key actually exists on the source module; and every field the target module requires is mapped to something. The Studio editor pre-adds an empty mapping row for each required target field automatically, with a default already filled in for the two most common ones (Owner → current user, Name → the source record's name).
 
 ### Linking the two records
 

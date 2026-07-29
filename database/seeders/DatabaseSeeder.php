@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
     $this->call(RelationshipSeeder::class);
     $this->call(TransformationSeeder::class);
    $this->call(DashboardPresetSeeder::class);
-      //  $this->call(UsersTableSeeder::class);
 
-      //  $this->call(DevSeeder::class);
-      //  $this->call(ActivitySeeder::class);
-      //  $this->call(LineItemsSeeder::class);
-      //  $this->call(RelationshipPopulationSeeder::class);
-      //  $this->call(OwnerAssignmentSeeder::class);
+       $this->call(UsersTableSeeder::class);
+       $this->call(DevSeeder::class);
+       $this->call(ActivitySeeder::class);
+       $this->call(LineItemsSeeder::class);
+       $this->call(RelationshipPopulationSeeder::class);
+       $this->call(OwnerAssignmentSeeder::class);
   }
 }

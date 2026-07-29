@@ -60,7 +60,7 @@ A class-level `TODO` flags that all four executors are pure synchronous DB write
 ### Executors (`app/Services/Transformations/Executors/`)
 
 - **`CreateRecordExecutor`** — resolves the target module's `model_class`, sets `name` from the source record and `owner_id` (source's owner, falling back to the acting user), and saves. This is a separate, minimal `fill()`+`save()`, deliberately not routed through `RecordController::store()` (which has no field validation of its own).
-- **`CopyFieldsExecutor`** — applies every configured field mapping (`mode: field|static|expression`) onto the already-created target record, then saves again. Studio config is the *only* source of truth here — there is no per-run override; the earlier overlay-based "edit before creating" UI was removed entirely (see the pivot noted in git history / the Studio section below).
+- **`CopyFieldsExecutor`** — applies every configured field mapping (`mode: field|static|expression`) onto the already-created target record, then saves again. Studio config is the *only* source of truth here — there is no per-run override; the earlier overlay-based "edit before creating" UI was removed entirely (see the pivot noted in git history / the Studio section below). `resolveValue()` for `static` mode goes through `resolveStaticValue()`, which substitutes the `@current_user` sentinel for the run's actual actor id (see §6.3) — every other static value passes through unchanged.
 - **`CopyRelationshipsExecutor`** — copies every relationship key configured in Studio, unconditionally, whether the run is manual or automatic (no per-run checkbox selection either). `line_items` is a special sentinel handled by cloning `LineItem` rows (`replicate()`, re-pointed `parent_type`/`parent_id`, `calculateTotals()->save()`); any other key is a related module's slug, resolved to the actual relationship name independently on each side (`RelationshipService::getRelationshipBetween()`) since the source and target modules can have differently-named relationships to the same related module.
 - **`LinkRecordsExecutor`** — a single `RelationshipService::link()` call using the transformation's own `relationship_id`. This one call is what makes the "Created From"/"Converted To" connection and Relationships-tab visibility work with no other new plumbing.
 
@@ -169,11 +169,41 @@ Routes under `settings/transformations` (admin-gated, alongside the rest of Sett
 
 ### 6.2 Save-time validation beyond basic field rules
 
-`validateRequest()` throws `ValidationException` (surfaced to the user as the actual message, not a generic fallback — see `Edit.vue`'s `submit()`) for three business-rule violations basic Laravel rules can't express:
+`validateRequest()` throws `ValidationException` (surfaced to the user as the actual message, not a generic fallback — see `Edit.vue`'s `submit()`) for business-rule violations basic Laravel rules can't express:
 
 1. **Duplicate mapped target field** — the same target field configured twice in `field_mappings` (which value would even apply?).
 2. **Duplicate condition field under `conditions_match: all`** — see §3.
 3. **`automation_enabled` with zero conditions** — an automatic rule with nothing to check would never actually run (see §5.2's gap this closes off). Enforced client-side too (`Edit.vue`'s `goToStep()` blocks leaving the Setup tab, and a `watch()` on `automation_enabled` auto-adds one empty condition row so the panel is never blank) — the server check exists specifically in case that client gate gets bypassed.
+4. **`source_module`/`target_module` outside the allow-list** — `Rule::in($allowedModuleSlugs)`, where `$allowedModuleSlugs` is every active module minus `EXCLUDED_MODULES = ['users', 'userinvites']`. Users/User Invites are excluded because they're not ordinary record modules (no arbitrary field set, special create/update paths) — `moduleOptions()` (which feeds the Studio module pickers) applies the same exclusion so the UI never offers them in the first place; this validation is the server-side backstop.
+5. **Unknown condition field** (`assertConditionFieldsAreKnown()`) — every `conditions[].field` must be a real field on `source_module` (`Module::allFields()`).
+6. **Unknown relationship key** (`assertRelationshipsAreKnown()`) — every entry in `relationships` must be either `line_items` (only if the source module `has_line_items`) or a `related_slug` returned by `RelationshipService::getRelationshipForModule($sourceModule->slug)`.
+7. **Type-incompatible field mapping** (`assertMappingsAreTypeCompatible()`) — for every `field_mappings` row, the target field must exist on `target_module`, and:
+   - `mode: field` — the chosen source field must have the same `type` as the target field, and for `type: record` the two fields' `related_module` must also match (`fieldModeIsIncompatible()`).
+   - `mode: expression` — only allowed when the target field's type is text-like (`text`, `longtext`, `email`, `phone`, `url`); expressions are always a plain concatenated string, so a number/date/record target can't accept one.
+   - `mode: static` — for a `type: record` target field, the static value must either be the literal sentinel `@current_user` (only valid when `related_module === 'users'`) or an id that actually exists in that related module's table (`staticRecordValueIsValid()`).
+8. **Required target fields left unmapped** (`assertRequiredTargetFieldsAreMapped()`) — every target-module field that is `required`, not `readonly`, and not `is_calculated` must have a `field_mappings` row whose value is actually filled in (a non-empty `source_field` for `field` mode, a non-null/non-empty `value` for `static`, a non-empty `expression` array for `expression`) — a present-but-empty row doesn't count as mapped.
+
+Validation-failure messages resolve field/module labels through the actual module config rather than raw slugs — `fieldLabelMap($moduleSlug)` builds a `name => translated label` map from `Module::allFields()`, used to render duplicate/unmapped field lists in the user's own language (`lang/{en,de}/globals.php` under `transformations.messages`) instead of internal field names. New validation message keys: `required_fields_must_be_mapped`, `mapping_incompatible`, `unknown_mapped_field`, `unknown_condition_field`, `unknown_relationship`, `current_user_value_label`.
+
+### 6.3 The `@current_user` static-value sentinel
+
+A `static` mapping can carry the literal string `@current_user` instead of a real id — resolved only at run time, never stored as an actual user id, so the same rule always uses whoever triggers the specific run (manual actor or automatic-run resolved actor from §2), not whoever configured the rule in Studio. Two places know about the sentinel:
+
+- **Validation** (`staticRecordValueIsValid()`, §6.2 item 7) — accepts it only when the target field's `related_module` is `users`, without trying to resolve it against a real row (there's nothing to look up yet).
+- **Execution** (`CopyFieldsExecutor::resolveStaticValue()`) — `$value === '@current_user' ? $context->actor->id : $value`, applied wherever a `static` mapping's value is read, so the substitution happens exactly once, at the point the field is actually copied onto the target record.
+
+The Studio Mapping tab exposes this through `MappingRow.vue`'s "Value" cell: for a `static` mapping on a `type: record` target field, the plain text input is replaced by a button that opens `RecordSelectorDrawer` (search-and-select), showing "Current user" as a selectable label instead of a raw id whenever the value already is `@current_user`.
+
+### 6.4 Studio guardrails that mirror the server-side checks
+
+`Edit.vue` and `MappingRow.vue` narrow the UI so most of §6.2's checks are hard to violate in the first place, not just caught on submit:
+
+- **Type-filtered source-field dropdown** — `MappingRow.vue`'s `sourceFieldOptions` only lists source fields whose `type` matches the currently-selected target field (and, for `record`, whose `related_module` also matches); changing the target field (`onTargetFieldChange()`) clears the row's `source_field`/`value`/`expression` so a stale, now-incompatible choice can't linger.
+- **Expression mode hidden for non-text targets** — `modeOptions` only includes `expression` when the target field is text-like, matching item 7's server rule exactly.
+- **Read-only/calculated fields excluded from target options** — `targetFieldOptions` in `Edit.vue` filters out any target field that's `readonly` or `is_calculated`, since those can never be written to regardless of mapping mode.
+- **Required fields auto-added with defaults** — `ensureRequiredFieldMappings()` (watched on `form.target_module`, `immediate: true`) pushes an empty mapping row for every required target field not already mapped, pre-filling `owner_id` with `{mode: static, value: '@current_user'}` and `name` with `{mode: field, source_field: 'name'}` — the two fields almost every module both requires and can trivially default. A client-side `hasUnfilledRequiredMapping`/`unfilledRequiredFields` pair blocks `submit()` with an inline error before the request is even sent, mirroring item 8 server-side.
+- **Same-module reference hides linking** — `sameModuleReference` (`form.source_module === form.target_module`) hides the "Link the two records" toggle and its warning while source/target are equal; this covers the moment during setup when both dropdowns default/resolve to the same value before the user has picked a distinct target, ahead of the model-level self-conversion guard (§1) that would otherwise reject the save outright.
+- **Save button gated on dirty state, not just filled-in fields** — the form moved from a plain `reactive()` object to Inertia's `useForm()`, so the Save button's `:disabled` is now `saving || !isDirty` (was: missing name/source/target) and a `useUnsavedChangesGuard` warns on navigating away with unsaved edits — both orthogonal to validation, but part of the same commit.
 
 ### 6.3 Record-type condition values resolve a display label server-side
 
