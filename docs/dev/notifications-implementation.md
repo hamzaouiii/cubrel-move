@@ -4,7 +4,7 @@ Branch: `Notifications`
 
 ## 1. What this feature is
 
-An in-app notification system (bell icon + dropdown in the top bar, polled) covering seven event types, backed by Laravel's standard `database` notification channel, plus a per-user, per-type email opt-in. There was no notifications infrastructure in this codebase before this feature — no `notifications` table, no bell, no `routes/console.php` (referenced by `bootstrap/app.php` but the file didn't exist).
+An in-app notification system (bell icon + dropdown in the top bar, polled) covering nine event types, backed by Laravel's standard `database` notification channel, plus a per-user, per-type email opt-in. There was no notifications infrastructure in this codebase before this feature — no `notifications` table, no bell, no `routes/console.php` (referenced by `bootstrap/app.php` but the file didn't exist).
 
 ## 2. Code structure
 
@@ -18,6 +18,8 @@ app/Notifications/
   UserInviteAcceptedNotification.php
   UserInviteExpiredNotification.php
   ImpersonationNotification.php
+  RecordConvertedNotification.php     # see §11
+  TransformationTriggeredNotification.php  # see §11
 
 app/Support/
   NotificationPresenter.php      # renders title/body from raw data, at read time
@@ -39,9 +41,9 @@ resources/js/
   Pages/Preferences/Index.vue           # personal overrides, incl. paired email/in-app table — see §8
   Pages/Settings/Notifications.vue      # admin-wide defaults, same paired table — see §8
 
-config/preferences.php            # 'notifications' tab — 14 fields (7 email + 7 in-app) — see §8
+config/preferences.php            # 'notifications' tab — 18 fields (9 email + 9 in-app) — see §8, §11
 config/settings.php               # admin Settings registry — 'notifications' item under 'system' — see §8
-config/default_notification_settings.php  # org-wide defaults (14 keys), single source of truth for seeder + migration
+config/default_notification_settings.php  # org-wide defaults (18 keys), single source of truth for seeder + migration
 config/default_settings.php       # org-wide defaults for every OTHER setting_values row — see §8.4
 lang/{en,de}/globals.php           # 'notifications' key — bell strings; 'preferences.notification_types' — shared row labels for both paired tables — see §8
 lang/{en,de}/emails.php            # 'notifications' key — email strings (separate wording)
@@ -49,7 +51,7 @@ lang/{en,de}/emails.php            # 'notifications' key — email strings (sepa
 
 ### Why a `BaseAppNotification` base class
 
-All 7 notification types need the exact same channel logic. Rather than repeat that in each class, `BaseAppNotification` defines `via()` once and each subclass only implements `typeKey(): string`. As of §8, both the in-app channel (database + live broadcast, bundled as one toggle) and mail are independently opt-out, not just mail:
+All 9 notification types need the exact same channel logic. Rather than repeat that in each class, `BaseAppNotification` defines `via()` once and each subclass only implements `typeKey(): string`. As of §8, both the in-app channel (database + live broadcast, bundled as one toggle) and mail are independently opt-out, not just mail:
 
 ```php
 abstract class BaseAppNotification extends Notification implements ShouldQueue, ShouldBroadcast
@@ -98,6 +100,8 @@ The fix: `toArray()` now returns only plain, untranslated fields (ids, real name
 | `invite_accepted` | `app/Services/Users/InviteService.php::accept()` | invite's `invited_by` |
 | `invite_expired` | `app/Console/Commands/NotifyExpiredInvites.php`, scheduled hourly, invites past `expires_at` not yet flagged (`expired_notified_at`) | invite's `invited_by` |
 | `impersonated` | `app/Http/Controllers/UserController.php::impersonate()` | the impersonated (target) user |
+| `record_converted` | `app/Services/Notifications/NotificationService.php::notifyTransformationRun()`, called from `TransformationRunController::run()` (manual) and `TransformationAutomationObserver::saved()` (automatic) | source record's `owner_id`, unless they're the actor |
+| `transformation_triggered` | same `notifyTransformationRun()`, automatic runs only | the actor whose save triggered the automatic conversion |
 
 `AuditObserver` is the single choke point for `record_assigned`/`record_activity` because it already observes every `BaseModule` subclass (registered from each model's `booted()`, per late static binding — see `docs/dev/audit-trail-implementation.md` §4.1 for why it can't be registered from `AppServiceProvider` instead). It excludes the `userinvites` module (`AuditObserver::NOTIFICATION_EXCLUDED_MODULES`) since `UserInvite` already has its own purpose-built notifications — without that exclusion, accepting an invite fired both `UserInviteAcceptedNotification` *and* a generic "activity on your record" notification for the same event.
 
@@ -205,7 +209,7 @@ The original feature (§1-§6) was 60s-poll only: the bell badge updated up to a
 ### 7.3 How a notification reaches the browser
 
 1. `$user->notify(new XxxNotification(...))` is called from the same choke points as §3 — unchanged.
-2. `BaseAppNotification::via()` now includes `'broadcast'` alongside `'database'`/`'mail'`, so every one of the 7 types broadcasts automatically — no per-subclass change needed.
+2. `BaseAppNotification::via()` now includes `'broadcast'` alongside `'database'`/`'mail'`, so every notification type broadcasts automatically — no per-subclass change needed.
 3. `BaseAppNotification::toBroadcast($notifiable)` builds the payload. This is the one place broadcasting couldn't just reuse the existing read-time rendering: `NotificationController::index()` renders `title`/`body` inside a real request, in the *viewer's* locale, but a broadcast fires once, on the queue worker, with no such request. So `toBroadcast()` temporarily swaps `App::setLocale($notifiable->preferredLocale())`, calls the same `NotificationPresenter::present()` used for the database list, then restores the previous locale — the same `HasLocalePreference` mechanism `toMail()` already relies on (§2), applied at broadcast time instead of read time.
 4. Laravel dispatches this on a **private channel named `App.Models.User.{id}`** (`routes/channels.php`), authorized by session auth via `/broadcasting/auth` — no Sanctum/API tokens needed since this is a same-origin Inertia session app. Note `User`'s primary key is a UUID (`HasUuids`), so `{id}` in the channel name and in `routes/channels.php`'s authorization check is a UUID string, not an integer.
 5. The queue worker (`ShouldQueue`, same `database` queue connection as everything else) processes the notification, then a second small queued job (`BroadcastNotificationCreated`) makes the actual HTTP call into Reverb, which pushes the frame down the matching browser socket(s).
@@ -331,3 +335,69 @@ Unrelated bug found while reviewing this addition: `NotificationPresenter::modul
 This feature has **no dedicated automated tests** as of this writing — everything in §9 above was manual/tinker verification, not a persisted test suite. A first attempt at a comprehensive `tests/Feature/Notifications/` suite was written and then discarded: it was built in one large batch against assumptions about the codebase (method names, route/middleware behavior, factory/auth internals) without verifying each piece against real behavior first, and roughly a third of the ~85 assertions failed on the first run for a mix of reasons — some genuine test-authoring mistakes (missing required fields on fixtures, wrong assumptions about admin middleware response codes), and at least one real gotcha worth remembering if this is attempted again: a freshly-`factory()->create()`d `User` keeps `id` as the raw `Ramsey\Uuid\Lazy\LazyUuidFromString` object the factory assigns, not a string, until the model is re-fetched from the database — so `actingAs($justCreatedUser)` does not behave like a real logged-in session for any code that does a strict `===` comparison against `Auth::id()` (e.g. `NotificationService::resolveRecipient()`'s self-skip check). A real request always re-fetches the user via `SessionGuard`, which normalizes `id` back to a string. Tests relying on that comparison need `->fresh()` after creating the acting user, or they'll see false self-notification failures that don't reflect production behavior.
 
 If/when this gets proper test coverage, build it incrementally (one file, verified passing, before the next) rather than as one large speculative batch.
+
+## 11. Conversion Rule notifications + notification suppression
+
+Branch: `Notifications` (same branch, later addition, after [Conversion Rules](conversion-implementation.md) shipped)
+
+### 11.1 Two new types, one method
+
+`NotificationService::notifyTransformationRun(Transformation $transformation, BaseModule $sourceRecord, BaseModule $targetRecord, ?User $actor, bool $automatic): void` covers both new types from a single call site, called once from each of `TransformationRunController::run()` (manual, `automatic: false`) and `TransformationAutomationObserver::saved()` (automatic, `automatic: true`):
+
+- **`record_converted`** (`RecordConvertedNotification`) — tells the source record's owner their record was converted, for both manual and automatic runs, unless the owner is also the actor (a manual run already showed them a success toast; an automatic run gets `transformation_triggered` instead).
+- **`transformation_triggered`** (`TransformationTriggeredNotification`) — tells the actor their edit triggered an automatic conversion, since that happens silently inside a model observer with no request/response cycle to show them a toast. Manual runs never fire this — the person who clicked "Convert" already knows.
+
+Both classes follow the exact same shape as every other type in §1-§10: plain untranslated data in `toArray()`, `NotificationPresenter::present()` match arms (`record_converted`, `transformation_triggered`) render `title`/`body` at read/broadcast time, and `toMail()` builds its own copy via `emails.notifications.*`. The two new `notify_email_*`/`notify_inapp_*` keys were added to `config/default_notification_settings.php`, `config/preferences.php`, `settings.fields.*`, and `globals.preferences.notification_types.*` in both lang files, bringing the running total from 7 types/14 keys to 9 types/18 keys.
+
+### 11.2 Why a suppression flag was needed
+
+Running a single conversion used to fire up to **six** notifications, all noise except the two above:
+
+1. `CreateRecordExecutor`'s `save()` → `created` → `AuditObserver::created()` → `notifyIfAssigned()` ("record assigned to you").
+2. `CopyFieldsExecutor`'s second `save()` on the same target → `updated` → `AuditObserver::updated()` → `notifyRecordActivity()` ("activity on your record").
+3. `CopyRelationshipsExecutor`'s per-related-record `RelationshipService::link()` calls → `notifyActivityLinked()` → one "linked" notification per copied activity record (a Quote with 3 line-item-adjacent activities copied over means 3 more).
+4. The intended `RecordConvertedNotification`/`TransformationTriggeredNotification` (§11.1).
+
+Items 1-3 are legitimate audit *log* entries (the record genuinely was created/updated/linked) but not legitimate *notifications* — the owner doesn't need three separate pings plus the real one for what is, from their point of view, a single event ("your Quote became an Invoice").
+
+### 11.3 The fix: a suppression flag, plus killing the double save
+
+**`TransformationEngine::$suppressionDepth`** (a static `int`, not a `bool` — an automatic transformation's `saved()` observer can itself trigger another transformation, so a counter survives that reentrancy without the inner run's `finally` block re-enabling notifications while the outer run is still executing) is incremented before the step loop and decremented in a `finally` after it:
+
+```php
+self::$suppressionDepth++;
+try {
+    foreach ($transformation->steps as $step) {
+        // ...
+        $this->resolveExecutor($step->type)->execute($context, $step->configuration ?? []);
+    }
+} finally {
+    self::$suppressionDepth--;
+}
+```
+
+`TransformationEngine::notificationsSuppressed(): bool` (`self::$suppressionDepth > 0`) is checked — and short-circuits *only* the notification call, never the audit log write — at each of the three noisy call sites:
+
+- `AuditObserver::created()` — skips `notifyIfAssigned()`, keeps `AuditService::log('created', ...)`.
+- `AuditObserver::updated()` — skips `notifyIfAssigned()`/`notifyRecordActivity()`, keeps `AuditService::log('updated', ...)` and `ImageCleanupService::cleanupReplacedFields()`.
+- `RelationshipService::notifyActivityLinked()` — returns before resolving the module/parent lookups at all, keeps `logLinkChange()`'s two `AuditService::log()` calls (called separately, just above, in `link()`).
+
+This kills items 1 and 3 outright. Item 2 (the double save) is fixed separately, since suppressing its notification still leaves a spurious `updated` audit-log row and a wasted DB write: **`CreateRecordExecutor` no longer calls `save()`** — it only instantiates the target model and sets it on `$context->targetRecord` — and **`CopyFieldsExecutor` performs the one and only `save()`**, after applying its field mappings on top of the same instance. This is safe specifically because `copy_fields` is *always* present immediately after `create_record` in `TransformationsManagerController::STEP_ORDER` (even with an empty `mappings` array — `syncSteps()` always writes both steps), and every other step type (`copy_relationships`, `link_records`) runs after it, so nothing reads `$context->targetRecord->id` before it's actually been assigned by the `HasUuids` trait's `creating` hook during that single save.
+
+Net effect: one conversion now produces exactly one notification — `RecordConvertedNotification` or `TransformationTriggeredNotification` — never more.
+
+### 11.4 Files touched (this addition)
+
+**Backend**
+- `app/Notifications/RecordConvertedNotification.php`, `TransformationTriggeredNotification.php` (new)
+- `app/Services/Notifications/NotificationService.php` — `notifyTransformationRun()`
+- `app/Support/NotificationPresenter.php` — `record_converted`/`transformation_triggered` match arms
+- `app/Http/Controllers/TransformationRunController.php` — manual-run hook
+- `app/Observers/TransformationAutomationObserver.php` — automatic-run hook
+- `app/Services/Transformations/TransformationEngine.php` — `$suppressionDepth`/`notificationsSuppressed()`
+- `app/Observers/AuditObserver.php`, `app/Services/Relationships/RelationshipService.php` — suppression checks
+- `app/Services/Transformations/Executors/CreateRecordExecutor.php`, `CopyFieldsExecutor.php` — merged save
+- `config/default_notification_settings.php`, `config/preferences.php` — 2 new types × 2 channels = 4 new keys
+- `lang/{en,de}/globals.php`, `emails.php`, `settings.php` — `record_converted`/`transformation_triggered` strings, `notification_types.*` row labels
+
+No new automated tests — same as §10, this feature area has no dedicated suite yet.

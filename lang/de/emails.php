@@ -103,5 +103,13 @@ return [
             'subject' => 'Auf dein Konto wurde zugegriffen',
             'body' => '**:user** hat dein Konto am **:time** verwendet.',
         ],
+        'record_converted' => [
+            'subject' => 'Dein :module wurde umgewandelt',
+            'body' => '**:user** hat **:source_module** **„:source_record"** in **:target_module** **„:target_record"** umgewandelt.',
+        ],
+        'transformation_triggered' => [
+            'subject' => 'Automatische Umwandlung ausgelöst',
+            'body' => 'Deine Änderung an **:source_module** **„:source_record"** hat eine automatische Umwandlung ausgelöst und **:target_module** **„:target_record"** erstellt.',
+        ],
     ],
 ];

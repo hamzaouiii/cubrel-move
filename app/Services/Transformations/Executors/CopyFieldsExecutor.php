@@ -12,6 +12,12 @@ use App\Services\Transformations\TransformationException;
  * the target record. Studio config is the only source of truth here,
  * there is no runtime override, see the plan's "no more overlay"
  * decision.
+ *
+ * Also does the target record's one and only save() — CreateRecordExecutor
+ * intentionally leaves it unsaved so the record is only ever written to
+ * the DB once, with the create_record fields and these mappings merged
+ * together, instead of a "created" row immediately followed by an
+ * "updated" one.
  */
 class CopyFieldsExecutor implements StepExecutorInterface
 {

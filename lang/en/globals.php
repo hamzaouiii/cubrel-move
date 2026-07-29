@@ -63,6 +63,14 @@ return [
             'title' => 'Your account was accessed by a Super Admin',
             'body' => ':user impersonated your account on :time.',
         ],
+        'record_converted' => [
+            'title' => 'Your :module was converted',
+            'body' => ':user converted your :source_record into :target_module :target_record.',
+        ],
+        'transformation_triggered' => [
+            'title' => 'Automatic conversion triggered',
+            'body' => 'Your change to :source_record triggered an automatic conversion, creating :target_module :target_record.',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Open Sidebar',
@@ -636,7 +644,7 @@ return [
             'summary_label' => 'Summary',
             'preview_label' => 'Preview',
             'creates_badge' => 'Creates',
-            'new_record_badge' => 'New record',
+            'new_record_badge' => 'New :module record',
             'automation_enabled_short' => 'Automatic',
             'line_items' => 'Line Items',
             'disabled_badge' => 'Disabled',
@@ -910,6 +918,8 @@ return [
             'invite_expired' => 'A user invite I sent expires',
             'record_activity' => 'Activity on records I own',
             'impersonated' => 'My account is impersonated',
+            'record_converted' => 'A record I own is converted',
+            'transformation_triggered' => 'My change triggers an automatic conversion',
         ],
     ],
 ];

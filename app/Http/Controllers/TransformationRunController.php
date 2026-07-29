@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Module;
 use App\Models\Transformation;
+use App\Services\Notifications\NotificationService;
 use App\Services\Transformations\TransformationEngine;
 use Illuminate\Http\Request;
 
@@ -62,6 +63,14 @@ class TransformationRunController extends Controller
             $record,
             $request->user(),
             $skipLink,
+        );
+
+        NotificationService::notifyTransformationRun(
+            $transformation,
+            $record,
+            $target,
+            $request->user(),
+            automatic: false,
         );
 
         return response()->json([

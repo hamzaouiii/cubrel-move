@@ -8,6 +8,7 @@ use App\Models\Module;
 use App\Models\MeetingAttendee;
 use App\Models\Modules\Meeting;
 use App\Models\Modules\Task;
+use App\Models\Transformation;
 use App\Models\UserInvite;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,9 @@ use App\Notifications\RecordActivityNotification;
 use App\Notifications\RecordAssignedNotification;
 use App\Notifications\ImpersonationNotification;
 use App\Notifications\MeetingInviteNotification;
+use App\Notifications\RecordConvertedNotification;
 use App\Notifications\TaskDueSoonNotification;
+use App\Notifications\TransformationTriggeredNotification;
 use App\Notifications\UserInviteAcceptedNotification;
 use App\Notifications\UserInviteExpiredNotification;
 
@@ -132,5 +135,57 @@ class NotificationService {
     public static function notifyImpersonated(User $target, string $impersonatorName, Carbon $startedAt): void
     {
         $target->notify(new ImpersonationNotification($impersonatorName, $startedAt));
+    }
+
+    /**
+     * Notifies about a transformation run, manual or automatic. Two
+     * different people can care about this and for different reasons:
+     *
+     * - The source record's owner is told their record was converted,
+     *   this matters regardless of how the run was triggered, UNLESS
+     *   they're the one who caused it (a manual run already shows them
+     *   a success toast; an automatic run gets the more specific
+     *   "your change triggered this" notification below instead).
+     * - The actor is told their edit triggered an automatic conversion,
+     *   only relevant for automatic runs, a manual run means they
+     *   already know, they clicked the button themselves.
+     */
+    public static function notifyTransformationRun(
+        Transformation $transformation,
+        BaseModule $sourceRecord,
+        BaseModule $targetRecord,
+        ?User $actor,
+        bool $automatic,
+    ): void {
+        $ownerId = $sourceRecord->getAttribute('owner_id');
+        $actorIsOwner = $actor && $ownerId && $actor->id === $ownerId;
+
+        if ($automatic && $actor) {
+            $actor->notify(new TransformationTriggeredNotification(
+                $transformation->source_module,
+                $sourceRecord->id,
+                $sourceRecord->name ?? $sourceRecord->number ?? null,
+                $transformation->target_module,
+                $targetRecord->id,
+                $targetRecord->name ?? $targetRecord->number ?? null,
+                $transformation->name,
+            ));
+        }
+
+        if ($actorIsOwner) {
+            return;
+        }
+
+        $owner = self::resolveRecipient($ownerId, skipSelf: false);
+
+        $owner?->notify(new RecordConvertedNotification(
+            $transformation->source_module,
+            $sourceRecord->id,
+            $sourceRecord->name ?? $sourceRecord->number ?? null,
+            $transformation->target_module,
+            $targetRecord->id,
+            $targetRecord->name ?? $targetRecord->number ?? null,
+            $actor?->name,
+        ));
     }
 }

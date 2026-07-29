@@ -64,6 +64,25 @@ class NotificationPresenter
                     'time' => self::highlight(self::formattedTime($data['started_at'] ?? null)),
                 ]),
             ],
+            'record_converted' => [
+                'title' => __('globals.notifications.record_converted.title', [
+                    'module' => self::highlight(self::moduleLabel($data['source_module_slug'] ?? null) ?? ($data['source_module_slug'] ?? '')),
+                ]),
+                'body' => __('globals.notifications.record_converted.body', [
+                    'user' => self::highlight($data['actor_name'] ?? __('globals.notifications.someone')),
+                    'source_record' => self::highlight($data['source_record_label'] ?? $data['source_record_id'] ?? ''),
+                    'target_module' => self::highlight(self::moduleLabel($data['target_module_slug'] ?? null) ?? ($data['target_module_slug'] ?? '')),
+                    'target_record' => self::highlight($data['target_record_label'] ?? $data['target_record_id'] ?? ''),
+                ]),
+            ],
+            'transformation_triggered' => [
+                'title' => __('globals.notifications.transformation_triggered.title'),
+                'body' => __('globals.notifications.transformation_triggered.body', [
+                    'source_record' => self::highlight($data['source_record_label'] ?? $data['source_record_id'] ?? ''),
+                    'target_module' => self::highlight(self::moduleLabel($data['target_module_slug'] ?? null) ?? ($data['target_module_slug'] ?? '')),
+                    'target_record' => self::highlight($data['target_record_label'] ?? $data['target_record_id'] ?? ''),
+                ]),
+            ],
             default => ['title' => '', 'body' => ''],
         };
     }

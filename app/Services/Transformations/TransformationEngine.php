@@ -34,6 +34,26 @@ class TransformationEngine
         'link_records' => LinkRecordsExecutor::class,
     ];
 
+    /**
+     * >0 while a run's step loop is executing, including nested runs
+     * (an automatic transformation can itself trigger another one via
+     * TransformationAutomationObserver). AuditObserver and
+     * RelationshipService check this to skip the owner-facing
+     * notifications that each step's saves/links would otherwise fire,
+     * since a single conversion already gets its own
+     * RecordConvertedNotification/TransformationTriggeredNotification
+     * once its run completes — the per-step ones were just noise.
+     * Audit log entries are unaffected, only notifications are skipped.
+     * A counter (not a bool) so an inner run finishing doesn't
+     * re-enable notifications while an outer run is still in progress.
+     */
+    protected static int $suppressionDepth = 0;
+
+    public static function notificationsSuppressed(): bool
+    {
+        return self::$suppressionDepth > 0;
+    }
+
     public function run(
         Transformation $transformation,
         BaseModule $sourceRecord,
@@ -53,12 +73,18 @@ class TransformationEngine
                 actor: $actor ?? auth()->user() ?? User::where('username', 'admin')->first() ?? User::firstOrFail(),
             );
 
-            foreach ($transformation->steps as $step) {
-                if ($skipLinking && $step->type === 'link_records') {
-                    continue;
-                }
+            self::$suppressionDepth++;
 
-                $this->resolveExecutor($step->type)->execute($context, $step->configuration ?? []);
+            try {
+                foreach ($transformation->steps as $step) {
+                    if ($skipLinking && $step->type === 'link_records') {
+                        continue;
+                    }
+
+                    $this->resolveExecutor($step->type)->execute($context, $step->configuration ?? []);
+                }
+            } finally {
+                self::$suppressionDepth--;
             }
 
             if (! $context->targetRecord) {

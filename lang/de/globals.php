@@ -64,6 +64,14 @@ return [
             'title' => 'Auf dein Konto wurde zugegriffen',
             'body' => ':user hat dein Konto am :time verwendet.',
         ],
+        'record_converted' => [
+            'title' => 'Dein :module wurde umgewandelt',
+            'body' => ':user hat „:source_record" in :target_module „:target_record" umgewandelt.',
+        ],
+        'transformation_triggered' => [
+            'title' => 'Automatische Umwandlung ausgelöst',
+            'body' => 'Deine Änderung an „:source_record" hat eine automatische Umwandlung ausgelöst und :target_module „:target_record" erstellt.',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Seitenleiste Öffnen',
@@ -908,6 +916,8 @@ return [
             'invite_expired' => 'Gesendete Einladung läuft ab',
             'record_activity' => 'Aktivität auf Datensätzen, die mir gehören',
             'impersonated' => 'Mein Konto wird verwendet',
+            'record_converted' => 'Ein Datensatz, der mir gehört, wird umgewandelt',
+            'transformation_triggered' => 'Meine Änderung löst eine automatische Umwandlung aus',
         ],
     ],
 ];

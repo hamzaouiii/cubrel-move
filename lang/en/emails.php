@@ -103,5 +103,13 @@ return [
             'subject' => 'Your account was accessed',
             'body' => '**:user** impersonated your account on **:time**.',
         ],
+        'record_converted' => [
+            'subject' => 'Your :module was converted',
+            'body' => '**:user** converted your **:source_module**: **:source_record** into **:target_module**: **:target_record**.',
+        ],
+        'transformation_triggered' => [
+            'subject' => 'Automatic conversion triggered',
+            'body' => 'Your change to **:source_module**: **:source_record** triggered an automatic conversion, creating **:target_module**: **:target_record**.',
+        ],
     ],
 ];

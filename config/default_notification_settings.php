@@ -10,6 +10,8 @@ return [
     'notify_email_invite_expired' => '1',
     'notify_email_record_activity' => '0',
     'notify_email_impersonated' => '1',
+    'notify_email_record_converted' => '0',
+    'notify_email_transformation_triggered' => '0',
     // in-app
     'notify_inapp_record_assigned' => '1',
     'notify_inapp_meeting_invite' => '1',
@@ -18,4 +20,6 @@ return [
     'notify_inapp_invite_expired' => '1',
     'notify_inapp_record_activity' => '1',
     'notify_inapp_impersonated' => '1',
+    'notify_inapp_record_converted' => '1',
+    'notify_inapp_transformation_triggered' => '1',
 ];

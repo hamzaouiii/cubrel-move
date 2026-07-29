@@ -8,7 +8,13 @@ use App\Services\Transformations\TransformationContext;
 use App\Services\Transformations\TransformationException;
 
 /**
- * Creates the target record. */
+ * Instantiates the target record but deliberately does not save it —
+ * the always-present copy_fields step (see
+ * TransformationsManagerController::STEP_ORDER) fills in the mapped
+ * fields on top of this and does the one save() for both, so the
+ * record is only ever created once instead of a "created" followed by
+ * an immediate "updated".
+ */
 class CreateRecordExecutor implements StepExecutorInterface
 {
     public function execute(TransformationContext $context, array $configuration): void
@@ -25,7 +31,6 @@ class CreateRecordExecutor implements StepExecutorInterface
         $target = new $modelClass();
         $target->name = $context->sourceRecord->name;
         $target->owner_id = $context->sourceRecord->owner_id ?? $context->actor->id;
-        $target->save();
 
         $context->targetRecord = $target;
     }

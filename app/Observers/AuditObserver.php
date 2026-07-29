@@ -8,6 +8,7 @@ use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Audit\AuditService;
 use App\Services\ImageCleanupService;
 use App\Services\Notifications\NotificationService;
+use App\Services\Transformations\TransformationEngine;
 
 class AuditObserver
 {
@@ -19,6 +20,10 @@ class AuditObserver
         }
 
         AuditService::log('created', $module->slug, $model->id, null);
+
+        if (TransformationEngine::notificationsSuppressed()) {
+            return;
+        }
 
         // if a user other than creator is the owner then that is an assignment and should be covered by a notification
         NotificationService::notifyIfAssigned($model, $module, $model->getAttribute('owner_id'));
@@ -49,6 +54,10 @@ class AuditObserver
         AuditService::log('updated', $module->slug, $model->id, $changes);
 
         ImageCleanupService::cleanupReplacedFields($module, $model);
+
+        if (TransformationEngine::notificationsSuppressed()) {
+            return;
+        }
 
         if (array_key_exists('owner_id', $changes)) {
             NotificationService::notifyIfAssigned($model, $module, $model->owner_id);

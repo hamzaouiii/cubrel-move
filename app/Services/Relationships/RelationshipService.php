@@ -9,6 +9,7 @@ use App\Models\RelationshipLink;
 use App\Models\Module;
 use App\Services\Audit\AuditService;
 use App\Services\Notifications\NotificationService;
+use App\Services\Transformations\TransformationEngine;
 use RuntimeException;
 use App\Support\Settings;
 
@@ -215,6 +216,10 @@ class RelationshipService
    */
   private static function notifyActivityLinked(string $moduleSlug, string $moduleId, string $relatedModuleSlug, string $relatedId): void
   {
+    if (TransformationEngine::notificationsSuppressed()) {
+      return;
+    }
+
     $module = self::getModuleBySlug($moduleSlug);
     $related = self::getModuleBySlug($relatedModuleSlug);
 

@@ -863,7 +863,7 @@ The Attendees section is a fixed, non-field layout section (`has_attendees: true
 
 ## 19. Notifications
 
-Seven event types notify the relevant user automatically — no per-module setup required, the same way [Audit Trail](#16-audit-trail--impersonation-sessions) captures every record change without opt-in. Delivery is live: a bell icon in the top bar and a bottom-left toast popup both update the instant an event happens, over a private WebSocket channel (`laravel/reverb`), with a slow background poll as a fallback if the connection ever drops.
+Nine event types notify the relevant user automatically — no per-module setup required, the same way [Audit Trail](#16-audit-trail--impersonation-sessions) captures every record change without opt-in. Delivery is live: a bell icon in the top bar and a bottom-left toast popup both update the instant an event happens, over a private WebSocket channel (`laravel/reverb`), with a slow background poll as a fallback if the connection ever drops.
 
 ### Triggers
 
@@ -876,6 +876,8 @@ Seven event types notify the relevant user automatically — no per-module setup
 | User invite accepted | `InviteService::accept()` | Whoever sent the invite |
 | User invite expired | `NotifyExpiredInvites` (scheduled hourly) | Whoever sent the invite |
 | Account impersonated | `UserController::impersonate()` | The impersonated user |
+| Record converted | A [conversion rule](#21-conversion-rules) runs, manual or automatic | Source record's owner, unless they're the one who ran it |
+| Automatic conversion triggered | Your edit satisfies an automatic [conversion rule](#21-conversion-rules)'s conditions | The person whose edit triggered it |
 
 ### Delivery channels
 
@@ -897,7 +899,7 @@ Both toggles exist at two levels, the same "system default with a personal overr
 | System-wide default | `/settings/system/notifications` (admin) | Organization default for every type/channel pair |
 | Personal override | Preferences → Notifications | This user only; unset falls back to the system default |
 
-Both pages render the same 14 email/in-app pairs as a two-column toggle table (`Settings/Notifications.vue`, `Preferences/Index.vue`), reading from and writing to the same 14 `setting_values` rows (`setting_item = notifications`) — an admin sets the organization's defaults, a user can independently override either channel for any type on their own account.
+Both pages render the same 18 email/in-app pairs as a two-column toggle table (`Settings/Notifications.vue`, `Preferences/Index.vue`), reading from and writing to the same 18 `setting_values` rows (`setting_item = notifications`) — an admin sets the organization's defaults, a user can independently override either channel for any type on their own account.
 
 ### Reference
 
@@ -918,7 +920,7 @@ Every user has a `/preferences` page (`PreferencesController`, `Preferences/Inde
 | General | App language, date format, datetime format |
 | Style | Primary/secondary/success/danger colors, "use individual module colors" |
 | Lists & Panels | Related panel limit, list view limit, linking panel limit |
-| Notifications | All 14 email/in-app toggles — see [Notifications](#19-notifications) |
+| Notifications | All 18 email/in-app toggles — see [Notifications](#19-notifications) |
 
 Tabs are reflected in the URL (`?tab=general`), so any tab can be linked to directly and the browser's back/forward buttons move between them — `NotificationBell.vue`'s settings icon, for example, opens straight to `/preferences?tab=notifications`.
 
@@ -949,6 +951,10 @@ Every enabled conversion rule is available from a record's action menu ("Convert
 A rule can additionally be set to run automatically, evaluated whenever a source-module record is saved: if at least one configured condition field actually changed in that save, and the full condition set (matched as ALL or ANY) evaluates true, the rule runs with no user interaction. A rule can't be saved as automatic with zero conditions. The condition builder reuses the exact same field/operator/value mechanism as [List Filters](#8-search) — the same operator vocabulary per field type, and the same value-picker components (including a proper record picker for `record`-type fields, not a raw id).
 
 Because there is no confirmation step for an automatic run, enabling both "link the two records" and Automatic on a one-to-one relationship means every automatic run can silently replace whichever record it was previously linked to — the Studio editor surfaces this as an explicit warning.
+
+### Notifications
+
+Every run — manual or automatic — notifies the source record's owner that their record was converted, unless they're the one who ran it. An automatic run additionally notifies whoever's edit triggered it, since that happens silently in the background with no confirmation screen to tell them. See [Notifications](#19-notifications).
 
 ### Field mapping & relationship copying
 
