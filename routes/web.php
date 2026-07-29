@@ -17,6 +17,8 @@ use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\RecordController;
+use App\Http\Controllers\TransformationRunController;
+use App\Http\Controllers\TransformationsManagerController;
 use App\Http\Controllers\RelatedFieldController;
 use App\Http\Controllers\RelationshipLinkController;
 use App\Http\Controllers\RelationshipManagerController;
@@ -210,6 +212,18 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
                 Route::post('/{pdfTemplate}/default', [PdfTemplatesController::class, 'setDefault'])->name('default');
             });
 
+            // Transformations (Studio > Automation > Transformations)
+            Route::prefix('transformations')->name('transformations.')->group(function () {
+                Route::get('/', [TransformationsManagerController::class, 'index'])->name('index');
+                Route::get('/create', [TransformationsManagerController::class, 'create'])->name('create');
+                Route::post('/', [TransformationsManagerController::class, 'store'])->name('store');
+                Route::get('/{transformation}', [TransformationsManagerController::class, 'edit'])->name('edit');
+                Route::put('/{transformation}', [TransformationsManagerController::class, 'update'])->name('update');
+                Route::patch('/{transformation}/toggle', [TransformationsManagerController::class, 'toggle'])->name('toggle');
+                Route::delete('/{transformation}', [TransformationsManagerController::class, 'destroy'])->name('destroy');
+                Route::post('/expressions/validate', [TransformationsManagerController::class, 'validateExpression'])->name('validate-expression');
+            });
+
             // Audit Trail
             Route::prefix('audit-trail')->name('audit-trail.')->group(function () {
                 Route::get('/', [AuditLogController::class, 'index'])->name('index');
@@ -245,6 +259,9 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::get('/modules/{module}/{record_id}/relationships/{relationship}/single-link', [RelationshipLinkController::class, 'getRecordsForUpdateSingleLinking'])->name('relationships.single-link');
     Route::post('/modules/{module}/{record_id}/relationships/{relationship}', [RelationshipLinkController::class, 'linkRecords'])->name('relationships.link');
     Route::delete('/modules/{module}/{record_id}/relationships/{relationship}/{relatedId}', [RelationshipLinkController::class, 'unlink'])->name('relationships.unlink');
+    Route::get('/modules/{module}/{recordId}/transformations', [TransformationRunController::class, 'available'])->name('transformations.available');
+    Route::get('/transformations/{transformation}/{recordId}/preview', [TransformationRunController::class, 'preview'])->name('transformations.preview');
+    Route::post('/transformations/{transformation}/{recordId}/run', [TransformationRunController::class, 'run'])->name('transformations.run');
     Route::get('/{module}/{recordId}/pdf', [PdfController::class, 'generate'])->name('modules.record.pdf');
     Route::get('/{module}/{recordId}/export', [ExportController::class, 'export'])->name('modules.record.export');
     Route::post('/{module}/export', [ExportController::class, 'exportMany'])->name('modules.records.exportMany');

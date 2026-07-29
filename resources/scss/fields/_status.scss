@@ -23,12 +23,8 @@
     }
 
     &.is-invalid {
-      border-color: #ef4444;
+      border-color: var(--danger-color);
       background: #fef2f2;
-
-      &:focus-within {
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-      }
     }
 
     &.is-disabled {
@@ -67,7 +63,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      color: #ef4444;
+      color: var(--danger-color);
     }
   }
 

@@ -14,6 +14,7 @@ const addAlert = (type, message, options = {}) => {
     dismissible: options.dismissible ?? true,
     timeout: options.timeout ?? 5000,
     progressable: options.progressable ?? true,
+    action: options.action ?? null,
   });
 
   if (options.timeout !== 0) {

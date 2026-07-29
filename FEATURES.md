@@ -26,6 +26,7 @@
 18. [Activities](#18-activities)
 19. [Notifications](#19-notifications)
 20. [User Preferences](#20-user-preferences)
+21. [Conversion Rules](#21-conversion-rules)
 
 ---
 
@@ -470,6 +471,10 @@ See [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessio
 ### Notifications
 
 See [Notifications](#19-notifications).
+
+### Conversion Rules
+
+See [Conversion Rules](#21-conversion-rules).
 
 ---
 
@@ -924,3 +929,45 @@ Tabs are reflected in the URL (`?tab=general`), so any tab can be linked to dire
 ### Override mechanism
 
 A user's overrides are stored as a single JSON `preferences` column on `User`. Saving a field writes an override; explicitly resetting a field back to "System default" removes that key from the JSON entirely rather than storing a duplicate of the default — so a later change to the organization's own default is picked up automatically for anyone who never overrode it. Every field shows the current system default inline (`current_system_value`) so a user can see what they're diverging from before they touch it, and a top-level "Reset" clears all unsaved edits (not saved overrides) back to what's currently on the account.
+
+---
+
+## 21. Conversion Rules
+
+Admins can define reusable recipes for creating a record in one module from a record in another — for example, "create an Invoice from an accepted Quote" — runnable by hand at any time, and optionally set to run automatically when conditions are met. Converting a record never changes or removes the source record.
+
+### Definition
+
+A conversion rule (`Transformation` model, `transformations` table) pairs a source module and a target module, and owns an ordered list of pipeline steps (`transformation_steps`): create the target record, copy mapped fields onto it, copy configured relationships (including line items), and optionally link the source and target records together. All steps run inside a single DB transaction, so a failure at any step rolls back the whole run.
+
+### Manual conversion
+
+Every enabled conversion rule is available from a record's action menu ("Convert") regardless of any conditions configured — conditions never gate the manual action, only the automatic one (below). Picking a rule checks first whether running it would silently replace an existing one-to-one link; if so, the user is asked to confirm or to create the new record without linking it.
+
+### Automatic conversion
+
+A rule can additionally be set to run automatically, evaluated whenever a source-module record is saved: if at least one configured condition field actually changed in that save, and the full condition set (matched as ALL or ANY) evaluates true, the rule runs with no user interaction. A rule can't be saved as automatic with zero conditions. The condition builder reuses the exact same field/operator/value mechanism as [List Filters](#8-search) — the same operator vocabulary per field type, and the same value-picker components (including a proper record picker for `record`-type fields, not a raw id).
+
+Because there is no confirmation step for an automatic run, enabling both "link the two records" and Automatic on a one-to-one relationship means every automatic run can silently replace whichever record it was previously linked to — the Studio editor surfaces this as an explicit warning.
+
+### Field mapping & relationship copying
+
+Each target field's value is configured once in Studio as source-field / static value / expression (literal text plus a source field and/or a small set of helpers — today's date, the acting user's name, a new UUID). A static value on a record-type target field opens a record picker (search and select) instead of a raw id field, with "Current user" offered as a one-click shortcut. Which of the source record's relationships get copied onto the new record — including line items — is likewise configured once in Studio and applies identically to every run, manual or automatic; there is no per-run override or per-run relationship checkbox.
+
+### Save-time validation
+
+Users and User Invites can never be picked as a source or target module. Before a rule can be saved, Cubrel checks: every field-mode mapping points at a source field of the same type as its target (and, for record-type fields, the same related module); the one-line expression mode is only offered — and only accepted — for text-like target fields; every condition field and every relationship-to-copy key actually exists on the source module; and every field the target module requires is mapped to something. The Studio editor pre-adds an empty mapping row for each required target field automatically, with a default already filled in for the two most common ones (Owner → current user, Name → the source record's name).
+
+### Linking the two records
+
+An optional toggle links the source and target records through the same relationship system used everywhere else in Cubrel (see [Relationships](#6-relationships)) — a system relationship is auto-provisioned the first time a rule is saved with linking on, reusing an existing relationship between the two modules if one already exists. This is what makes each record show up in the other's Relationships tab with no extra configuration.
+
+### Studio management
+
+Full CRUD at `/settings/transformations` (`Settings > Automation > Conversion Rules`): a list view with a one-click enable/disable toggle per rule, and a two-tab editor — **Setup** (Automatic toggle, conditions, link-the-two-records) and **Mapping** (field mappings, relationships to copy). Deleting a rule removes only the rule itself, never any records or links it already created — deleting one that has actually been used shows a stronger confirmation warning first.
+
+### Reference
+
+- `docs/guides/en/conversion-guide.md` — plain-language, user-facing guide.
+- `docs/dev/conversion-implementation.md` — full technical writeup.
+- **No automated test coverage yet** — this feature has no dedicated test suite as of this writing.

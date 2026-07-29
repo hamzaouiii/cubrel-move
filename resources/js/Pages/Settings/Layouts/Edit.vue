@@ -479,8 +479,6 @@ const moduleColor = computed(() => {
     ? (props.module.color ?? appSettings.primary_color)
     : appSettings.primary_color;
 });
-
-console.log(moduleColor.value);
 </script>
 
 <template>

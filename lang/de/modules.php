@@ -48,6 +48,8 @@ return [
         'import' => 'Importieren',
         'pdf'   => 'Als PDF Drucken',
         'history' => 'Verlauf anzeigen',
+        'transform' => 'Umwandeln',
+        'open' => 'Öffnen',
         'apply' => 'Anwenden',
         'clear' => 'Leeren',
         'filter_list' => 'Liste filtern',

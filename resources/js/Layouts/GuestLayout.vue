@@ -45,14 +45,4 @@ provide("useModuleColors", useModuleColors);
       <slot />
     </main>
   </div>
-  <div class="unsupported-device">
-    <h3><i class="fa-solid fa-skull-crossbones"></i></h3>
-    <h3>{{ $t("globals.unsupported_device_title") }}</h3>
-    <p>
-      {{ $t("globals.unsupported_device_message") }}
-    </p>
-    <p>
-      {{ $t("globals.unsupported_device_action_request") }}
-    </p>
-  </div>
 </template>

@@ -23,6 +23,18 @@ return     [
     'dropdown' => 'Dropdown List',
     'dropdown_list' => 'Dropdown List',
     'slug' => 'System Key',
+    'source_module' => 'Source module',
+    'target_module' => 'Target module',
+    'conditions.*.field' => 'Condition field',
+    'conditions.*.operator' => 'Condition operator',
+    'conditions.*.value' => 'Condition value',
+    'field_mappings.*.target_field' => 'Target field',
+    'field_mappings.*.mode' => 'Mapping mode',
+    'field_mappings.*.source_field' => 'Source field',
+    'field_mappings.*.value' => 'Mapping value',
+    'field_mappings.*.expression.*.type' => 'Expression part type',
+    'field_mappings.*.expression.*.value' => 'Expression part value',
+    'relationships.*' => 'Relationship',
 
   ],
 ];

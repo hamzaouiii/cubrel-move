@@ -39,10 +39,6 @@
     border-color: var(--danger-color);
     background: #fef2f2;
 
-    &:focus-within {
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-
     @if $icon-selector {
       #{$icon-selector} {
         color: var(--danger-color);
@@ -51,7 +47,11 @@
   }
 }
 
-@mixin field-readonly-state($type, $icon-selector: null, $input-selector: "input") {
+@mixin field-readonly-state(
+  $type,
+  $icon-selector: null,
+  $input-selector: "input"
+) {
   &.#{$type}--readonly {
     background: #f9fafb;
     border-color: #e5e7eb;

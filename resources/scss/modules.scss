@@ -603,6 +603,16 @@
           color: white;
         }
       }
+      &--success {
+        color: var(--success-color);
+        border-color: color-mix(in srgb, var(--success-color) 82%, white);
+
+        &:hover {
+          border-color: var(--success-color);
+          background-color: color-mix(in srgb, var(--success-color) 82%, white);
+          color: white;
+        }
+      }
 
       &--revoke {
         color: var(--secondary-color);
@@ -1993,7 +2003,6 @@
 
       &:focus {
         border-color: var(--module-color, #4f7df3);
-        box-shadow: 0 0 0 3px rgba(var(--module-color-rgb, 79, 125, 243), 0.1);
       }
     }
   }
@@ -2704,6 +2713,36 @@
     rgba(15, 23, 42, 0.7)
   );
   backdrop-filter: blur(6px);
+}
+
+/* RECORD TRANSFORMATIONS ("Transform" modal, built on the .pdf-modal pattern) */
+
+.transformation-modal__create-new {
+  color: var(--primary-color, #2563eb);
+  text-decoration: none;
+
+  .pdf-template-row__name {
+    color: inherit;
+    font-weight: 600;
+  }
+}
+
+.transformation-modal__link-conflict {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 16px;
+  background: color-mix(in srgb, #f59e0b 10%, white);
+  border: 1px solid color-mix(in srgb, #f59e0b 35%, white);
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  i {
+    color: #f59e0b;
+  }
 }
 
 /*  LINK RELATED RECORDS */
@@ -4211,7 +4250,6 @@
 
     &:focus {
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
 
     &::placeholder {
