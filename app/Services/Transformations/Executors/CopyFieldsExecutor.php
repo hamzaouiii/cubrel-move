@@ -9,7 +9,9 @@ use App\Services\Transformations\TransformationException;
 
 /**
  * Applies configured source-field / static / expression mappings onto
- * the target record. A user override from the overlay always wins over the configured mapping for that target field.
+ * the target record. Studio config is the only source of truth here,
+ * there is no runtime override, see the plan's "no more overlay"
+ * decision.
  */
 class CopyFieldsExecutor implements StepExecutorInterface
 {
@@ -30,11 +32,7 @@ class CopyFieldsExecutor implements StepExecutorInterface
                 continue;
             }
 
-            $value = array_key_exists($targetField, $context->userOverrides)
-                ? $context->userOverrides[$targetField]
-                : $this->resolveValue($mapping, $context);
-
-            $context->targetRecord->{$targetField} = $value;
+            $context->targetRecord->{$targetField} = $this->resolveValue($mapping, $context);
             $context->summary['fields_copied']++;
         }
 

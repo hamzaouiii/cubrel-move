@@ -38,15 +38,13 @@ class TransformationEngine
         Transformation $transformation,
         BaseModule $sourceRecord,
         ?User $actor = null,
-        array $userOverrides = [],
-        array $relationshipSelections = [],
         bool $skipLinking = false,
     ): BaseModule {
         if (! $transformation->enabled) {
             throw new TransformationException("Transformation [{$transformation->name}] is disabled.");
         }
 
-        return DB::transaction(function () use ($transformation, $sourceRecord, $actor, $userOverrides, $relationshipSelections, $skipLinking) {
+        return DB::transaction(function () use ($transformation, $sourceRecord, $actor, $skipLinking) {
             $context = new TransformationContext(
                 transformation: $transformation,
                 sourceRecord: $sourceRecord,
@@ -54,8 +52,6 @@ class TransformationEngine
                 targetModuleSlug: $transformation->target_module,
                 actor: $actor ?? auth()->user() ?? User::where('username', 'admin')->first() ?? User::firstOrFail(),
             );
-            $context->userOverrides = $userOverrides;
-            $context->relationshipSelections = $relationshipSelections;
 
             foreach ($transformation->steps as $step) {
                 if ($skipLinking && $step->type === 'link_records') {

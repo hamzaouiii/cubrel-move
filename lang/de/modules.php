@@ -48,7 +48,7 @@ return [
         'import' => 'Importieren',
         'pdf'   => 'Als PDF Drucken',
         'history' => 'Verlauf anzeigen',
-        'create_from' => 'Erstellen aus',
+        'transform' => 'Umwandeln',
         'open' => 'Öffnen',
         'apply' => 'Anwenden',
         'clear' => 'Leeren',

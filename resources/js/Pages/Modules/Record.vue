@@ -23,6 +23,7 @@ import PdfModal from "@/Pages/Components/Modules/PdfModal.vue";
 import ExportModal from "@/Pages/Components/Modules/ExportModal.vue";
 import HistoryModal from "@/Pages/Components/Modules/HistoryModal.vue";
 import RecordActivitySidebar from "@/Pages/Components/Modules/RecordActivitySidebar.vue";
+import TransformationModal from "@/Pages/Components/Modules/TransformationModal.vue";
 
 const { success, error, info, clearAllAlerts } = useAlerts();
 const { confirm } = useConfirm();
@@ -43,6 +44,7 @@ const props = defineProps({
   lineItemsListColumns: { type: Array, default: () => [] },
   lineItemsSnapshotLayout: Object,
   pdfTemplates: { type: Array, default: () => [] },
+  availableTransformations: { type: Array, default: () => [] },
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -56,6 +58,16 @@ const form = useForm({ ...props.record });
 const isEditing = ref(false);
 const validationErrors = ref([]);
 const showActionDropDown = ref(false);
+const showTransformationModal = ref(false);
+
+const openTransformationModal = () => {
+  showTransformationModal.value = true;
+  showActionDropDown.value = false;
+};
+
+const onTransformationCreated = () => {
+  router.reload({ only: ["record"] });
+};
 const showPdfModal = ref(false);
 const showExportModal = ref(false);
 const showHistoryModal = ref(false);
@@ -636,6 +648,14 @@ const handleTotalsUpdated = (totals) => {
                   <span>{{ $t("modules.actions.pdf") }}</span>
                 </li>
                 <li
+                  v-if="availableTransformations.length > 0"
+                  @click="openTransformationModal()"
+                  class="record-layout__header__details__actions__edit__dropdown__item"
+                >
+                  <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                  <span>{{ $t("modules.actions.transform") }}</span>
+                </li>
+                <li
                   @click="openHistory()"
                   class="record-layout__header__details__actions__edit__dropdown__item"
                 >
@@ -800,6 +820,18 @@ const handleTotalsUpdated = (totals) => {
           :record-id="record.id"
           :fields="fields"
           @close="showHistoryModal = false"
+        />
+
+        <TransformationModal
+          v-if="showTransformationModal"
+          :source-module="module.slug"
+          :source-record="{
+            id: record.id,
+            name: record.name ?? record.number ?? record.id,
+          }"
+          :transformations="availableTransformations"
+          @close="showTransformationModal = false"
+          @created="onTransformationCreated"
         />
 
         <RecordSelectorDrawer

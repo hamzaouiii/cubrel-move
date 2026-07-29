@@ -9,9 +9,10 @@ use App\Services\Transformations\TransformationContext;
 use App\Services\Transformations\TransformationException;
 
 /**
- * Copies the relationships that the transformation offers AND that
- * the user actually checked in the overlay at run time.
- * Configured relationship keys are module slugs
+ * Copies every relationship configured in Studio for this transformation,
+ * unconditionally, whether the run is manual or automatic. Configured
+ * relationship keys are module slugs plus the special
+ * "line_items" sentinel.
  */
 class CopyRelationshipsExecutor implements StepExecutorInterface
 {
@@ -23,10 +24,7 @@ class CopyRelationshipsExecutor implements StepExecutorInterface
             throw new TransformationException('copy_relationships step ran before the target record was created.');
         }
 
-        $offered = $configuration['relationships'] ?? [];
-        $selected = array_intersect($offered, $context->relationshipSelections);
-
-        foreach ($selected as $key) {
+        foreach ($configuration['relationships'] ?? [] as $key) {
             if ($key === self::LINE_ITEMS_KEY) {
                 $this->copyLineItems($context);
             } else {

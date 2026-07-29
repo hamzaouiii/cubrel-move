@@ -25,6 +25,7 @@ const normalizedAlerts = computed(() =>
     dismissible: a.dismissible ?? false,
     progressable: a.progressable ?? false,
     timeout: a.timeout ?? 5000,
+    action: a.action ?? null,
   })),
 );
 
@@ -69,6 +70,14 @@ onUnmounted(() => {
       <i :class="iconMap[alert.type]"></i>
       <div class="alerts__item__message">
         {{ alert.message }}
+        <button
+          v-if="alert.action"
+          type="button"
+          class="alerts__item__action"
+          @click="alert.action.onClick"
+        >
+          {{ alert.action.label }}
+        </button>
       </div>
 
       <div class="alerts__item__close">

@@ -9,34 +9,28 @@ return [
                 'label' => 'modules.defaults.name',
             ],
             1 => [
-                'name' => 'website',
-                'type' => 'url',
-                'label' => 'modules.accounts.fields.website',
-                'dropdown_list_id' => null,
-            ],
-            2 => [
                 'name' => 'phone',
                 'type' => 'text',
                 'label' => 'modules.accounts.fields.phone',
                 'dropdown_list_id' => null,
             ],
-            3 => [
+            2 => [
                 'name' => 'email',
                 'type' => 'email',
                 'label' => 'modules.accounts.fields.email',
                 'dropdown_list_id' => null,
             ],
-            4 => [
+            3 => [
                 'name' => 'owner_id',
                 'type' => 'record',
                 'label' => 'modules.defaults.owner_id',
             ],
-            5 => [
+            4 => [
                 'name' => 'created_at',
                 'type' => 'datetime',
                 'label' => 'modules.defaults.created_at',
             ],
-            6 => [
+            5 => [
                 'name' => 'updated_at',
                 'type' => 'datetime',
                 'label' => 'modules.defaults.updated_at',

@@ -35,7 +35,7 @@ return [
         'import' => 'Import',
         'pdf' => 'Print As PDF',
         'history' => 'View History',
-        'create_from' => 'Create From',
+        'transform' => 'Convert',
         'open' => 'Open',
         'apply' => 'Apply',
         'clear' => 'Clear',

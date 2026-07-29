@@ -15,12 +15,6 @@ class TransformationContext
 {
     public ?BaseModule $targetRecord = null;
 
-    /** @var array<string, mixed> field values the user edited in the overlay before submit; these win over configured mappings */
-    public array $userOverrides = [];
-
-    /** @var string[] relationship keys the user checked in the overlay ('line_items' sentinel + relationship names) */
-    public array $relationshipSelections = [];
-
     /** @var array{fields_copied: int, line_items_copied: int, relationships_copied: array<string, int>} */
     public array $summary = [
         'fields_copied' => 0,

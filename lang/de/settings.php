@@ -141,11 +141,11 @@ return [
             'pdf_templates' => 'Erstelle und verwalte die PDF-Layouts, die beim Generieren von Dokumenten für deine Datensätze verwendet werden.',
             'company' => 'Verwalte die Identität deines Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
             'audit' => 'Überprüfe den Änderungsverlauf von Datensätzen und Impersonation-Sitzungen.',
-            'automation' => 'Erstelle Transformationen, die einen Datensatz manuell oder automatisch in einen anderen umwandeln.',
+            'automation' => 'Erstelle Umwandlungsregeln, die einen Datensatz manuell oder automatisch in einen anderen umwandeln.',
         ],
     ],
     'items' => [
-        'transformations' => 'Transformationen',
+        'transformations' => 'Umwandlungsregeln',
         'pdf_templates' => 'PDF-Vorlagen',
         'audit_trail' => 'Audit-Verlauf',
         'impersonation_sessions' => 'Impersonation-Sitzungen',

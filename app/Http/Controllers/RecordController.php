@@ -15,6 +15,7 @@ use Inertia\Inertia;
 use App\Models\PdfTemplate;
 use App\Services\Audit\AuditService;
 use App\Services\ImageCleanupService;
+use App\Models\Transformation;
 
 class RecordController extends Controller
 {
@@ -89,6 +90,19 @@ class RecordController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'is_default']);
 
+        $transformationModuleIcons = Module::pluck('icon', 'slug');
+
+        $availableTransformations = Transformation::where('source_module', $moduleModel->slug)
+            ->where('enabled', true)
+            ->get()
+            ->map(fn (Transformation $t) => [
+                'id' => $t->id,
+                'name' => $t->name,
+                'icon' => $transformationModuleIcons[$t->target_module] ?? null,
+                'target_module' => $t->target_module,
+            ])
+            ->values();
+
         return Inertia::render('Modules/Record', array_merge([
             'module' => $moduleModel,
             'title' => $moduleModel->name,
@@ -102,6 +116,7 @@ class RecordController extends Controller
             'lineItemsListColumns' => $lineItemsListColumns,
             'lineItemsSnapshotLayout' => $lineItemsSnapshotLayout,
             'pdfTemplates' => $pdfTemplates,
+            'availableTransformations' => $availableTransformations,
         ], $props));
 
     }

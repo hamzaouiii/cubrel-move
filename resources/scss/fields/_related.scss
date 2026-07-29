@@ -21,6 +21,7 @@
     transition: all 0.2s ease-in-out;
     letter-spacing: 0.3px;
     font-family: inherit;
+    overflow: auto;
 
     &__content {
       display: flex;
@@ -56,6 +57,9 @@
           transform: scale(1.2);
         }
       }
+    }
+    .related-record-label {
+      text-wrap: nowrap;
     }
   }
 

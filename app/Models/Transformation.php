@@ -9,9 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * This is an infrastructure class, a sibling class to Module/Field/Relationship.
- * Defines a reusable Action "Create From" 
+ * Defines a reusable Action Conversion 
  * Reusable across records from the same module not across all modules. 
  * Each record of this class represents a definition and map for the action
+ * 
+ * I decided to label this action in the layout as Conversion after implementation
+ * Transformations felt inaccurate as a description
  */
 class Transformation extends Model
 {
@@ -22,7 +25,6 @@ class Transformation extends Model
     protected $casts = [
         'conditions' => 'array',
         'enabled' => 'boolean',
-        'manual_enabled' => 'boolean',
         'automation_enabled' => 'boolean',
         'link_records_enabled' => 'boolean',
     ];
@@ -42,10 +44,10 @@ class Transformation extends Model
 
     /**
      * Evaluates this transformation's 'conditions' JSON against a record.
-     * An empty conditions list always passes.
+     * Only gates automatic execution, manual runs are always available whenever the transformation is enabled 
      * Conditions with no field are ignored
      * Two match modes only: all or any (full AND & full OR)
-     * Groupping trees are not supported
+     * Groupping trees are not yet supported
      *
      * @param array<int, array{field: string, operator: string, value: mixed}> $conditions
      */
@@ -64,18 +66,44 @@ class Transformation extends Model
             : ! in_array(false, $results, true);
     }
 
+
     protected static function evaluateSingleCondition(array $condition, \App\Models\BaseModule $record): bool
     {
         $actual = $record->{$condition['field']} ?? null;
         $expected = $condition['value'] ?? null;
 
-        return match ($condition['operator'] ?? '==') {
-            '==' => (string) $actual === (string) $expected,
-            '!=' => (string) $actual !== (string) $expected,
-            '>' => (float) $actual > (float) $expected,
-            '<' => (float) $actual < (float) $expected,
+        return match ($condition['operator'] ?? 'equals') {
+            'equals' => (string) $actual === (string) $expected,
+            'not_equals' => (string) $actual !== (string) $expected,
+            'contains' => str_contains((string) $actual, (string) $expected),
+            'not_contains' => ! str_contains((string) $actual, (string) $expected),
+            'starts_with' => str_starts_with((string) $actual, (string) $expected),
+            'greater_than' => (float) $actual > (float) $expected,
+            'less_than' => (float) $actual < (float) $expected,
+            'before' => strtotime((string) $actual) < strtotime((string) $expected),
+            'after' => strtotime((string) $actual) > strtotime((string) $expected),
+            'between' => self::evaluateBetween($actual, $expected),
+            'in' => in_array((string) $actual, array_map('strval', (array) $expected), true),
+            'is_empty' => $actual === null || $actual === '',
+            'is_not_empty' => $actual !== null && $actual !== '',
             default => false,
         };
+    }
+
+    protected static function evaluateBetween(mixed $actual, mixed $range): bool
+    {
+        [$min, $max] = array_pad((array) $range, 2, null);
+
+        if ($min === null || $max === null) {
+            return false;
+        }
+
+        if (is_numeric($min) && is_numeric($max)) {
+            return (float) $actual >= (float) $min && (float) $actual <= (float) $max;
+        }
+
+        return strtotime((string) $actual) >= strtotime((string) $min)
+            && strtotime((string) $actual) <= strtotime((string) $max);
     }
 
     public function passesConditions(\App\Models\BaseModule $record): bool
@@ -140,7 +168,7 @@ class Transformation extends Model
     /**
      * RelationshipService::link() silently replaces whichever record a
      * one-to-one relationship's two sides already point to. 
-     * Returns  the other-side record currently linked to $sourceRecord 
+     * Returns the other-side record currently linked to $sourceRecord 
      */
     public function findConflictingLink(\App\Models\BaseModule $sourceRecord): ?array
     {

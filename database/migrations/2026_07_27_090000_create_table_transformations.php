@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('target_module');
             $table->text('description')->nullable();
             $table->boolean('enabled')->default(true);
-            $table->boolean('manual_enabled')->default(true);
             $table->boolean('automation_enabled')->default(false);
             $table->json('conditions')->nullable();
             $table->string('conditions_match')->default('all');
+            $table->boolean('link_records_enabled')->default(true);
             $table->uuid('relationship_id')->nullable();
             $table->timestamps();
 

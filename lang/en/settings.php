@@ -144,11 +144,11 @@ return [
                         'pdf_templates' => 'Create and manage the PDF layouts used when generating documents for your records.',
             'company'        => 'Manage your organization\'s identity shown on generated documents.',
             'audit' => 'Review record change history and impersonation sessions.',
-            'automation' => 'Create record transformations that turn one record into another, manually or automatically.',
+            'automation' => 'Create conversion rules that turn one record into another, manually or automatically.',
         ],
     ],
     'items' => [
-        'transformations' => 'Transformations',
+        'transformations' => 'Conversion Rules',
         'role_management' => 'Role Management',
          'pdf_templates' => 'PDF Templates',
         'audit_trail' => 'Audit Trail',
