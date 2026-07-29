@@ -99,6 +99,10 @@ including modules you've built. See the [relationships
 guide](relationships-guide.md) for the different shapes a relationship can
 take and how linking/unlinking works.
 
+### Conversion Rule
+
+A reusable recipe for creating a record in one module from a record in another, for example "create an Invoice from an accepted Quote." Runnable by hand at any time from a record's action menu, and optionally set to run by itself when conditions you choose become true. Converting a record never changes or removes the original. See the [conversion guide](conversion-guide.md) for how to set one up.
+
 ### Line items
 
 For modules like Quotes, Orders, and Invoices, "has line items" means
@@ -246,6 +250,7 @@ own concepts:
 | Label | The human-readable name shown for something |
 | Dropdown List | A reusable, centrally-managed set of options for select fields |
 | Relationship | A link between two modules |
+| Conversion Rule | A reusable recipe for creating a record in one module from another |
 | Activity | A Task, Call, Meeting, or Note linked to another record |
 | Activity Timeline | A record's panel showing its linked activities and change history |
 | Line items | A priced list within a record (Quotes/Orders/Invoices-style) |

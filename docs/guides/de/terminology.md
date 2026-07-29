@@ -110,6 +110,15 @@ Beziehungen zwischen den Standardmodulen mit, und Sie können eigene
 Beziehungen zwischen beliebigen zwei Modulen anlegen, auch zwischen selbst
 erstellten Modulen.
 
+### Umwandlungsregel
+
+Ein wiederverwendbares Rezept, um aus einem Datensatz eines Moduls einen
+Datensatz in einem anderen Modul zu erstellen, zum Beispiel "erstelle eine
+Rechnung aus einem angenommenen Angebot". Jederzeit manuell über das
+Aktionsmenü eines Datensatzes ausführbar, und optional so einstellbar, dass
+sie von selbst läuft, sobald von Ihnen festgelegte Bedingungen erfüllt sind.
+Das Umwandeln eines Datensatzes verändert oder entfernt das Original nie.
+
 ### Positionen
 
 Bei Modulen wie Angeboten, Bestellungen und Rechnungen bedeutet "hat
@@ -264,6 +273,7 @@ einen eigenen Begriff benötigen:
 | Bezeichnung | Der für Menschen lesbare Name, unter dem etwas angezeigt wird |
 | Dropdown-Liste | Eine wiederverwendbare, zentral verwaltete Optionsliste für Auswahlfelder |
 | Beziehung | Eine Verknüpfung zwischen zwei Modulen |
+| Umwandlungsregel | Ein wiederverwendbares Rezept, um aus einem Datensatz eines Moduls einen Datensatz eines anderen zu erstellen |
 | Positionen | Eine bepreiste Liste innerhalb eines Datensatzes (Angebote/Bestellungen/Rechnungen) |
 | Dashboard | Die anpassbare Übersichtsseite nach der Anmeldung |
 | Administrator | Ein Benutzer mit Zugriff auf Einstellungen |
