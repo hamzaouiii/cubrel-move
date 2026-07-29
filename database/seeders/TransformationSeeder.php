@@ -42,7 +42,6 @@ class TransformationSeeder extends Seeder
                 'description' => 'Create a Sales Order once a Quote is accepted.',
                 'enabled' => true,
                 'automation_enabled' => false,
-                // Only accepted quotes should turn into orders
                 'conditions' => [
                     ['field' => 'status', 'operator' => 'equals', 'value' => 'accepted'],
                 ],

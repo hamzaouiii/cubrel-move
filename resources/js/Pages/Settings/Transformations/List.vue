@@ -19,7 +19,6 @@ const appSettings = page.props.appSettings;
 const props = defineProps({
   transformations: Array,
 });
-console.log(props.transformations);
 const crumbs = [
   { label: t("settings.label"), href: "/settings" },
   { label: t("settings.items.transformations") },
@@ -120,8 +119,17 @@ const getModuleLabelBySlug = (slug) => {
                   :class="tr.target_icon || 'fa-arrow-right-arrow-left'"
                 ></i>
                 <span>{{ tr.name }}</span>
-                <span class="pdf-templates__badge" v-if="!tr.enabled">
-                  {{ $t("globals.transformations.labels.disabled_badge") }}
+
+                <span
+                  class="transformations-row__badge"
+                  v-if="tr.automation_enabled"
+                >
+                  {{
+                    $t(
+                      "globals.transformations.labels.automation_enabled_short",
+                    )
+                  }}
+                  <i class="fa-solid fa-bolt"></i>
                 </span>
               </div>
             </td>
@@ -141,7 +149,11 @@ const getModuleLabelBySlug = (slug) => {
                 {{ $t("globals.transformations.buttons.edit_btn") }}
               </Link>
               <button
-                class="row-action-btn row-action-btn--revoke"
+                class="row-action-btn"
+                :class="[
+                  { ' row-action-btn--revoke': tr.enabled },
+                  { ' row-action-btn--success': !tr.enabled },
+                ]"
                 @click="handleToggle(tr)"
               >
                 <i class="fa-solid fa-power-off"></i>

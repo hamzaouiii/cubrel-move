@@ -2406,6 +2406,13 @@
 
 .transformations-row {
   cursor: default !important;
+  &__badge {
+    padding: 4px;
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    background-color: color-mix(in srgb, var(--secondary-color) 10%, white);
+    border-radius: 5px;
+  }
 }
 .transformation-mapping-row {
   display: flex;

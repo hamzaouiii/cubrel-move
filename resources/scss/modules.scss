@@ -603,6 +603,16 @@
           color: white;
         }
       }
+      &--success {
+        color: var(--success-color);
+        border-color: color-mix(in srgb, var(--success-color) 82%, white);
+
+        &:hover {
+          border-color: var(--success-color);
+          background-color: color-mix(in srgb, var(--success-color) 82%, white);
+          color: white;
+        }
+      }
 
       &--revoke {
         color: var(--secondary-color);
