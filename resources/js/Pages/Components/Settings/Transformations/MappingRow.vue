@@ -12,7 +12,7 @@ const props = defineProps({
   allowFieldMode: { type: Boolean, default: true },
 });
 
-const emit = defineEmits(["update:modelValue", "remove"]);
+const emit = defineEmits(["update:modelValue", "remove", "open-record-picker"]);
 
 const update = (key, value) => {
   emit("update:modelValue", { ...props.modelValue, [key]: value });
@@ -36,9 +36,25 @@ const NUMERIC_FIELD_TYPES = [
   "duration",
 ];
 const isNumericFieldType = (type) => NUMERIC_FIELD_TYPES.includes(type);
-const sourceFieldOptions = computed(() =>
-  props.sourceFields.map((f) => ({ value: f.name, label: f.label || f.name })),
-);
+
+// Expressions are always a plain concatenated string
+const TEXT_LIKE_FIELD_TYPES = ["text", "longtext", "email", "phone", "url"];
+const isTextLikeType = (type) => TEXT_LIKE_FIELD_TYPES.includes(type);
+
+const sourceFieldOptions = computed(() => {
+  if (!targetFieldMeta.value) return [];
+
+  return props.sourceFields
+    .filter((f) => {
+      if (f.type !== targetFieldMeta.value.type) return false;
+      if (f.type === "record") {
+        return f.related_module === targetFieldMeta.value.related_module;
+      }
+      return true;
+    })
+    .map((f) => ({ value: f.name, label: f.label || f.name }));
+});
+
 const modeOptions = computed(() => {
   const options = [];
   if (props.allowFieldMode) {
@@ -47,15 +63,47 @@ const modeOptions = computed(() => {
       label: "globals.transformations.options.mode_field",
     });
   }
-  options.push(
-    { value: "static", label: "globals.transformations.options.mode_static" },
-    {
+  options.push({
+    value: "static",
+    label: "globals.transformations.options.mode_static",
+  });
+  if (!targetFieldMeta.value || isTextLikeType(targetFieldMeta.value.type)) {
+    options.push({
       value: "expression",
       label: "globals.transformations.options.mode_expression",
-    },
-  );
+    });
+  }
   return options;
 });
+
+const onTargetFieldChange = (newTarget) => {
+  const newMeta = props.targetFields.find((f) => f.name === newTarget) ?? null;
+  const modeStillValid =
+    props.modelValue.mode !== "expression" ||
+    !newMeta ||
+    isTextLikeType(newMeta.type);
+
+  emit("update:modelValue", {
+    ...props.modelValue,
+    target_field: newTarget,
+    source_field: "",
+    value: null,
+    valueLabel: null,
+    expression: [],
+    mode: modeStillValid ? props.modelValue.mode : "field",
+  });
+};
+
+const onModeChange = (newMode) => {
+  emit("update:modelValue", {
+    ...props.modelValue,
+    mode: newMode,
+    source_field: "",
+    value: null,
+    valueLabel: null,
+    expression: [],
+  });
+};
 </script>
 
 <template>
@@ -69,7 +117,7 @@ const modeOptions = computed(() => {
           $t('globals.transformations.placeholders.target_field_placeholder')
         "
         :searchable="true"
-        @update:model-value="(v) => update('target_field', v)"
+        @update:model-value="onTargetFieldChange"
       />
 
       <i class="fa-solid fa-arrow-left transformation-mapping-row__arrow"></i>
@@ -79,7 +127,7 @@ const modeOptions = computed(() => {
         :model-value="modelValue.mode"
         :options="modeOptions"
         :searchable="false"
-        @update:model-value="(v) => update('mode', v)"
+        @update:model-value="onModeChange"
       />
 
       <SettingDropdownField
@@ -108,6 +156,23 @@ const modeOptions = computed(() => {
         :value="modelValue.value"
         @input="update('value', $event.target.value)"
       />
+
+      <button
+        v-else-if="
+          modelValue.mode === 'static' && targetFieldMeta?.type === 'record'
+        "
+        type="button"
+        class="transformation-mapping-row__value transformation-mapping-row__record-picker"
+        @click="$emit('open-record-picker')"
+      >
+        <i class="fa-solid fa-link"></i>
+        <span>{{
+          modelValue.value === "@current_user"
+            ? $t("globals.transformations.messages.current_user_value_label")
+            : modelValue.valueLabel ||
+              $t("globals.transformations.placeholders.pick_record_placeholder")
+        }}</span>
+      </button>
 
       <div
         v-else-if="modelValue.mode === 'static' && targetFieldMeta"

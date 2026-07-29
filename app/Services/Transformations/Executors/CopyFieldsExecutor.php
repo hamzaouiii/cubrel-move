@@ -43,9 +43,14 @@ class CopyFieldsExecutor implements StepExecutorInterface
     {
         return match ($mapping['mode'] ?? 'field') {
             'field' => $context->sourceRecord->{$mapping['source_field']} ?? null,
-            'static' => $mapping['value'] ?? null,
+            'static' => $this->resolveStaticValue($mapping['value'] ?? null, $context),
             'expression' => $this->evaluator->evaluate($mapping['expression'] ?? [], $context),
             default => throw new TransformationException("Unknown field mapping mode: {$mapping['mode']}"),
         };
+    }
+
+    protected function resolveStaticValue(mixed $value, TransformationContext $context): mixed
+    {
+        return $value === '@current_user' ? $context->actor->id : $value;
     }
 }

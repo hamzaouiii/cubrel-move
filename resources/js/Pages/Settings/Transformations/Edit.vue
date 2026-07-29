@@ -1,8 +1,8 @@
 <script setup>
-import { computed, getCurrentInstance, reactive, ref, watch } from "vue";
+import { computed, getCurrentInstance, ref, watch } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SettingsLayout from "@/Layouts/SettingsLayout.vue";
-import { Head, router, usePage } from "@inertiajs/vue3";
+import { Head, router, useForm, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useConfirm } from "@/Composables/useConfirm";
 import SettingsBreadcrumb from "@/Pages/Components/Settings/SettingsBreadcrumb.vue";
@@ -15,7 +15,7 @@ import ExplainTip from "@/Pages/Components/Globals/ExplainTip.vue";
 import Checkbox from "@/Pages/Components/FiledTypes/Checkbox.vue";
 import Selectbox from "@/Pages/Components/FiledTypes/Selectbox.vue";
 import RecordSelectorDrawer from "@/Pages/Components/Modules/RecordSelectorDrawer.vue";
-
+import { useUnsavedChangesGuard } from "@/Composables/useUnsavedChangesGuard";
 defineOptions({ layout: [AppLayout, SettingsLayout] });
 
 const { proxy } = getCurrentInstance();
@@ -37,7 +37,7 @@ const stepConfig = (type) =>
   props.transformation?.steps?.find((s) => s.type === type)?.configuration ??
   {};
 
-const form = reactive({
+const form = useForm({
   name: props.transformation?.name ?? "",
   source_module: props.transformation?.source_module ?? "",
   target_module: props.transformation?.target_module ?? "",
@@ -45,12 +45,6 @@ const form = reactive({
   automation_enabled: props.transformation?.automation_enabled ?? false,
   conditions: props.transformation?.conditions ?? [],
   conditions_match: props.transformation?.conditions_match ?? "all",
-  // Field mappings and "default values" both answer the same question
-  // ("what value should this target field get?"), there is only one
-  // list, in field/static/expression mode per row. Pre-existing
-  // transformations saved before this merge may still have a separate
-  // set_values step; fold it into field_mappings on load so nothing is
-  // lost.
   field_mappings: [
     ...(stepConfig("copy_fields").mappings ?? []),
     ...(stepConfig("set_values").values ?? []),
@@ -69,7 +63,12 @@ const targetModuleMeta = computed(() =>
 );
 
 const sourceFieldOptions = computed(() => sourceModuleMeta.value?.fields ?? []);
-const targetFieldOptions = computed(() => targetModuleMeta.value?.fields ?? []);
+// A readonly or calculated field can't be written to
+const targetFieldOptions = computed(() =>
+  (targetModuleMeta.value?.fields ?? []).filter(
+    (f) => !f.readonly && !f.is_calculated,
+  ),
+);
 
 const moduleDropdownOptions = computed(() =>
   props.transform_modules.map((m) => ({
@@ -81,10 +80,7 @@ const moduleDropdownOptions = computed(() =>
 const showPipeline = computed(() => {
   return form.source_module && form.target_module;
 });
-// With match "all" (AND), the same field can only be used once, e.g.
-// "status is accepted AND status is draft" can never be true. With
-// match "any" (OR) repeats are fine, e.g. "status is draft OR status
-// is accepted" is a normal either-or check.
+
 const conditionFieldOptionsFor = (index) => {
   const usedElsewhere =
     form.conditions_match === "all"
@@ -102,16 +98,9 @@ const conditionFieldOptionsFor = (index) => {
 };
 
 // The condition VALUE input must match the selected field's real type
-// (status dropdown, date picker, record id, number, ...) rather than
-// always being a plain text box, resolved via the same FieldRenderer
-// dispatch every other field-driven input in the app uses.
 const conditionFieldMeta = (fieldName) =>
   sourceFieldOptions.value.find((f) => f.name === fieldName) ?? null;
 
-// Same operator vocabulary as the record list's filter builder (see
-// FilterZone.vue), config/filter_operators.php is the single source of
-// truth for which operators make sense per field type, shared here as
-// the `filterOperators` page prop.
 const operatorsForType = (type) => {
   const operators = page.props.filterOperators ?? {};
   return operators.by_type?.[type] ?? operators.default ?? [];
@@ -204,6 +193,29 @@ const activeConditionOverlayField = computed(() => {
   return conditionFieldMeta(form.conditions[activeConditionIndex.value]?.field);
 });
 
+const mappingOverlayOpen = ref(false);
+const activeMappingIndex = ref(null);
+
+const openMappingRecordPicker = (index) => {
+  activeMappingIndex.value = index;
+  mappingOverlayOpen.value = true;
+};
+
+const onMappingRecordSelect = (record) => {
+  if (activeMappingIndex.value === null) return;
+  form.field_mappings[activeMappingIndex.value].value = record.id;
+  form.field_mappings[activeMappingIndex.value].valueLabel = record.name;
+  mappingOverlayOpen.value = false;
+  activeMappingIndex.value = null;
+};
+
+const activeMappingOverlayField = computed(() => {
+  if (activeMappingIndex.value === null) return null;
+  const targetName =
+    form.field_mappings[activeMappingIndex.value]?.target_field;
+  return targetFieldOptions.value.find((f) => f.name === targetName) ?? null;
+});
+
 const matchTypeOptions = [
   { value: "all", label: t("globals.transformations.options.match_all") },
   { value: "any", label: t("globals.transformations.options.match_any") },
@@ -226,6 +238,67 @@ const targetFieldOptionsFor = (index) => {
   );
   return targetFieldOptions.value.filter((f) => !usedElsewhere.has(f.name));
 };
+const sameModuleReference = computed(() => {
+  return form.source_module === form.target_module;
+});
+const targetRequiredFields = computed(() =>
+  targetFieldOptions.value.filter((f) => f.required),
+);
+
+const isMappingRowFilled = (mapping) => {
+  if (mapping.mode === "static") {
+    return mapping.value !== null && mapping.value !== "";
+  }
+  if (mapping.mode === "expression") {
+    return Array.isArray(mapping.expression) && mapping.expression.length > 0;
+  }
+  return !!mapping.source_field;
+};
+
+const ensureRequiredFieldMappings = () => {
+  const mappedTargets = new Set(form.field_mappings.map((m) => m.target_field));
+
+  for (const field of targetRequiredFields.value) {
+    if (mappedTargets.has(field.name)) continue;
+
+    if (field.name === "owner_id") {
+      form.field_mappings.push({
+        mode: "static",
+        target_field: "owner_id",
+        value: "@current_user",
+      });
+    } else if (field.name === "name") {
+      form.field_mappings.push({
+        mode: "field",
+        target_field: "name",
+        source_field: "name",
+      });
+    } else {
+      form.field_mappings.push({
+        mode: "field",
+        target_field: field.name,
+        source_field: "",
+      });
+    }
+  }
+};
+
+watch(() => form.target_module, ensureRequiredFieldMappings, {
+  immediate: true,
+});
+
+const unfilledRequiredFields = computed(() =>
+  targetRequiredFields.value.filter((field) => {
+    const mapping = form.field_mappings.find(
+      (m) => m.target_field === field.name,
+    );
+    return !mapping || !isMappingRowFilled(mapping);
+  }),
+);
+
+const hasUnfilledRequiredMapping = computed(
+  () => unfilledRequiredFields.value.length > 0,
+);
 
 const steps = [
   {
@@ -269,13 +342,23 @@ const summary = computed(() => ({
 const saving = ref(false);
 
 const submit = () => {
+  if (hasUnfilledRequiredMapping.value) {
+    error(
+      t("globals.transformations.messages.required_fields_must_be_mapped", {
+        fields: unfilledRequiredFields.value.map((f) => t(f.label)).join(", "),
+        module: targetModuleMeta.value ? t(targetModuleMeta.value.label) : "",
+      }),
+    );
+    return;
+  }
+
   saving.value = true;
   const url = isEdit.value
     ? `/settings/transformations/${props.transformation.id}`
     : "/settings/transformations";
   const method = isEdit.value ? "put" : "post";
 
-  router[method](url, form, {
+  form[method](url, {
     onError: (errors) =>
       error(
         Object.values(errors)[0] ??
@@ -317,6 +400,12 @@ const crumbs = [
       : t("globals.transformations.labels.new_title"),
   },
 ];
+const isDirty = computed(() => {
+  return form.isDirty;
+});
+useUnsavedChangesGuard({
+  getIsDirty: () => isDirty.value,
+});
 </script>
 
 <template>
@@ -385,9 +474,7 @@ const crumbs = [
         <button
           type="button"
           class="transformations-edit__toolbar__btn transformations-edit__toolbar__btn--save"
-          :disabled="
-            saving || !form.name || !form.source_module || !form.target_module
-          "
+          :disabled="saving || !isDirty"
           @click="submit"
         >
           {{
@@ -552,7 +639,10 @@ const crumbs = [
               />
             </div>
 
-            <div class="transformations-edit__badge-group">
+            <div
+              class="transformations-edit__badge-group"
+              v-if="!sameModuleReference"
+            >
               <label class="transformations-edit__checkbox">
                 <Checkbox v-model="form.link_records_enabled" />
                 {{ $t("globals.transformations.labels.link_records_label") }}
@@ -560,19 +650,19 @@ const crumbs = [
               <ExplainTip
                 :text="$t('globals.transformations.hints.link_records_explain')"
               />
-            </div>
 
-            <p
-              v-if="form.automation_enabled && form.link_records_enabled"
-              class="transformations-edit__link-warning"
-            >
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              {{
-                $t(
-                  "globals.transformations.messages.link_records_override_warning",
-                )
-              }}
-            </p>
+              <div
+                v-if="form.automation_enabled && form.link_records_enabled"
+                class="transformations-edit__link-warning"
+              >
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                {{
+                  $t(
+                    "globals.transformations.messages.link_records_override_warning",
+                  )
+                }}
+              </div>
+            </div>
 
             <Transition name="expand">
               <div
@@ -728,6 +818,7 @@ const crumbs = [
                 :source-module="form.source_module"
                 @update:model-value="(v) => (form.field_mappings[i] = v)"
                 @remove="removeMapping(i)"
+                @open-record-picker="openMappingRecordPicker(i)"
               />
 
               <button type="button" @click="addMapping">
@@ -801,6 +892,21 @@ const crumbs = [
       @close="
         conditionOverlayOpen = false;
         activeConditionIndex = null;
+      "
+    />
+
+    <RecordSelectorDrawer
+      :open="mappingOverlayOpen"
+      :search-endpoint="
+        activeMappingOverlayField
+          ? `/relatedfield/search/${activeMappingOverlayField.related_module}`
+          : ''
+      "
+      :related-module="activeMappingOverlayField?.related_module"
+      @select="onMappingRecordSelect"
+      @close="
+        mappingOverlayOpen = false;
+        activeMappingIndex = null;
       "
     />
   </div>

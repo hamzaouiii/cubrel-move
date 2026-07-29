@@ -17,6 +17,8 @@ class TransformationsManagerController extends Controller
 
     protected const STEP_ORDER = ['create_record', 'copy_fields', 'copy_relationships'];
 
+    protected const EXCLUDED_MODULES = ['users', 'userinvites'];
+
     public function index(Request $request)
     {
         $moduleIcons = Module::pluck('icon', 'slug');
@@ -228,11 +230,15 @@ class TransformationsManagerController extends Controller
             ->values()
             ->all();
 
+        $allowedModuleSlugs = Module::where('is_active', true)
+            ->whereNotIn('slug', self::EXCLUDED_MODULES)
+            ->pluck('slug');
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'source_module' => 'required|string',
-            'target_module' => 'required|string|different:source_module',
+            'source_module' => ['required', 'string', \Illuminate\Validation\Rule::in($allowedModuleSlugs)],
+            'target_module' => ['required', 'string', 'different:source_module', \Illuminate\Validation\Rule::in($allowedModuleSlugs)],
             'enabled' => 'boolean',
             'automation_enabled' => 'boolean',
             'conditions' => 'array',
@@ -259,9 +265,13 @@ class TransformationsManagerController extends Controller
             ->duplicates();
 
         if ($duplicates->isNotEmpty()) {
+            $targetLabels = $this->fieldLabelMap($validated['target_module'] ?? null);
+
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'field_mappings' => __('globals.transformations.messages.duplicate_mapped_field', [
-                    'fields' => $duplicates->unique()->implode(', '),
+                    'fields' => $duplicates->unique()
+                        ->map(fn ($name) => $targetLabels->get($name, $name))
+                        ->implode(', '),
                 ]),
             ]);
         }
@@ -273,9 +283,13 @@ class TransformationsManagerController extends Controller
                 ->duplicates();
 
             if ($conditionDuplicates->isNotEmpty()) {
+                $sourceLabels = $this->fieldLabelMap($validated['source_module'] ?? null);
+
                 throw \Illuminate\Validation\ValidationException::withMessages([
                     'conditions' => __('globals.transformations.messages.duplicate_condition_field_all', [
-                        'fields' => $conditionDuplicates->unique()->implode(', '),
+                        'fields' => $conditionDuplicates->unique()
+                            ->map(fn ($name) => $sourceLabels->get($name, $name))
+                            ->implode(', '),
                     ]),
                 ]);
             }
@@ -293,7 +307,189 @@ class TransformationsManagerController extends Controller
             }
         }
 
+        $this->assertConditionFieldsAreKnown($validated);
+        $this->assertRelationshipsAreKnown($validated);
+        $this->assertMappingsAreTypeCompatible($validated);
+        $this->assertRequiredTargetFieldsAreMapped($validated);
+
         return $validated;
+    }
+
+
+    protected function assertConditionFieldsAreKnown(array $validated): void
+    {
+        $sourceModule = Module::where('slug', $validated['source_module'] ?? null)->first();
+
+        if (! $sourceModule) {
+            return;
+        }
+
+        $knownFields = $sourceModule->allFields()->pluck('name');
+
+        $unknown = collect($validated['conditions'] ?? [])
+            ->pluck('field')
+            ->filter()
+            ->reject(fn ($name) => $knownFields->contains($name));
+
+        if ($unknown->isNotEmpty()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'conditions' => __('globals.transformations.messages.unknown_condition_field'),
+            ]);
+        }
+    }
+
+ 
+    protected function assertRelationshipsAreKnown(array $validated): void
+    {
+        $sourceModule = Module::where('slug', $validated['source_module'] ?? null)->first();
+
+        if (! $sourceModule) {
+            return;
+        }
+
+        $allowed = RelationshipService::getRelationshipForModule($sourceModule->slug)
+            ->pluck('related_slug');
+
+        if ($sourceModule->has_line_items) {
+            $allowed->push('line_items');
+        }
+
+        $unknown = collect($validated['relationships'] ?? [])
+            ->reject(fn ($key) => $allowed->contains($key));
+
+        if ($unknown->isNotEmpty()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'relationships' => __('globals.transformations.messages.unknown_relationship'),
+            ]);
+        }
+    }
+
+    protected function assertMappingsAreTypeCompatible(array $validated): void
+    {
+        $sourceModule = Module::where('slug', $validated['source_module'] ?? null)->first();
+        $targetModule = Module::where('slug', $validated['target_module'] ?? null)->first();
+
+        if (! $sourceModule || ! $targetModule) {
+            return;
+        }
+
+        $sourceFieldsByName = $sourceModule->allFields()->keyBy('name');
+        $targetFieldsByName = $targetModule->allFields()->keyBy('name');
+        $textLikeTypes = ['text', 'longtext', 'email', 'phone', 'url'];
+
+        foreach ($validated['field_mappings'] ?? [] as $mapping) {
+            $targetField = $targetFieldsByName->get($mapping['target_field'] ?? null);
+
+            if (! $targetField) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'field_mappings' => __('globals.transformations.messages.unknown_mapped_field'),
+                ]);
+            }
+
+            $incompatible = match ($mapping['mode'] ?? 'field') {
+                'field' => $this->fieldModeIsIncompatible($mapping, $targetField, $sourceFieldsByName),
+                'expression' => ! in_array($targetField->type, $textLikeTypes, true),
+                'static' => $targetField->type === 'record'
+                    && ! $this->staticRecordValueIsValid($mapping['value'] ?? null, $targetField),
+                default => false,
+            };
+
+            if ($incompatible) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'field_mappings' => __('globals.transformations.messages.mapping_incompatible', [
+                        'field' => __($targetField->label),
+                    ]),
+                ]);
+            }
+        }
+    }
+
+    protected function fieldModeIsIncompatible(array $mapping, $targetField, \Illuminate\Support\Collection $sourceFieldsByName): bool
+    {
+        $sourceField = $sourceFieldsByName->get($mapping['source_field'] ?? null);
+
+        if (! $sourceField || $sourceField->type !== $targetField->type) {
+            return true;
+        }
+
+        if ($targetField->type === 'record') {
+            return $sourceField->related_module !== $targetField->related_module;
+        }
+
+        return false;
+    }
+
+    protected function staticRecordValueIsValid(?string $value, $targetField): bool
+    {
+        if (! $value || ! $targetField->related_module) {
+            return false;
+        }
+        if ($value === '@current_user') {
+            return $targetField->related_module === 'users';
+        }
+
+        $relatedModule = Module::where('slug', $targetField->related_module)->first();
+
+        if (! $relatedModule || ! $relatedModule->model_class || ! class_exists($relatedModule->model_class)) {
+            return false;
+        }
+
+        return $relatedModule->model_class::where('id', $value)->exists();
+    }
+
+    protected function fieldLabelMap(?string $moduleSlug): \Illuminate\Support\Collection
+    {
+        $module = $moduleSlug ? Module::where('slug', $moduleSlug)->first() : null;
+
+        if (! $module) {
+            return collect();
+        }
+
+        return $module->allFields()->mapWithKeys(fn ($field) => [$field->name => __($field->label)]);
+    }
+
+    protected function assertRequiredTargetFieldsAreMapped(array $validated): void
+    {
+        $targetModule = Module::where('slug', $validated['target_module'] ?? null)->first();
+
+        if (! $targetModule) {
+            return;
+        }
+
+        $requiredFieldNames = $targetModule->allFields()
+            ->filter(fn ($field) => $field->required && ! $field->readonly && ! $field->is_calculated)
+            ->pluck('name');
+
+        $mappingsByTarget = collect($validated['field_mappings'] ?? [])->keyBy('target_field');
+
+        $isMapped = function (string $name) use ($mappingsByTarget): bool {
+            $mapping = $mappingsByTarget->get($name);
+
+            if (! $mapping) {
+                return false;
+            }
+
+            return match ($mapping['mode'] ?? 'field') {
+                'static' => ($mapping['value'] ?? '') !== '' && $mapping['value'] !== null,
+                'expression' => ! empty($mapping['expression']),
+                default => ! empty($mapping['source_field'] ?? null),
+            };
+        };
+
+        $unmapped = $requiredFieldNames->filter(fn ($name) => ! $isMapped($name));
+
+        if ($unmapped->isNotEmpty()) {
+            $targetFieldsByName = $targetModule->allFields()->keyBy('name');
+
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'field_mappings' => __('globals.transformations.messages.required_fields_must_be_mapped', [
+                    'fields' => $unmapped
+                        ->map(fn ($name) => __($targetFieldsByName->get($name)->label))
+                        ->implode(', '),
+                    'module' => __($targetModule->label),
+                ]),
+            ]);
+        }
     }
 
     protected function syncSteps(Transformation $transformation, array $validated): void
@@ -325,6 +521,7 @@ class TransformationsManagerController extends Controller
     protected function moduleOptions()
     {
         return Module::where('is_active', true)
+            ->whereNotIn('slug', self::EXCLUDED_MODULES)
             ->orderBy('sort_order')
             ->get(['id', 'slug', 'name', 'label', 'icon', 'color', 'has_line_items'])
             ->map(function (Module $module) {
