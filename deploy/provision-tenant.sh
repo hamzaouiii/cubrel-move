@@ -209,59 +209,103 @@ else
 fi
 
 # --- 4b. Inbound email capture (Cloudflare DNS + Mailtrap) ------------------
-# Users BCC "log+{token}@${DOMAIN}" to log an email against a CRM record
-# (see app/Http/Controllers/EmailInboundWebhookController.php). This
-# registers ${DOMAIN} as a Mailtrap inbound domain, points its MX record
-# at Mailtrap via the Cloudflare API, and wires Mailtrap's webhook back to
-# this tenant. MX only — no new subdomain/TLS is needed since the existing
-# nginx vhost + wildcard cert already serve https://${DOMAIN}.
+# Users BCC "{username}@${DOMAIN}" (or an admin-created address) to log an
+# email against a CRM record (see EmailInboundWebhookController). Confirmed
+# against Mailtrap's live API + a real webhook payload during development
+# (2026-07-30) — this is the actual flow, not a docs-only guess:
+#   1. POST /api/domains                       -> domain_id, dns_records
+#   2. PATCH /api/domains/{id} inbound_enabled  -> adds the inbound MX record
+#   3. POST /api/inbound/folders                -> folder_id
+#      POST /api/inbound/folders/{id}/inboxes   -> inbox_id (catch-all, tied
+#                                                   to the domain from step 1)
+#   4. POST /api/webhooks                        -> Mailtrap-generated
+#                                                   signing_secret (we do NOT
+#                                                   supply our own secret)
 #
 # Skipped entirely if the ops-level Mailtrap/Cloudflare credentials aren't
 # configured in provision.env, so this stays optional per-deployment.
 MAILTRAP_INBOUND_WEBHOOK_SECRET=""
 if [ -n "${MAILTRAP_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ZONE_ID:-}" ]; then
-  step "Registering '${DOMAIN}' as a Mailtrap inbound domain"
+  step "Registering '${DOMAIN}' with Mailtrap (domain + inbound + DNS)"
 
-  MAILTRAP_INBOUND_WEBHOOK_SECRET=$(openssl rand -hex 20)
-  WEBHOOK_URL="https://${DOMAIN}/api/webhooks/email-inbound"
+  DOMAIN_RESPONSE=$(curl -sS -X POST "https://mailtrap.io/api/domains" \
+    -H "Api-Token: ${MAILTRAP_API_TOKEN}" -H "Content-Type: application/json" \
+    -d "$(jq -n --arg d "$DOMAIN" '{domain: {domain_name: $d}}')")
+  DOMAIN_ID=$(echo "$DOMAIN_RESPONSE" | jq -r '.id // empty')
 
-  # NOTE: endpoint/payload shape verified against Mailtrap's Inbound Email
-  # API docs at the time this was written — re-check before relying on it
-  # in production, providers change API surfaces.
-  MAILTRAP_RESPONSE=$(curl -sS -X POST "https://mailtrap.io/api/accounts/inbound_domains" \
-    -H "Api-Token: ${MAILTRAP_API_TOKEN}" \
-    -H "Content-Type: application/json" \
-    -d "$(jq -n --arg domain "$DOMAIN" --arg url "$WEBHOOK_URL" --arg secret "$MAILTRAP_INBOUND_WEBHOOK_SECRET" \
-      '{domain: $domain, webhook_url: $url, webhook_secret: $secret}')")
-
-  # Expected shape: { "id": ..., "dns_records": [ {"type": "MX"|"TXT", "name": "...", "value": "...", "priority": ...}, ... ] }
-  DNS_RECORD_COUNT=$(echo "$MAILTRAP_RESPONSE" | jq '.dns_records | length' 2>/dev/null || echo 0)
-
-  if [ "$DNS_RECORD_COUNT" -gt 0 ] 2>/dev/null; then
-    step "Writing $DNS_RECORD_COUNT DNS record(s) to Cloudflare for '${DOMAIN}'"
-    echo "$MAILTRAP_RESPONSE" | jq -c '.dns_records[]' | while read -r record; do
-      RTYPE=$(echo "$record" | jq -r '.type')
-      RNAME=$(echo "$record" | jq -r '.name')
-      RVALUE=$(echo "$record" | jq -r '.value')
-      RPRIORITY=$(echo "$record" | jq -r '.priority // 10')
-
-      CF_PAYLOAD=$(jq -n --arg type "$RTYPE" --arg name "$RNAME" --arg content "$RVALUE" --argjson priority "$RPRIORITY" \
-        '{type: $type, name: $name, content: $content, priority: $priority, ttl: 3600}')
-
-      curl -sS -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records" \
-        -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-        -H "Content-Type: application/json" \
-        -d "$CF_PAYLOAD" >/dev/null
-    done
+  if [ -z "$DOMAIN_ID" ]; then
+    warn "Could not register '${DOMAIN}' with Mailtrap — response:"
+    echo "    $DOMAIN_RESPONSE"
   else
-    warn "Mailtrap did not return DNS records to provision — check MAILTRAP_RESPONSE manually:"
-    echo "    $MAILTRAP_RESPONSE"
+    DOMAIN_RESPONSE=$(curl -sS -X PATCH "https://mailtrap.io/api/domains/${DOMAIN_ID}" \
+      -H "Api-Token: ${MAILTRAP_API_TOKEN}" -H "Content-Type: application/json" \
+      -d '{"domain":{"inbound_enabled":true}}')
+
+    DNS_RECORD_COUNT=$(echo "$DOMAIN_RESPONSE" | jq '.dns_records | length' 2>/dev/null || echo 0)
+    if [ "$DNS_RECORD_COUNT" -gt 0 ] 2>/dev/null; then
+      step "Writing $DNS_RECORD_COUNT DNS record(s) to Cloudflare for '${DOMAIN}'"
+      echo "$DOMAIN_RESPONSE" | jq -c '.dns_records[]' | while read -r record; do
+        RTYPE=$(echo "$record" | jq -r '.type')
+        RNAME=$(echo "$record" | jq -r '.name')
+        RVALUE=$(echo "$record" | jq -r '.value')
+        RPRIORITY=$(echo "$record" | jq -r '.priority // 10')
+
+        CF_PAYLOAD=$(jq -n --arg type "$RTYPE" --arg name "$RNAME" --arg content "$RVALUE" --argjson priority "$RPRIORITY" \
+          '{type: $type, name: $name, content: $content, priority: $priority, ttl: 3600}')
+
+        curl -sS -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records" \
+          -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+          -d "$CF_PAYLOAD" >/dev/null
+      done
+    else
+      warn "Mailtrap did not return DNS records after enabling inbound — check manually:"
+      echo "    $DOMAIN_RESPONSE"
+    fi
+
+    step "Creating Mailtrap inbox for '${DOMAIN}'"
+    FOLDER_RESPONSE=$(curl -sS -X POST "https://mailtrap.io/api/inbound/folders" \
+      -H "Api-Token: ${MAILTRAP_API_TOKEN}" -H "Content-Type: application/json" \
+      -d "$(jq -n --arg n "$NAME" '{name: $n}')")
+    FOLDER_ID=$(echo "$FOLDER_RESPONSE" | jq -r '.id // empty')
+
+    INBOX_ID=""
+    if [ -n "$FOLDER_ID" ]; then
+      INBOX_RESPONSE=$(curl -sS -X POST "https://mailtrap.io/api/inbound/folders/${FOLDER_ID}/inboxes" \
+        -H "Api-Token: ${MAILTRAP_API_TOKEN}" -H "Content-Type: application/json" \
+        -d "$(jq -n --arg n "$NAME" --argjson d "$DOMAIN_ID" '{name: $n, domain_id: $d}')")
+      INBOX_ID=$(echo "$INBOX_RESPONSE" | jq -r '.id // empty')
+    fi
+
+    if [ -z "$INBOX_ID" ]; then
+      warn "Could not create a Mailtrap inbox for '${DOMAIN}' — check FOLDER_RESPONSE/INBOX_RESPONSE manually:"
+      echo "    folder: $FOLDER_RESPONSE"
+      echo "    inbox:  ${INBOX_RESPONSE:-<not attempted>}"
+    else
+      step "Registering inbound webhook"
+      WEBHOOK_URL="https://${DOMAIN}/api/webhooks/email-inbound"
+      WEBHOOK_RESPONSE=$(curl -sS -X POST "https://mailtrap.io/api/webhooks" \
+        -H "Api-Token: ${MAILTRAP_API_TOKEN}" -H "Content-Type: application/json" \
+        -d "$(jq -n --arg url "$WEBHOOK_URL" --argjson inbox "$INBOX_ID" \
+          '{webhook: {url: $url, webhook_type: "inbound_receiving", inbound_inbox_id: $inbox}}')")
+
+      MAILTRAP_INBOUND_WEBHOOK_SECRET=$(echo "$WEBHOOK_RESPONSE" | jq -r '.webhook.signing_secret // .signing_secret // empty')
+
+      if [ -z "$MAILTRAP_INBOUND_WEBHOOK_SECRET" ]; then
+        warn "Webhook created but no signing_secret in the response — signature verification will fail until this is fixed manually. Response:"
+        echo "    $WEBHOOK_RESPONSE"
+      fi
+    fi
   fi
 else
   warn "MAILTRAP_API_TOKEN / CLOUDFLARE_API_TOKEN / CLOUDFLARE_ZONE_ID not set — skipping inbound email capture setup."
   echo "    Emails module will still work for manual entry; BCC capture just won't be wired up for this tenant."
 fi
 
+# MAILTRAP_API_TOKEN is also needed at runtime (EmailInboundWebhookController
+# fetches full message content via the Messages API), not just here at
+# provisioning time — previously missing, silently breaking every tenant's
+# inbound capture even when the webhook itself worked.
+set_env "MAILTRAP_API_TOKEN" "\"${MAILTRAP_API_TOKEN:-}\""
 set_env "MAILTRAP_INBOUND_WEBHOOK_SECRET" "$MAILTRAP_INBOUND_WEBHOOK_SECRET"
 
 # --- 5. Build & migrate ------------------------------------------------------
