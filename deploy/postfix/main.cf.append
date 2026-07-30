@@ -1,0 +1,9 @@
+# --- Cubrel inbound email capture --------------------------------------
+# Appended by deploy/setup-postfix.sh. Accepts mail for any *.cubrel.com
+# recipient and hands it to the cubrelrelay pipe transport (see
+# master.cf.append) instead of real mailbox delivery — nothing is stored
+# on this server, every message is forwarded to the owning tenant's own
+# /api/webhooks/email-inbound endpoint by deploy/cubrel-inbound-relay.sh.
+virtual_mailbox_domains = pcre:/etc/postfix/cubrel/accepted_domains.pcre
+virtual_mailbox_maps = pcre:/etc/postfix/cubrel/accepted_recipients.pcre
+virtual_transport = cubrelrelay:

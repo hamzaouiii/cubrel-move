@@ -23,8 +23,8 @@ return new class extends Migration
             // Always 'logged' for now — BCC capture is one-directional. A
             // distinct value reserved for Level 2 (real outbound sending).
             $table->string('direction')->default('logged');
-            // Mailtrap's inbound message id, used to make webhook retries
-            // idempotent (Mailtrap delivers at-least-once).
+            // RFC 5322 Message-ID (or a content hash if a message omits
+            // one), used to make relay retries idempotent.
             $table->string('provider_message_id')->nullable()->unique();
             // The slug of whichever address captured this email (a user's
             // username, or an admin-created App\Models\EmailCaptureAddress

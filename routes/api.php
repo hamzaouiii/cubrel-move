@@ -13,23 +13,10 @@ Route::middleware(['web', 'auth'])->group(function () {
   Route::get('/related-module-records/{id}', [RelationshipLinkController::class, 'getRecordsForLinking']);
 });
 
-// Unauthenticated, called by Mailtrap's servers, not a browser session.
-// Verified via HMAC signature (EmailInboundWebhookController::hasValidSignature)
-// instead of Laravel auth, and exempted from CSRF in bootstrap/app.php.
+// Unauthenticated at the Laravel auth layer — called by the self-hosted
+// Postfix relay on this same server (deploy/cubrel-inbound-relay.sh), not
+// a browser session. Sits outside the 'web' group above, so it gets
+// api.php's default stateless middleware (no session, no CSRF) rather
+// than needing an explicit exemption. Verified via a shared secret
+// header instead (EmailInboundWebhookController::hasValidSecret).
 Route::post('/webhooks/email-inbound', [EmailInboundWebhookController::class, 'handle']);
-
-// TEMPORARY — payload discovery only, remove before committing. Logs
-// whatever CloudMailin (or any provider) actually sends so the real
-// endpoint above can be adapted to match, instead of guessing. Accepts
-// any method — some providers GET-verify a target URL before using it,
-// which a POST-only route would reject with a 405.
-Route::match(['get', 'post'], '/webhooks/debug', function (\Illuminate\Http\Request $request) {
-    \Illuminate\Support\Facades\Log::info('Webhook debug payload', [
-        'method' => $request->method(),
-        'headers' => $request->headers->all(),
-        'body' => $request->all(),
-        'raw' => $request->getContent(),
-    ]);
-
-    return response('', 200);
-});

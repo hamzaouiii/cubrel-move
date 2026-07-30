@@ -36,42 +36,42 @@
 
 Each business module is stored in its own table, extends `BaseModule`, and carries both stock fields (defined in `config/stock_fields.php`) and an arbitrary number of user-defined custom fields stored in a `custom_fields` JSON column.
 
-| Module | Table | Notable fields | Line items | Owner |
-|---|---|---|---|---|
-| **Leads** | `leads` | first_name, last_name, email, phone, company, address (JSON) | No | Yes |
-| **Accounts** | `accounts` | name, website, email, phone, billing_address (JSON), shipping_address (JSON) | No | Yes |
-| **Contacts** | `contacts` | first_name, last_name, email, phone, position, notes | No | Yes |
-| **Deals** | `deals` | amount, sales_stage, probability, expected_close_date, type | No | Yes |
-| **Orders** | `orders` | order_number, status, order_date, due_date, subtotal, discount_amount, tax_amount, total | Yes | Yes |
-| **Invoices** | `invoices` | number, status, issue_date, due_date, subtotal, discount_amount, tax_amount, total | Yes | Yes |
-| **Quotes** | `quotes` | number, status, valid_until, subtotal, discount_amount, tax_amount, total | Yes | Yes |
-| **Products** | `products` | sku, category, price, unit, tax_rate, is_active | No | Yes |
-| **Support Cases** | `cases` | subject, status, priority, opened_at, closed_at | No | Yes |
-| **Tasks** | `tasks` | due_at, status, priority, completed_at (auto-set on completion) | No | Yes |
-| **Calls** | `calls` | direction, call_at, duration_minutes, status, outcome | No | Yes |
-| **Meetings** | `meetings` | location (address), start_at, end_at, duration (auto-computed), status | No | Yes |
-| **Notes** | `notes` | (default fields only) | No | Yes |
+| Module            | Table      | Notable fields                                                                           | Line items | Owner |
+| ----------------- | ---------- | ---------------------------------------------------------------------------------------- | ---------- | ----- |
+| **Leads**         | `leads`    | first_name, last_name, email, phone, company, address (JSON)                             | No         | Yes   |
+| **Accounts**      | `accounts` | name, website, email, phone, billing_address (JSON), shipping_address (JSON)             | No         | Yes   |
+| **Contacts**      | `contacts` | first_name, last_name, email, phone, position, notes                                     | No         | Yes   |
+| **Deals**         | `deals`    | amount, sales_stage, probability, expected_close_date, type                              | No         | Yes   |
+| **Orders**        | `orders`   | order_number, status, order_date, due_date, subtotal, discount_amount, tax_amount, total | Yes        | Yes   |
+| **Invoices**      | `invoices` | number, status, issue_date, due_date, subtotal, discount_amount, tax_amount, total       | Yes        | Yes   |
+| **Quotes**        | `quotes`   | number, status, valid_until, subtotal, discount_amount, tax_amount, total                | Yes        | Yes   |
+| **Products**      | `products` | sku, category, price, unit, tax_rate, is_active                                          | No         | Yes   |
+| **Support Cases** | `cases`    | subject, status, priority, opened_at, closed_at                                          | No         | Yes   |
+| **Tasks**         | `tasks`    | due_at, status, priority, completed_at (auto-set on completion)                          | No         | Yes   |
+| **Calls**         | `calls`    | direction, call_at, duration_minutes, status, outcome                                    | No         | Yes   |
+| **Meetings**      | `meetings` | location (address), start_at, end_at, duration (auto-computed), status                   | No         | Yes   |
+| **Notes**         | `notes`    | (default fields only)                                                                    | No         | Yes   |
 
 Tasks, Calls, Meetings, and Notes are the **activity modules** — see [Activities](#18-activities) for the timeline sidebar, linking, and completion behavior built around them.
 
 ### Infrastructure Models
 
-| Model | Purpose |
-|---|---|
-| `Module` | Registry entry for every CRM module (slug, icon, flags, model/handler class, etc.) |
-| `Field` | Defines a field on a module — type, validation rules, display options |
-| `Layout` | Stores JSON configuration for list / record / related / linking-panel / line-item views per module |
-| `DropdownList` | Named lists of selectable option values used by select/status fields |
-| `Relationship` | Declares how two modules relate (one-to-many, many-to-many, one-to-one) |
-| `RelationshipLink` | Join record connecting two module records through a `Relationship` |
-| `UserInvite` | Pending invitation token with expiry and status |
-| `LineItem` | Child row on any module with line items enabled (polymorphic `parent_type`/`parent_id`) |
-| `MeetingAttendee` | Person (linked Contact/Lead/User, or external guest) attending a Meeting, with role/RSVP/attendance (see [Activities](#18-activities)) |
-| `Settings` / `SettingValue` | Key-value system settings with group and autoload support |
-| `Dashboard` | Per-user dashboard widget configuration (JSON) |
-| `PdfTemplate` | Module-scoped PDF template; owns its section `definition` JSON directly; `is_default` flag per module |
-| `AuditLog` | Append-only event log — who changed what record, and who linked/unlinked which relationship (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)) |
-| `ImpersonationSession` | One row per impersonation session — who impersonated whom, from what IP, start/end (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)) |
+| Model                       | Purpose                                                                                                                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Module`                    | Registry entry for every CRM module (slug, icon, flags, model/handler class, etc.)                                                                                                |
+| `Field`                     | Defines a field on a module — type, validation rules, display options                                                                                                             |
+| `Layout`                    | Stores JSON configuration for list / record / related / linking-panel / line-item views per module                                                                                |
+| `DropdownList`              | Named lists of selectable option values used by select/status fields                                                                                                              |
+| `Relationship`              | Declares how two modules relate (one-to-many, many-to-many, one-to-one)                                                                                                           |
+| `RelationshipLink`          | Join record connecting two module records through a `Relationship`                                                                                                                |
+| `UserInvite`                | Pending invitation token with expiry and status                                                                                                                                   |
+| `LineItem`                  | Child row on any module with line items enabled (polymorphic `parent_type`/`parent_id`)                                                                                           |
+| `MeetingAttendee`           | Person (linked Contact/Lead/User, or external guest) attending a Meeting, with role/RSVP/attendance (see [Activities](#18-activities))                                            |
+| `Settings` / `SettingValue` | Key-value system settings with group and autoload support                                                                                                                         |
+| `Dashboard`                 | Per-user dashboard widget configuration (JSON)                                                                                                                                    |
+| `PdfTemplate`               | Module-scoped PDF template; owns its section `definition` JSON directly; `is_default` flag per module                                                                             |
+| `AuditLog`                  | Append-only event log — who changed what record, and who linked/unlinked which relationship (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions)) |
+| `ImpersonationSession`      | One row per impersonation session — who impersonated whom, from what IP, start/end (see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions))          |
 
 ---
 
@@ -81,26 +81,26 @@ Tasks, Calls, Meetings, and Notes are the **activity modules** — see [Activiti
 
 Defined in `config/default_field_types.php` and mapped to database column types in `config/default_field_types_mapper.php`. Each type has a Vue component registered in `resources/js/Registries/fieldRegistry.js`.
 
-| Type | DB column | Vue component | Validation |
-|---|---|---|---|
-| `text` | `text` | `Text.vue` | none (accepts anything) |
-| `longtext` | `longText` | `LongText.vue` | none |
-| `email` | `string` | `Email.vue` | regex email pattern |
-| `phone` | `string` | `PhoneField.vue` | libphonenumber-js (DE locale default) |
-| `url` | `string` | `UrlField.vue` | must include protocol |
-| `select` | `string` | `Select.vue` | none |
-| `status` | `string` | `StatusField.vue` | none |
-| `checkbox` | `boolean` | `Checkbox.vue` | none |
-| `date` | `date` | `DateTime.vue` | none |
-| `datetime` | `dateTime` | `DateTime.vue` | none |
-| `integer` | `integer` | `IntegerField.vue` | integer only, optional range |
-| `decimal` | `decimal` | `DecimalField.vue` | float, optional precision + bounds |
-| `percentage` | `decimal` | `PercentageField.vue` | 0–100 range |
-| `currency` | `decimal` | `CurrencyField.vue` | non-negative number |
-| `address` | `json` | `AddressField.vue` | all sub-fields non-empty |
-| `record` | `string` | `RelatedRecord.vue` | UUID format |
-| `image` | `string` | `ImageField.vue` | image upload validation |
-| `duration` | `integer` | `DurationField.vue` | read-only — no edit-mode input at all |
+| Type         | DB column  | Vue component         | Validation                            |
+| ------------ | ---------- | --------------------- | ------------------------------------- |
+| `text`       | `text`     | `Text.vue`            | none (accepts anything)               |
+| `longtext`   | `longText` | `LongText.vue`        | none                                  |
+| `email`      | `string`   | `Email.vue`           | regex email pattern                   |
+| `phone`      | `string`   | `PhoneField.vue`      | libphonenumber-js (DE locale default) |
+| `url`        | `string`   | `UrlField.vue`        | must include protocol                 |
+| `select`     | `string`   | `Select.vue`          | none                                  |
+| `status`     | `string`   | `StatusField.vue`     | none                                  |
+| `checkbox`   | `boolean`  | `Checkbox.vue`        | none                                  |
+| `date`       | `date`     | `DateTime.vue`        | none                                  |
+| `datetime`   | `dateTime` | `DateTime.vue`        | none                                  |
+| `integer`    | `integer`  | `IntegerField.vue`    | integer only, optional range          |
+| `decimal`    | `decimal`  | `DecimalField.vue`    | float, optional precision + bounds    |
+| `percentage` | `decimal`  | `PercentageField.vue` | 0–100 range                           |
+| `currency`   | `decimal`  | `CurrencyField.vue`   | non-negative number                   |
+| `address`    | `json`     | `AddressField.vue`    | all sub-fields non-empty              |
+| `record`     | `string`   | `RelatedRecord.vue`   | UUID format                           |
+| `image`      | `string`   | `ImageField.vue`      | image upload validation               |
+| `duration`   | `integer`  | `DurationField.vue`   | read-only — no edit-mode input at all |
 
 ### Composite Field: Address
 
@@ -133,19 +133,19 @@ All module tables carry a `custom_fields` JSON column. Fields created through th
 
 Every module — stock or custom — carries the same set of boolean flags on its `Module` record. This is the single source of truth for what each one means and where it can be changed; other sections link back here instead of redefining them.
 
-| Flag | Meaning | Where it's set |
-|---|---|---|
-| `is_active` | Module is live and queryable — nearly every controller gates on it. A module built through the Module Builder starts `false` and only flips to `true` once the deploy pipeline's final step completes. | Deployment pipeline only — no manual toggle |
-| `is_custom` | Distinguishes a Module Builder-created module from a static, built-in one. | Set once at creation, never edited afterward |
-| `show_in_sidebar` | Module appears in the left-nav sidebar. | Module Builder (create/edit) and Module Manager |
-| `show_in_module_manager` | Module is listed in the admin Module Manager at all. Always `true` for modules created through the Module Builder. | Not user-editable |
-| `is_relatable` | Other modules can link to this module's records through relationships, and its records can be picked in `record`-type fields. | Module Builder only (defaults to `true`) |
-| `has_owner` | Attaches an `owner_id` (FK → users) to each record for ownership scoping (see [Permissions & Roles](#11-permissions--roles)). Forced `true` for every module created through the Module Builder — not currently configurable. | Not user-editable |
-| `has_line_items` | Module supports child line-item rows (see [Line Items](#7-line-items)). | Module Builder (create/edit, before deploy) |
-| `is_product_like` | Module is eligible to be picked as a line-item source by other modules (e.g. Products). | Module Builder only |
-| `line_item_source_module` | Which `is_product_like` module this module's line items search and snapshot from; falls back to `products`. | Module Builder (before deploy) or Module Manager (after — until `canChangeLineItemSourceModule()` locks it once a line item exists) |
-| `is_activity` | Records of this module are activity items — linkable to other records, appear in their timelines (see [Activities](#18-activities)). | Module Builder only, not editable after creation |
-| `has_activity` | Records of this module get the activity timeline sidebar (see [Activities](#18-activities)). | Module Builder only, not editable after creation |
+| Flag                      | Meaning                                                                                                                                                                                                                       | Where it's set                                                                                                                      |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `is_active`               | Module is live and queryable — nearly every controller gates on it. A module built through the Module Builder starts `false` and only flips to `true` once the deploy pipeline's final step completes.                        | Deployment pipeline only — no manual toggle                                                                                         |
+| `is_custom`               | Distinguishes a Module Builder-created module from a static, built-in one.                                                                                                                                                    | Set once at creation, never edited afterward                                                                                        |
+| `show_in_sidebar`         | Module appears in the left-nav sidebar.                                                                                                                                                                                       | Module Builder (create/edit) and Module Manager                                                                                     |
+| `show_in_module_manager`  | Module is listed in the admin Module Manager at all. Always `true` for modules created through the Module Builder.                                                                                                            | Not user-editable                                                                                                                   |
+| `is_relatable`            | Other modules can link to this module's records through relationships, and its records can be picked in `record`-type fields.                                                                                                 | Module Builder only (defaults to `true`)                                                                                            |
+| `has_owner`               | Attaches an `owner_id` (FK → users) to each record for ownership scoping (see [Permissions & Roles](#11-permissions--roles)). Forced `true` for every module created through the Module Builder — not currently configurable. | Not user-editable                                                                                                                   |
+| `has_line_items`          | Module supports child line-item rows (see [Line Items](#7-line-items)).                                                                                                                                                       | Module Builder (create/edit, before deploy)                                                                                         |
+| `is_product_like`         | Module is eligible to be picked as a line-item source by other modules (e.g. Products).                                                                                                                                       | Module Builder only                                                                                                                 |
+| `line_item_source_module` | Which `is_product_like` module this module's line items search and snapshot from; falls back to `products`.                                                                                                                   | Module Builder (before deploy) or Module Manager (after — until `canChangeLineItemSourceModule()` locks it once a line item exists) |
+| `is_activity`             | Records of this module are activity items — linkable to other records, appear in their timelines (see [Activities](#18-activities)).                                                                                          | Module Builder only, not editable after creation                                                                                    |
+| `has_activity`            | Records of this module get the activity timeline sidebar (see [Activities](#18-activities)).                                                                                                                                  | Module Builder only, not editable after creation                                                                                    |
 
 While a module is mid-creation in the Module Builder (`is_draft = true`), it's soft-locked to the editing admin (`locked_by`/`locked_until`, a rolling 2-hour window) so two admins can't clobber the same draft concurrently.
 
@@ -194,12 +194,12 @@ Every module has a handler class (extends `BaseModuleHandler`) responsible for:
 
 Each module can have up to five layout types stored in the `layouts` table as JSON blobs. Default layouts are defined in `config/module_layouts/{module}.php` (and, for the newest type below, `config/default_layouts.php`). PDF output layout is a separate, standalone concern — see [PDF Generation](#13-pdf-generation).
 
-| Type | Purpose | UI editor |
-|---|---|---|
-| `list` | Columns shown in the module list table | `LayoutListEditor.vue` |
-| `record` | Sections and fields shown on a single record page | `LayoutRecordEditor.vue` |
-| `related` | Columns shown in related-record subpanels | `LayoutRelatedEditor.vue` |
-| `linkingPanel` | Columns shown in the record-selector overlay | `LayoutLinkingPanelEditor.vue` |
+| Type                | Purpose                                                                                                                                                                            | UI editor                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `list`              | Columns shown in the module list table                                                                                                                                             | `LayoutListEditor.vue`            |
+| `record`            | Sections and fields shown on a single record page                                                                                                                                  | `LayoutRecordEditor.vue`          |
+| `related`           | Columns shown in related-record subpanels                                                                                                                                          | `LayoutRelatedEditor.vue`         |
+| `linkingPanel`      | Columns shown in the record-selector overlay                                                                                                                                       | `LayoutLinkingPanelEditor.vue`    |
 | `lineItemsSnapshot` | Which line-item fields appear on the create/edit sheet, and which field on the configured line-item source module autofills each one (only relevant when `has_line_items` is true) | `LayoutLineItemMappingEditor.vue` |
 
 ### Layout Editor
@@ -222,14 +222,14 @@ Within the `record` layout editor, a module's "Line Items" section (`has_line_it
 
 ### Single Record Operations
 
-| Action | Route | Controller method |
-|---|---|---|
-| Show list | `GET /{module}` | `ListController@__invoke` |
-| Show record | `GET /{module}/{recordId}` | `RecordController@__invoke` |
-| Create form | `GET /{module}/create` | `RecordController@create` |
-| Store | `POST /{module}` | `RecordController@store` |
-| Update | `PUT /{module}/{record}` | `RecordController@update` |
-| Delete | `DELETE /{module}/{record}` | `RecordController@destroy` |
+| Action      | Route                       | Controller method           |
+| ----------- | --------------------------- | --------------------------- |
+| Show list   | `GET /{module}`             | `ListController@__invoke`   |
+| Show record | `GET /{module}/{recordId}`  | `RecordController@__invoke` |
+| Create form | `GET /{module}/create`      | `RecordController@create`   |
+| Store       | `POST /{module}`            | `RecordController@store`    |
+| Update      | `PUT /{module}/{record}`    | `RecordController@update`   |
+| Delete      | `DELETE /{module}/{record}` | `RecordController@destroy`  |
 
 ### Bulk Operations
 
@@ -239,10 +239,10 @@ Both bulk delete and bulk update support three selection modes passed in the req
 - **All matching** — `allMatchingSelected=true` with current filter state
 - **All except** — `allMatchingSelected=true` + `excludedIds[]`
 
-| Action | Route | Component |
-|---|---|---|
-| Bulk delete | `DELETE /{module}` | `ListActions/ListDeleteZone.vue` |
-| Bulk field update | `PUT /{module}` | `ListActions/MassUpdateZone.vue` |
+| Action            | Route              | Component                        |
+| ----------------- | ------------------ | -------------------------------- |
+| Bulk delete       | `DELETE /{module}` | `ListActions/ListDeleteZone.vue` |
+| Bulk field update | `PUT /{module}`    | `ListActions/MassUpdateZone.vue` |
 
 A bulk field update applies one field/value pair uniformly to every selected record. If the target field is required, the whole request is rejected up front when the new value would be empty (`MassUpdateZone.vue` shows the same validation client-side that single-record editing uses). The value field also supports `record`-type targets (e.g. bulk-reassigning "Owned by") via the same `RecordSelectorDrawer` picker used on the record page.
 
@@ -250,10 +250,10 @@ A bulk field update applies one field/value pair uniformly to every selected rec
 
 `ExportController` provides CSV and JSON export, both single-record and bulk:
 
-| Action | Route | Controller method |
-|---|---|---|
-| Export one record | `GET /{module}/{recordId}/export?format=json\|csv` | `ExportController@export` |
-| Export many | `POST /{module}/export` | `ExportController@exportMany` |
+| Action            | Route                                              | Controller method             |
+| ----------------- | -------------------------------------------------- | ----------------------------- |
+| Export one record | `GET /{module}/{recordId}/export?format=json\|csv` | `ExportController@export`     |
+| Export many       | `POST /{module}/export`                            | `ExportController@exportMany` |
 
 - Bulk export reuses the same three selection modes as bulk delete/update.
 - Every create/update/delete above (single-record and bulk) is logged automatically — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
@@ -270,16 +270,16 @@ A bulk field update applies one field/value pair uniformly to every selected rec
 
 Relationships between modules are declared in the `relationships` table and seeded by `RelationshipSeeder`. Stored shape is always one of `one-to-many`, `many-to-many`, `one-to-one` — `left_module` is the "one"/parent side, `right_module` is the "many"/child side (for `one-to-many`). System relationships (`is_system=true`) are non-deletable.
 
-The Create form additionally offers a **`many-to-one`** option, so a relationship can be created from either side without needing to know the left/right convention — picking "many-to-one" from the *child* module's own page (e.g. "many Deals belong to one Account," created from Deals) automatically swaps left/right and stores it as `one-to-many`; `many-to-one` is purely a creation-time convenience, never persisted as a `type` value itself. See [Relationships Guide](docs/guides/relationships-guide.md) and [Relationships Implementation](docs/dev/relationships-implementation.md).
+The Create form additionally offers a **`many-to-one`** option, so a relationship can be created from either side without needing to know the left/right convention — picking "many-to-one" from the _child_ module's own page (e.g. "many Deals belong to one Account," created from Deals) automatically swaps left/right and stores it as `one-to-many`; `many-to-one` is purely a creation-time convenience, never persisted as a `type` value itself. See [Relationships Guide](docs/guides/relationships-guide.md) and [Relationships Implementation](docs/dev/relationships-implementation.md).
 
 ### Linking / Unlinking
 
-| Action | Route |
-|---|---|
-| Get available records to link | `GET /modules/{module}/{record}/relationships/{relationship}/available` |
-| Get records for single-link update | `GET /modules/{module}/{record}/relationships/{relationship}/single-link` |
-| Link records | `POST /modules/{module}/{record}/relationships/{relationship}` |
-| Unlink records | `DELETE /modules/{module}/{record}/relationships/{relationship}/{relatedId}` |
+| Action                             | Route                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| Get available records to link      | `GET /modules/{module}/{record}/relationships/{relationship}/available`      |
+| Get records for single-link update | `GET /modules/{module}/{record}/relationships/{relationship}/single-link`    |
+| Link records                       | `POST /modules/{module}/{record}/relationships/{relationship}`               |
+| Unlink records                     | `DELETE /modules/{module}/{record}/relationships/{relationship}/{relatedId}` |
 
 The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle the UI for selecting and linking records. Linking and unlinking are both logged — on both sides of the relationship — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
 
@@ -318,12 +318,12 @@ The line-items table's **visible columns** are likewise configurable — they co
 
 ### API
 
-| Action | Route |
-|---|---|
-| List | `GET /line-items?parent_type=X&parent_id=Y` |
-| Create | `POST /line-items` |
-| Update | `PUT /line-items/{lineItem}` |
-| Delete | `DELETE /line-items/{lineItem}` |
+| Action  | Route                                             |
+| ------- | ------------------------------------------------- |
+| List    | `GET /line-items?parent_type=X&parent_id=Y`       |
+| Create  | `POST /line-items`                                |
+| Update  | `PUT /line-items/{lineItem}`                      |
+| Delete  | `DELETE /line-items/{lineItem}`                   |
 | Reorder | `POST /line-items/reorder` (updates `sort_order`) |
 
 The record page shows line items when the module has line items enabled.
@@ -383,14 +383,14 @@ Route `GET /` → `DashboardController@index`. Dashboards are fully personalizab
 
 ### Legacy fixed widgets (still present, non-configurable)
 
-| Widget | Data source | Vue component |
-|---|---|---|
-| Recent leads | Last N leads where `owner_id = user` | `NewRecords.vue` |
-| Owned records | Cross-module records owned by user | `MyRecords.vue` |
-| Recent orders | Last 5 orders | `RecentOrders.vue` |
-| Deals over time | Monthly deal amounts, 12-month window | `DealsOverTime.vue` (line chart) |
-| Deal stages | Won / lost / open deal counts | `DealStages.vue` (doughnut chart) |
-| Invoice overview | Invoice status breakdown | (inline in `Index.vue`) |
+| Widget           | Data source                           | Vue component                     |
+| ---------------- | ------------------------------------- | --------------------------------- |
+| Recent leads     | Last N leads where `owner_id = user`  | `NewRecords.vue`                  |
+| Owned records    | Cross-module records owned by user    | `MyRecords.vue`                   |
+| Recent orders    | Last 5 orders                         | `RecentOrders.vue`                |
+| Deals over time  | Monthly deal amounts, 12-month window | `DealsOverTime.vue` (line chart)  |
+| Deal stages      | Won / lost / open deal counts         | `DealStages.vue` (doughnut chart) |
+| Invoice overview | Invoice status breakdown              | (inline in `Index.vue`)           |
 
 ---
 
@@ -400,21 +400,21 @@ Settings are organized into groups, each with one or more items, each holding ke
 
 ### System
 
-| Item | Setting | Type |
-|---|---|---|
-| **Locale** | `app_locale`, `default_locale` | Language pickers |
-| | `date_format`, `datetime_format` | Dropdown (locale-aware examples) |
-| | `timezone` | Dropdown (IANA zones) |
-| | `first_day_of_week` | Integer |
-| | `default_currency` | Dropdown |
-| | `multi_currency_mode` | Checkbox |
-| **Style** | `theme` | Dropdown (light/dark/system) |
-| | `primary_color`, `secondary_color`, `success_color`, `danger_color` | Color pickers |
-| | `border_radius` | Integer/slider |
-| | `table_striped_rows` | Checkbox |
-| | `use_individual_module_colors` | Checkbox |
-| **Display Defaults** | `list_view_limit`, `linking_panel_limit`, `related_panel_limit` | Integer |
-| **Data Retention** | `retention_notifications_days`, `retention_audit_logs_days`, `retention_userinvites_days`, `retention_failed_jobs_days` | Integer (days) |
+| Item                 | Setting                                                                                                                 | Type                             |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| **Locale**           | `app_locale`, `default_locale`                                                                                          | Language pickers                 |
+|                      | `date_format`, `datetime_format`                                                                                        | Dropdown (locale-aware examples) |
+|                      | `timezone`                                                                                                              | Dropdown (IANA zones)            |
+|                      | `first_day_of_week`                                                                                                     | Integer                          |
+|                      | `default_currency`                                                                                                      | Dropdown                         |
+|                      | `multi_currency_mode`                                                                                                   | Checkbox                         |
+| **Style**            | `theme`                                                                                                                 | Dropdown (light/dark/system)     |
+|                      | `primary_color`, `secondary_color`, `success_color`, `danger_color`                                                     | Color pickers                    |
+|                      | `border_radius`                                                                                                         | Integer/slider                   |
+|                      | `table_striped_rows`                                                                                                    | Checkbox                         |
+|                      | `use_individual_module_colors`                                                                                          | Checkbox                         |
+| **Display Defaults** | `list_view_limit`, `linking_panel_limit`, `related_panel_limit`                                                         | Integer                          |
+| **Data Retention**   | `retention_notifications_days`, `retention_audit_logs_days`, `retention_userinvites_days`, `retention_failed_jobs_days` | Integer (days)                   |
 
 The `SettingsController` provides live preview options for date/datetime formats based on the selected timezone. These are organization-wide defaults set by an admin — see [User Preferences](#20-user-preferences) for the separate, per-user override of these same settings.
 
@@ -422,16 +422,14 @@ The `SettingsController` provides live preview options for date/datetime formats
 
 Old, no-longer-relevant rows are pruned automatically on a daily schedule rather than accumulating indefinitely:
 
-| What's cleaned | Configurable window (default) |
-|---|---|
-| In-app/email notifications | `retention_notifications_days` (180 days) |
-| Audit log entries (and their bulk-batch affected-record rows, removed together automatically) | `retention_audit_logs_days` (730 days) |
-| Resolved user invites — accepted or expired | `retention_userinvites_days` (365 days) |
-| Failed queue jobs | `retention_failed_jobs_days` (30 days) |
+| What's cleaned                                                                                | Configurable window (default)             |
+| --------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| In-app/email notifications                                                                    | `retention_notifications_days` (180 days) |
+| Audit log entries (and their bulk-batch affected-record rows, removed together automatically) | `retention_audit_logs_days` (730 days)    |
+| Resolved user invites — accepted or expired                                                   | `retention_userinvites_days` (365 days)   |
+| Failed queue jobs                                                                             | `retention_failed_jobs_days` (30 days)    |
 
 Each window is an organization-wide default editable at `/settings/system/data-retention`, following the same admin-configurable settings pattern used throughout [Settings](#10-settings). Pending user invites are never pruned regardless of age — only ones already accepted or expired are eligible. Expired, unused password-reset tokens are cleared daily as well, governed by the existing password-reset expiry window rather than a separate retention setting.
-
-
 
 ### Customisation
 
@@ -484,11 +482,11 @@ See [Conversion Rules](#21-conversion-rules).
 
 The system has two role levels:
 
-| Flag | Meaning |
-|---|---|
-| `is_root = true` | Super admin — cannot be demoted; bypasses all checks |
+| Flag              | Meaning                                                   |
+| ----------------- | --------------------------------------------------------- |
+| `is_root = true`  | Super admin — cannot be demoted; bypasses all checks      |
 | `is_admin = true` | Admin — accesses settings, user management, impersonation |
-| neither | Regular user |
+| neither           | Regular user                                              |
 
 `AdminMiddleware` protects all routes under `/settings`, `/users`, and `/invites`.
 
@@ -516,31 +514,31 @@ Admins can impersonate any user via `POST /users/{user}/impersonate`. A persiste
 
 Routes under `/users` cover full CRUD for user accounts. Admins can set `is_admin`, assign `title`, `phone`, `mobile`, `avatar`. Password is hashed on save.
 
-| Route | Purpose |
-|---|---|
-| `GET /users` | Paginated user list |
-| `GET /users/create` | Create form |
-| `POST /users` | Store user |
-| `GET /users/{id}` | Show user record |
-| `PUT /users/{id}` | Update user |
-| `POST /users/{user}/reset-password` | Admin-initiated password reset |
-| `POST /users/{user}/send-set-password` | Send a set-password link to the user |
-| `GET /users-linking-list` | Paginated users for record-linking overlay |
+| Route                                  | Purpose                                    |
+| -------------------------------------- | ------------------------------------------ |
+| `GET /users`                           | Paginated user list                        |
+| `GET /users/create`                    | Create form                                |
+| `POST /users`                          | Store user                                 |
+| `GET /users/{id}`                      | Show user record                           |
+| `PUT /users/{id}`                      | Update user                                |
+| `POST /users/{user}/reset-password`    | Admin-initiated password reset             |
+| `POST /users/{user}/send-set-password` | Send a set-password link to the user       |
+| `GET /users-linking-list`              | Paginated users for record-linking overlay |
 
 ### Invitation System
 
 Admins can invite users by email. Accepted invites create a new User record.
 
-| Route | Purpose |
-|---|---|
-| `POST /invites` | Create single invite |
-| `POST /invites/bulk` | Create multiple invites at once |
-| `GET /invites/{token}` | Show acceptance form (guest) |
-| `POST /invites/{token}/accept` | Accept invite, set password, create account |
-| `POST /invites/{invite}/resend` | Resend invitation email |
-| `PATCH /invites/{invite}/revoke` | Revoke without deleting |
-| `DELETE /invites/{invite}` | Delete invite record |
-| `GET /users/invites` | Pending invites list |
+| Route                            | Purpose                                     |
+| -------------------------------- | ------------------------------------------- |
+| `POST /invites`                  | Create single invite                        |
+| `POST /invites/bulk`             | Create multiple invites at once             |
+| `GET /invites/{token}`           | Show acceptance form (guest)                |
+| `POST /invites/{token}/accept`   | Accept invite, set password, create account |
+| `POST /invites/{invite}/resend`  | Resend invitation email                     |
+| `PATCH /invites/{invite}/revoke` | Revoke without deleting                     |
+| `DELETE /invites/{invite}`       | Delete invite record                        |
+| `GET /users/invites`             | Pending invites list                        |
 
 ### User Profile
 
@@ -554,42 +552,42 @@ Admins can invite users by email. Accepted invites create a new User record.
 
 Templates are stored in the `pdf_templates` table. Each template is fully standalone — it owns its layout `definition` (JSON) directly.
 
-| Column | Type | Purpose |
-|---|---|---|
-| `id` | UUID | PK |
-| `module_slug` | string | Which module the template belongs to |
-| `name` | string | Human-readable name |
-| `blade_view` | string | Blade view path |
-| `description` | string (nullable) | Optional admin description |
-| `is_default` | boolean | Only one default per module at a time |
-| `definition` | JSON | Section tree that drives the rendered output |
+| Column        | Type              | Purpose                                      |
+| ------------- | ----------------- | -------------------------------------------- |
+| `id`          | UUID              | PK                                           |
+| `module_slug` | string            | Which module the template belongs to         |
+| `name`        | string            | Human-readable name                          |
+| `blade_view`  | string            | Blade view path                              |
+| `description` | string (nullable) | Optional admin description                   |
+| `is_default`  | boolean           | Only one default per module at a time        |
+| `definition`  | JSON              | Section tree that drives the rendered output |
 
 ### Template Manager (Settings)
 
 Full CRUD at `/settings/pdf-templates`:
 
-| Route | Method | Action |
-|---|---|---|
-| `/settings/pdf-templates` | GET | List — paginated, searchable by name or module label |
-| `/settings/pdf-templates/create?module=X` | GET | Create — pre-loads fields, relationships, line-item fields for selected module |
-| `/settings/pdf-templates` | POST | Store — validates the section definition, ensures a single default per module |
-| `/settings/pdf-templates/preview` | POST | Live preview — server-renders with sample data |
-| `/settings/pdf-templates/{id}` | GET/PUT/DELETE | Edit / update / delete |
-| `/settings/pdf-templates/{id}/default` | POST | Atomically sets one default, clears others |
+| Route                                     | Method         | Action                                                                         |
+| ----------------------------------------- | -------------- | ------------------------------------------------------------------------------ |
+| `/settings/pdf-templates`                 | GET            | List — paginated, searchable by name or module label                           |
+| `/settings/pdf-templates/create?module=X` | GET            | Create — pre-loads fields, relationships, line-item fields for selected module |
+| `/settings/pdf-templates`                 | POST           | Store — validates the section definition, ensures a single default per module  |
+| `/settings/pdf-templates/preview`         | POST           | Live preview — server-renders with sample data                                 |
+| `/settings/pdf-templates/{id}`            | GET/PUT/DELETE | Edit / update / delete                                                         |
+| `/settings/pdf-templates/{id}/default`    | POST           | Atomically sets one default, clears others                                     |
 
 ### Section-Based Definition Format
 
 A template `definition` is a JSON object of sections. Each section has a `type` that controls how it is rendered:
 
-| Section type | Description |
-|---|---|
-| `header` | Two-column header row grid; left/right slots each hold a `kind` item |
-| `footer` | Fixed-to-bottom footer; same two-column row format |
-| `fields` | Horizontal row of labelled field values; supports `full` or `half` width |
-| `text` | Static text/notes block with optional title |
-| `divider` | Horizontal rule |
-| `relationship` | Table of related records with configurable columns |
-| `line_items` | Full line-items table with subtotal / tax / discount / total summary |
+| Section type   | Description                                                              |
+| -------------- | ------------------------------------------------------------------------ |
+| `header`       | Two-column header row grid; left/right slots each hold a `kind` item     |
+| `footer`       | Fixed-to-bottom footer; same two-column row format                       |
+| `fields`       | Horizontal row of labelled field values; supports `full` or `half` width |
+| `text`         | Static text/notes block with optional title                              |
+| `divider`      | Horizontal rule                                                          |
+| `relationship` | Table of related records with configurable columns                       |
+| `line_items`   | Full line-items table with subtotal / tax / discount / total summary     |
 
 **Slot `kind` values** (used inside `header`/`footer` rows and `fields` sections): `logo`, `meta` (company name/address/phone/email), `title` (document title + record number), `field` (a single record field value), `page_number`, `date`.
 
@@ -676,11 +674,11 @@ Every create/update/delete on any module record, every relationship link/unlink,
 
 ### Two tables, two different shapes
 
-| Table | Shape | Purpose |
-|---|---|---|
-| `audit_logs` | Append-only, one row per event | `created`/`updated`/`deleted`/`linked`/`unlinked` — module, record, actor, action, and a JSON diff |
+| Table                        | Shape                                         | Purpose                                                                                                                 |
+| ---------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `audit_logs`                 | Append-only, one row per event                | `created`/`updated`/`deleted`/`linked`/`unlinked` — module, record, actor, action, and a JSON diff                      |
 | `audit_log_affected_records` | Append-only, one row per (batch, record) pair | Lets a bulk-operation batch row be attributed back to every individual record it touched, each with its own prior value |
-| `impersonation_sessions` | Mutable, one row per session | Who impersonated whom, from what IP, start/end (null while ongoing) |
+| `impersonation_sessions`     | Mutable, one row per session                  | Who impersonated whom, from what IP, start/end (null while ongoing)                                                     |
 
 ### Write paths
 
@@ -700,11 +698,11 @@ Fields flagged as calculated (e.g. `total`/`subtotal`/`tax_amount`/`discount_amo
 
 ### Frontend
 
-| Surface | Route | Gate |
-|---|---|---|
-| Per-record history | Record page action menu → "View History" (modal) | Same visibility as the record itself |
-| Global audit log | `/settings/audit-trail` | Admin |
-| Impersonation sessions | `/settings/impersonation-sessions` | Admin |
+| Surface                | Route                                            | Gate                                 |
+| ---------------------- | ------------------------------------------------ | ------------------------------------ |
+| Per-record history     | Record page action menu → "View History" (modal) | Same visibility as the record itself |
+| Global audit log       | `/settings/audit-trail`                          | Admin                                |
+| Impersonation sessions | `/settings/impersonation-sessions`               | Admin                                |
 
 Both Settings pages filter using the app's real field components (searchable dropdowns, date pickers) rather than native HTML inputs. Clicking a row in the global audit log opens one of two views depending on the row: a row with a specific record behind it opens the per-record History modal, with full field-aware old→new rendering (resolved field labels, dropdown option labels, related-record names, locale-aware date formatting). A bulk-batch row instead opens a breakdown view listing every record the batch touched — each with its own resolved label and, for updates, its own old→new value — paginated so this stays fast even for a batch spanning an entire module's table.
 
@@ -724,11 +722,11 @@ Within the per-record History modal itself, a bulk-batch entry the viewed record
 
 Any module's list view offers an **Import** option (next to Export in the actions dropdown) that creates or updates many records at once from an uploaded file, through a guided multi-step wizard: upload → map columns → optional match field → confirm → results.
 
-| Action | Route | Controller method |
-|---|---|---|
-| Upload & preview (parse headers/sample rows) | `POST /{module}/import/preview` | `ImportController@preview` |
-| Start import | `POST /{module}/import/{import}/start` | `ImportController@start` |
-| Poll progress | `GET /{module}/import/{import}/status` | `ImportController@status` |
+| Action                                       | Route                                  | Controller method          |
+| -------------------------------------------- | -------------------------------------- | -------------------------- |
+| Upload & preview (parse headers/sample rows) | `POST /{module}/import/preview`        | `ImportController@preview` |
+| Start import                                 | `POST /{module}/import/{import}/start` | `ImportController@start`   |
+| Poll progress                                | `GET /{module}/import/{import}/status` | `ImportController@status`  |
 
 Frontend: `ImportModal.vue` (wizard flow) and `ImportFieldSelect.vue` (per-column field picker).
 
@@ -794,28 +792,28 @@ Activities use the same many-to-many relationship system as any other module rel
 
 ### Route
 
-| Action | Route |
-|---|---|
+| Action                                        | Route                                       |
+| --------------------------------------------- | ------------------------------------------- |
 | Get a record's merged activity/audit timeline | `GET /modules/{module}/{recordId}/timeline` |
 
 ### Meeting Attendees
 
 **Meetings is a special case.** Everything else in this document that's per-module — line items, activity linking, the timeline sidebar — is a flag any module can opt into through the Module Builder (see [Module Flags Reference](#module-flags-reference)). Attendees is not: it is built specifically for the Meetings module (a dedicated `meeting_attendees` table, `MeetingOrganizerObserver`, `AttendeesPanel.vue`, and a dedicated Layout Builder section), not a general capability, and there's no flag that turns it on for another module.
 
-Meetings carry a dedicated attendee list, separate from the generic activity-linking relationships above — it tracks *who* is invited and their individual RSVP/attendance, not just which records the meeting relates to.
+Meetings carry a dedicated attendee list, separate from the generic activity-linking relationships above — it tracks _who_ is invited and their individual RSVP/attendance, not just which records the meeting relates to.
 
 #### Data
 
 `meeting_attendees` is a plain FK to `meetings`, not polymorphic — this is Meetings-only, not a general per-module capability like line items:
 
-| Column | Purpose |
-|---|---|
+| Column                      | Purpose                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------- |
 | `source_type` / `source_id` | Nullable link to a Contact, Lead, or User record. Null on both means an external guest. |
-| `name` / `email` | Snapshotted at add time for linked attendees; typed directly for external guests. |
-| `role` | `organizer` \| `required` \| `optional` |
-| `rsvp_status` | `invited` \| `accepted` \| `declined` \| `tentative` |
-| `attendance_status` | `attended` \| `no_show`, null until recorded |
-| `responded_at` | Set automatically whenever `rsvp_status` moves off `invited` |
+| `name` / `email`            | Snapshotted at add time for linked attendees; typed directly for external guests.       |
+| `role`                      | `organizer` \| `required` \| `optional`                                                 |
+| `rsvp_status`               | `invited` \| `accepted` \| `declined` \| `tentative`                                    |
+| `attendance_status`         | `attended` \| `no_show`, null until recorded                                            |
+| `responded_at`              | Set automatically whenever `rsvp_status` moves off `invited`                            |
 
 Valid values for `role`, `rsvp_status`, and `attendance_status`, plus which modules can be picked as an attendee source, are defined once in `config/meeting_attendees.php` and shared to the frontend via Inertia (`meetingAttendeeOptions`) — the option lists shown in the UI and the values accepted by server-side validation read from the same source.
 
@@ -837,7 +835,7 @@ Valid values for `role`, `rsvp_status`, and `attendance_status`, plus which modu
 
 `AttendeesPanel.vue` lists attendees sorted Organizer → Required → Optional (rank driven by `config/meeting_attendees.php`, re-applied client-side so a new or edited row lands correctly without a refetch):
 
-- Avatar and highlight color reflect the *linked module's* color (Contact/Lead/User), not the Meeting's own — external guests get a neutral gray. Colors respect the `use_individual_module_colors` setting the same way every other related-record display does.
+- Avatar and highlight color reflect the _linked module's_ color (Contact/Lead/User), not the Meeting's own — external guests get a neutral gray. Colors respect the `use_individual_module_colors` setting the same way every other related-record display does.
 - RSVP and attendance render as colored pill badges. Their edit controls stay hidden until a row is hovered (or actively mid-edit), toggled by a pen/check icon rather than a persistent inline dropdown.
 - "Mark all attended" bulk-sets every attendee with no recorded attendance to `attended`.
 
@@ -847,12 +845,12 @@ The Attendees section is a fixed, non-field layout section (`has_attendees: true
 
 #### API
 
-| Action | Route |
-|---|---|
-| List a meeting's attendees | `GET /meeting-attendees?meeting_id=X` |
-| Add an attendee | `POST /meeting-attendees` |
-| Update an attendee | `PUT /meeting-attendees/{id}` |
-| Remove an attendee | `DELETE /meeting-attendees/{id}` |
+| Action                                    | Route                                       |
+| ----------------------------------------- | ------------------------------------------- |
+| List a meeting's attendees                | `GET /meeting-attendees?meeting_id=X`       |
+| Add an attendee                           | `POST /meeting-attendees`                   |
+| Update an attendee                        | `PUT /meeting-attendees/{id}`               |
+| Remove an attendee                        | `DELETE /meeting-attendees/{id}`            |
 | Mark all unrecorded attendees as attended | `POST /meeting-attendees/mark-all-attended` |
 
 ### Reference
@@ -867,26 +865,26 @@ Nine event types notify the relevant user automatically — no per-module setup 
 
 ### Triggers
 
-| Type | Triggered from | Notified |
-|---|---|---|
-| Record assigned | `AuditObserver` — record created/updated with `owner_id` set to someone else | New owner |
-| Activity on a record you own | `AuditObserver` (update/delete) and `RelationshipService::link()` (activity linked) | Record owner, unless they're the actor |
-| Meeting invite | `MeetingAttendeeController::store()` | The invited user |
-| Task due soon | `NotifyTasksDueSoon` (scheduled hourly) | Task owner |
-| User invite accepted | `InviteService::accept()` | Whoever sent the invite |
-| User invite expired | `NotifyExpiredInvites` (scheduled hourly) | Whoever sent the invite |
-| Account impersonated | `UserController::impersonate()` | The impersonated user |
-| Record converted | A [conversion rule](#21-conversion-rules) runs, manual or automatic | Source record's owner, unless they're the one who ran it |
-| Automatic conversion triggered | Your edit satisfies an automatic [conversion rule](#21-conversion-rules)'s conditions | The person whose edit triggered it |
+| Type                           | Triggered from                                                                        | Notified                                                 |
+| ------------------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Record assigned                | `AuditObserver` — record created/updated with `owner_id` set to someone else          | New owner                                                |
+| Activity on a record you own   | `AuditObserver` (update/delete) and `RelationshipService::link()` (activity linked)   | Record owner, unless they're the actor                   |
+| Meeting invite                 | `MeetingAttendeeController::store()`                                                  | The invited user                                         |
+| Task due soon                  | `NotifyTasksDueSoon` (scheduled hourly)                                               | Task owner                                               |
+| User invite accepted           | `InviteService::accept()`                                                             | Whoever sent the invite                                  |
+| User invite expired            | `NotifyExpiredInvites` (scheduled hourly)                                             | Whoever sent the invite                                  |
+| Account impersonated           | `UserController::impersonate()`                                                       | The impersonated user                                    |
+| Record converted               | A [conversion rule](#21-conversion-rules) runs, manual or automatic                   | Source record's owner, unless they're the one who ran it |
+| Automatic conversion triggered | Your edit satisfies an automatic [conversion rule](#21-conversion-rules)'s conditions | The person whose edit triggered it                       |
 
 ### Delivery channels
 
 Each type broadcasts over up to three independent channels, controlled by `BaseAppNotification::via()`:
 
-| Channel | Surface | Toggle |
-|---|---|---|
+| Channel                  | Surface                                                     | Toggle                |
+| ------------------------ | ----------------------------------------------------------- | --------------------- |
 | `database` + `broadcast` | Bell dropdown + live toast (bundled as one "in-app" toggle) | `notify_inapp_<type>` |
-| `mail` | Email | `notify_email_<type>` |
+| `mail`                   | Email                                                       | `notify_email_<type>` |
 
 A live push renders its title/body server-side at broadcast time, in the recipient's own saved language (`HasLocalePreference`) — not the actor's locale or the queue worker's default — so a German-language user always sees a clean, single-language notification regardless of who triggered it or what locale the background job happens to run under.
 
@@ -894,10 +892,10 @@ A live push renders its title/body server-side at broadcast time, in the recipie
 
 Both toggles exist at two levels, the same "system default with a personal override" pattern used throughout [Settings](#10-settings):
 
-| Level | Location | Scope |
-|---|---|---|
-| System-wide default | `/settings/system/notifications` (admin) | Organization default for every type/channel pair |
-| Personal override | Preferences → Notifications | This user only; unset falls back to the system default |
+| Level               | Location                                 | Scope                                                  |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------ |
+| System-wide default | `/settings/system/notifications` (admin) | Organization default for every type/channel pair       |
+| Personal override   | Preferences → Notifications              | This user only; unset falls back to the system default |
 
 Both pages render the same 18 email/in-app pairs as a two-column toggle table (`Settings/Notifications.vue`, `Preferences/Index.vue`), reading from and writing to the same 18 `setting_values` rows (`setting_item = notifications`) — an admin sets the organization's defaults, a user can independently override either channel for any type on their own account.
 
@@ -915,12 +913,12 @@ Every user has a `/preferences` page (`PreferencesController`, `Preferences/Inde
 
 ### Tabs
 
-| Tab | Fields |
-|---|---|
-| General | App language, date format, datetime format |
-| Style | Primary/secondary/success/danger colors, "use individual module colors" |
-| Lists & Panels | Related panel limit, list view limit, linking panel limit |
-| Notifications | All 18 email/in-app toggles — see [Notifications](#19-notifications) |
+| Tab            | Fields                                                                  |
+| -------------- | ----------------------------------------------------------------------- |
+| General        | App language, date format, datetime format                              |
+| Style          | Primary/secondary/success/danger colors, "use individual module colors" |
+| Lists & Panels | Related panel limit, list view limit, linking panel limit               |
+| Notifications  | All 18 email/in-app toggles — see [Notifications](#19-notifications)    |
 
 Tabs are reflected in the URL (`?tab=general`), so any tab can be linked to directly and the browser's back/forward buttons move between them — `NotificationBell.vue`'s settings icon, for example, opens straight to `/preferences?tab=notifications`.
 

@@ -1,0 +1,9 @@
+# Used as virtual_mailbox_maps: a catch-all existence check. Returning a
+# match for ANY local-part is deliberate — Postfix only decides whether a
+# recipient domain+address is deliverable at all; which specific user or
+# capture address it maps to is resolved later, in the Laravel app
+# (EmailInboundWebhookController::resolveMailbox), not here. Rejecting
+# truly unknown addresses at the app layer (silent 202, no Email record)
+# is preferable to rejecting at the SMTP layer, since it avoids leaking
+# which addresses are valid to a probing sender.
+/^.+@.+\.cubrel\.com$/    1

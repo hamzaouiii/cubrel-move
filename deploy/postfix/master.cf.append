@@ -1,0 +1,10 @@
+# --- Cubrel inbound email capture --------------------------------------
+# Appended by deploy/setup-postfix.sh. Standard Postfix "pipe to a
+# script" pattern (see `man 8 pipe` for the flags= letters) — runs as the
+# unprivileged cubrelrelay system user, not root or the default nobody.
+# ${original_recipient} is the actual SMTP envelope recipient (RCPT TO),
+# which is required here, not optional: a BCC'd address never appears in
+# the message's To:/Cc: headers by definition, so the envelope recipient
+# is the only reliable way to know which capture address this was sent to.
+cubrelrelay unix  -       n       n       -       -       pipe
+  flags=DRhu user=cubrelrelay argv=/usr/local/bin/cubrel-inbound-relay.sh ${original_recipient}

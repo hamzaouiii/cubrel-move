@@ -28,9 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'mailtrap' => [
-        'api_token' => env('MAILTRAP_API_TOKEN'),
-        'inbound_webhook_secret' => env('MAILTRAP_INBOUND_WEBHOOK_SECRET'),
+    'inbound_relay' => [
+        // Shared secret between this app and the self-hosted Postfix
+        // catch-all relay (deploy/cubrel-inbound-relay.sh) — server-wide,
+        // not per-tenant, since the relay isn't a third party. Generated
+        // once by deploy/setup-postfix.sh.
+        'secret' => env('INBOUND_RELAY_SECRET'),
     ],
 
     'slack' => [

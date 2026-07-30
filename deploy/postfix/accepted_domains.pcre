@@ -1,0 +1,5 @@
+# Used as virtual_mailbox_domains: matches any subdomain of cubrel.com
+# (every tenant), so Postfix accepts SMTP for all of them without listing
+# each tenant domain individually. New tenants need no Postfix changes —
+# only the one-time wildcard MX record in Cloudflare covers them.
+/^.+\.cubrel\.com$/    1

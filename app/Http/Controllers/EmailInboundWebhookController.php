@@ -9,25 +9,31 @@ use App\Services\Relationships\RelationshipService;
 use App\Services\Users\EmailCaptureAddressService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
+use ZBateson\MailMimeParser\Header\AddressHeader;
+use ZBateson\MailMimeParser\Header\IHeader;
+use ZBateson\MailMimeParser\MailMimeParser;
 
 /**
- * Receives Mailtrap's inbound-email webhook for BCC-captured mail.
+ * Receives inbound email relayed by the self-hosted Postfix catch-all
+ * (see deploy/postfix/ and deploy/cubrel-inbound-relay.sh) for every
+ * *.cubrel.com tenant domain. Postfix accepts SMTP for all of them and
+ * pipes each message to a thin relay script, which POSTs the raw RFC822
+ * body here along with the original SMTP envelope recipient in a header
+ * — the only reliable source of the actual capture address, since a
+ * BCC'd address never appears in the message's own To:/Cc: headers.
  *
- * Mailtrap's webhook is a lightweight notification, not the full parsed
- * email: it POSTs {"events": [{"event": "inbound.message_received",
- * "inbox_id": ..., "message_id": ..., "from": "Name <email>", ...}]},
- * signed via HMAC-SHA256 in the "mailtrap-signature" header. The full
- * subject/body/recipients are fetched separately via
- * GET /api/inbound/inboxes/{inbox_id}/messages/{message_id} — confirmed
- * against a live webhook payload + docs.mailtrap.io on 2026-07-30.
+ * Trust model: the relay runs on infrastructure we control (not a third
+ * party across the internet), so verification is a shared secret header
+ * rather than a per-provider HMAC scheme — see hasValidSecret().
  */
 class EmailInboundWebhookController extends Controller
 {
-    protected const SIGNATURE_HEADER = 'mailtrap-signature';
+    protected const SECRET_HEADER = 'X-Cubrel-Relay-Secret';
+
+    protected const RECIPIENT_HEADER = 'X-Cubrel-Relay-Recipient';
 
     public function __construct(protected EmailCaptureAddressService $addresses)
     {
@@ -35,86 +41,79 @@ class EmailInboundWebhookController extends Controller
 
     public function handle(Request $request): Response
     {
-        if (! $this->hasValidSignature($request)) {
-            Log::warning('Rejected inbound email webhook: bad signature.');
+        if (! $this->hasValidSecret($request)) {
+            Log::warning('Rejected inbound email relay: bad or missing secret.');
 
             return response('', 401);
         }
 
-        foreach ((array) $request->input('events', []) as $event) {
-            if (($event['event'] ?? null) !== 'inbound.message_received') {
-                continue;
-            }
+        $recipient = $request->header(self::RECIPIENT_HEADER);
 
-            $this->processMessage((int) $event['inbox_id'], (string) $event['message_id']);
+        if (! $recipient) {
+            Log::warning('Inbound email relay: missing recipient header.');
+
+            return response('', 400);
         }
 
-        return response('', 200);
-    }
-
-    protected function processMessage(int $inboxId, string $messageId): void
-    {
-        if (Email::where('provider_message_id', $messageId)->exists()) {
-            // Mailtrap delivers at-least-once — a retry of an already
-            // processed message is a no-op, not an error.
-            return;
-        }
-
-        $message = $this->fetchMessage($inboxId, $messageId);
-
-        if (! $message) {
-            Log::warning('Inbound email webhook: could not fetch message.', compact('inboxId', 'messageId'));
-
-            return;
-        }
-
-        // TEMPORARY, remove once the shape is nailed down — the webhook
-        // event's "from" was a plain string but the Messages API's "to"
-        // turned out to be an array, so log the raw shape while we adapt.
-        Log::debug('Mailtrap message payload', ['message' => $message]);
-
-        $fromList = $this->normalizeAddressList($message['from'] ?? null);
-        $toList = $this->normalizeAddressList($message['to'] ?? null);
-        $ccList = $this->normalizeAddressList($message['cc'] ?? null);
-
-        $recipient = $toList[0]['email'] ?? null;
-        $mailbox = $recipient ? $this->resolveMailbox($recipient) : null;
+        $mailbox = $this->resolveMailbox($recipient);
 
         if (! $mailbox) {
-            Log::info('Inbound email webhook: no address matched recipient.', ['recipient' => $recipient]);
+            // Not one of ours — acknowledge so the relay script doesn't
+            // treat this as a failure worth retrying, but nothing gets
+            // created. Deliberately 202 not 404: doesn't confirm or deny
+            // which addresses are valid to whoever sent it.
+            Log::info('Inbound email relay: no address matched recipient.', ['recipient' => $recipient]);
 
-            return;
+            return response('', 202);
         }
 
-        $fromAddress = $fromList[0]['email'] ?? null;
-        $fromName = $fromList[0]['name'] ?? null;
+        $raw = $request->getContent();
+        $message = (new MailMimeParser())->parse($raw, false);
+
+        // RFC 5322 Message-ID is globally unique per message. Falls back
+        // to a content hash for the rare message that omits it, so a
+        // retried relay delivery still can't double-create a record.
+        $messageId = $message->getMessageId() ?: hash('sha256', $raw);
+
+        if (Email::where('provider_message_id', $messageId)->exists()) {
+            return response('', 200);
+        }
+
+        $fromHeader = $message->getHeader('from');
+        $fromAddress = $fromHeader instanceof AddressHeader ? $fromHeader->getEmail() : null;
+        $fromName = $fromHeader instanceof AddressHeader ? $fromHeader->getPersonName() : null;
+
+        $toAddresses = $this->extractAddresses($message->getHeader('to'));
+        $ccAddresses = $this->extractAddresses($message->getHeader('cc'));
 
         $email = Email::create([
-            'name' => $message['subject'] ?: '(no subject)',
-            'body' => $message['text_body'] ?? $message['html_body'] ?? null,
+            'name' => $message->getSubject() ?: '(no subject)',
+            'body' => $message->getTextContent() ?? $message->getHtmlContent(),
             'from_address' => $fromAddress,
             'from_name' => $fromName,
-            'to_addresses' => array_column($toList, 'email'),
-            'cc_addresses' => array_column($ccList, 'email'),
-            'sent_at' => isset($message['received_at']) ? Carbon::parse($message['received_at']) : now(),
+            'to_addresses' => $toAddresses,
+            'cc_addresses' => $ccAddresses,
+            'sent_at' => $this->parseDate($message->getHeaderValue('date')),
             'direction' => 'logged',
             'provider_message_id' => $messageId,
             'mailbox' => $mailbox['slug'],
             // Null owner_id on a team address falls through to BaseModule's
-            // default owner (same as any other module), not an error case.
+            // default owner, same as any other module.
             'owner_id' => $mailbox['owner_id'],
         ]);
 
         $this->linkMatchingContacts($email, array_filter(array_merge(
             [$fromAddress],
-            array_column($toList, 'email'),
-            array_column($ccList, 'email'),
+            $toAddresses,
+            $ccAddresses,
         )));
+
+        return response('', 200);
     }
 
     /**
-     * Resolves an inbound recipient address to whichever mailbox owns it:
-     * a user's personal username-based address first, then an
+     * Resolves the envelope recipient to whichever mailbox owns it: a
+     * user's personal username-based address first, then an
      * admin-created EmailCaptureAddress (which may be ownerless — a team
      * mailbox like "leads"). Returns null if nothing matches.
      *
@@ -128,11 +127,6 @@ class EmailInboundWebhookController extends Controller
             return ['slug' => $user->username, 'owner_id' => $user->id];
         }
 
-        // Lowercased for the same reason as EmailCaptureAddressService's
-        // username lookup — SMTP clients don't reliably lowercase
-        // local-parts. Slugs are already enforced lowercase at creation
-        // (EmailCaptureAddressController's validation regex), so a plain
-        // exact match against the normalized incoming value is enough.
         $localPart = Str::lower(Str::before($recipient, '@'));
         $address = EmailCaptureAddress::where('slug', $localPart)->first();
 
@@ -144,43 +138,38 @@ class EmailInboundWebhookController extends Controller
     }
 
     /**
-     * GET /api/inbound/inboxes/{inbox_id}/messages/{message_id} — returns
-     * the full parsed email the webhook only notified us about.
+     * @return string[]
      */
-    protected function fetchMessage(int $inboxId, string $messageId): ?array
+    protected function extractAddresses(?IHeader $header): array
     {
-        $token = config('services.mailtrap.api_token');
-
-        $request = Http::withHeaders(['Api-Token' => $token]);
-
-        // Local Windows PHP installs commonly lack a configured CA bundle,
-        // which cURL needs to verify Mailtrap's certificate. Skip
-        // verification only in local dev — never in production, where the
-        // server's CA bundle is properly configured.
-        if (app()->environment('local')) {
-            $request = $request->withoutVerifying();
+        if (! $header instanceof AddressHeader) {
+            return [];
         }
 
-        $response = $request->get("https://mailtrap.io/api/inbound/inboxes/{$inboxId}/messages/{$messageId}");
+        return array_values(array_filter(array_map(
+            fn ($part) => $part->getEmail(),
+            $header->getAddresses(),
+        )));
+    }
 
-        if (! $response->successful()) {
-            Log::warning('Mailtrap messages API request failed.', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            return null;
+    protected function parseDate(?string $raw): Carbon
+    {
+        if (! $raw) {
+            return now();
         }
 
-        return $response->json();
+        try {
+            return Carbon::parse($raw);
+        } catch (\Exception) {
+            return now();
+        }
     }
 
     /**
      * Case-insensitive lookup against the indexed contacts.email column
-     * (see 2026_07_29_120001_add_email_index_to_contacts_table.php),
-     * linking every match via the generic activity relationship
-     * (emails is_activity => contacts has_activity) rather than a
-     * bespoke pivot.
+     * (see 2025_12_04_115225_create_contacts_table.php), linking every
+     * match via the generic activity relationship (emails is_activity =>
+     * contacts has_activity) rather than a bespoke pivot.
      */
     protected function linkMatchingContacts(Email $email, array $addresses): void
     {
@@ -201,73 +190,20 @@ class EmailInboundWebhookController extends Controller
             ));
     }
 
-    protected function hasValidSignature(Request $request): bool
+    protected function hasValidSecret(Request $request): bool
     {
-        $secret = config('services.mailtrap.inbound_webhook_secret');
+        $secret = config('services.inbound_relay.secret');
 
         if (! $secret) {
             return false;
         }
 
-        $signature = $request->header(self::SIGNATURE_HEADER);
+        $provided = $request->header(self::SECRET_HEADER);
 
-        if (! $signature) {
+        if (! $provided) {
             return false;
         }
 
-        $expected = hash_hmac('sha256', $request->getContent(), $secret);
-
-        return hash_equals($expected, $signature);
-    }
-
-    /**
-     * Mailtrap isn't consistent about from/to/cc shape between the webhook
-     * event (plain "Name <email>" string) and the Messages API response
-     * (array — of strings, or of {email, name} objects, or a single
-     * {email, name} object for a single recipient — exact shape still
-     * being confirmed against live payloads). Normalizes any of those into
-     * a flat list of ['email' => ..., 'name' => ...].
-     */
-    protected function normalizeAddressList(mixed $raw): array
-    {
-        if ($raw === null || $raw === '') {
-            return [];
-        }
-
-        // A single {email, name}-shaped object, not a list of them.
-        if (is_array($raw) && array_key_exists('email', $raw)) {
-            $raw = [$raw];
-        }
-
-        if (is_string($raw)) {
-            $raw = explode(',', $raw);
-        }
-
-        return collect($raw)
-            ->map(function ($item) {
-                if (is_array($item)) {
-                    return ['email' => $item['email'] ?? null, 'name' => $item['name'] ?? null];
-                }
-
-                [$email, $name] = $this->splitAddress((string) $item);
-
-                return ['email' => $email, 'name' => $name];
-            })
-            ->filter(fn (array $a) => filled($a['email']))
-            ->values()
-            ->all();
-    }
-
-    /**
-     * Parses an RFC-2822-style "Name <email>" string (or a bare address)
-     * into [email, name].
-     */
-    protected function splitAddress(string $raw): array
-    {
-        if (preg_match('/^(.*?)<(.+?)>$/', trim($raw), $matches)) {
-            return [trim($matches[2]), trim($matches[1], " \t\"") ?: null];
-        }
-
-        return [trim($raw) ?: null, null];
+        return hash_equals($secret, $provided);
     }
 }
