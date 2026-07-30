@@ -54,6 +54,23 @@ const onItemClick = (notification) => {
   open.value = false;
 };
 
+const HOVER_READ_DELAY = 500;
+const hoverTimers = {};
+
+const onItemMouseEnter = (notification) => {
+  if (notification.read_at) return;
+  clearTimeout(hoverTimers[notification.id]);
+  hoverTimers[notification.id] = setTimeout(() => {
+    markRead(notification.id);
+    delete hoverTimers[notification.id];
+  }, HOVER_READ_DELAY);
+};
+
+const onItemMouseLeave = (notification) => {
+  clearTimeout(hoverTimers[notification.id]);
+  delete hoverTimers[notification.id];
+};
+
 const relativeTime = (value) => {
   const diffMs = Date.now() - new Date(value).getTime();
   const diffMin = Math.floor(diffMs / 60000);
@@ -117,6 +134,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
+  Object.values(hoverTimers).forEach(clearTimeout);
 });
 
 const openPreferences = () => {
@@ -233,6 +251,8 @@ const hideTooltip = () => {
                 class="notification-item"
                 :class="{ 'notification-item--unread': !n.read_at }"
                 @click="onItemClick(n)"
+                @mouseenter="onItemMouseEnter(n)"
+                @mouseleave="onItemMouseLeave(n)"
               >
                 <div class="notification-item__icon">
                   <i :class="n.data.icon || 'fa-solid fa-bell'"></i>
