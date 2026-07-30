@@ -12,7 +12,9 @@
 #                terminal instead of emailed.
 #
 # Requires deploy/install-systemd-units.sh to have been run once already,
-# and deploy/provision.env to exist (copy from provision.env.example).
+# deploy/provision.env to exist (copy from provision.env.example), and
+# `jq` to be installed (used to parse the Cloudflare/Mailtrap API responses
+# when setting up per-tenant inbound email capture).
 set -euo pipefail
 
 # Colors only when stdout is an actual terminal — plain text if redirected
@@ -36,6 +38,11 @@ usage() {
 
 if [ "$(id -u)" -ne 0 ]; then
   err "Must run as root (needs to write to /etc/nginx, /etc/systemd, chown www-data)."
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  err "jq is required (used to parse the Cloudflare/Mailtrap API responses) — install it first."
   exit 1
 fi
 
@@ -200,6 +207,62 @@ else
   echo "    Create it manually: CREATE DATABASE \`${DB_DATABASE}\`; GRANT ALL ON \`${DB_DATABASE}\`.* TO '${DB_USERNAME}'@'localhost';"
   read -rp "Press enter once the database exists and is reachable... "
 fi
+
+# --- 4b. Inbound email capture (Cloudflare DNS + Mailtrap) ------------------
+# Users BCC "log+{token}@${DOMAIN}" to log an email against a CRM record
+# (see app/Http/Controllers/EmailInboundWebhookController.php). This
+# registers ${DOMAIN} as a Mailtrap inbound domain, points its MX record
+# at Mailtrap via the Cloudflare API, and wires Mailtrap's webhook back to
+# this tenant. MX only — no new subdomain/TLS is needed since the existing
+# nginx vhost + wildcard cert already serve https://${DOMAIN}.
+#
+# Skipped entirely if the ops-level Mailtrap/Cloudflare credentials aren't
+# configured in provision.env, so this stays optional per-deployment.
+MAILTRAP_INBOUND_WEBHOOK_SECRET=""
+if [ -n "${MAILTRAP_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ZONE_ID:-}" ]; then
+  step "Registering '${DOMAIN}' as a Mailtrap inbound domain"
+
+  MAILTRAP_INBOUND_WEBHOOK_SECRET=$(openssl rand -hex 20)
+  WEBHOOK_URL="https://${DOMAIN}/api/webhooks/email-inbound"
+
+  # NOTE: endpoint/payload shape verified against Mailtrap's Inbound Email
+  # API docs at the time this was written — re-check before relying on it
+  # in production, providers change API surfaces.
+  MAILTRAP_RESPONSE=$(curl -sS -X POST "https://mailtrap.io/api/accounts/inbound_domains" \
+    -H "Api-Token: ${MAILTRAP_API_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d "$(jq -n --arg domain "$DOMAIN" --arg url "$WEBHOOK_URL" --arg secret "$MAILTRAP_INBOUND_WEBHOOK_SECRET" \
+      '{domain: $domain, webhook_url: $url, webhook_secret: $secret}')")
+
+  # Expected shape: { "id": ..., "dns_records": [ {"type": "MX"|"TXT", "name": "...", "value": "...", "priority": ...}, ... ] }
+  DNS_RECORD_COUNT=$(echo "$MAILTRAP_RESPONSE" | jq '.dns_records | length' 2>/dev/null || echo 0)
+
+  if [ "$DNS_RECORD_COUNT" -gt 0 ] 2>/dev/null; then
+    step "Writing $DNS_RECORD_COUNT DNS record(s) to Cloudflare for '${DOMAIN}'"
+    echo "$MAILTRAP_RESPONSE" | jq -c '.dns_records[]' | while read -r record; do
+      RTYPE=$(echo "$record" | jq -r '.type')
+      RNAME=$(echo "$record" | jq -r '.name')
+      RVALUE=$(echo "$record" | jq -r '.value')
+      RPRIORITY=$(echo "$record" | jq -r '.priority // 10')
+
+      CF_PAYLOAD=$(jq -n --arg type "$RTYPE" --arg name "$RNAME" --arg content "$RVALUE" --argjson priority "$RPRIORITY" \
+        '{type: $type, name: $name, content: $content, priority: $priority, ttl: 3600}')
+
+      curl -sS -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records" \
+        -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "$CF_PAYLOAD" >/dev/null
+    done
+  else
+    warn "Mailtrap did not return DNS records to provision — check MAILTRAP_RESPONSE manually:"
+    echo "    $MAILTRAP_RESPONSE"
+  fi
+else
+  warn "MAILTRAP_API_TOKEN / CLOUDFLARE_API_TOKEN / CLOUDFLARE_ZONE_ID not set — skipping inbound email capture setup."
+  echo "    Emails module will still work for manual entry; BCC capture just won't be wired up for this tenant."
+fi
+
+set_env "MAILTRAP_INBOUND_WEBHOOK_SECRET" "$MAILTRAP_INBOUND_WEBHOOK_SECRET"
 
 # --- 5. Build & migrate ------------------------------------------------------
 # Full install, not --no-dev: fakerphp/faker is a require-dev package but

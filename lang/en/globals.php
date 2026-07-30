@@ -756,6 +756,36 @@ return [
         ],
     ],
 
+    'email_capture_addresses' => [
+        'labels' => [
+            'page_title' => 'Email Capture Addresses',
+            'title' => 'Email Capture Addresses',
+            'slug_label' => 'Address',
+            'label_label' => 'Label',
+            'owner_label' => 'Owner (optional)',
+            'no_owner_option' => 'No owner (team mailbox)',
+            'slug_column' => 'Address',
+            'label_column' => 'Label',
+            'owner_column' => 'Owner',
+            'your_address_label' => 'Email capture address',
+        ],
+        'hints' => [
+            'slug_hint' => 'Any email BCC\'d or sent to this address is logged in the Emails module.',
+        ],
+        'buttons' => [
+            'create_btn' => 'Create address',
+            'delete_btn' => 'Delete',
+            'copy_btn' => 'Copy address',
+        ],
+        'messages' => [
+            'no_addresses' => 'No capture addresses configured yet.',
+            'delete_confirm_title' => 'Delete Capture Address',
+            'delete_confirm' => 'Delete :slug? Emails already captured through it are not affected.',
+            'delete_error' => 'Could not delete address.',
+            'copied' => 'Address copied to clipboard.',
+        ],
+    ],
+
     'pdf_templates' => [
         'preview' => 'Preview',
         'page_title' => 'PDF Templates',

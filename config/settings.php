@@ -78,8 +78,8 @@ return [
         'name' => 'Inbound Email',
         'slug' => 'inbound-email',
         'label' => 'settings.items.inbound_email',
-        'path' => '/settings/email/inbound',
-        'isActive' => 0,
+        'path' => '/settings/email-capture-addresses',
+        'isActive' => 1,
         'icon' => 'fa-solid fa-inbox'
       ],
       'email-queue' => [

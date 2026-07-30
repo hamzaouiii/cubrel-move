@@ -138,7 +138,7 @@ return [
         'audit' => 'Audit',
         'automation' => 'Automatisierung',
         'description' => [
-            'email' => 'Verwalte ausgehende und eingehende E Mails. Die E Mail Einstellungen müssen konfiguriert werden, damit Benutzer E Mails und Newsletter Kampagnen versenden können.',
+            'email' => 'Erstelle und Verwalte eingehende E Mails.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
             'users' => 'Lade Benutzer in Cubrel ein und verwalte sie.',
             'customisations' => 'Erstelle und verwalte Module, Layouts, Felder und Beziehungen.',

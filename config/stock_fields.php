@@ -470,6 +470,49 @@ return [
             'filterable' => true,
         ],
     ],
+    'emails' => [
+        'body' => [
+            'name' => 'body',
+            'type' => 'longtext',
+            'searchable' => true,
+        ],
+        'from_address' => [
+            'name' => 'from_address',
+            'type' => 'text',
+            'searchable' => true,
+            'filterable' => true,
+        ],
+        'from_name' => [
+            'name' => 'from_name',
+            'type' => 'text',
+            'searchable' => true,
+            'filterable' => true,
+        ],
+        'to_addresses' => [
+            'name' => 'to_addresses',
+            'type' => 'json',
+        ],
+        'cc_addresses' => [
+            'name' => 'cc_addresses',
+            'type' => 'json',
+        ],
+        'sent_at' => [
+            'name' => 'sent_at',
+            'type' => 'datetime',
+            'filterable' => true,
+            'sortable' => true,
+        ],
+        'direction' => [
+            'name' => 'direction',
+            'type' => 'select',
+            'filterable' => true,
+        ],
+        'mailbox' => [
+            'name' => 'mailbox',
+            'type' => 'text',
+            'filterable' => true,
+        ],
+    ],
     'line_items' => [
         'parent_type' => [
             'name' => 'parent_type',

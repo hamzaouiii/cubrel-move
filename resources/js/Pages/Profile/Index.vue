@@ -27,6 +27,7 @@ const props = defineProps({
   record: Object,
   layout: Object,
   fields: Object,
+  emailCaptureHost: String,
 });
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
@@ -62,6 +63,15 @@ const avatar = computed(() => {
 const mode = computed(() => {
   return isEditing.value === true ? "edit" : "detail";
 });
+
+const emailCaptureAddress = computed(
+  () => `${form.username || record.username}@${props.emailCaptureHost}`,
+);
+
+const copyCaptureAddress = () => {
+  navigator.clipboard?.writeText(emailCaptureAddress.value);
+  success(t("globals.email_capture_addresses.messages.copied"));
+};
 
 const isDirty = computed(() => form.isDirty);
 
@@ -371,6 +381,22 @@ useUnsavedChangesGuard({
               class="record-layout__header__details__info__text__description"
             >
               {{ record.description }}
+            </div>
+            <div class="profile__capture-address">
+              <span class="profile__capture-address__label">
+                {{ $t("globals.email_capture_addresses.labels.your_address_label") }}:
+              </span>
+              <span class="profile__capture-address__value">{{
+                emailCaptureAddress
+              }}</span>
+              <button
+                type="button"
+                class="profile__capture-address__copy"
+                @click="copyCaptureAddress"
+                :title="$t('globals.email_capture_addresses.buttons.copy_btn')"
+              >
+                <i class="fa-solid fa-copy"></i>
+              </button>
             </div>
           </div>
         </div>

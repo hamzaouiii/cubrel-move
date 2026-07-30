@@ -141,7 +141,7 @@ return [
         'audit' => 'Audit',
         'automation' => 'Automation',
         'description' => [
-            'email' => 'Manage outbound and inbound emails. The email settings must be configured in order to enable users to send out email and newsletter campaigns.',
+            'email' => 'Manage inbound emails.',
             'system' => 'Configure the system-wide settings according to the specifications of your organization.',
             'users' => 'Invite and manage users in Cubrel.',
             'customisations' => 'Create and manage Modules, Layouts, Fields, and Relationships.',
