@@ -333,6 +333,27 @@ return [
         'is_custom' => 0,
     ],
 
+    [
+        'name' => 'Emails',
+        'slug' => 'emails',
+        'label' => 'modules.emails.label',
+        'single_label' => 'modules.emails.single_label',
+        'icon' => 'fa-solid fa-envelope',
+        'color' => '#0EA5E9',
+        'path' => '/emails',
+        'sort_order' => 140,
+        'category' => 'activities',
+        'is_active' => true,
+        'is_activity' => true,
+        'show_in_sidebar' => 1,
+        'handler_class' => 'App\\Handlers\\Modules\\EmailsModuleHandler',
+        'description' => 'Emails captured via BCC and logged against records.',
+        'show_in_module_manager' => true,
+        'model_class' => 'App\\Models\\Modules\\Email',
+        'table_name' => 'emails',
+        'is_custom' => 0,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | SYSTEM

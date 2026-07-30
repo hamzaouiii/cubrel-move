@@ -39,6 +39,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ImpersonationSessionController;
 use App\Http\Controllers\RecordHistoryController;
 use App\Http\Controllers\RecordTimelineController;
+use App\Http\Controllers\EmailCaptureAddressController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -222,6 +223,14 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
                 Route::patch('/{transformation}/toggle', [TransformationsManagerController::class, 'toggle'])->name('toggle');
                 Route::delete('/{transformation}', [TransformationsManagerController::class, 'destroy'])->name('destroy');
                 Route::post('/expressions/validate', [TransformationsManagerController::class, 'validateExpression'])->name('validate-expression');
+            });
+
+            // Email capture addresses (admin-created inboxes for the
+            // Emails module, e.g. leads@{tenant} — see EmailInboundWebhookController)
+            Route::prefix('email-capture-addresses')->name('email-capture-addresses.')->group(function () {
+                Route::get('/', [EmailCaptureAddressController::class, 'index'])->name('index');
+                Route::post('/', [EmailCaptureAddressController::class, 'store'])->name('store');
+                Route::delete('/{emailCaptureAddress}', [EmailCaptureAddressController::class, 'destroy'])->name('destroy');
             });
 
             // Audit Trail

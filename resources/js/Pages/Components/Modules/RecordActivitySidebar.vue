@@ -9,7 +9,7 @@ import {
   watch,
   getCurrentInstance,
 } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import { usePage, Link } from "@inertiajs/vue3";
 import dayjs from "dayjs";
 import { useAlerts } from "@/Composables/useAlerts";
 import { useAuditFormatting } from "@/Composables/useAuditFormatting";
@@ -247,6 +247,8 @@ const ownerPhrase = (entry) => {
     : null;
 };
 
+const recordUrl = (slug, id) => `/${slug}/${id}`;
+
 const activityTitle = (entry) => {
   if (entry.entry_type === "notes") {
     return entry.record.description || entry.record.name;
@@ -440,9 +442,12 @@ const auditFieldTitle = (field) =>
 
               <div class="activity-sidebar__entry__body">
                 <template v-if="entry.source === 'activity'">
-                  <div class="activity-sidebar__entry__title">
+                  <Link
+                    :href="recordUrl(entry.module.slug, entry.record.id)"
+                    class="activity-sidebar__entry__title activity-sidebar__entry__title--link"
+                  >
                     {{ activityTitle(entry) }}
-                  </div>
+                  </Link>
                   <div class="activity-sidebar__entry__meta">
                     {{ activityMeta(entry) }}
                   </div>
@@ -482,7 +487,19 @@ const auditFieldTitle = (field) =>
                     <div class="activity-sidebar__entry__title">
                       {{ linkTitle(entry) }}
                     </div>
-                    <div class="activity-sidebar__entry__meta">
+                    <Link
+                      v-if="entry.changes.related_module && entry.changes.related_id"
+                      :href="
+                        recordUrl(
+                          entry.changes.related_module,
+                          entry.changes.related_id,
+                        )
+                      "
+                      class="activity-sidebar__entry__meta activity-sidebar__entry__meta--link"
+                    >
+                      {{ linkDetail(entry) }}
+                    </Link>
+                    <div v-else class="activity-sidebar__entry__meta">
                       {{ linkDetail(entry) }}
                     </div>
                   </template>

@@ -12,7 +12,9 @@
 #                terminal instead of emailed.
 #
 # Requires deploy/install-systemd-units.sh to have been run once already,
-# and deploy/provision.env to exist (copy from provision.env.example).
+# deploy/provision.env to exist (copy from provision.env.example), and
+# `jq` to be installed (used to parse the Cloudflare/Mailtrap API responses
+# when setting up per-tenant inbound email capture).
 set -euo pipefail
 
 # Colors only when stdout is an actual terminal — plain text if redirected
@@ -36,6 +38,11 @@ usage() {
 
 if [ "$(id -u)" -ne 0 ]; then
   err "Must run as root (needs to write to /etc/nginx, /etc/systemd, chown www-data)."
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  err "jq is required (used to parse the Cloudflare/Mailtrap API responses) — install it first."
   exit 1
 fi
 
@@ -200,6 +207,16 @@ else
   echo "    Create it manually: CREATE DATABASE \`${DB_DATABASE}\`; GRANT ALL ON \`${DB_DATABASE}\`.* TO '${DB_USERNAME}'@'localhost';"
   read -rp "Press enter once the database exists and is reachable... "
 fi
+
+# --- 4b. Inbound email capture (Cloudflare DNS + Mailtrap) ------------------
+# Delegates to setup-inbound-email.sh (shared with retrofitting this onto an
+# already-provisioned tenant, so the Mailtrap/Cloudflare API sequence has
+# one source of truth instead of two copies that can drift). Never fatal to
+# provisioning as a whole — a failure here just means BCC capture isn't
+# wired up yet; the Emails module still works for manual entry, and
+# setup-inbound-email.sh can be re-run against this tenant later.
+step "Setting up inbound email capture"
+bash "$SCRIPT_DIR/setup-inbound-email.sh" "$NAME" || warn "Inbound email capture setup failed or was skipped — see output above. Re-run 'bash $SCRIPT_DIR/setup-inbound-email.sh $NAME' once fixed."
 
 # --- 5. Build & migrate ------------------------------------------------------
 # Full install, not --no-dev: fakerphp/faker is a require-dev package but
