@@ -43,7 +43,7 @@ class ModuleScaffolder
             return;
         }
 
-        $castsExport = $this->exportCastsArray($this->dateCastsFor($module));
+        $castsExport = $this->exportCastsArray($this->castsFor($module));
 
         $contents = <<<PHP
         <?php
@@ -69,9 +69,22 @@ class ModuleScaffolder
         }
     }
 
-    protected function dateCastsFor(Module $module): array
+    /**
+     * casts for date/datetime/integer/decimal/boolean fields
+     */
+    protected function castsFor(Module $module): array
     {
-        $typeToCast = ['date' => 'date', 'datetime' => 'datetime'];
+        $typeToCast = [
+            'date' => 'date',
+            'datetime' => 'datetime',
+            'number' => 'integer',
+            'integer' => 'integer',
+            'duration' => 'integer',
+            'decimal' => 'decimal:2',
+            'currency' => 'decimal:2',
+            'percentage' => 'decimal:2',
+            'checkbox' => 'boolean',
+        ];
 
         return $module->draftFields()
             ->filter(fn ($field) => ! str_starts_with($field->key ?? '', 'default.') && isset($typeToCast[$field->type]))

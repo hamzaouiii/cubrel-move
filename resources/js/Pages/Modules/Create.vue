@@ -106,6 +106,29 @@ const handleClickOutsideActionDropDown = (event) => {
   }
 };
 
+const getFieldType = (fieldName) => {
+  return props.fields?.find((field) => field.name === fieldName)?.type || null;
+};
+
+// Mirrors Record.vue's normalizeDateTime(): the frontend date pickers hand back
+// a JS Date.toISOString() string ("...T...Z"), which strict MySQL rejects as a
+// DATETIME/DATE literal, so this converts it to "YYYY-MM-DD HH:mm:ss" first.
+const normalizeDateTime = (value) => {
+  const d = new Date(value);
+  return d.toISOString().slice(0, 19).replace("T", " ");
+};
+
+const normalizeDatesForSubmit = (data) => {
+  const normalized = { ...data };
+  for (const key of Object.keys(normalized)) {
+    const type = getFieldType(key);
+    if ((type === "datetime" || type === "date") && normalized[key]) {
+      normalized[key] = normalizeDateTime(normalized[key]);
+    }
+  }
+  return normalized;
+};
+
 const getRequiredFields = () => {
   let allRequiredFields = [];
 
@@ -199,7 +222,7 @@ const saveRecord = () => {
   }
 
   form
-    .transform((data) => ({ ...data }))
+    .transform((data) => normalizeDatesForSubmit(data))
     .post(url, {
       onSuccess: () => {
         clearAllAlerts();
