@@ -55,6 +55,17 @@ abstract class BaseModule extends Model
             if (empty($model->owner_id)) {
                 $model->owner_id = static::getDefaultOwnerId();
             }
+
+            if (empty($model->created_by)) {
+                $model->created_by = static::getDefaultOwnerId();
+            }
+            if (empty($model->updated_by)) {
+                $model->updated_by = static::getDefaultOwnerId();
+            }
+        });
+
+        static::updating(function (self $model) {
+            $model->updated_by = static::getDefaultOwnerId();
         });
 
         static::bootAuditObserver();

@@ -34,6 +34,18 @@ return [
         "label" => "modules.defaults.updated_at",
         "sortable" => true
       ],
+      [
+        "name" => "created_by",
+        "type" => "record",
+        "label" => "modules.defaults.created_by",
+        "sortable" => true
+      ],
+      [
+        "name" => "updated_by",
+        "type" => "record",
+        "label" => "modules.defaults.updated_by",
+        "sortable" => true
+      ],
     ],
     "defaultSort" => null,
   ],
@@ -78,6 +90,20 @@ return [
             'label' => 'modules.defaults.updated_at',
             'readonly' => true,
             'required' => true,
+            'sortable' => true
+          ],
+          [
+            'name' => 'created_by',
+            'type' => 'record',
+            'label' => 'modules.defaults.created_by',
+            'readonly' => true,
+            'sortable' => true
+          ],
+          [
+            'name' => 'updated_by',
+            'type' => 'record',
+            'label' => 'modules.defaults.updated_by',
+            'readonly' => true,
             'sortable' => true
           ]
         ]

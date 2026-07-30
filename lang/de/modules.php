@@ -36,6 +36,8 @@ return [
         'updated_at' => 'Aktualisiert am',
         'no_data' => 'Keine Daten gefunden',
         'owner_id' => 'Gehört zu',
+        'created_by' => 'Erstellt von',
+        'updated_by' => 'Aktualisiert von',
         'description' => 'Beschreibung',
         'subtotal' => 'Zwischensumme',
         'tax_amount' => 'Steuerbetrag',

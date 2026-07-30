@@ -57,4 +57,28 @@ return [
     'is_default' => true,
     'searchable' => false,
   ],
+  'created_by' =>
+  [
+    'name' => 'created_by',
+    'searchable' => false,
+    'required' => false,
+    'related_module' => 'users',
+    'type' => 'record',
+    'readonly' => true,
+    'key'     => 'default.created_by',
+    'label'   => 'modules.defaults.created_by',
+    'is_default' => true
+  ],
+  'updated_by' =>
+  [
+    'name' => 'updated_by',
+    'searchable' => false,
+    'required' => false,
+    'related_module' => 'users',
+    'type' => 'record',
+    'readonly' => true,
+    'key'     => 'default.updated_by',
+    'label'   => 'modules.defaults.updated_by',
+    'is_default' => true
+  ],
 ];

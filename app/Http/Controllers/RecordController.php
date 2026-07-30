@@ -398,7 +398,7 @@ class RecordController extends Controller
                           ? "custom_fields->{$field->name}"
                           : $field->name;
 
-                        $count += $modelClass::whereIn('id', $ids)->update([$column => $value]);
+                        $count += $modelClass::whereIn('id', $ids)->update([$column => $value, 'updated_by' => auth()->id()]);
                     }
                 });
             });
@@ -421,10 +421,10 @@ class RecordController extends Controller
         // Explicit list mode
         if ($field->is_custom) {
             $updatedCount = $modelClass::whereIn('id', $selectedIds)
-                ->update(["custom_fields->{$field_name}" => $newValue]);
+                ->update(["custom_fields->{$field_name}" => $newValue, 'updated_by' => auth()->id()]);
         } else {
             $updatedCount = $modelClass::whereIn('id', $selectedIds)
-                ->update([$field_name => $this->castValueForColumn($modelClass, $field_name, $newValue)]);
+                ->update([$field_name => $this->castValueForColumn($modelClass, $field_name, $newValue), 'updated_by' => auth()->id()]);
         }
 
         AuditService::log('updated', $moduleModel->slug, null, [

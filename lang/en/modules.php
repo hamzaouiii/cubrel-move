@@ -23,6 +23,8 @@ return [
         'created_at' => 'Created At',
         'updated_at' => 'Updated At',
         'owner_id' => 'Owned by',
+        'created_by' => 'Created By',
+        'updated_by' => 'Updated By',
         'no_data' => ' No data available',
         'subtotal' => 'Subtotal',
         'tax_amount' => 'Tax Amount',
