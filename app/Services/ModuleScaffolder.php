@@ -22,14 +22,14 @@ class ModuleScaffolder
 
         $baseName = class_basename($modelClass);
 
-        $this->createModelFile($baseName, $table);
+        $this->createModelFile($baseName, $table, $module);
         $this->createHandlerFile($baseName, $modelClass);
         $this->createModuleLabels($module);
         $this->activateFields($module);
         $this->createTable($table, $module);
     }
 
-    public function createModelFile(string $baseName, string $table): void
+    public function createModelFile(string $baseName, string $table, Module $module): void
     {
         $directory = app_path('Models/Modules/Custom');
 
@@ -43,6 +43,8 @@ class ModuleScaffolder
             return;
         }
 
+        $castsExport = $this->exportCastsArray($this->dateCastsFor($module));
+
         $contents = <<<PHP
         <?php
 
@@ -55,6 +57,8 @@ class ModuleScaffolder
             protected \$table = '{$table}';
 
             protected \$guarded = [];
+
+            protected \$moduleCasts = {$castsExport};
         }
 
         PHP;
@@ -63,6 +67,31 @@ class ModuleScaffolder
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate($path, true);
         }
+    }
+
+    protected function dateCastsFor(Module $module): array
+    {
+        $typeToCast = ['date' => 'date', 'datetime' => 'datetime'];
+
+        return $module->draftFields()
+            ->filter(fn ($field) => ! str_starts_with($field->key ?? '', 'default.') && isset($typeToCast[$field->type]))
+            ->mapWithKeys(fn ($field) => [$field->name => $typeToCast[$field->type]])
+            ->all();
+    }
+
+    protected function exportCastsArray(array $casts): string
+    {
+        if (empty($casts)) {
+            return '[]';
+        }
+
+        $lines = array_map(
+            fn ($name, $cast) => "        '{$name}' => '{$cast}',",
+            array_keys($casts),
+            $casts
+        );
+
+        return "[\n".implode("\n", $lines)."\n    ]";
     }
 
     public function createHandlerFile(string $baseName, string $modelClass): void
