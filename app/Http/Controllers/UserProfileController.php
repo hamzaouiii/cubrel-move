@@ -31,6 +31,7 @@ class UserProfileController extends Controller
       'record'    => $user,
       'fields'         => $fields,
       'module'         => $moduleModel,
+      'emailCaptureHost' => parse_url(config('app.url'), PHP_URL_HOST) ?: config('app.url'),
 
     ]));
   }

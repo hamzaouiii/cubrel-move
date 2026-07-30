@@ -753,6 +753,36 @@ return [
         ],
     ],
 
+    'email_capture_addresses' => [
+        'labels' => [
+            'page_title' => 'E-Mail-Erfassungsadressen',
+            'title' => 'E-Mail-Erfassungsadressen',
+            'slug_label' => 'Adresse',
+            'label_label' => 'Bezeichnung',
+            'owner_label' => 'Besitzer (optional)',
+            'no_owner_option' => 'Kein Besitzer (Team-Postfach)',
+            'slug_column' => 'Adresse',
+            'label_column' => 'Bezeichnung',
+            'owner_column' => 'Besitzer',
+            'your_address_label' => 'E-Mail-Erfassungsadresse',
+        ],
+        'hints' => [
+            'slug_hint' => 'Jede E-Mail, die an diese Adresse gesendet oder per BCC weitergeleitet wird, wird im Emails-Modul erfasst.',
+        ],
+        'buttons' => [
+            'create_btn' => 'Adresse erstellen',
+            'delete_btn' => 'Löschen',
+            'copy_btn' => 'Adresse kopieren',
+        ],
+        'messages' => [
+            'no_addresses' => 'Noch keine Erfassungsadressen konfiguriert.',
+            'delete_confirm_title' => 'Erfassungsadresse löschen',
+            'delete_confirm' => ':slug löschen? Bereits erfasste E-Mails sind davon nicht betroffen.',
+            'delete_error' => 'Adresse konnte nicht gelöscht werden.',
+            'copied' => 'Adresse in die Zwischenablage kopiert.',
+        ],
+    ],
+
     'pdf_templates' => [
         'preview' => 'Vorschau',
 

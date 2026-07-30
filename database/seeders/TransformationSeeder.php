@@ -30,6 +30,7 @@ class TransformationSeeder extends Seeder
         $this->seedCaseToTask();
         $this->seedCallToNote();
         $this->seedMeetingToNote();
+        $this->seedEmailToContact();
     }
 
     protected function seedQuoteToOrder(): void
@@ -332,6 +333,43 @@ class TransformationSeeder extends Seeder
                     ['type' => 'field', 'value' => 'end_at'],
                     ['type' => 'text', 'value' => ' — status: '],
                     ['type' => 'field', 'value' => 'status'],
+                ]],
+            ],
+            [],
+        );
+    }
+
+    protected function seedEmailToContact(): void
+    {
+        $this->upsert(
+            [
+                'source_module' => 'emails',
+                'target_module' => 'contacts',
+                'name' => 'Contact',
+                'description' => 'Create a Contact from a captured Email whose sender isn\'t in the CRM yet.',
+                'enabled' => true,
+                // Transformation::evaluateSingleCondition() only ever inspects
+                // the source record's own field values — it has no operator
+                // for "this record has no linked Contact yet", so an
+                // unmatched-sender trigger can't be expressed as an
+                // automation condition. Same situation as Lead -> Account /
+                // Lead -> Deal below: stays a manual "Transform" action from
+                // the Email record until the engine grows relationship-aware
+                // conditions.
+                'automation_enabled' => false,
+                'conditions' => [],
+                'conditions_match' => 'all',
+                // Reuses the existing many-to-many contacts<->emails
+                // activity relationship rather than creating a second one.
+                'link_records_enabled' => true,
+            ],
+            [
+                ['mode' => 'field', 'source_field' => 'from_name', 'target_field' => 'name'],
+                ['mode' => 'field', 'source_field' => 'from_address', 'target_field' => 'email'],
+                ['mode' => 'field', 'source_field' => 'owner_id', 'target_field' => 'owner_id'],
+                ['mode' => 'expression', 'target_field' => 'notes', 'expression' => [
+                    ['type' => 'text', 'value' => 'Created from a captured email — subject: '],
+                    ['type' => 'field', 'value' => 'name'],
                 ]],
             ],
             [],

@@ -949,6 +949,35 @@
           }
         }
       }
+      .profile__capture-address {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        font-size: 0.8rem;
+
+        &__label {
+          color: #94a3b8;
+        }
+
+        &__value {
+          font-weight: 600;
+          color: #1e2125;
+        }
+
+        &__copy {
+          border: none;
+          background: none;
+          cursor: pointer;
+          color: #94a3b8;
+          padding: 2px 4px;
+          font-size: 0.8rem;
+
+          &:hover {
+            color: var(--module-color);
+          }
+        }
+      }
       &__actions {
         align-self: center;
         display: flex;
