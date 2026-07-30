@@ -44,6 +44,18 @@ else
   step "Postfix already installed"
 fi
 
+# PCRE lookup table support (used by accepted_domains.pcre /
+# accepted_recipients.pcre below) is a separate package on Debian/Ubuntu,
+# not bundled with the base postfix package. Without it, every RCPT TO
+# fails with "451 4.3.0 Temporary lookup failure" — a config-looks-fine,
+# fails-at-runtime trap.
+if ! postconf -m 2>/dev/null | grep -q '^pcre$'; then
+  step "Installing postfix-pcre (PCRE lookup table support)"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y postfix-pcre
+else
+  step "postfix-pcre already installed"
+fi
+
 # --- 2. Unprivileged relay user ------------------------------------------
 if ! id cubrelrelay >/dev/null 2>&1; then
   step "Creating cubrelrelay system user"

@@ -380,3 +380,115 @@ it's being checked against the wrong grant row entirely.
 Always use `DB_HOST=localhost`, not `DB_HOST=127.0.0.1`, unless you've
 specifically granted the DB user for TCP too. `provision-tenant.sh` already
 defaults to `localhost` for this reason.
+
+## 10. Inbound email relay (Postfix)
+
+Every tenant's [Email Capture](FEATURES.md#22-email-capture) feature is
+served by one self-hosted Postfix instance, shared across every tenant on
+this server — not a third-party inbound-email provider. This is **one-time,
+server-wide setup**, not something that happens per tenant.
+
+### One-time setup
+
+```bash
+sudo bash deploy/setup-postfix.sh
+```
+
+This installs Postfix (non-interactively) plus `postfix-pcre` (see the
+pitfall below), creates an unprivileged `cubrelrelay` system user, writes
+the catch-all config (`deploy/postfix/`), and **prints a generated shared
+secret** at the end. Two things to do with that output:
+
+1. Add it to `deploy/provision.env` as `INBOUND_RELAY_SECRET="<secret>"` —
+   from then on, every new tenant provisioned via `provision-tenant.sh`
+   picks it up automatically, no extra steps.
+2. Add the wildcard DNS records it tells you to (Cloudflare, `cubrel.com`
+   zone):
+   - `A` record: `mail` → this server's IP, **DNS only** (grey cloud —
+     Cloudflare's proxy only handles HTTP(S), not SMTP; a proxied record
+     here breaks mail delivery entirely).
+   - `MX` record: `*` (wildcard) → `mail.cubrel.com`, priority `10`.
+
+   One set of records covers every current and future tenant subdomain —
+   there is no per-tenant DNS step for this feature.
+
+### How mail actually gets from Postfix to a tenant
+
+Postfix accepts SMTP for any `*.cubrel.com` recipient (a PCRE catch-all,
+not a per-tenant domain list) and pipes every accepted message to
+`deploy/cubrel-inbound-relay.sh`, which POSTs the raw message plus the
+original envelope recipient to that tenant's own
+`/api/webhooks/email-inbound`, authenticated with the shared secret above.
+`EmailInboundWebhookController` parses the MIME message
+(`zbateson/mail-mime-parser`) and matches the recipient to a user or
+capture address from there — see
+[Email Capture](FEATURES.md#22-email-capture) for the feature itself.
+
+The envelope recipient (not the message's own `To:`/`Cc:` headers) is what
+determines the match — required for BCC to work at all, since a BCC'd
+address never appears in a message's own headers.
+
+### Retrofitting a tenant provisioned before this was set up
+
+`provision-tenant.sh` only templates `INBOUND_RELAY_SECRET` into a
+tenant's `.env` at creation time. A tenant created before
+`deploy/provision.env` had that variable set needs it added by hand:
+
+```bash
+SECRET=$(cat /etc/cubrel/inbound-relay-secret)
+cd /var/www/cubrel/tenants/<name>
+grep -q '^INBOUND_RELAY_SECRET=' .env \
+  && sed -i "s|^INBOUND_RELAY_SECRET=.*|INBOUND_RELAY_SECRET=\"${SECRET}\"|" .env \
+  || echo "INBOUND_RELAY_SECRET=\"${SECRET}\"" >> .env
+sudo -u www-data php artisan config:clear
+```
+
+### Verification
+
+Send a real email to a real username or capture address at a tenant's
+domain, then trace it end to end:
+
+```bash
+tail -f /var/log/mail.log                              # Postfix accepted it and ran the relay?
+tail -f /var/www/cubrel/tenants/<name>/storage/logs/laravel.log   # app-side result
+```
+
+A successful delivery shows `relay=cubrelrelay ... status=sent` in
+`mail.log`. Confirm the record actually landed:
+
+```bash
+cd /var/www/cubrel/tenants/<name>
+sudo -u www-data php artisan tinker --execute="dd(App\Models\Modules\Email::latest()->first());"
+```
+
+### Common pitfall: `451 4.3.0 Temporary lookup failure` on every RCPT
+
+PCRE lookup-table support (`pcre:` maps, used for the catch-all domain and
+recipient acceptance) is a **separate package on Debian/Ubuntu**, not
+bundled with base `postfix` — `setup-postfix.sh` installs it
+(`postfix-pcre`), but if this error shows up anyway (e.g. Postfix was
+already installed some other way before this feature existed), fix it
+directly:
+
+```bash
+sudo apt-get install -y postfix-pcre
+sudo systemctl restart postfix
+```
+
+Confirm the maps themselves work, independent of SMTP entirely:
+
+```bash
+postmap -q "test.cubrel.com" pcre:/etc/postfix/cubrel/accepted_domains.pcre
+postmap -q "someone@test.cubrel.com" pcre:/etc/postfix/cubrel/accepted_recipients.pcre
+```
+
+Both should print `1`.
+
+### Common pitfall: mail accepted and relayed, but the tenant returns 401
+
+`mail.log` will show `status=bounced (... curl: (22) ... 401 ...)` — the
+relay reached the app, but the shared secret didn't match. Almost always
+means the tenant's `.env` doesn't have `INBOUND_RELAY_SECRET` set (see
+"Retrofitting" above) or has a stale cached config from before it was
+added — `php artisan config:clear` after any `.env` edit, same as the
+general config-cache pitfall in Section 8.

@@ -111,6 +111,7 @@ export default defineConfig({
               { text: "Layouts", link: "/en/layouts-guide" },
               { text: "Relationships", link: "/en/relationships-guide" },
               { text: "Importing Data", link: "/en/import-guide" },
+              { text: "Converting Records", link: "/en/conversion-guide" },
               {
                 text: "Module vs. BaseModule",
                 link: "/en/module-basemodule-guide",
@@ -118,9 +119,24 @@ export default defineConfig({
             ],
           },
           {
+            text: "Everyday Use",
+            items: [
+              { text: "Searching", link: "/en/search-guide" },
+              { text: "Dashboard", link: "/en/dashboard-guide" },
+              { text: "Activities", link: "/en/activities-guide" },
+              { text: "Bulk Actions & Export", link: "/en/bulk-export-guide" },
+              { text: "Emails", link: "/en/emails-guide" },
+              { text: "Your Preferences", link: "/en/preferences-guide" },
+            ],
+          },
+          {
             text: "Administration & Security",
             items: [
               { text: "Users, Invites & Passwords", link: "/en/users-guide" },
+              { text: "First-Time Setup", link: "/en/onboarding-guide" },
+              { text: "PDF Templates", link: "/en/pdf-templates-guide" },
+              { text: "Dropdown Lists", link: "/en/dropdown-manager-guide" },
+              { text: "Impersonation", link: "/en/impersonation-guide" },
               { text: "Audit Trail", link: "/en/audit-trail-guide" },
               { text: "Notifications", link: "/en/notification-guide" },
               { text: "Sessions", link: "/en/session-timeout-guide" },

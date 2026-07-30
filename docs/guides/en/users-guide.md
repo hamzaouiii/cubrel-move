@@ -7,7 +7,7 @@ In this article we cover how people get access to your Cubrel organization, the 
 **Settings-level access aside, everyone with a Cubrel account shows up under Users** — one record per person, alongside every other module's records: a list view, a record page, and its own fields (name, username, email, phone, title, avatar, status, and so on). It behaves like any core module, with two differences that come from it representing a person rather than a business record:
 
 - Users have no **Owner** field — a user can't own itself the way a Deal or Contact is owned by someone.
-- The record page's action menu offers user-specific actions instead of the usual ones: **Send password reset email**, and, for super admins only, **Login as** (impersonation, covered in the [Audit Trail guide](audit-trail-guide.md#impersonation-is-always-transparent-never-hidden)).
+- The record page's action menu offers user-specific actions instead of the usual ones: **Send password reset email**, and, for super admins only, **Login as** (impersonation, covered in the [Impersonation guide](impersonation-guide.md)).
 
 Every user has a **Status** (Active or Inactive) and an **Is Admin** flag. Status controls whether the account can be impersonated and shows up as available; Admin controls access to Settings, see [Admin and Super admin](terminology.md#admin) in the terminology guide for the distinction between an admin and a super admin.
 

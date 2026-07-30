@@ -28,7 +28,7 @@ Admins can go to **Settings > Audit Trail** for the full, unfiltered picture, ev
 
 ## Impersonation is always transparent, never hidden
 
-Occasionally, a super admin may need to sign in *as* another user, for example, to help troubleshoot something from that person's exact point of view. Whenever that happens and a change is made during that session, the Audit Trail always shows it plainly: the entry is marked with a small badge reading **"as [Super Admin's name]"**, right next to the action. Nobody looking at a record's history is ever left wondering whether the person shown is really who made the change.
+Occasionally, a super admin may need to sign in *as* another user, for example, to help troubleshoot something from that person's exact point of view. Whenever that happens and a change is made during that session, the Audit Trail always shows it plainly: the entry is marked with a small badge reading **"as [Super Admin's name]"**, right next to the action. Nobody looking at a record's history is ever left wondering whether the person shown is really who made the change. See the [Impersonation guide](impersonation-guide.md) for who can impersonate and how to start/stop a session.
 
 Separately from the Audit Trail, **Settings > Impersonation Sessions** (visible to all admins) lists every impersonation session on its own: who signed in as whom, from what IP address, when it started and ended, and how long it lasted. An ongoing session (one that hasn't ended yet) is clearly marked as such.
 

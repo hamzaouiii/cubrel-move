@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Verified 2026-07-24 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
+> Verified 2026-07-30 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -27,6 +27,7 @@
 19. [Notifications](#19-notifications)
 20. [User Preferences](#20-user-preferences)
 21. [Conversion Rules](#21-conversion-rules)
+22. [Email Capture](#22-email-capture)
 
 ---
 
@@ -51,8 +52,9 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Calls**         | `calls`    | direction, call_at, duration_minutes, status, outcome                                    | No         | Yes   |
 | **Meetings**      | `meetings` | location (address), start_at, end_at, duration (auto-computed), status                   | No         | Yes   |
 | **Notes**         | `notes`    | (default fields only)                                                                    | No         | Yes   |
+| **Emails**        | `emails`   | body, from_name, from_address, to_addresses (JSON), cc_addresses (JSON), sent_at, direction, mailbox | No | Yes |
 
-Tasks, Calls, Meetings, and Notes are the **activity modules** — see [Activities](#18-activities) for the timeline sidebar, linking, and completion behavior built around them.
+Tasks, Calls, Meetings, Notes, and Emails are the **activity modules** — see [Activities](#18-activities) for the timeline sidebar, linking, and completion behavior built around them. Emails additionally has its own capture pipeline — see [Email Capture](#22-email-capture).
 
 ### Infrastructure Models
 
@@ -764,7 +766,7 @@ Tasks, Calls, Meetings, and Notes are first-class core modules (see [Data Modeli
 
 Any module can opt into this system through the `is_activity`/`has_activity` flags on `Module` (see [Module Flags Reference](#module-flags-reference)), set when the module is created in the Module Builder:
 
-- `is_activity` — set on Tasks, Calls, Meetings, Notes.
+- `is_activity` — set on Tasks, Calls, Meetings, Notes, Emails.
 - `has_activity` — set on Leads, Accounts, Contacts, Deals, Support Cases, Quotes, Orders, Invoices.
 
 Setting either flag on a module automatically generates the many-to-many relationships needed to link it to every module on the other side (`RelationshipService::syncActivityRelationships()`) — no manual relationship setup required. The same generation runs for every existing `is_activity`/`has_activity` module at install time.
@@ -974,4 +976,33 @@ Full CRUD at `/settings/transformations` (`Settings > Automation > Conversion Ru
 
 - `docs/guides/en/conversion-guide.md` — plain-language, user-facing guide.
 - `docs/dev/conversion-implementation.md` — full technical writeup.
+- **No automated test coverage yet** — this feature has no dedicated test suite as of this writing.
+
+---
+
+## 22. Email Capture
+
+Every user can BCC (or send directly to) a standing personal email address to log that email against CRM records automatically, with no manual data entry. Captured emails land in the **Emails** module (see [Data Modeling](#1-data-modeling)) like any other activity, and match against Contacts and other `has_activity` records by participant email address, linking automatically.
+
+### Personal capture addresses
+
+Every user's capture address is `{username}@{tenant-domain}` — derived directly from their existing username, with no separate token to look up or manage. A user's Profile page shows this address with a one-click copy button.
+
+### Team / shared capture addresses
+
+Admins can create additional capture addresses for a shared purpose — `leads@{tenant-domain}` or `support@{tenant-domain}`, for example — from `Settings > Email > Inbound Email`. A team address can optionally have an owner; captured emails through an ownerless address fall back to the same default-owner behavior every other module uses.
+
+### Automation via Conversion Rules
+
+Every captured email is stamped with a `mailbox` field recording which address received it (a username, or a team address's slug). Because it's a regular field, [Conversion Rules](#21-conversion-rules) can condition on it — for example, a rule that only runs automatically for emails captured through the `leads` address, turning them straight into a Lead.
+
+### How it's received
+
+Inbound mail is received by a self-hosted mail relay, not a third-party provider — matching every other message an email passing through never leaves infrastructure Cubrel controls. One server-wide wildcard configuration covers every tenant's capture domain automatically; no per-tenant setup is needed when a new instance is provisioned.
+
+### Reference
+
+- `docs/guides/en/emails-guide.md` — plain-language, user-facing guide.
+- `docs/dev/emails-implementation.md` — full technical writeup.
+- `DEPLOYMENT.md` — server-side setup for the inbound mail relay.
 - **No automated test coverage yet** — this feature has no dedicated test suite as of this writing.
