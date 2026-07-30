@@ -1561,12 +1561,31 @@
       font-size: 0.85rem;
       font-weight: 600;
       color: #1f2937;
+
+      &--link {
+        display: block;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
 
     &__meta {
       font-size: 0.75rem;
       color: #9ca3af;
       margin-top: 0.15rem;
+
+      &--link {
+        display: block;
+        cursor: pointer;
+        color: inherit;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
 
     &__diff {
