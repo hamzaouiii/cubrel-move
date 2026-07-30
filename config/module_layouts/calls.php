@@ -109,6 +109,16 @@ return [
                         'type' => 'datetime',
                         'label' => 'modules.calls.fields.updated_at',
                     ],
+                    4 => [
+                        'name' => 'created_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.created_by',
+                    ],
+                    5 => [
+                        'name' => 'updated_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.updated_by',
+                    ],
                 ],
             ],
         ],

@@ -23,6 +23,16 @@ return [
                 'type' => 'datetime',
                 'label' => 'modules.notes.fields.created_at',
             ],
+            4 => [
+                'name' => 'created_by',
+                'type' => 'record',
+                'label' => 'modules.defaults.created_by',
+            ],
+            5 => [
+                'name' => 'updated_by',
+                'type' => 'record',
+                'label' => 'modules.defaults.updated_by',
+            ],
         ],
     ],
     'linkingPanel' => [

@@ -59,6 +59,18 @@ return array(
         'type' => 'datetime',
         'label' => 'modules.deals.fields.created_at',
       ),
+      9 =>
+      array(
+        'name' => 'created_by',
+        'type' => 'record',
+        'label' => 'modules.defaults.created_by',
+      ),
+      10 =>
+      array(
+        'name' => 'updated_by',
+        'type' => 'record',
+        'label' => 'modules.defaults.updated_by',
+      ),
     ),
   ),
   'record' =>
@@ -150,6 +162,18 @@ return array(
             'name' => 'created_at',
             'type' => 'datetime',
             'label' => 'modules.defaults.created_at',
+          ),
+          4 =>
+          array(
+            'name' => 'created_by',
+            'type' => 'record',
+            'label' => 'modules.defaults.created_by',
+          ),
+          5 =>
+          array(
+            'name' => 'updated_by',
+            'type' => 'record',
+            'label' => 'modules.defaults.updated_by',
           ),
         ),
       ),

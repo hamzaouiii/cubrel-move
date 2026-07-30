@@ -38,6 +38,16 @@ return [
                 'type' => 'datetime',
                 'label' => 'modules.defaults.updated_at',
             ],
+            7 => [
+                'name' => 'created_by',
+                'type' => 'record',
+                'label' => 'modules.defaults.created_by',
+            ],
+            8 => [
+                'name' => 'updated_by',
+                'type' => 'record',
+                'label' => 'modules.defaults.updated_by',
+            ],
         ],
     ],
     'record' => [
@@ -141,6 +151,16 @@ return [
                         'label' => 'modules.invoices.fields.updated_at',
                     ],
                     2 => [
+                        'name' => 'created_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.created_by',
+                    ],
+                    3 => [
+                        'name' => 'updated_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.updated_by',
+                    ],
+                    4 => [
                         'name' => 'owner_id',
                         'type' => 'record',
                         'label' => 'modules.defaults.owner_id',

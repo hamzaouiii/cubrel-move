@@ -35,6 +35,16 @@ return [
                 'type' => 'datetime',
                 'label' => 'modules.defaults.updated_at',
             ],
+            6 => [
+                'name' => 'created_by',
+                'type' => 'record',
+                'label' => 'modules.defaults.created_by',
+            ],
+            7 => [
+                'name' => 'updated_by',
+                'type' => 'record',
+                'label' => 'modules.defaults.updated_by',
+            ],
         ],
     ],
     'record' => [
@@ -81,6 +91,16 @@ return [
                         'name' => 'updated_at',
                         'type' => 'datetime',
                         'label' => 'modules.defaults.updated_at',
+                    ],
+                    8 => [
+                        'name' => 'created_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.created_by',
+                    ],
+                    9 => [
+                        'name' => 'updated_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.updated_by',
                     ],
                 ],
             ],

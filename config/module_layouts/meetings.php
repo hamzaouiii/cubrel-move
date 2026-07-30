@@ -124,6 +124,16 @@ return [
                         'type' => 'datetime',
                         'label' => 'modules.meetings.fields.updated_at',
                     ],
+                    5 => [
+                        'name' => 'created_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.created_by',
+                    ],
+                    6 => [
+                        'name' => 'updated_by',
+                        'type' => 'record',
+                        'label' => 'modules.defaults.updated_by',
+                    ],
                 ],
             ],
         ],
