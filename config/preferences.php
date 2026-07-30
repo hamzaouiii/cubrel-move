@@ -122,6 +122,11 @@ return [
           'label' => 'settings.fields.notify_email_transformation_triggered',
           'validation' => 'nullable|boolean',
         ],
+        'notify_email_transformation_automation_failed' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_email_transformation_automation_failed',
+          'validation' => 'nullable|boolean',
+        ],
         'notify_inapp_record_assigned' => [
           'type' => 'bool',
           'label' => 'settings.fields.notify_inapp_record_assigned',
@@ -165,6 +170,11 @@ return [
         'notify_inapp_transformation_triggered' => [
           'type' => 'bool',
           'label' => 'settings.fields.notify_inapp_transformation_triggered',
+          'validation' => 'nullable|boolean',
+        ],
+        'notify_inapp_transformation_automation_failed' => [
+          'type' => 'bool',
+          'label' => 'settings.fields.notify_inapp_transformation_automation_failed',
           'validation' => 'nullable|boolean',
         ],
       ],

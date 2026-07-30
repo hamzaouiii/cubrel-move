@@ -18,6 +18,7 @@ use App\Notifications\ImpersonationNotification;
 use App\Notifications\MeetingInviteNotification;
 use App\Notifications\RecordConvertedNotification;
 use App\Notifications\TaskDueSoonNotification;
+use App\Notifications\TransformationAutomationFailedNotification;
 use App\Notifications\TransformationTriggeredNotification;
 use App\Notifications\UserInviteAcceptedNotification;
 use App\Notifications\UserInviteExpiredNotification;
@@ -186,6 +187,29 @@ class NotificationService {
             $targetRecord->id,
             $targetRecord->name ?? $targetRecord->number ?? null,
             $actor?->name,
+        ));
+    }
+
+    /**
+     * Notifies every admin that an automatic conversion rule failed to run.
+     * Transformations are Studio config with no "owner" field, so unlike the
+     * other transformation notifications above there's no single record
+     * owner to tell; admins are the only people who can go fix the rule.
+     */
+    public static function notifyTransformationAutomationFailed(
+        Transformation $transformation,
+        BaseModule $sourceRecord,
+        string $reason,
+    ): void {
+        User::where('is_admin', true)->get()->each(fn (User $admin) => $admin->notify(
+            new TransformationAutomationFailedNotification(
+                $transformation->id,
+                $transformation->name,
+                $transformation->source_module,
+                $sourceRecord->id,
+                $sourceRecord->name ?? $sourceRecord->number ?? null,
+                $reason,
+            )
         ));
     }
 }

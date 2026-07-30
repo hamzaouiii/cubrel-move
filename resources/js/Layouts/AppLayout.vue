@@ -78,7 +78,7 @@ provide("useModuleColors", useModuleColors);
 // test alerts
 // info("Operation completed successfully", { timeout: 0 });
 // error("Failed to connect to the database", { timeout: 0 });
-// warning("Disk space is running low", { timeout: 0, progressable: true });
+// warning("Disk space is running low", { progressable: true });
 // success("Your changes have been saved", { timeout: 0 });
 
 // test live notification toast

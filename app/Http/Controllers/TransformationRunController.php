@@ -6,6 +6,7 @@ use App\Models\Module;
 use App\Models\Transformation;
 use App\Services\Notifications\NotificationService;
 use App\Services\Transformations\TransformationEngine;
+use App\Services\Transformations\TransformationException;
 use Illuminate\Http\Request;
 
 
@@ -58,12 +59,16 @@ class TransformationRunController extends Controller
 
         $skipLink = (bool) $request->boolean('skip_link');
 
-        $target = app(TransformationEngine::class)->run(
-            $transformation,
-            $record,
-            $request->user(),
-            $skipLink,
-        );
+        try {
+            $target = app(TransformationEngine::class)->run(
+                $transformation,
+                $record,
+                $request->user(),
+                $skipLink,
+            );
+        } catch (TransformationException $e) {
+            abort(422, $e->getMessage());
+        }
 
         NotificationService::notifyTransformationRun(
             $transformation,

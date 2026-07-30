@@ -79,6 +79,7 @@ const run = async (skipLink) => {
       e.response?.data?.message ??
       t("globals.transformations.messages.run_error");
     phase.value = "error";
+    showError(errorMessage.value, { timeout: 0 });
   }
 };
 

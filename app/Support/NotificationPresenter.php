@@ -83,6 +83,14 @@ class NotificationPresenter
                     'target_record' => self::highlight($data['target_record_label'] ?? $data['target_record_id'] ?? ''),
                 ]),
             ],
+            'transformation_automation_failed' => [
+                'title' => __('globals.notifications.transformation_automation_failed.title'),
+                'body' => __('globals.notifications.transformation_automation_failed.body', [
+                    'transformation' => self::highlight($data['transformation_name'] ?? ''),
+                    'source_record' => self::highlight($data['source_record_label'] ?? $data['source_record_id'] ?? ''),
+                    'reason' => self::highlight($data['reason'] ?? ''),
+                ]),
+            ],
             default => ['title' => '', 'body' => ''],
         };
     }

@@ -7,6 +7,8 @@ use App\Models\Transformation;
 use App\Services\Notifications\NotificationService;
 use App\Services\Transformations\TransformationEngine;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * The V1 "minimal automation hook": runs transformations whenever their conditions become true on a save.
@@ -46,7 +48,13 @@ class TransformationAutomationObserver
                 continue;
             }
 
-            if ($transformation->passesConditions($model)) {
+            if (! $transformation->passesConditions($model)) {
+                continue;
+            }
+
+            // This runs inside the source record's saved() eventk, whoever
+            // triggered it usually has no idea this rule exists and didn't ask to run it. 
+            try {
                 $target = app(TransformationEngine::class)->run($transformation, $model);
 
                 NotificationService::notifyTransformationRun(
@@ -56,6 +64,10 @@ class TransformationAutomationObserver
                     Auth::user(),
                     automatic: true,
                 );
+            } catch (Throwable $e) {
+                Log::error("Automatic conversion [{$transformation->name}] failed for {$moduleSlug} [{$model->id}]: {$e->getMessage()}");
+
+                NotificationService::notifyTransformationAutomationFailed($transformation, $model, $e->getMessage());
             }
         }
     }

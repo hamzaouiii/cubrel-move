@@ -71,6 +71,10 @@ return [
             'title' => 'Automatic conversion triggered',
             'body' => 'Your change to :source_record triggered an automatic conversion, creating :target_module :target_record.',
         ],
+        'transformation_automation_failed' => [
+            'title' => 'Automatic conversion failed',
+            'body' => 'Conversion rule :transformation failed to run for :source_record: :reason',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Open Sidebar',
@@ -667,6 +671,7 @@ return [
             'automation_enabled_explain' => "This conversion can always be triggered manually. Enable 'Automatic' to also run it automatically once the conditions are met.",
             'link_records_explain' => 'Links the source record to the one this conversion creates. If the underlying relationship is one-to-one, converting again will replace whichever record it currently points to, the modal will warn before that happens.',
             'modal_sub_select' => 'Choose how to convert this record.',
+            'required_field_empty_explain' => "This field is required on the target module. If the mapped source field is empty on a given record, converting that specific record will fail; it won't stop other records from converting.",
         ],
 
         'placeholders' => [
@@ -707,6 +712,7 @@ return [
             'save_error' => 'Could not save conversion rule.',
             'duplicate_mapped_field' => 'Each target field can only be mapped once. Duplicate: :fields',
             'required_fields_must_be_mapped' => 'Field :fields is required in :module, please assign a value before saving.',
+            'required_field_empty_on_source' => 'Cannot convert: :fields is required but empty on this record.',
             'mapping_incompatible' => '":field" has an incompatible mapping. Pick a matching field, or a valid value of the same type.',
             'unknown_mapped_field' => 'That mapping refers to a field that doesn\'t exist on the target module.',
             'current_user_value_label' => 'Current user',
@@ -950,6 +956,7 @@ return [
             'impersonated' => 'My account is impersonated',
             'record_converted' => 'A record I own is converted',
             'transformation_triggered' => 'My change triggers an automatic conversion',
+            'transformation_automation_failed' => 'An automatic conversion rule fails to run',
         ],
     ],
 ];

@@ -111,5 +111,9 @@ return [
             'subject' => 'Automatic conversion triggered',
             'body' => 'Your change to **:source_module**: **:source_record** triggered an automatic conversion, creating **:target_module**: **:target_record**.',
         ],
+        'transformation_automation_failed' => [
+            'subject' => 'Automatic conversion failed: :transformation',
+            'body' => 'The conversion rule **:transformation** failed to run for **:source_module**: **:source_record**. Reason: :reason',
+        ],
     ],
 ];

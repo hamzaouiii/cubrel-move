@@ -72,6 +72,10 @@ return [
             'title' => 'Automatische Umwandlung ausgelöst',
             'body' => 'Deine Änderung an „:source_record" hat eine automatische Umwandlung ausgelöst und :target_module „:target_record" erstellt.',
         ],
+        'transformation_automation_failed' => [
+            'title' => 'Automatische Umwandlung fehlgeschlagen',
+            'body' => 'Die Umwandlungsregel :transformation konnte für „:source_record" nicht ausgeführt werden: :reason',
+        ],
     ],
     'sidebar' => [
         'expand' => 'Seitenleiste Öffnen',
@@ -664,6 +668,7 @@ return [
             'automation_enabled_explain' => 'Diese Umwandlung kann jederzeit manuell ausgelöst werden. Aktiviere „Automatisch", um sie zusätzlich automatisch auszuführen, sobald die Bedingungen erfüllt sind',
             'link_records_explain' => 'Verknüpft den Quelldatensatz mit dem bei der Umwandlung erstellten.',
             'modal_sub_select' => 'Wähle, wie dieser Datensatz umgewandelt werden soll.',
+            'required_field_empty_explain' => 'Dieses Feld ist im Zielmodul erforderlich. Ist das zugeordnete Quellfeld bei einem Datensatz leer, schlägt die Umwandlung nur für diesen Datensatz fehl, andere Datensätze werden trotzdem umgewandelt.',
         ],
 
         'placeholders' => [
@@ -704,6 +709,7 @@ return [
             'save_error' => 'Umwandlungsregel konnte nicht gespeichert werden.',
             'duplicate_mapped_field' => 'Jedes Zielfeld kann nur einmal zugeordnet werden. Duplikat: :fields',
             'required_fields_must_be_mapped' => 'Das Feld :fields ist in :module erforderlich, bitte weise vor dem Speichern einen Wert zu.',
+            'required_field_empty_on_source' => 'Umwandlung nicht möglich: :fields ist erforderlich, aber bei diesem Datensatz leer.',
             'mapping_incompatible' => '„:field" hat eine unpassende Zuordnung. Wähle ein passendes Feld oder einen gültigen Wert desselben Typs.',
             'unknown_mapped_field' => 'Diese Zuordnung verweist auf ein Feld, das im Zielmodul nicht existiert.',
             'current_user_value_label' => 'Aktueller Benutzer',
@@ -948,6 +954,7 @@ return [
             'impersonated' => 'Mein Konto wird verwendet',
             'record_converted' => 'Ein Datensatz, der mir gehört, wird umgewandelt',
             'transformation_triggered' => 'Meine Änderung löst eine automatische Umwandlung aus',
+            'transformation_automation_failed' => 'Eine automatische Umwandlungsregel schlägt fehl',
         ],
     ],
 ];

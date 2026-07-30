@@ -2,6 +2,7 @@
 
 namespace App\Services\Transformations\Executors;
 
+use App\Models\Module;
 use App\Services\Transformations\Contracts\StepExecutorInterface;
 use App\Services\Transformations\ExpressionEvaluator;
 use App\Services\Transformations\TransformationContext;
@@ -42,7 +43,41 @@ class CopyFieldsExecutor implements StepExecutorInterface
             $context->summary['fields_copied']++;
         }
 
+        $this->assertRequiredFieldsHaveValues($context);
+
         $context->targetRecord->save();
+    }
+
+    /**
+     * Studio only guarantees required target fields are *mapped* to
+     * something (TransformationsManagerController::assertRequiredTargetFieldsAreMapped);
+     * it can't guarantee the mapped source field actually holds a value on
+     * a given record. Without this, an empty source value silently reaches
+     * save() and surfaces as a raw DB "not null" error instead of a
+     * user-facing message.
+     */
+    protected function assertRequiredFieldsHaveValues(TransformationContext $context): void
+    {
+        $targetModule = Module::where('slug', $context->targetModuleSlug)->first();
+
+        if (! $targetModule) {
+            return;
+        }
+
+        $missing = $targetModule->allFields()
+            ->filter(fn ($field) => $field->required && ! $field->readonly && ! $field->is_calculated)
+            ->filter(function ($field) use ($context) {
+                $value = $context->targetRecord->{$field->name} ?? null;
+
+                return $value === null || $value === '';
+            })
+            ->map(fn ($field) => __($field->label));
+
+        if ($missing->isNotEmpty()) {
+            throw new TransformationException(__('globals.transformations.messages.required_field_empty_on_source', [
+                'fields' => $missing->implode(', '),
+            ]));
+        }
     }
 
     protected function resolveValue(array $mapping, TransformationContext $context): mixed

@@ -111,5 +111,9 @@ return [
             'subject' => 'Automatische Umwandlung ausgelöst',
             'body' => 'Deine Änderung an **:source_module** **„:source_record"** hat eine automatische Umwandlung ausgelöst und **:target_module** **„:target_record"** erstellt.',
         ],
+        'transformation_automation_failed' => [
+            'subject' => 'Automatische Umwandlung fehlgeschlagen: :transformation',
+            'body' => 'Die Umwandlungsregel **:transformation** konnte für **:source_module** **„:source_record"** nicht ausgeführt werden. Grund: :reason',
+        ],
     ],
 ];

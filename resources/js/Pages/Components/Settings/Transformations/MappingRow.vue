@@ -3,6 +3,7 @@ import { computed } from "vue";
 import SettingDropdownField from "@/Pages/Components/FiledTypes/SettingDropdownField.vue";
 import FieldRenderer from "@/Pages/Components/Globals/FieldRenderer.vue";
 import ExpressionBuilder from "@/Pages/Components/Settings/Transformations/ExpressionBuilder.vue";
+import ExplainTip from "@/Pages/Components/Globals/ExplainTip.vue";
 
 const props = defineProps({
   modelValue: { type: Object, required: true },
@@ -118,6 +119,13 @@ const onModeChange = (newMode) => {
         "
         :searchable="true"
         @update:model-value="onTargetFieldChange"
+      />
+
+      <ExplainTip
+        v-if="targetFieldMeta?.required"
+        :text="
+          $t('globals.transformations.hints.required_field_empty_explain')
+        "
       />
 
       <i class="fa-solid fa-arrow-left transformation-mapping-row__arrow"></i>
