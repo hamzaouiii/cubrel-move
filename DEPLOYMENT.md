@@ -282,37 +282,26 @@ sudo -u www-data php artisan cubrel:bootstrap you@example.com
 
 ## 5. Routine deploys (existing tenants)
 
-`deploy.sh` stays a per-tenant script — run it from inside the tenant's own
-directory, same as your current manual `git pull` workflow. It now also
-restarts that tenant's Reverb process (queue worker already gets a
-`queue:restart` signal; Reverb needs a real restart since it doesn't
-hot-reload):
+Use `deploy/deploy.sh <name>` — the canonical deploy script, run as root from
+anywhere (it resolves the tenant directory itself from its own location):
 
 ```bash
-#!/bin/bash
-set -e
-git config core.fileMode false
-git pull
-composer install --optimize-autoloader
-php artisan migrate --force
-php artisan cubrel:sync-defaults
-php artisan optimize
-npm ci && npm run build
-chmod -R 755 .
-chown -R www-data:www-data .
-php artisan queue:restart
-php artisan storage:link
-
-TENANT=$(basename "$PWD")
-systemctl restart "cubrel-reverb@${TENANT}"
-
-echo "Deploy done for tenant: ${TENANT}"
+sudo bash deploy/deploy.sh test
 ```
 
-`TENANT` is derived from the directory name, so this one script works
-unmodified for app, demo, solar, and every future tenant — as long as the
-tenant folder name matches its systemd instance name (`app`, `demo`,
-`solar`, ...), which the provisioning steps above already guarantee.
+It: does a `--ff-only` `git fetch`/`pull` on whatever branch that tenant
+tracks (hard-stops instead of merging if the tenant's checkout has diverged —
+that needs a human, not an automatic merge commit) → `composer install` →
+`npm run build` → `php artisan migrate --force` → `php artisan
+cubrel:sync-defaults` (see below) → `config:clear` → `chown` → restarts that
+tenant's queue worker + Reverb process → reloads php-fpm (soft-fail if the
+service name differs on this box).
+
+There used to be a second, simpler `/deploy.sh` at the repo root (no root
+check, no tenant argument, no divergence guard, no sync-defaults) — that one
+has been superseded by `deploy/deploy.sh` and removed; if any tenant's crontab
+or muscle memory still points at the old path, repoint it at
+`deploy/deploy.sh <name>`.
 
 ### `cubrel:sync-defaults` — adding a new default field/module/dropdown/etc.
 
