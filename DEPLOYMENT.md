@@ -295,6 +295,7 @@ git config core.fileMode false
 git pull
 composer install --optimize-autoloader
 php artisan migrate --force
+php artisan cubrel:sync-defaults
 php artisan optimize
 npm ci && npm run build
 chmod -R 755 .
@@ -312,6 +313,48 @@ echo "Deploy done for tenant: ${TENANT}"
 unmodified for app, demo, solar, and every future tenant — as long as the
 tenant folder name matches its systemd instance name (`app`, `demo`,
 `solar`, ...), which the provisioning steps above already guarantee.
+
+### `cubrel:sync-defaults` — adding a new default field/module/dropdown/etc.
+
+When a change adds a new default (a key in `config/default_fields.php`, a
+module in `config/modules.php`, a `stock_fields`/`dropdown_lists` entry, a
+filter, a setting, a relationship, a transformation), a plain code deploy
+isn't enough on an already-provisioned tenant: those tables were populated
+once at provision time via `DatabaseSeeder`, so the new config entry never
+reaches an existing tenant's database on its own. `cubrel:sync-defaults`
+(`app/Console/Commands/SyncDefaults.php`) closes that gap and runs
+automatically as part of `deploy.sh`, right after `migrate --force`.
+
+It's **insert-only** — every seeder it calls only adds a row that's new in
+config; it never updates or deletes a row that already exists. That matters
+because fields, modules, and relationships are all editable live through
+their respective manager UIs — an admin's customization is never at risk
+from a routine deploy.
+
+The one seeder in that list that isn't insert-only yet is
+`dropdownListSeeder`, which still overwrites a dropdown's `values` with the
+config version on every run. Harmless if the list is pure stock/system
+options nobody edits through the UI, but if an admin has ever added their
+own option to a stock dropdown list, a deploy that changes that same list
+in config would wipe their addition. Worth fixing the same way (insert
+missing options into the existing array rather than replacing it) before
+relying on it for a dropdown list end users can actually edit.
+
+Layouts (`config/module_layouts/*.php`) are deliberately **not** part of
+this command — a layout only gets a database row the moment a user saves a
+customization through the Layout builder (`Layout::firstOrNew` in
+`LayoutManagerController`). Until then, `Module::resolveLayout()` reads the
+config file directly, so a plain `git pull` is already the complete fix for
+layout defaults; a saved customization is never touched because the code
+never looks at config once a database row exists for that module/type.
+
+Seeders intentionally left out of `cubrel:sync-defaults` — `UsersTableSeeder`,
+`DevSeeder`, `ActivitySeeder`, `LineItemsSeeder`,
+`RelationshipPopulationSeeder`, `IconsTableSeeder` — either fabricate demo
+data unconditionally on every run or delete-and-recreate a table outright.
+They stay reserved for `DatabaseSeeder`'s fresh-tenant path in
+`provision-tenant.sh` (`migrate:fresh --seed` against a guaranteed-empty
+database) and must never run against a tenant with real data.
 
 `systemctl restart` requires root or passwordless sudo for the deploy user;
 since `deploy.sh` already runs `chown` (root-only in practice), this should
