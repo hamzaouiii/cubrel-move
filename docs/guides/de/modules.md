@@ -18,15 +18,15 @@ Modulverwaltung pflegen.
 Jedes Modul besteht aus denselben Bestandteilen, egal ob es mit Cubrel
 ausgeliefert wurde oder Sie es selbst erstellt haben:
 
-- **Attribute** — Name, Symbol, Farbe, Kategorie und ein paar
+- **Attribute**: Name, Symbol, Farbe, Kategorie und ein paar
   Verhaltensschalter (weiter unten beschrieben).
-- **Felder** — die Informationen, die ein Datensatz enthält (ein Textfeld,
+- **Felder**: die Informationen, die ein Datensatz enthält (ein Textfeld,
   ein Datum, eine Auswahlliste, ein Verweis auf ein anderes Modul, und so
   weiter).
-- **Layouts** — wie diese Felder in der Listenansicht, auf der
+- **Layouts**: wie diese Felder in der Listenansicht, auf der
   Datensatzseite und in den Panels für zugehörige Datensätze angeordnet
   sind.
-- **Beziehungen** — optionale Verknüpfungen zu anderen Modulen (eine
+- **Beziehungen**: optionale Verknüpfungen zu anderen Modulen (eine
   Verkaufschance, die zu einer Firma gehört; eine Rechnung, die mit einem
   Kontakt verknüpft ist). Details dazu finden Sie im [Leitfaden zu
   Beziehungen](./relationships-guide.md).
@@ -128,16 +128,16 @@ alltägliche Änderungen über die **Modulverwaltung**, unter **Einstellungen
 → Module**. Das ist eine Liste aller Module im System; das Öffnen eines
 Moduls führt zu dessen Einstellungsseite mit folgenden Tabs:
 
-- **Moduleinstellungen** — die oben beschriebenen Attribute (Name, Symbol,
+- **Moduleinstellungen**: die oben beschriebenen Attribute (Name, Symbol,
   Farbe, Kategorie, Beschreibung, Sichtbarkeit in der Seitenleiste).
   Änderungen hier wirken sich sofort aus, ohne einen
   Veröffentlichungsschritt.
-- **Felder** — Felder jederzeit hinzufügen, bearbeiten oder entfernen,
+- **Felder**: Felder jederzeit hinzufügen, bearbeiten oder entfernen,
   nachdem das Modul live ist, ohne dass irgendetwas erneut veröffentlicht
   werden muss.
-- **Layouts** — Felder in der Listenansicht, auf der Datensatzseite und in
+- **Layouts**: Felder in der Listenansicht, auf der Datensatzseite und in
   den zugehörigen Panels anordnen.
-- **Beziehungen** — das Modul mit anderen verknüpfen.
+- **Beziehungen**: das Modul mit anderen verknüpfen.
 
 Ein paar Dinge sind bewusst gesperrt, sobald ein Modul veröffentlicht wurde,
 und lassen sich nicht mehr über die Modulverwaltung ändern: die

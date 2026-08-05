@@ -65,16 +65,16 @@ beschreibt nur, wann sie hinzugefügt wurden, nicht wie sie sich verhalten.
 Wie die Felder eines Moduls auf dem Bildschirm angeordnet sind. Ein Modul hat
 mehrere Layouts, jedes für eine andere Ansicht:
 
-- **Liste** — welche Spalten in der Listenansicht des Moduls angezeigt
+- **Liste**: welche Spalten in der Listenansicht des Moduls angezeigt
   werden.
-- **Datensatz** — wie Felder auf der Datensatzseite selbst in Abschnitte
+- **Datensatz**: wie Felder auf der Datensatzseite selbst in Abschnitte
   gruppiert sind.
-- **Zugehörige Panels** — welche Beziehungs-Panels auf dem
+- **Zugehörige Panels**: welche Beziehungs-Panels auf dem
   Zugehörig-Tab eines Datensatzes erscheinen, und in welcher Reihenfolge.
-- **Verknüpfungs-Panel** — welche zusätzlichen Spalten im Suchfenster
+- **Verknüpfungs-Panel**: welche zusätzlichen Spalten im Suchfenster
   angezeigt werden, das beim Verknüpfen eines Datensatzes mit einem anderen
   erscheint, über den Namen hinaus.
-- **Positions-Übersicht** — bei Modulen mit Positionen, welche Spalten in
+- **Positions-Übersicht**: bei Modulen mit Positionen, welche Spalten in
   der Positionstabelle selbst angezeigt werden.
 
 Layouts werden pro Modul unter **Einstellungen > Module > [Modul] >
@@ -246,16 +246,16 @@ bestimmte Vorlage ausgewählt wurde.
 Ein paar weitere Einstellungsbereiche runden die Anwendung ab, ohne dass sie
 einen eigenen Begriff benötigen:
 
-- **Unternehmensdaten** — die eigenen Angaben Ihres Unternehmens (unter
+- **Unternehmensdaten**: die eigenen Angaben Ihres Unternehmens (unter
   anderem verwendet auf erzeugten PDFs).
-- **Region und Sprachoptionen** — Datums-, Uhrzeit- und Zahlenformatierung
+- **Region und Sprachoptionen**: Datums-, Uhrzeit- und Zahlenformatierung
   für Ihr Unternehmen.
-- **Stil** — Branding: Primär-/Sekundärfarben, sowie ob jedes Modul seine
+- **Stil**: Branding: Primär-/Sekundärfarben, sowie ob jedes Modul seine
   eigene Akzentfarbe verwendet oder eine gemeinsame.
-- **Präferenzen** — kleinere persönliche bzw. unternehmensweite
+- **Präferenzen**: kleinere persönliche bzw. unternehmensweite
   Voreinstellungen, etwa wie viele Datensätze pro Seite in einer
   Listenansicht angezeigt werden.
-- **Benutzereinladungen** — wie neue Benutzer zu Ihrem Unternehmen
+- **Benutzereinladungen**: wie neue Benutzer zu Ihrem Unternehmen
   hinzugefügt werden; eine eingeladene Person vergibt ihr eigenes Passwort
   bei der ersten Anmeldung.
 
