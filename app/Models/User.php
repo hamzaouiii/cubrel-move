@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 //  Extend BaseModule and implement the Auth Contracts
 class User extends BaseModule implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, HasLocalePreference
@@ -29,7 +30,7 @@ class User extends BaseModule implements AuthenticatableContract, AuthorizableCo
     use Authenticatable, Authorizable, CanResetPassword;
 
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasUuids, Notifiable;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
     public $incrementing = false;
 

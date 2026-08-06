@@ -321,6 +321,19 @@ class Module extends Model
     }
 
     /**
+     * excludes readonly/calculated fields, which allFields() does not.
+     *
+     * @return array<int, string>
+     */
+    public function writableFieldNames(): array
+    {
+        return $this->allFields()
+            ->reject(fn (Field $field) => $field->readonly || $field->is_calculated || $field->name === 'owner_id')
+            ->pluck('name')
+            ->all();
+    }
+
+    /**
      * @return Collection<Field>
      */
     public function allEditableFields(): Collection
