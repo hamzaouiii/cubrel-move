@@ -80,10 +80,19 @@ class AuditObserver
         return $diff;
     }
 
+    /** Static cache keyed by model class - previously uncached, re-queried on every event. */
+    private static array $moduleCache = [];
+
     private function resolveModule(BaseModule $model): ?Module
     {
-        return Module::withoutGlobalScope(AdminOnlyModuleScope::class)
-            ->where('model_class', get_class($model))
+        $class = get_class($model);
+
+        if (array_key_exists($class, self::$moduleCache)) {
+            return self::$moduleCache[$class];
+        }
+
+        return self::$moduleCache[$class] = Module::withoutGlobalScope(AdminOnlyModuleScope::class)
+            ->where('model_class', $class)
             ->first();
     }
 

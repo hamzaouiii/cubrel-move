@@ -360,6 +360,11 @@ class RelationshipService
 
     Module::warmFieldsCache($modules);
 
+    // Warms getModuleBySlug()'s cache from data we already have, so getDataForPanel() below doesn't re-query per relationship.
+    foreach ($modules as $slug => $module) {
+      self::$moduleCache[$slug] = $module;
+    }
+
     return $relationships->map(function ($relationship) use ($modules) {
 
       $module = $modules->get($relationship->related_slug);
@@ -489,9 +494,12 @@ class RelationshipService
     return $module->getDataForPanel();
   }
   /**
-   * on second thought this function's name does not sound right, perhaps it required changing in the future
+   * on second thought this function's name does not sound right, perhaps it required changing in the future ---- ??? why
+ 
+   * $includePanelData defaults true to keep the web panel unchanged; the
+   * API passes false to skip getDataForPanel()'s unused metadata queries.
    */
-  public static function getAllRelatedRecords(string $module_slug, string $recordId): Collection
+  public static function getAllRelatedRecords(string $module_slug, string $recordId, bool $includePanelData = true): Collection
   {
     $relationships = self::getRelationshipForModule($module_slug);
 
@@ -549,7 +557,6 @@ class RelationshipService
           'next_page_url' => $paginator->nextPageUrl(),
         ];
       }
-      $panelData =  self::getDataForPanel($relationship->related_slug);
       $result[$relationship->name] = [
         'name'         => $relationship->name,
         'type'         => $relationship->type,
@@ -560,12 +567,16 @@ class RelationshipService
         'pagination'   => $pagination,
         'related_slug' => $relationship->related_slug,
       ];
-      $result[$relationship->name] =  array_merge($result[$relationship->name], $panelData);
 
-      if ($relationship->role === "child" || $relationship->role === "sibling") {
-        if ($count == 1) {
-          $parent_record = array('parent_record' => $records->first());
-          $result[$relationship->name] =  array_merge($result[$relationship->name], $parent_record);
+      if ($includePanelData) {
+        $panelData = self::getDataForPanel($relationship->related_slug);
+        $result[$relationship->name] = array_merge($result[$relationship->name], $panelData);
+
+        if ($relationship->role === "child" || $relationship->role === "sibling") {
+          if ($count == 1) {
+            $parent_record = array('parent_record' => $records->first());
+            $result[$relationship->name] =  array_merge($result[$relationship->name], $parent_record);
+          }
         }
       }
     }

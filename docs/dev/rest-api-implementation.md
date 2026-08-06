@@ -1,4 +1,4 @@
-# REST API (Partner API v1)
+# REST API (v1)
 
 Branch: `WIP/rest-api`
 
@@ -37,7 +37,7 @@ app/Http/Controllers/
 resources/js/Pages/Settings/ApiTokens/
   Create.vue, List.vue, Record.vue
 
-config/api.php                  # excluded_modules, read_only_modules, hidden_fields
+config/api.php                  # excluded_modules (only key with default content - see §11)
 config/auth.php                 # 'api' guard - driver: sanctum
 routes/api.php                  # /api/v1/{module} routes, auth:sanctum + throttle:api
 
@@ -45,8 +45,8 @@ database/migrations/2026_07_30_090233_create_personal_access_tokens_table.php
   # Sanctum's stock migration, adapted to uuidMorphs('tokenable') since
   # User uses HasUuids - the default migration assumes an integer PK.
 
-bootstrap/app.php                # forces JSON error bodies for ValidationException/HttpException on api/* paths
-app/Providers/AppServiceProvider.php  # RateLimiter::for('api', ...) - 60/min per token
+bootstrap/app.php                # forces JSON error bodies for ValidationException/AuthenticationException/HttpException on api/* paths
+app/Providers/AppServiceProvider.php  # RateLimiter::for('api', ...) - 60/min per token; RecordApiService singleton
 ```
 
 No custom Sanctum model or guard - `Laravel\Sanctum\PersonalAccessToken` and
@@ -69,15 +69,16 @@ entirely this app's.
   it against whatever the request claims to want - the request's ability
   list is never trusted directly, only used to select from what's actually
   grantable.
-- **Enforcement-time**: `RecordController::authorizeAbility()`
-  (`app/Http/Controllers/Api/V1/RecordController.php:78-93`) is the single
-  choke point for every action. It 404s excluded modules, 403s writes to
-  read-only modules regardless of grant, then checks
+- **Enforcement-time**: `RecordApiService::authorizeAbility()` is the single
+  choke point for every action - called from `RecordController` directly
+  for `index`/`show`/`destroy`, and from `ModuleRecordRequest::authorize()`
+  for `store`/`update` (has to run there, before `rules()` builds anything,
+  or an excluded module leaks field names via a 422). It 404s excluded
+  modules, 403s writes to read-only modules regardless of grant, then checks
   `$token->can('*') || $token->can("{$module}:{$verb}")`. Sanctum's
   route-level `ability:` middleware couldn't be used here instead - it can't
   parametrize on the `{module}` route wildcard, and the required verb
-  differs per action within the same route pattern (`PUT` needs `write`,
-  `DELETE` needs `delete`, same URL shape).
+  differs per action within the same route pattern.
 
 ## 4. `RecordApiService` / `Module::withoutGlobalScope(AdminOnlyModuleScope::class)`
 
@@ -85,9 +86,10 @@ entirely this app's.
 made outside an authenticated web-session admin (`Auth::check() &&
 Auth::user()->isAdmin()`, checked against the **default `web` guard**). A
 Sanctum bearer-token request never satisfies that check - the token's user
-is authenticated on the `api` guard, not `web` - so every module lookup in
-this API layer (`RecordApiService::resolveModule()`,
-`ModuleRecordRequest::rules()`) explicitly bypasses the scope. This is safe
+is authenticated on the `api` guard, not `web` - so `RecordApiService::resolveModule()`
+explicitly bypasses the scope. It's the only place a module is looked up in
+this API layer - `ModuleRecordRequest::rules()` calls into it too, rather
+than running its own separate query. This is safe
 *only* because `authorizeAbility()` is the real gate here - a token still
 needs an explicit `users:read`/`users:write` grant to touch that module, the
 same as any other. Bypassing the scope without that per-request ability
@@ -190,7 +192,7 @@ field value persisted correctly and appeared flat in the response; a
 partial `update()` touching only that custom field left every other field
 untouched and merged correctly against the existing value; no nested
 `custom_fields` key appeared in either response. No automated test exists
-for this yet (see §10).
+for this yet (see §12).
 
 ## 6. Error responses always JSON on `api/*`
 
@@ -318,7 +320,7 @@ $ curl -H "Accept-Language: de" -d '{}' http://.../api/v1/leads      # valid tok
 ```
 
 All three round-tripped in English too (default, or with an explicit
-`Accept-Language: en`). No automated test yet - see §10.
+`Accept-Language: en`). No automated test yet - see §12.
 
 ## 8. Rate limiting
 
@@ -337,16 +339,93 @@ Applied via `throttle:api` in `routes/api.php`'s route group. `X-RateLimit-*`
 headers are added automatically by Laravel's throttle middleware; no custom
 code needed for those.
 
-## 9. Extending the API
+## 9. Embedded child data: `line_items`, `attendees`, `related`
 
-**Excluding a module, or making it read-only** - edit `config/api.php`,
-nothing else. `excluded_modules` 404s a module outright (also removed from
-the token-creation picker); `read_only_modules` keeps it visible/grantable
-but limits the picker to `read` and 403s any write/delete regardless of
-grant, enforced in `RecordController::authorizeAbility()`.
+Every single-record response (`show`/`store`/`update` - never `index`, to
+avoid extra queries per row on a list page) can carry up to three extra
+top-level keys alongside the record's own fields.
 
-**Stripping a field from every response for a module** - add it to
-`config('api.hidden_fields.{slug}')`. This is independent of the
+### 9.1 `line_items` - quotes/orders/invoices only
+
+`line_items` is itself an excluded module - a partner never queries
+`/api/v1/line_items` directly - but a Quote/Order/Invoice response would be
+incomplete without them. `RecordController::presentRecord()` checks
+`$moduleModel->has_line_items` and embeds them via
+`RecordApiService::lineItemsFor()`, which queries `LineItem` by
+`parent_type`/`parent_id` (`parent_type` is the owning module's *slug*, the
+same convention `LineItemsPanel.vue` already uses on the web side).
+
+### 9.2 `attendees` - meetings only
+
+Same idea, for the one other module with a child collection that isn't its
+own queryable resource - there's no "meeting attendees" `Module` row at all,
+so there's no exclusion to enforce, just the embedding via
+`RecordApiService::attendeesFor()`. Ordering matches
+`MeetingAttendeeController::index()` exactly (organizer, then required, then
+optional, then by name).
+
+### 9.3 `related` - every module, keyed by relationship name
+
+Applies to *every* module's single-record response, always present (an
+empty object if nothing's linked). Reuses `RelationshipService::getAllRelatedRecords()`
+- the same method the web app's related-panels sidebar calls - via
+`RecordApiService::relatedRecordsFor()`. Two things worth knowing: it's
+capped to one page per relationship (`related_panel_limit`, no pagination
+exposed here), and relationships pointing at an excluded module are dropped
+entirely rather than embedding data that module's exclusion should block.
+
+## 10. Query waste found and fixed while building §9
+
+Measured directly (`DB::listen()`, isolated `tinker` process per test, not
+guessed).
+
+### 10.1 `related` was ~24 queries for one record, 16 wasted
+
+`getAllRelatedRecords()` also called `getDataForPanel()` once per
+relationship type - fetching `linkingPanel`/`allFields` metadata purely for
+web panel rendering, which `relatedRecordsFor()` never reads. Worse: the
+module lookup inside it re-queried data `getRelationshipForModule()` had
+*already fetched in one batched query* moments earlier, because that batch
+result was never written into the static cache `getModuleBySlug()` checks.
+
+Fixed in the pre-existing, web-shared `RelationshipService` (not API-only
+code) two ways: `getAllRelatedRecords()` gained an `$includePanelData = true`
+parameter (defaults preserve the web sidebar exactly; the API passes
+`false`), and `getRelationshipForModule()` now warms `self::$moduleCache`
+from its own batch fetch - which also speeds up the *web app's* panel
+rendering, since it's the same shared cache. Verified: a lead with 8
+relationship types went from 25 queries (16 wasted) to 9, zero duplicates.
+
+### 10.2 `store()`/`update()` resolved the same module twice
+
+`ModuleRecordRequest::rules()` used to run its own independent module query,
+and `RecordController` ran a second one for the same module in the same
+request. Fixed by binding `RecordApiService` as a singleton
+(`AppServiceProvider`) with a per-instance `resolveModule()` cache; `rules()`
+now calls `RecordApiService::resolveModule()` instead of querying
+independently, so both call sites share one cached lookup.
+
+### 10.3 `AuditObserver::resolveModule()` had no caching at all
+
+Unlike `BaseModule::getModuleSlug()` (same idea, already cached), this
+re-queried on every single `created()`/`updated()`/`deleted()` event -
+regardless of surface, so this affected the web app too. Given the same
+static-cache treatment, keyed by model class.
+
+## 11. Extending the API
+
+**Excluding a module, or making it read-only** - edit `config/api.php`.
+`excluded_modules` 404s a module outright (also removed from the
+token-creation picker) and is the only key declared by default.
+`read_only_modules` does the same job for write/delete (keeps the module
+visible/grantable but limits the picker to `read`, enforced in
+`RecordApiService::authorizeAbility()`) but isn't in the config file right
+now - add `'read_only_modules' => [...]` back if a module ever needs it, the
+call site already defaults to `[]` when it's absent.
+
+**Stripping a field from every response for a module** - add a
+`'hidden_fields' => ['slug' => [...]]` entry to `config/api.php` (also
+removed for now, same reasoning). This is independent of the
 `DENYLIST_PATTERNS` regexes in `RecordResource` (`/token/i`, `/secret/i`,
 `/password/i`, `/_hash$/i`, `/recovery_codes/i`), which strip
 credential-shaped columns from *every* module's response regardless of that
@@ -358,14 +437,14 @@ become reachable - it's picked up automatically as soon as it's `is_active`
 and not listed in `excluded_modules`. Its `$fillable` array does not need
 `custom_fields` added to it (see §5).
 
-## 10. No automated test coverage
+## 12. No automated test coverage
 
 Everything in this feature was verified manually - `curl`, `php artisan
-tinker`, and `Cubrel-REST-API.postman_collection.json` (repo root, not yet
-committed as of this writing) covering the full CRUD happy path,
-validation/auth/permission negative cases, rate-limit headers, and (§7)
-localization across both supported languages. If this API gets a real test
-suite, `tests/Feature/Api/V1/` with `actingAs()`-style Sanctum token
+tinker`, and `Cubrel-REST-API.postman_collection.json` (repo root, committed)
+covering the full CRUD happy path, validation/auth/permission negative
+cases, rate-limit headers, localization (§7), and the embedded-data/query
+fixes (§9-10). If this API gets a real test suite, `tests/Feature/Api/V1/`
+with `actingAs()`-style Sanctum token
 assertions (`Sanctum::actingAs($user, ['leads:read'])`) would be the natural
 shape - none of that scaffolding exists yet, and the Postman collection is
 not a substitute for one (no CI can run it).

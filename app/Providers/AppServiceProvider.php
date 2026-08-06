@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -20,6 +23,7 @@ use App\Observers\LineItemTotalsObserver;
 use App\Models\Modules\Meeting;
 use App\Observers\MeetingOrganizerObserver;
 use App\Services\Users\OwnershipService;
+use App\Services\Api\RecordApiService;
 class AppServiceProvider extends ServiceProvider
 {
   /**
@@ -31,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
       return new ModuleScaffolder($app['files']);
     });
     $this->app->singleton(OwnershipService::class);
+    
+    $this->app->singleton(RecordApiService::class);
   }
 
 
@@ -45,6 +51,10 @@ class AppServiceProvider extends ServiceProvider
     Meeting::observe(MeetingOrganizerObserver::class);
 
     Vite::prefetch(concurrency: 3);
+
+    RateLimiter::for('api', function (Request $request) {
+      return Limit::perMinute(60)->by($request->user()?->currentAccessToken()?->id ?: $request->ip());
+    });
 
     // overriding system wide settings by the preferences array passed along with auth::user
     Inertia::share([

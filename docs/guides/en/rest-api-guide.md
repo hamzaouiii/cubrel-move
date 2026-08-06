@@ -121,6 +121,64 @@ separate `custom_fields` wrapper to know about:
 **Settings → Modules**; from the API's point of view it behaves exactly like
 a built-in field.
 
+### Related and child records
+
+Getting, creating, or updating a single record (never a list) includes
+extra keys beyond that record's own fields, so you rarely need a second
+request to get the full picture.
+
+**`related`** — present on every module, always, keyed by relationship
+name. Each value is an array of the records linked through that
+relationship (an empty array if nothing's linked, or if the module has no
+relationships at all):
+
+```json
+{
+  "id": "...",
+  "name": "Acme Corp",
+  "related": {
+    "leads_tasks": [
+      { "id": "...", "name": "Follow up call", "status": "not_started" }
+    ],
+    "leads_calls": [],
+    "leads_meetings": []
+  }
+}
+```
+
+Relationship names aren't published as a fixed list — reading them off a
+record's `related` object *is* how you discover them. Each relationship is
+capped to a limited number of records (the same cap the app's own
+related-records panel uses) and isn't paginated within this response.
+
+**`line_items`** — Quotes, Orders, and Invoices only:
+
+```json
+{
+  "id": "...",
+  "total": "45.00",
+  "line_items": [
+    { "id": "...", "name": "Widget", "quantity": "2.0000", "unit_price": "10.0000", "total": "20.0000" }
+  ]
+}
+```
+
+**`attendees`** — Meetings only, ordered organizer first, then required,
+then optional, then alphabetically by name:
+
+```json
+{
+  "id": "...",
+  "name": "Budget planning meeting",
+  "attendees": [
+    { "id": "...", "name": "Alice", "role": "organizer", "rsvp_status": "accepted" }
+  ]
+}
+```
+
+None of this appears when listing records (`GET /api/v1/{module}` without
+an `{id}`) — only on a single record.
+
 ## Permissions
 
 Every token has a specific set of `module:action` grants (or full access),
