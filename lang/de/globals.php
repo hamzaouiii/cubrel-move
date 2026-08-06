@@ -789,6 +789,48 @@ return [
         ],
     ],
 
+    'api_tokens' => [
+        'labels' => [
+            'page_title' => 'API-Token',
+            'title' => 'API-Token',
+            'new_page_title' => 'Neues API-Token',
+            'show_page_title' => 'Token erstellt',
+            'name_label' => 'Token-Name',
+            'user_label' => 'REST-API-Benutzer',
+            'full_access_label' => 'Vollzugriff (alle Module)',
+            'full_access' => 'Vollzugriff',
+            'name_column' => 'Name',
+            'owner_column' => 'REST-API-Benutzer',
+            'abilities_column' => 'Berechtigungen',
+            'selective' => 'Selektiv',
+            'last_used_column' => 'Zuletzt verwendet',
+            'created_column' => 'Erstellt',
+            'new_token_title' => 'Token erstellt',
+            'read' => 'Lesen',
+            'write' => 'Schreiben',
+            'delete' => 'Löschen',
+        ],
+        'hints' => [
+            'intro' => 'Tokens authentifizieren externe Integrationen gegenüber der REST-API von Cubrel.',
+            'new_token' => 'Kopieren Sie dieses Token jetzt, es wird nicht erneut angezeigt.',
+        ],
+        'buttons' => [
+            'create_btn' => 'Token erstellen',
+            'cancel_btn' => 'Abbrechen',
+            'delete_btn' => 'Widerrufen',
+            'copy_btn' => 'Token kopieren',
+            'done_btn' => 'Fertig',
+        ],
+        'messages' => [
+            'no_tokens' => 'Noch keine API-Token erstellt.',
+            'no_permissions_error' => 'Wähle mindestens eine Modulberechtigung aus, oder vergib Vollzugriff.',
+            'delete_confirm_title' => 'API-Token widerrufen',
+            'delete_confirm' => '":name" widerrufen? Jede Integration, die dieses Token verwendet, verliert sofort den Zugriff.',
+            'delete_error' => 'Token konnte nicht widerrufen werden.',
+            'copied' => 'Token in die Zwischenablage kopiert.',
+        ],
+    ],
+
     'pdf_templates' => [
         'preview' => 'Vorschau',
 

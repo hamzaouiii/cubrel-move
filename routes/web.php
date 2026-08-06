@@ -40,6 +40,7 @@ use App\Http\Controllers\ImpersonationSessionController;
 use App\Http\Controllers\RecordHistoryController;
 use App\Http\Controllers\RecordTimelineController;
 use App\Http\Controllers\EmailCaptureAddressController;
+use App\Http\Controllers\ApiTokenController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -242,6 +243,15 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
             // Impersonation Sessions
             Route::prefix('impersonation-sessions')->name('impersonation-sessions.')->group(function () {
                 Route::get('/', [ImpersonationSessionController::class, 'index'])->name('index');
+            });
+
+            // REST API tokens
+            Route::prefix('api-tokens')->name('api-tokens.')->group(function () {
+                Route::get('/', [ApiTokenController::class, 'index'])->name('index');
+                Route::get('/create', [ApiTokenController::class, 'create'])->name('create');
+                Route::post('/', [ApiTokenController::class, 'store'])->name('store');
+                Route::get('/{token}', [ApiTokenController::class, 'show'])->name('show');
+                Route::delete('/{token}', [ApiTokenController::class, 'destroy'])->name('destroy');
             });
         });
 

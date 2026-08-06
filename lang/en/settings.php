@@ -142,6 +142,7 @@ return [
                 'pdf_templates' => 'PDF Templates',
         'audit' => 'Audit',
         'automation' => 'Automation',
+        'integrations' => 'Integrations',
         'description' => [
             'email' => 'Manage inbound emails.',
             'system' => 'Configure the system-wide settings according to the specifications of your organization.',
@@ -151,6 +152,7 @@ return [
             'company'        => 'Manage your organization\'s identity shown on generated documents.',
             'audit' => 'Review record change history and impersonation sessions.',
             'automation' => 'Create conversion rules that turn one record into another, manually or automatically.',
+            'integrations' => 'Manage and setup external integrations',
         ],
     ],
     'items' => [
@@ -159,6 +161,7 @@ return [
          'pdf_templates' => 'PDF Templates',
         'audit_trail' => 'Audit Trail',
         'impersonation_sessions' => 'Impersonation Sessions',
+        'api_tokens' => 'API Tokens',
         'inbound_email' => 'Inbound Email',
         'currencies' => 'Currencies',
         'create_user' => 'Create A User',
