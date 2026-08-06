@@ -25,7 +25,7 @@ const props = defineProps({
   },
   accentColor: {
     type: String,
-    default: "var(--module-color)",
+    default: null,
   },
   selectedRecord: {
     type: String,
