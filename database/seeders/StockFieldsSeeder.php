@@ -13,10 +13,11 @@ class StockFieldsSeeder extends Seeder
 {
   public function run(): void
   {
+    // Insert only throughout this seeder
     // seed default fields
     $defaults = config("default_fields", []);
     foreach ($defaults as $fieldKey => $default) {
-      Field::updateOrCreate(
+      Field::firstOrCreate(
         [
           'name'      => $fieldKey,
           'is_global' => true
@@ -37,7 +38,7 @@ class StockFieldsSeeder extends Seeder
     $li_fields = config("default_line_item_fields", []);
 
     foreach ($li_fields as $fieldKey => $field) {
-      Field::updateOrCreate(
+      Field::firstOrCreate(
         [
           'name'      => $fieldKey,
         ],
@@ -76,7 +77,7 @@ class StockFieldsSeeder extends Seeder
           }
         }
 
-        Field::updateOrCreate(
+        Field::firstOrCreate(
           [
             'module_id' => $module->id,
             'name'      => $fieldKey,
@@ -84,9 +85,7 @@ class StockFieldsSeeder extends Seeder
           array_merge($definition, [
             'key'               => "{$module->slug}_{$fieldKey}",
             'label'             => "modules.{$module->slug}.fields.{$fieldKey}",
-            'id'                => Field::where('module_id', $module->id)
-              ->where('name', $fieldKey)
-              ->value('id') ?? (string) Str::uuid(),
+            'id'                => (string) Str::uuid(),
             'dropdown_list_id'  => $dropdownListId,
             'is_custom'         => false,
             'is_active'         => true,

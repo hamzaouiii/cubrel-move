@@ -282,36 +282,68 @@ sudo -u www-data php artisan cubrel:bootstrap you@example.com
 
 ## 5. Routine deploys (existing tenants)
 
-`deploy.sh` stays a per-tenant script — run it from inside the tenant's own
-directory, same as your current manual `git pull` workflow. It now also
-restarts that tenant's Reverb process (queue worker already gets a
-`queue:restart` signal; Reverb needs a real restart since it doesn't
-hot-reload):
+Use `deploy/deploy.sh <name>` — the canonical deploy script, run as root from
+anywhere (it resolves the tenant directory itself from its own location):
 
 ```bash
-#!/bin/bash
-set -e
-git config core.fileMode false
-git pull
-composer install --optimize-autoloader
-php artisan migrate --force
-php artisan optimize
-npm ci && npm run build
-chmod -R 755 .
-chown -R www-data:www-data .
-php artisan queue:restart
-php artisan storage:link
-
-TENANT=$(basename "$PWD")
-systemctl restart "cubrel-reverb@${TENANT}"
-
-echo "Deploy done for tenant: ${TENANT}"
+sudo bash deploy/deploy.sh test
 ```
 
-`TENANT` is derived from the directory name, so this one script works
-unmodified for app, demo, solar, and every future tenant — as long as the
-tenant folder name matches its systemd instance name (`app`, `demo`,
-`solar`, ...), which the provisioning steps above already guarantee.
+It: does a `--ff-only` `git fetch`/`pull` on whatever branch that tenant
+tracks (hard-stops instead of merging if the tenant's checkout has diverged —
+that needs a human, not an automatic merge commit) → `composer install` →
+`npm run build` → `php artisan migrate --force` → `php artisan
+cubrel:sync-defaults` (see below) → `config:clear` → `chown` → restarts that
+tenant's queue worker + Reverb process → reloads php-fpm (soft-fail if the
+service name differs on this box).
+
+There used to be a second, simpler `/deploy.sh` at the repo root (no root
+check, no tenant argument, no divergence guard, no sync-defaults) — that one
+has been superseded by `deploy/deploy.sh` and removed; if any tenant's crontab
+or muscle memory still points at the old path, repoint it at
+`deploy/deploy.sh <name>`.
+
+### `cubrel:sync-defaults` — adding a new default field/module/dropdown/etc.
+
+When a change adds a new default (a key in `config/default_fields.php`, a
+module in `config/modules.php`, a `stock_fields`/`dropdown_lists` entry, a
+filter, a setting, a relationship, a transformation), a plain code deploy
+isn't enough on an already-provisioned tenant: those tables were populated
+once at provision time via `DatabaseSeeder`, so the new config entry never
+reaches an existing tenant's database on its own. `cubrel:sync-defaults`
+(`app/Console/Commands/SyncDefaults.php`) closes that gap and runs
+automatically as part of `deploy.sh`, right after `migrate --force`.
+
+It's **insert-only** — every seeder it calls only adds a row that's new in
+config; it never updates or deletes a row that already exists. That matters
+because fields, modules, and relationships are all editable live through
+their respective manager UIs — an admin's customization is never at risk
+from a routine deploy.
+
+The one seeder in that list that isn't insert-only yet is
+`dropdownListSeeder`, which still overwrites a dropdown's `values` with the
+config version on every run. Harmless if the list is pure stock/system
+options nobody edits through the UI, but if an admin has ever added their
+own option to a stock dropdown list, a deploy that changes that same list
+in config would wipe their addition. Worth fixing the same way (insert
+missing options into the existing array rather than replacing it) before
+relying on it for a dropdown list end users can actually edit.
+
+Layouts (`config/module_layouts/*.php`) are deliberately **not** part of
+this command — a layout only gets a database row the moment a user saves a
+customization through the Layout builder (`Layout::firstOrNew` in
+`LayoutManagerController`). Until then, `Module::resolveLayout()` reads the
+config file directly, so a plain `git pull` is already the complete fix for
+layout defaults; a saved customization is never touched because the code
+never looks at config once a database row exists for that module/type.
+
+Seeders intentionally left out of `cubrel:sync-defaults` — `UsersTableSeeder`,
+`DevSeeder`, `ActivitySeeder`, `LineItemsSeeder`,
+`RelationshipPopulationSeeder`, `IconsTableSeeder` — either fabricate demo
+data unconditionally on every run or delete-and-recreate a table outright.
+They stay reserved for `DatabaseSeeder`'s fresh-tenant path in
+`provision-tenant.sh` (`migrate:fresh --seed` against a guaranteed-empty
+database) and must never run against a tenant with real data.
 
 `systemctl restart` requires root or passwordless sudo for the deploy user;
 since `deploy.sh` already runs `chown` (root-only in practice), this should

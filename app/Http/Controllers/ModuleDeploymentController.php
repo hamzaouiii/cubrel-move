@@ -58,7 +58,7 @@ class ModuleDeploymentController extends Controller
   public function generateFiles(Module $module, ModuleScaffolder $scaffolder)
   {
     $baseName = class_basename($module->model_class);
-    $scaffolder->createModelFile($baseName, $module->table_name);
+    $scaffolder->createModelFile($baseName, $module->table_name, $module);
     $scaffolder->createHandlerFile($baseName, $module->model_class);
     return response()->json(['success' => true]);
   }

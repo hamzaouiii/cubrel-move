@@ -14,9 +14,13 @@ class RelationshipSeeder extends Seeder
     $relationships = config('stock_relationships', []);
     $now = now();
 
+    // Insert only a rerun must never touch a relationship that already
+    // exists
     foreach ($relationships as $relationship) {
-      DB::table('relationships')->updateOrInsert(
-        ['name' => $relationship['name']],
+      if (DB::table('relationships')->where('name', $relationship['name'])->exists()) {
+        continue;
+      }
+      DB::table('relationships')->insert(
         array_merge($relationship, [
           'id' => uuid_create(UUID_TYPE_RANDOM),
           'created_at' => $now,
@@ -26,10 +30,6 @@ class RelationshipSeeder extends Seeder
       );
     }
 
-    // See RelationshipService::syncActivityRelationships() for the full
-    // has_activity x is_activity pairing logic — reused here and in
-    // ModuleBuilderController so a module gets wired up the same way whether
-    // it's flagged at seed time or toggled later in the Module Builder.
     Module::where('is_activity', true)
       ->orWhere('has_activity', true)
       ->get()
