@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Module;
+use App\Scopes\AdminOnlyModuleScope;
 
 class ModulesTableSeeder extends Seeder
 {
@@ -11,7 +12,11 @@ class ModulesTableSeeder extends Seeder
   {
 
     foreach (config('modules') as $module) {
-      Module::firstOrCreate(['slug' => $module['slug']], $module);
+      // Seeding runs outside any authenticated request (artisan/CLI), so
+      // AdminOnlyModuleScope would hide the existing 'settings'/'users' rows
+      // from this lookup and firstOrCreate would try (and fail) to re-insert them.
+      Module::withoutGlobalScope(AdminOnlyModuleScope::class)
+        ->firstOrCreate(['slug' => $module['slug']], $module);
     }
   }
 }
