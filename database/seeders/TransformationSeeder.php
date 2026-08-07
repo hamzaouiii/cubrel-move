@@ -47,7 +47,7 @@ class TransformationSeeder extends Seeder
                     ['field' => 'status', 'operator' => 'equals', 'value' => 'accepted'],
                 ],
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -89,7 +89,7 @@ class TransformationSeeder extends Seeder
                 // duplicate-condition-field check), 'status' and 'total'
                 // are distinct fields so this is compliant.
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -126,7 +126,7 @@ class TransformationSeeder extends Seeder
                     ['field' => 'sales_stage', 'operator' => 'equals', 'value' => 'proposal'],
                 ],
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -164,7 +164,7 @@ class TransformationSeeder extends Seeder
                 'automation_enabled' => false,
                 'conditions' => [],
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -191,7 +191,7 @@ class TransformationSeeder extends Seeder
                 'automation_enabled' => false,
                 'conditions' => [],
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -221,7 +221,7 @@ class TransformationSeeder extends Seeder
                 'conditions_match' => 'all',
                 // Reuses the existing one-to-one leads<->contacts relationship
                 // rather than creating a second, redundant one
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -254,7 +254,7 @@ class TransformationSeeder extends Seeder
                 ],
                 'conditions_match' => 'all',
                 // Reuses the existing cases<->tasks activity relationship
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'expression', 'target_field' => 'name', 'expression' => [
@@ -288,7 +288,7 @@ class TransformationSeeder extends Seeder
                     ['field' => 'status', 'operator' => 'equals', 'value' => 'held'],
                 ],
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -321,7 +321,7 @@ class TransformationSeeder extends Seeder
                     ['field' => 'status', 'operator' => 'equals', 'value' => 'held'],
                 ],
                 'conditions_match' => 'all',
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'name', 'target_field' => 'name'],
@@ -361,7 +361,7 @@ class TransformationSeeder extends Seeder
                 'conditions_match' => 'all',
                 // Reuses the existing many-to-many contacts<->emails
                 // activity relationship rather than creating a second one.
-                'link_records_enabled' => true,
+                'link_records_enabled' => false,
             ],
             [
                 ['mode' => 'field', 'source_field' => 'from_name', 'target_field' => 'name'],

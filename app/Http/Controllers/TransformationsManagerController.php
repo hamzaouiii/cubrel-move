@@ -63,8 +63,6 @@ class TransformationsManagerController extends Controller
             'link_records_enabled' => $validated['link_records_enabled'] ?? true,
         ]);
 
-        $transformation->ensureRelationship();
-
         $this->syncSteps($transformation, $validated);
 
         return redirect()
@@ -156,8 +154,6 @@ class TransformationsManagerController extends Controller
             'conditions_match' => $validated['conditions_match'] ?? 'all',
             'link_records_enabled' => $validated['link_records_enabled'] ?? true,
         ]);
-
-        $transformation->ensureRelationship();
 
         $this->syncSteps($transformation, $validated);
 
@@ -309,10 +305,38 @@ class TransformationsManagerController extends Controller
 
         $this->assertConditionFieldsAreKnown($validated);
         $this->assertRelationshipsAreKnown($validated);
+        $this->assertRelationshipExistsForLinking($validated);
         $this->assertMappingsAreTypeCompatible($validated);
         $this->assertRequiredTargetFieldsAreMapped($validated);
 
         return $validated;
+    }
+
+    /**
+     * link_records_enabled requires a Relationship already defined between the two
+     * modules, transformations never create one themselves. Relationships are only
+     * ever created explicitly through Module Manager.
+     */
+    protected function assertRelationshipExistsForLinking(array $validated): void
+    {
+        if (! ($validated['link_records_enabled'] ?? true)) {
+            return;
+        }
+
+        if (! isset($validated['source_module'], $validated['target_module'])) {
+            return;
+        }
+
+        $exists = RelationshipService::getRelationshipBetween(
+            $validated['source_module'],
+            $validated['target_module'],
+        )->isNotEmpty();
+
+        if (! $exists) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'link_records_enabled' => __('globals.transformations.messages.no_relationship_to_link'),
+            ]);
+        }
     }
 
 

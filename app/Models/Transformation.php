@@ -128,8 +128,10 @@ class Transformation extends Model
     }
 
     /**
-     * Uses the system Relationship row this transformation uses to link a source record to the record it created.
-     * Do nothing when link_records_enabled is off
+     * Points this transformation at the Relationship row (if any) already defined between
+     * its source and target module. Never creates one, relationships are only ever
+     * created explicitly through Module Manager.
+     * Does nothing when link_records_enabled is off
      */
     public function ensureRelationship(): ?Relationship
     {
@@ -142,22 +144,7 @@ class Transformation extends Model
             $this->target_module,
         )->first();
 
-        if (! $relationship) {
-            $name = "{$this->source_module}_{$this->target_module}_transformation";
-
-            $relationship = Relationship::firstOrCreate(
-                ['name' => $name],
-                [
-                    'label' => "modules.{$this->target_module}.label",
-                    'left_module' => $this->source_module,
-                    'right_module' => $this->target_module,
-                    'type' => 'one-to-many',
-                    'is_system' => true,
-                ]
-            );
-        }
-
-        if ($this->relationship_id !== $relationship->id) {
+        if ($relationship && $this->relationship_id !== $relationship->id) {
             $this->relationship_id = $relationship->id;
             $this->saveQuietly();
         }
