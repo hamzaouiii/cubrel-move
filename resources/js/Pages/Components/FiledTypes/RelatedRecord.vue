@@ -132,10 +132,10 @@ const emitOpenOverlay = () => {
             <i class="fa-solid fa-xmark"></i>
           </span>
         </div>
-        <button v-if="modelValue" @click="emitOpenOverlay()">
+        <button type="button" v-if="modelValue" @click="emitOpenOverlay()">
           <i class="fa-solid fa-pen"></i>
         </button>
-        <button v-else @click="emitOpenOverlay()">
+        <button type="button" v-else @click="emitOpenOverlay()">
           <i class="fa-solid fa-link"></i>
         </button>
       </div>

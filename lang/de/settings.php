@@ -139,6 +139,7 @@ return [
         'pdf_templates' => 'PDF-Vorlagen',
         'audit' => 'Audit',
         'automation' => 'Automatisierung',
+        'integrations' => 'Integrationen',
         'description' => [
             'email' => 'Erstelle und Verwalte eingehende E Mails.',
             'system' => 'Konfiguriere die systemweiten Einstellungen entsprechend den Vorgaben deiner Organisation.',
@@ -148,6 +149,7 @@ return [
             'company' => 'Verwalte die Identität deines Unternehmens, die auf erstellten Dokumenten angezeigt wird.',
             'audit' => 'Überprüfe den Änderungsverlauf von Datensätzen und Impersonation-Sitzungen.',
             'automation' => 'Erstelle Umwandlungsregeln, die einen Datensatz manuell oder automatisch in einen anderen umwandeln.',
+            'integrations' => 'Externe Integrationen verwalten und einrichten',
         ],
     ],
     'items' => [
@@ -155,6 +157,7 @@ return [
         'pdf_templates' => 'PDF-Vorlagen',
         'audit_trail' => 'Audit-Verlauf',
         'impersonation_sessions' => 'Impersonation-Sitzungen',
+        'api_tokens' => 'API-Token',
         'role_management' => 'Rollenverwaltung',
         'inbound_email' => 'Eingehende E-Mails',
         'currencies' => 'Währungen',

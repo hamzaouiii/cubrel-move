@@ -108,12 +108,7 @@ class UserController extends Controller
   }
 
   /**
-   * Store a newly created user record (admin "create user" page).
-   * There's no password field on this form — real onboarding goes through
-   * the invite flow, so we just seed a random password here to satisfy the
-   * NOT NULL column; the admin fields (avatar/type/status/is_admin) go
-   * through forceFill like User::createFromAccountForm does.
-   */
+   * Store a newly created user record. Not via invite   */
   public function store(Request $request)
   {
     $validated = $request->validate([
@@ -135,6 +130,10 @@ class UserController extends Controller
       array_merge($validated, ['password' => Str::random(32)]),
       collect($validated)->only(['avatar', 'phone', 'mobile', 'title', 'description', 'type', 'status', 'is_admin'])->all()
     );
+
+    if ($request->wantsJson()) {
+      return response()->json($user);
+    }
 
     return redirect("/users/{$user->id}")->with('success', 'Record created successfully.');
   }

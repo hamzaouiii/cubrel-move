@@ -792,6 +792,48 @@ return [
         ],
     ],
 
+    'api_tokens' => [
+        'labels' => [
+            'page_title' => 'API Tokens',
+            'title' => 'API Tokens',
+            'new_page_title' => 'New API Token',
+            'show_page_title' => 'Token Created',
+            'name_label' => 'Token Name',
+            'user_label' => 'REST API User',
+            'full_access_label' => 'Full access (all modules)',
+            'full_access' => 'Full access',
+            'name_column' => 'Name',
+            'owner_column' => 'REST API User',
+            'abilities_column' => 'Permissions',
+            'selective' => 'Selective',
+            'last_used_column' => 'Last Used',
+            'created_column' => 'Created',
+            'new_token_title' => 'Token created - Shown only once',
+            'read' => 'Read',
+            'write' => 'Write',
+            'delete' => 'Delete',
+            'link' => 'Link',
+        ],
+        'hints' => [
+            'intro' => "Tokens authenticate external integrations against Cubrel's REST API.",
+            'new_token' => 'Copy this token now, it will not be shown again.',
+        ],
+        'buttons' => [
+            'create_btn' => 'Create token',
+            'cancel_btn' => 'Cancel',
+            'delete_btn' => 'Revoke',
+            'done_btn' => 'Done',
+        ],
+        'messages' => [
+            'no_tokens' => 'No API tokens issued yet.',
+            'no_permissions_error' => 'Select at least one module permission, or grant full access.',
+            'delete_confirm_title' => 'Revoke API Token',
+            'delete_confirm' => 'Revoke ":name"? Any integration using it will immediately lose access.',
+            'delete_error' => 'Could not revoke token.',
+            'copied' => 'Token copied to clipboard.',
+        ],
+    ],
+
     'pdf_templates' => [
         'preview' => 'Preview',
         'page_title' => 'PDF Templates',

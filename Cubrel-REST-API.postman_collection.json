@@ -1,0 +1,1023 @@
+{
+  "info": {
+    "name": "Cubrel REST API v1",
+    "_postman_id": "c8b1a6a0-0000-4000-8000-000000000001",
+    "description": "Manual + scripted test suite for the /api/v1/{module} REST API (Sanctum bearer tokens, per-module read/write/delete abilities). Create a token at /settings/api-tokens/create first, then set the `token` collection variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Without this, a missing/invalid token doesn't come back as 401 JSON -",
+          "// Laravel's AuthenticationException isn't covered by this app's api/*",
+          "// JSON error overrides (only ValidationException/HttpException are), so",
+          "// it falls back to redirect()->guest('/login'), and Postman's default",
+          "// 'follow redirects' setting silently turns that into a 200 OK HTML page.",
+          "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "full_access_token", "value": "", "type": "string" },
+    { "key": "module", "value": "leads", "type": "string" },
+    { "key": "record_id", "value": "", "type": "string" },
+    { "key": "relationship_name", "value": "leads_tasks", "type": "string" },
+    { "key": "related_module", "value": "tasks", "type": "string" },
+    { "key": "link_record_id", "value": "", "type": "string" },
+    { "key": "link_related_id", "value": "", "type": "string" },
+    { "key": "link_related_id_2", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Happy path (write+delete token)",
+      "item": [
+        {
+          "name": "List records",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}?per_page=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"],
+              "query": [{ "key": "per_page", "value": "5" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('has data/meta/links envelope', () => {",
+                  "  pm.expect(body).to.have.keys(['data','meta','links']);",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "});",
+                  "pm.test('no password/token/secret fields leak', () => {",
+                  "  const json = JSON.stringify(body.data);",
+                  "  pm.expect(/password|token|secret|_hash/i.test(json)).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create record",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Lead\",\n  \"first_name\": \"Postman\",\n  \"last_name\": \"Test\",\n  \"email\": \"postman-test@example.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('returns created record with id', () => {",
+                  "  pm.expect(body.data).to.have.property('id');",
+                  "});",
+                  "pm.test('owner_id was auto-assigned, not client-controlled', () => {",
+                  "  pm.expect(body.data).to.have.property('owner_id');",
+                  "});",
+                  "if (body.data && body.data.id) {",
+                  "  pm.collectionVariables.set('record_id', body.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get single record",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{record_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('id matches requested record', () => {",
+                  "  pm.expect(pm.response.json().data.id).to.eql(pm.collectionVariables.get('record_id'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update record (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{record_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Lead (updated)\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('name was updated', () => {",
+                  "  pm.expect(pm.response.json().data.name).to.eql('Postman Test Lead (updated)');",
+                  "});",
+                  "pm.test('PUT is a partial patch - untouched fields survive', () => {",
+                  "  pm.expect(pm.response.json().data.email).to.eql('postman-test@example.com');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete record",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{record_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted record -> 404",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{record_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found after delete', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Validation",
+      "item": [
+        {
+          "name": "Create with missing required field -> 422",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"no-name@example.com\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('JSON error body with per-field breakdown', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('errors');",
+                  "  pm.expect(body.errors).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create with owner_id in body -> ignored, not 422",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Owner Override Attempt\",\n  \"owner_id\": \"1\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created (owner_id silently dropped, not validated)', () => pm.response.to.have.status(201));",
+                  "pm.test('owner_id in response is the auto-assigned default, not \"1\"', () => {",
+                  "  pm.expect(String(pm.response.json().data.owner_id)).to.not.eql('1');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. AuthN / AuthZ negatives",
+      "item": [
+        {
+          "name": "No token -> 401",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"] }
+            }
+          ]
+        },
+        {
+          "name": "Regression: no token + no Accept header -> still 401, not a redirect",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Undo the collection-level Accept override for this one request -",
+                  "// this is the exact condition that used to fall through to",
+                  "// redirect()->guest('/login') before bootstrap/app.php got an",
+                  "// AuthenticationException render() branch for api/*.",
+                  "pm.request.headers.remove('Accept');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('401 Unauthorized, no Accept header needed', () => pm.response.to.have.status(401));",
+                  "pm.test('JSON body, not an HTML redirect target', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Guards against regressing bootstrap/app.php's AuthenticationException render() branch for api/* - if this starts failing, an Accept header became necessary again."
+        },
+        {
+          "name": "Garbage token -> 401",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer not-a-real-token" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"] }
+            }
+          ]
+        },
+        {
+          "name": "Read-scoped token attempts write -> 403",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Should be rejected\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 Forbidden - token lacks module:write', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "description": "Run this with a token that was granted only 'read' on {{module}} (create a second token via the UI with just Read checked, no Write/Delete)."
+        },
+        {
+          "name": "Read-only module (pdf_templates) write -> 403",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/pdf_templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "pdf_templates"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Should be rejected\"\n}" },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{full_access_token}}", "type": "string" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 even for a full-access token', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "description": "Use the full-access token here - pdf_templates is read-only at the API layer regardless of grants (config/api.php read_only_modules)."
+        },
+        {
+          "name": "Excluded module (line_items) -> 404",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/line_items",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "line_items"]
+            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{full_access_token}}", "type": "string" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 even for a full-access token', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "users module -> hidden field stripped",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/users?per_page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"],
+              "query": [{ "key": "per_page", "value": "1" }]
+            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{full_access_token}}", "type": "string" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK for admin-only module via API (bypasses AdminOnlyModuleScope)', () => pm.response.to.have.status(200));",
+                  "pm.test('preferences field is stripped per config/api.php hidden_fields', () => {",
+                  "  const item = pm.response.json().data[0];",
+                  "  if (item) pm.expect(item).to.not.have.property('preferences');",
+                  "});",
+                  "pm.test('no password hash leaks regardless of hidden_fields config', () => {",
+                  "  const json = JSON.stringify(pm.response.json().data);",
+                  "  pm.expect(/password/i.test(json)).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Requires the full-access token's user to have been granted 'users' explicitly, or use full_access."
+        }
+      ]
+    },
+    {
+      "name": "4. Rate limiting (manual)",
+      "item": [
+        {
+          "name": "Single request (check headers)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}?per_page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"],
+              "query": [{ "key": "per_page", "value": "1" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('rate limit headers present', () => {",
+                  "  pm.expect(pm.response.headers.has('X-RateLimit-Limit')).to.be.true;",
+                  "  pm.expect(pm.response.headers.has('X-RateLimit-Remaining')).to.be.true;",
+                  "});",
+                  "console.log('Limit:', pm.response.headers.get('X-RateLimit-Limit'), 'Remaining:', pm.response.headers.get('X-RateLimit-Remaining'));"
+                ]
+              }
+            }
+          ],
+          "description": "Limit is 60/minute per token (AppServiceProvider RateLimiter::for('api')). To actually trip it: use Postman's Runner to fire this request 61x in a loop with 0 delay, and confirm request #61 returns 429."
+        }
+      ]
+    },
+    {
+      "name": "5. Localization (Accept-Language)",
+      "item": [
+        {
+          "name": "401 in German",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept-Language", "value": "de" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "pm.test('message is German', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('Nicht authentifiziert.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "AuthenticationException is thrown by auth:sanctum, which runs before SetLocaleFromAcceptLanguage middleware can (Laravel's middleware priority list reorders it ahead of unlisted custom middleware) - so bootstrap/app.php's render() resolves locale itself via ApiLocale::resolve() rather than trusting app()->getLocale()."
+        },
+        {
+          "name": "401 in English (no Accept-Language header)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "pm.test('falls back to config(app.locale) when header is absent', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('Unauthenticated.');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "404 in German",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept-Language", "value": "de-DE,de;q=0.9,en;q=0.8" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/00000000-0000-0000-0000-000000000000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "pm.test('message is German, and still generic (no model/id leak)', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('Ressource nicht gefunden.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Region subtag (de-DE) and q-values are deliberately included here to exercise ApiLocale's parsing, not just a bare 'de'."
+        },
+        {
+          "name": "422 validation in German",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "de" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"no-name@example.com\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('validation message is German', () => {",
+                  "  pm.expect(pm.response.json().errors.name[0]).to.eql('Das Feld Name ist erforderlich.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "This one isn't api.php at all - it's Laravel's own lang/de/validation.php, localized for free once SetLocaleFromAcceptLanguage sets the app locale before the FormRequest runs."
+        },
+        {
+          "name": "403 missing ability in German",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "de" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Should be rejected\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 Forbidden', () => pm.response.to.have.status(403));",
+                  "pm.test('message is German and still names the specific ability', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql(`Token besitzt nicht die Berechtigung ${pm.variables.get('module')}:write.`);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Run this with a token that was granted only 'read' on {{module}} - same token requirement as '3. AuthN / AuthZ negatives > Read-scoped token attempts write -> 403'."
+        }
+      ]
+    },
+    {
+      "name": "6. Relationships (link/unlink)",
+      "item": [
+        {
+          "name": "Setup: create primary record",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Postman Link Test Lead\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('link_record_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup: create related record",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{related_module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{related_module}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Link Test Task\",\n  \"due_at\": \"2027-01-01 12:00:00\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('link_related_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ],
+          "description": "due_at is required on tasks - adjust the body if {{related_module}} is changed to something else."
+        },
+        {
+          "name": "Setup: create a second related record (for the duplicate-link test)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{related_module}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{related_module}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Link Test Task 2\",\n  \"due_at\": \"2027-01-01 12:00:00\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('link_related_id_2', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Discover relationships for {{module}}",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/relationships",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "relationships"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is an array of {name,type,role,related_module}', () => {",
+                  "  pm.expect(body.data).to.be.an('array').that.is.not.empty;",
+                  "  pm.expect(body.data[0]).to.have.all.keys(['name','type','role','related_module']);",
+                  "});",
+                  "pm.test('relationship_name variable is a real relationship for this module', () => {",
+                  "  const names = body.data.map((r) => r.name);",
+                  "  pm.expect(names).to.include(pm.collectionVariables.get('relationship_name'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Also proves GET /{module}/relationships isn't swallowed by the generic GET /{module}/{id} route (routing order matters here)."
+        },
+        {
+          "name": "Link -> 201, returns the linked record",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}/relationships/{{relationship_name}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}", "relationships", "{{relationship_name}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"related_ids\": [\"{{link_related_id}}\"]\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('returns the linked record', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "  pm.expect(body.data[0].id).to.eql(pm.collectionVariables.get('link_related_id'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirm link shows up in the record's related object",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('related[relationship_name] contains the linked id', () => {",
+                  "  const related = pm.response.json().data.related[pm.collectionVariables.get('relationship_name')];",
+                  "  const ids = related.map((r) => r.id);",
+                  "  pm.expect(ids).to.include(pm.collectionVariables.get('link_related_id'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Link to unknown relationship name -> 404",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}/relationships/not_a_real_relationship",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}", "relationships", "not_a_real_relationship"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"related_ids\": [\"{{link_related_id}}\"]\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "pm.test('generic message, no internal detail leak', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('Resource not found.');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Link to a nonexistent related_id -> 422",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}/relationships/{{relationship_name}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}", "relationships", "{{relationship_name}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"related_ids\": [\"00000000-0000-0000-0000-000000000000\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('validation error on related_ids.0', () => {",
+                  "  pm.expect(pm.response.json().errors).to.have.property('related_ids.0');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Gap the web app's own linkRecords() doesn't check - the API validates related_ids with exists:{table},id instead of silently creating a dangling relationship_links row."
+        },
+        {
+          "name": "Duplicate link (many-to-many) -> 422 conflict",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}/relationships/{{relationship_name}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}", "relationships", "{{relationship_name}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"related_ids\": [\"{{link_related_id}}\"]\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('422 Unprocessable Entity - already linked', () => pm.response.to.have.status(422));",
+                  "pm.test('conflict message, not an uncaught 500', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql(\"This link already exists, or violates the relationship's cardinality rules.\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Only many-to-many relationships reject an exact duplicate this way - one-to-one/one-to-many silently REPLACE the existing link instead of erroring (RelationshipService::link()'s existing, pre-API behavior). Requires relationship_name to be a many-to-many relationship (leads_tasks is)."
+        },
+        {
+          "name": "Missing 'link' ability -> 403",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}/relationships/{{relationship_name}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}", "relationships", "{{relationship_name}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"related_ids\": [\"{{link_related_id_2}}\"]\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 Forbidden', () => pm.response.to.have.status(403));",
+                  "pm.test('names the link ability specifically', () => {",
+                  "  pm.expect(pm.response.json().message).to.eql(`Token lacks the ${pm.variables.get('module')}:link ability.`);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "description": "Run this with a token granted read/write on {{module}} but NOT link - same token-swap convention as '3. AuthN / AuthZ negatives > Read-scoped token attempts write -> 403'."
+        },
+        {
+          "name": "Unlink -> 204",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}/relationships/{{relationship_name}}/{{link_related_id}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api", "v1", "{{module}}", "{{link_record_id}}", "relationships",
+                "{{relationship_name}}", "{{link_related_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('204 No Content', () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirm unlink removed it from related",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('related[relationship_name] no longer contains the id', () => {",
+                  "  const related = pm.response.json().data.related[pm.collectionVariables.get('relationship_name')];",
+                  "  const ids = related.map((r) => r.id);",
+                  "  pm.expect(ids).to.not.include(pm.collectionVariables.get('link_related_id'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Relationships discovery on excluded module (users) -> 404",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/relationships",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "relationships"]
+            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{full_access_token}}", "type": "string" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 even for a full-access token', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cleanup: delete primary and related test records",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/v1/{{module}}/{{link_record_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "{{module}}", "{{link_record_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Best-effort cleanup of the two related records too - fire and forget,",
+                  "// this request's own assertion is only about the primary record.",
+                  "const base = pm.collectionVariables.get('base_url');",
+                  "const relatedModule = pm.collectionVariables.get('related_module');",
+                  "const token = pm.collectionVariables.get('token');",
+                  "['link_related_id', 'link_related_id_2'].forEach((key) => {",
+                  "  const id = pm.collectionVariables.get(key);",
+                  "  if (!id) return;",
+                  "  pm.sendRequest({",
+                  "    url: `${base}/api/v1/${relatedModule}/${id}`,",
+                  "    method: 'DELETE',",
+                  "    header: { Authorization: `Bearer ${token}`, Accept: 'application/json' },",
+                  "  }, () => {});",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('204 No Content', () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

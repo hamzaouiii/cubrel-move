@@ -231,5 +231,19 @@ return [
         'icon' => 'fa-solid fa-user-secret'
       ]
     ]
+  ],
+  'integrations' => [
+    'label' => 'settings.groups.integrations',
+    'description' => 'settings.groups.description.integrations',
+    'items' => [
+      'api-tokens' => [
+        'name' => 'API Tokens',
+        'slug' => 'api-tokens',
+        'label' => 'settings.items.api_tokens',
+        'path' => '/settings/api-tokens',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-key'
+      ]
+    ]
   ]
 ];
