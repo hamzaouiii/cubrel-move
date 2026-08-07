@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Models\BaseModule;
+use App\Services\Relationships\RelationshipService;
 use App\Support\Settings;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -12,14 +13,16 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        
-        
-        
-        
+
+
+
+
         Settings::clearCache();
 
-        
-        
+
+
         BaseModule::clearCustomFieldCache();
+
+        RelationshipService::clearCache();
     }
 }

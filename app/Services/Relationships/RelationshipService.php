@@ -23,8 +23,16 @@ class RelationshipService
   // Cache for Relationship rows by name 
   protected static array $relationshipCache = [];
 
-  // Cache for individual records by "class:id" 
+  // Cache for individual records by "class:id"
   protected static array $recordCache = [];
+
+  // These caches key on slug/name/id, stable across a test run - tests must reset this between cases.
+  public static function clearCache(): void
+  {
+    self::$moduleCache = [];
+    self::$relationshipCache = [];
+    self::$recordCache = [];
+  }
 
   /**
    * Generates a many-to-many relationship for every pairing
