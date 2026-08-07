@@ -24,7 +24,7 @@ const props = defineProps({
     apiModules: Array,
 });
 
-const VERBS = ["read", "write", "delete"];
+const VERBS = ["read", "write", "delete", "link"];
 
 const crumbs = [
     { label: t("settings.label"), href: "/settings" },
@@ -69,7 +69,7 @@ const grants = reactive(
     Object.fromEntries(
         props.apiModules.map((m) => [
             m.slug,
-            { read: false, write: false, delete: false },
+            { read: false, write: false, delete: false, link: false },
         ]),
     ),
 );
@@ -90,7 +90,8 @@ const columnAll = (verb) => ({
 const readAll = computed(columnAll("read"));
 const writeAll = computed(columnAll("write"));
 const deleteAll = computed(columnAll("delete"));
-const columnAllModels = { read: readAll, write: writeAll, delete: deleteAll };
+const linkAll = computed(columnAll("link"));
+const columnAllModels = { read: readAll, write: writeAll, delete: deleteAll, link: linkAll };
 
 const columnPartial = (verb) => {
     const applicable = props.apiModules.filter((m) => m.verbs.includes(verb));

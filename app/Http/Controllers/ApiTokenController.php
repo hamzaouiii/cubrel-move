@@ -135,7 +135,7 @@ class ApiTokenController extends Controller
             ->map(fn (Module $module) => [
                 'slug' => $module->slug,
                 'name' => $module->name,
-                'verbs' => ['read', 'write', 'delete'],
+                'verbs' => ['read', 'write', 'delete', 'link'],
             ])
             ->values()
             ->all();

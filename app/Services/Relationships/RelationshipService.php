@@ -20,6 +20,12 @@ class RelationshipService
    */
   protected static array $moduleCache = [];
 
+  // Cache for Relationship rows by name 
+  protected static array $relationshipCache = [];
+
+  // Cache for individual records by "class:id" 
+  protected static array $recordCache = [];
+
   /**
    * Generates a many-to-many relationship for every pairing
    * this module's is_activity/has_activity flags call for. Safe to call every time a module is saved.
@@ -96,13 +102,19 @@ class RelationshipService
    */
   public static function get(string $name): Relationship
   {
+    if (isset(self::$relationshipCache[$name])) {
+      return clone self::$relationshipCache[$name];
+    }
+
     $relationship = Relationship::where('name', $name)->first();
 
     if (!$relationship) {
       throw new \RuntimeException("Unknown relationship {$name}");
     }
 
-    return $relationship;
+    self::$relationshipCache[$name] = $relationship;
+
+    return clone $relationship;
   }
 
   /**
@@ -233,7 +245,7 @@ class RelationshipService
   private static function notifyParentOwner(Module $parentModule, string $parentId): void
   {
     $parentClass = self::resolveClassFromSlug($parentModule->slug);
-    $parent = $parentClass::find($parentId);
+    $parent = self::findCached($parentClass, $parentId);
 
     if ($parent) {
       NotificationService::notifyRecordActivity($parent, $parentModule, 'linked');
@@ -287,9 +299,23 @@ class RelationshipService
   private static function resolveRecordLabel(string $moduleSlug, string $id): ?string
   {
     $modelClass = self::resolveClassFromSlug($moduleSlug);
-    $record = $modelClass::find($id);
+    $record = self::findCached($modelClass, $id);
 
     return $record ? ($record->name ?? $record->number ?? $id) : null;
+  }
+
+  /**
+   * find() a record by class+id, cached.
+   */
+  private static function findCached(string $modelClass, string $id)
+  {
+    $key = "{$modelClass}:{$id}";
+
+    if (array_key_exists($key, self::$recordCache)) {
+      return self::$recordCache[$key];
+    }
+
+    return self::$recordCache[$key] = $modelClass::find($id);
   }
 
   /**
@@ -319,7 +345,7 @@ class RelationshipService
   }
 
   /**
-   * Relationship discovery, answers the question which relationship does this module have ?
+   * Relationship discovery, answers the question what relationships does this module have ?
    */
   public static function getRelationshipForModule(string $module_slug): Collection
   {

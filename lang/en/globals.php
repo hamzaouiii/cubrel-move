@@ -812,6 +812,7 @@ return [
             'read' => 'Read',
             'write' => 'Write',
             'delete' => 'Delete',
+            'link' => 'Link',
         ],
         'hints' => [
             'intro' => "Tokens authenticate external integrations against Cubrel's REST API.",
