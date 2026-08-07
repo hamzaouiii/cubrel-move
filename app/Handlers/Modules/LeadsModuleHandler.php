@@ -26,7 +26,6 @@ class LeadsModuleHandler extends BaseModuleHandler
     'name',
     'email',
     'phone',
-    'company',
     'description'
   ];
   protected string $model = Lead::class;
