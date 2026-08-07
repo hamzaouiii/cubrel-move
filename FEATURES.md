@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Verified 2026-07-30 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
+> Verified 2026-08-07 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -28,6 +28,7 @@
 20. [User Preferences](#20-user-preferences)
 21. [Conversion Rules](#21-conversion-rules)
 22. [Email Capture](#22-email-capture)
+23. [REST API](#23-rest-api)
 
 ---
 
@@ -39,7 +40,7 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 
 | Module            | Table      | Notable fields                                                                           | Line items | Owner |
 | ----------------- | ---------- | ---------------------------------------------------------------------------------------- | ---------- | ----- |
-| **Leads**         | `leads`    | first_name, last_name, email, phone, company, address (JSON)                             | No         | Yes   |
+| **Leads**         | `leads`    | first_name, last_name, email, phone, address (JSON)                                      | No         | Yes   |
 | **Accounts**      | `accounts` | name, website, email, phone, billing_address (JSON), shipping_address (JSON)             | No         | Yes   |
 | **Contacts**      | `contacts` | first_name, last_name, email, phone, position, notes                                     | No         | Yes   |
 | **Deals**         | `deals`    | amount, sales_stage, probability, expected_close_date, type                              | No         | Yes   |
@@ -53,6 +54,8 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Meetings**      | `meetings` | location (address), start_at, end_at, duration (auto-computed), status                   | No         | Yes   |
 | **Notes**         | `notes`    | (default fields only)                                                                    | No         | Yes   |
 | **Emails**        | `emails`   | body, from_name, from_address, to_addresses (JSON), cc_addresses (JSON), sent_at, direction, mailbox | No | Yes |
+
+Every core module also carries `created_by`/`updated_by` (defined in `config/default_fields.php`, a `record`-type field pointing at Users): read-only and set automatically by `BaseModule` — `created_by` on creation, `updated_by` overwritten on every `updating()` — never user-editable, the same way `owner_id` is.
 
 Tasks, Calls, Meetings, Notes, and Emails are the **activity modules** — see [Activities](#18-activities) for the timeline sidebar, linking, and completion behavior built around them. Emails additionally has its own capture pipeline — see [Email Capture](#22-email-capture).
 
@@ -966,7 +969,7 @@ Users and User Invites can never be picked as a source or target module. Before 
 
 ### Linking the two records
 
-An optional toggle links the source and target records through the same relationship system used everywhere else in Cubrel (see [Relationships](#6-relationships)) — a system relationship is auto-provisioned the first time a rule is saved with linking on, reusing an existing relationship between the two modules if one already exists. This is what makes each record show up in the other's Relationships tab with no extra configuration.
+An optional toggle links the source and target records through the same relationship system used everywhere else in Cubrel (see [Relationships](#6-relationships)) — reusing an existing relationship between the two modules. Relationships are only ever created explicitly through the Module Manager, not auto-provisioned by a conversion rule: if linking is turned on and no relationship exists yet between the source and target modules, saving the rule is rejected with a validation error rather than silently creating one. Once a relationship exists, this is what makes each record show up in the other's Relationships tab with no extra configuration.
 
 ### Studio management
 
@@ -1006,3 +1009,52 @@ Inbound mail is received by a self-hosted mail relay, not a third-party provider
 - `docs/dev/emails-implementation.md` — full technical writeup.
 - `DEPLOYMENT.md` — server-side setup for the inbound mail relay.
 - **No automated test coverage yet** — this feature has no dedicated test suite as of this writing.
+
+---
+
+## 23. REST API
+
+A token-authenticated REST API exposes module records and their relationships to external integrations, alongside the normal session-based web app.
+
+### Routes
+
+All under `/api/v1`, `auth:sanctum` + `throttle:api` middleware:
+
+| Action              | Route                                                           | Controller                              |
+| -------------------- | ---------------------------------------------------------------- | ---------------------------------------- |
+| List records        | `GET /api/v1/{module}`                                          | `Api\V1\RecordController@index`         |
+| Show record         | `GET /api/v1/{module}/{id}`                                     | `Api\V1\RecordController@show`          |
+| Create record       | `POST /api/v1/{module}`                                         | `Api\V1\RecordController@store`         |
+| Update record       | `PUT\|PATCH /api/v1/{module}/{id}`                               | `Api\V1\RecordController@update`        |
+| Delete record       | `DELETE /api/v1/{module}/{id}`                                  | `Api\V1\RecordController@destroy`       |
+| List relationships  | `GET /api/v1/{module}/relationships`                            | `Api\V1\RelationshipController@index`   |
+| Link records        | `POST /api/v1/{module}/{id}/relationships/{relationship}`       | `Api\V1\RelationshipController@link`    |
+| Unlink records      | `DELETE /api/v1/{module}/{id}/relationships/{relationship}/{relatedId}` | `Api\V1\RelationshipController@unlink` |
+
+`index` supports `search`, `sort`, `direction`, `filter`, and `per_page` query params. Locale for translated output (labels, error messages) is taken from the request's `Accept-Language` header (`SetLocaleFromAcceptLanguage` middleware), not the token owner's saved preference.
+
+### Authentication: Sanctum personal access tokens
+
+Bearer-token only — no session or CSRF involved. Tokens are Laravel Sanctum `PersonalAccessToken`s created server-side via `User::createToken()`, each carrying an explicit list of abilities in `{module-slug}:{verb}` form (`verb` is one of `read`, `write`, `delete`, `link`), or `['*']` for full access. `RecordApiService::authorizeAbility()` checks the calling token's abilities before every request; a token scoped to `leads:read` can list/view Leads but not create, update, delete, or link them.
+
+### Token management (Settings, admin-only)
+
+`/settings/api-tokens` (`ApiTokenController`, `Settings/ApiTokens/{List,Create,Record}.vue`) — full CRUD, nested under the same admin settings group as Audit Trail and Impersonation Sessions:
+
+- **Create** — an admin picks which user the token authenticates as, names it, and either grants full access or checks individual module/verb boxes from a generated checklist (every active module not API-excluded, times the four verbs).
+- **Reveal-once** — the plaintext token is shown exactly once immediately after creation (session-flashed, never persisted or re-displayable); only its hash is stored.
+- **List / Revoke** — `List.vue` shows every token with owning user, abilities, and last-used timestamp; deleting a token is immediate revocation.
+
+### Scoping and limits
+
+- `config('api.excluded_modules')` — `settings`, `line_items`, `users`, `userinvites`, `pdf_templates` — are never reachable through the API regardless of a token's abilities (404).
+- A requested module must still be `is_active` (see [Module Flags Reference](#module-flags-reference)).
+- Writable fields are allowlisted to `module->writableFieldNames()`; `owner_id`/`created_by`/`updated_by` are never accepted from the request body, only auto-set server-side.
+- Rate limit: Laravel's `api` throttle, keyed per-token.
+
+### Reference
+
+- `docs/dev/rest-api-implementation.md` — full technical writeup.
+- `docs/guides/en/rest-api-guide.md` (and `de/` translation) — plain-language, user-facing guide.
+- `Cubrel-REST-API.postman_collection.json` — importable Postman collection.
+- `tests/Feature/Api/V1/RecordCrudTest.php` — automated test coverage.
