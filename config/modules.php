@@ -415,7 +415,7 @@ return [
         'path' => '/users/invites',
         'sort_order' => 998,
         'category' => 'system',
-        'is_active' => true,
+        'is_active' => false,
         'is_relatable' => false,
         'show_in_sidebar' => 0,
         'handler_class' => 'App\\Handlers\\Modules\\UserInviteModuleHandler',

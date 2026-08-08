@@ -98,7 +98,6 @@ class InviteController extends Controller
 
     $moduleModel = Module::query()
       ->where('slug', 'userinvites')
-      ->where('is_active', true)
       ->firstOrFail();
 
     $handler = new UserInviteModuleHandler();
