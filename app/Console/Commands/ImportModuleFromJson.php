@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\DropdownList;
 use App\Models\Field;
 use App\Models\Label;
 use App\Models\Module;
@@ -151,7 +152,7 @@ class ImportModuleFromJson extends Command
 
             Field::updateOrCreate(
                 ['module_id' => $module->id, 'name' => $name],
-                array_merge($this->commonFieldAttributes($def), [
+                array_merge($this->commonFieldAttributes($module, $name, $def), [
                     'key' => "{$module->slug}_{$name}",
                     'label' => $def['label'] ?? Str::headline($name),
                     'is_draft' => true,
@@ -177,7 +178,7 @@ class ImportModuleFromJson extends Command
             $existing = Field::where('module_id', $module->id)->where('name', $name)->first();
 
             if ($existing) {
-                $existing->fill($this->commonFieldAttributes($def))->save();
+                $existing->fill($this->commonFieldAttributes($module, $name, $def))->save();
 
                 continue;
             }
@@ -190,7 +191,7 @@ class ImportModuleFromJson extends Command
                 ['value' => $labelText, 'is_custom' => true]
             );
 
-            Field::create(array_merge($this->commonFieldAttributes($def), [
+            Field::create(array_merge($this->commonFieldAttributes($module, $name, $def), [
                 'module_id' => $module->id,
                 'name' => $name,
                 'key' => "{$module->slug}_{$name}",
@@ -206,7 +207,7 @@ class ImportModuleFromJson extends Command
         return $created;
     }
 
-    protected function commonFieldAttributes(array $def): array
+    protected function commonFieldAttributes(Module $module, string $name, array $def): array
     {
         return [
             'type' => $def['type'] ?? 'text',
@@ -221,7 +222,31 @@ class ImportModuleFromJson extends Command
             'max_length' => $def['max_length'] ?? null,
             'regex' => $def['regex'] ?? null,
             'related_module' => $def['related_module'] ?? null,
+            'dropdown_list_id' => $this->resolveDropdownListId($module, $name, $def),
         ];
+    }
+
+    /**
+     * select/status fields resolve their dropdown by convention —
+     * "{module_slug}_{field_name}_list" — same lookup StockFieldsSeeder uses,
+     * unless the field definition names one explicitly via "dropdown_list".
+     */
+    protected function resolveDropdownListId(Module $module, string $name, array $def): ?string
+    {
+        $type = $def['type'] ?? 'text';
+
+        if (! in_array($type, ['select', 'status'], true)) {
+            return null;
+        }
+
+        $key = $def['dropdown_list'] ?? "{$module->slug}_{$name}_list";
+        $id = DropdownList::where('key', $key)->value('id');
+
+        if (! $id) {
+            $this->warn("No dropdown list found for key [{$key}] (field '{$name}') — leaving dropdown_list_id empty.");
+        }
+
+        return $id;
     }
 
     /**
