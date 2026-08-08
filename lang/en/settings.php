@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'label' => 'Settings',
+    'label' => 'Workspace',
     'reset' => 'Reset',
     'cancel' => 'Cancel',
     'save' => 'Save',

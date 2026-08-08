@@ -84,7 +84,7 @@ function onInstanceSubmit(instance) {
                   <button v-if="!editingInstance" class="wp__back" @click="configuringType = null">
                     <i class="fa-solid fa-arrow-left"></i>
                   </button>
-                  {{ editingInstance ? $t('globals.dashboard.edit_widget') : configuringDef.label }}
+                  {{ editingInstance ? $t('globals.dashboard.edit_widget') : $t(configuringDef.label) }}
                 </template>
                 <template v-else>{{
                   $t("globals.dashboard.customize_title")
@@ -194,7 +194,7 @@ function onInstanceSubmit(instance) {
                     <div class="wp__item-icon"><i :class="t.icon"></i></div>
                     <div class="wp__item-info">
                       <span class="wp__item-name">{{ $t(t.label) }}</span>
-                      <span class="wp__item-desc">{{ t.description }}</span>
+                      <span class="wp__item-desc">{{ $t(t.description) }}</span>
                     </div>
                     <button
                       class="wp__item-btn wp__item-btn--add"

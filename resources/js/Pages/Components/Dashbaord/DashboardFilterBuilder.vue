@@ -290,7 +290,7 @@ function updateBetween(i, subIdx, val) {
         <button
           class="dfb__remove"
           type="button"
-          title="Remove"
+          :title="$t('globals.dashboard.filter_remove')"
           @click="removeCondition(i)"
         >
           <i class="fa-solid fa-xmark"></i>

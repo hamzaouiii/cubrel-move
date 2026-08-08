@@ -27,7 +27,7 @@ const form = reactive({
 const canSubmit = computed(() => !!form.module)
 
 const moduleOptions = computed(() =>
-  props.modules.map(m => ({ value: m.slug, label: m.name }))
+  props.modules.map(m => ({ value: m.slug, label: m.label }))
 )
 
 function submit() {

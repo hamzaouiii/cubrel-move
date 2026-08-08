@@ -64,7 +64,7 @@ const canSubmit = computed(() => {
 });
 
 const moduleOptions = computed(() =>
-  props.modules.map((m) => ({ value: m.slug, label: m.name })),
+  props.modules.map((m) => ({ value: m.slug, label: m.label })),
 );
 const relationOptions = computed(() => [
   ...relationFields.value.map((f) => ({ value: `field:${f.name}`, label: f.label })),

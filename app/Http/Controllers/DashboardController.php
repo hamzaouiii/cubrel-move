@@ -161,7 +161,7 @@ class DashboardController extends Controller
     {
         return Module::where('is_active', true)
             ->orderBy('name')
-            ->get(['slug', 'name', 'icon'])
+            ->get(['slug', 'name', 'label', 'icon'])
             ->toArray();
     }
 }

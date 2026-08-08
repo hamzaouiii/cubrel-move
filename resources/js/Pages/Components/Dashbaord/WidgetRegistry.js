@@ -12,8 +12,8 @@ import MyRecords from "./MyRecords.vue";
 
 export const WIDGET_REGISTRY = {
   "my-records": {
-    label: "My Records",
-    description: "Records assigned to you across all modules",
+    label: "globals.dashboard.widget_my_records_label",
+    description: "globals.dashboard.widget_my_records_desc",
     icon: "fa-regular fa-folder-open",
     cols: 1,
     component: MyRecords,
@@ -27,40 +27,40 @@ export const WIDGET_REGISTRY = {
  */
 export const WIDGET_TYPES = {
   metric: {
-    label: "Metric",
-    description: "A single count, sum, or average for any module",
+    label: "globals.dashboard.widget_metric_label",
+    description: "globals.dashboard.widget_metric_desc",
     icon: "fa-solid fa-hashtag",
     defaultCols: 1,
     component: MetricWidget,
     configComponent: MetricConfigForm,
   },
   "time-series": {
-    label: "Records over time",
-    description: "Line or bar chart of any module field over time",
+    label: "globals.dashboard.widget_time_series_label",
+    description: "globals.dashboard.widget_time_series_desc",
     icon: "fa-solid fa-chart-line",
     defaultCols: 4,
     component: TimeSeriesWidget,
     configComponent: TimeSeriesConfigForm,
   },
   breakdown: {
-    label: "Breakdown",
-    description: "Donut or bar chart grouped by any field",
+    label: "globals.dashboard.widget_breakdown_label",
+    description: "globals.dashboard.widget_breakdown_desc",
     icon: "fa-solid fa-chart-pie",
     defaultCols: 2,
     component: BreakdownWidget,
     configComponent: BreakdownConfigForm,
   },
   "record-list": {
-    label: "Record list",
-    description: "A compact table of records from any module",
+    label: "globals.dashboard.widget_record_list_label",
+    description: "globals.dashboard.widget_record_list_desc",
     icon: "fa-solid fa-table-list",
     defaultCols: 1,
     component: RecordListWidget,
     configComponent: RecordListConfigForm,
   },
   people: {
-    label: "People",
-    description: "A leaderboard of people ranked by a sum, count, or average",
+    label: "globals.dashboard.widget_people_label",
+    description: "globals.dashboard.widget_people_desc",
     icon: "fa-solid fa-ranking-star",
     defaultCols: 2,
     component: PeopleWidget,

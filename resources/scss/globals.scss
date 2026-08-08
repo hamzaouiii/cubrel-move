@@ -842,7 +842,7 @@
                     background-color: rgba(0, 0, 0, 0.045);
                 }
 
-                img {
+                &__avatar {
                     width: 34px;
                     height: 34px;
                     border-radius: 50%;
@@ -853,6 +853,20 @@
                             var(--primary-color, #3498db) 25%,
                             white
                         );
+
+                    &--fallback {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: color-mix(
+                            in srgb,
+                            var(--primary-color, #3498db) 15%,
+                            white
+                        );
+                        color: var(--primary-color, #3498db);
+                        font-weight: 600;
+                        font-size: 0.85rem;
+                    }
                 }
 
                 > i {
@@ -866,28 +880,93 @@
                     right: 0;
                     background: white;
                     border: 1px solid rgba(0, 0, 0, 0.06);
-                    border-radius: 12px;
-                    list-style: none;
-                    min-width: 200px;
+                    border-radius: 16px;
+                    min-width: 260px;
                     z-index: 2;
                     font-size: 1rem;
                     overflow: hidden;
-                    padding: 6px;
                     box-shadow:
                         0 10px 30px rgba(0, 0, 0, 0.1),
                         0 2px 6px rgba(0, 0, 0, 0.04);
 
-                    li {
-                        border-radius: 8px;
+                    &__header {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 14px 16px;
+                        text-decoration: none;
+                        color: inherit;
+                        cursor: pointer;
+                        transition: background-color 0.12s ease;
 
-                        &:not(:last-child) {
+                        &:hover {
+                            background-color: rgba(0, 0, 0, 0.03);
+                        }
+                    }
+
+                    &__avatar {
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        flex-shrink: 0;
+
+                        &--fallback {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: color-mix(
+                                in srgb,
+                                var(--primary-color, #3498db) 15%,
+                                white
+                            );
+                            color: var(--primary-color, #3498db);
+                            font-weight: 600;
+                            font-size: 1.05rem;
+                        }
+                    }
+
+                    &__info {
+                        display: flex;
+                        flex-direction: column;
+                        min-width: 0;
+                        gap: 2px;
+                    }
+
+                    &__name {
+                        font-weight: 600;
+                        font-size: 0.95rem;
+                        color: #111827;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    &__meta {
+                        font-size: 0.8rem;
+                        color: #6b7280;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    &__divider {
+                        height: 1px;
+                        margin: 0;
+                        background: rgba(0, 0, 0, 0.06);
+                    }
+
+                    &__menu {
+                        list-style: none;
+                        padding: 6px;
+                        margin: 0;
+
+                        li:not(:last-child) {
                             margin-bottom: 2px;
                         }
 
-                        &:last-child {
-                            margin-top: 4px;
-                            padding-top: 4px;
-                            border-top: 1px solid rgba(0, 0, 0, 0.06);
+                        li {
+                            border-radius: 8px;
                         }
 
                         a {
@@ -911,7 +990,7 @@
                             }
 
                             i {
-                                width: 30px;
+                                width: 26px;
                                 font-size: 0.95rem;
                                 color: #9ca3af;
                             }
@@ -920,26 +999,26 @@
                                 color: var(--primary-color, #3498db);
                             }
                         }
-                    }
 
-                    li:last-child a {
-                        color: var(--danger-color, #ef4444);
-
-                        i {
+                        &--danger a {
                             color: var(--danger-color, #ef4444);
-                        }
 
-                        &:hover {
-                            background-color: color-mix(
-                                in srgb,
-                                var(--danger-color, #ef4444) 10%,
-                                white
-                            );
-                            color: var(--danger-color, #ef4444);
-                        }
+                            i {
+                                color: var(--danger-color, #ef4444);
+                            }
 
-                        &:hover i {
-                            color: var(--danger-color, #ef4444);
+                            &:hover {
+                                background-color: color-mix(
+                                    in srgb,
+                                    var(--danger-color, #ef4444) 10%,
+                                    white
+                                );
+                                color: var(--danger-color, #ef4444);
+                            }
+
+                            &:hover i {
+                                color: var(--danger-color, #ef4444);
+                            }
                         }
                     }
                 }

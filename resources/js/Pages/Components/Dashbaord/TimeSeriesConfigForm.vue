@@ -50,7 +50,7 @@ const canSubmit = computed(() => {
   return true
 })
 
-const moduleOptions    = computed(() => props.modules.map(m => ({ value: m.slug, label: m.name })))
+const moduleOptions    = computed(() => props.modules.map(m => ({ value: m.slug, label: m.label })))
 const dateFieldOptions = computed(() => dateFields.value.map(f => ({ value: f.name, label: f.label })))
 const numericOptions   = computed(() => numericFields.value.map(f => ({ value: f.name, label: f.label })))
 
