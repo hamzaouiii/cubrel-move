@@ -17,6 +17,18 @@ return [
 
   /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | The current release version, shown to users on the About page. Bump
+    | this alongside RELEASE_NOTES.md whenever a new version ships.
+    |
+    */
+
+  'version' => env('APP_VERSION', '1.0.0.0'),
+
+  /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

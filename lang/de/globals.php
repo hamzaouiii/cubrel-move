@@ -15,6 +15,7 @@ return [
         'global_search' => 'Globale Suche',
         'settings' => 'Einstellungen',
         'profile' => 'Profile',
+        'about' => 'Über Cubrel',
         'logout' => 'Abmelden',
         'notifications' => 'Benachrichtigungen',
     ],
@@ -1001,5 +1002,12 @@ return [
             'transformation_triggered' => 'Meine Änderung löst eine automatische Umwandlung aus',
             'transformation_automation_failed' => 'Eine automatische Umwandlungsregel schlägt fehl',
         ],
+    ],
+    'about' => [
+        'title' => 'Über',
+        'version_label' => 'Version',
+        'documentation' => 'Dokumentation',
+        'website' => 'Webseite',
+        'copyright' => '© :year Cubrel. Alle Rechte vorbehalten.',
     ],
 ];

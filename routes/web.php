@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DropdownListController;
@@ -77,6 +78,7 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::get('/preferences', [PreferencesController::class, 'index'])->name('preferences.index');
     Route::put('/preferences', [PreferencesController::class, 'update'])->name('preferences.update');
+    Route::get('/about', [AboutController::class, 'index'])->name('about.index');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
@@ -293,6 +295,6 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::put('/{module}', [RecordController::class, 'updateMany'])->name('modules.records.updateMany');
     Route::delete('/{module}/{record}', [RecordController::class, 'destroy'])->name('modules.records.destroy');
 
-    Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$|preferences$).+')->name('modules.index');
+    Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$|preferences$|about$).+')->name('modules.index');
 });
 

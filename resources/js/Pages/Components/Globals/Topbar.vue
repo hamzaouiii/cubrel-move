@@ -79,6 +79,12 @@ const user = computed(() => page.props.auth?.user || {});
                   {{ $t("globals.preferences.label") }}
                 </Link>
               </li>
+              <li>
+                <Link href="/about">
+                  <i class="fa-solid fa-circle-info"></i>
+                  {{ $t("globals.topbar.about") }}
+                </Link>
+              </li>
               <li @click="logout">
                 <a href="#">
                   <i class="fa-solid fa-arrow-right-from-bracket"></i>

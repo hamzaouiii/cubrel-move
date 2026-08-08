@@ -14,6 +14,7 @@ return [
         'global_search' => 'Globale Search',
         'settings' => 'Settings',
         'profile' => 'Profile',
+        'about' => 'About Cubrel',
         'logout' => 'Logout',
         'notifications' => 'Notifications',
     ],
@@ -1002,5 +1003,12 @@ return [
             'transformation_triggered' => 'My change triggers an automatic conversion',
             'transformation_automation_failed' => 'An automatic conversion rule fails to run',
         ],
+    ],
+    'about' => [
+        'title' => 'About',
+        'version_label' => 'Version',
+        'documentation' => 'Documentation',
+        'website' => 'Website',
+        'copyright' => '© :year Cubrel. All rights reserved.',
     ],
 ];
