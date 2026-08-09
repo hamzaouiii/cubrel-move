@@ -108,6 +108,30 @@ step "Cloning branch '$BRANCH' into $TENANT_DIR"
 git clone --branch "$BRANCH" "$REPO_URL" "$TENANT_DIR"
 cd "$TENANT_DIR"
 
+# From here on, a failed run leaves a half-provisioned tenant dir that
+# blocks retrying ("Tenant directory already exists") and, once the DB
+# step below has run, an orphaned database too. Clean both up on any
+# non-zero exit so a retry can just be run again as-is.
+cleanup_on_failure() {
+  local exit_code=$?
+  [ "$exit_code" -eq 0 ] && return
+  err "Provisioning failed (exit $exit_code) — cleaning up partial tenant '$NAME'."
+  cd /
+  rm -rf "$TENANT_DIR"
+  if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
+    mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS \`${DB_DATABASE:-cubrel_$NAME}\`;" 2>/dev/null || true
+  fi
+}
+trap cleanup_on_failure EXIT
+
+# Fail fast, before .env is written or the database is touched, if
+# composer.json and composer.lock have drifted out of sync (e.g. someone
+# edited composer.json without regenerating the lock file before merging
+# to main). The CI check in .github/workflows/composer-lock-check.yml is
+# meant to stop that from reaching main at all — this is the fallback.
+step "Validating composer.lock is in sync with composer.json"
+composer validate --strict --no-check-publish
+
 # Set this BEFORE any chmod/chown below — otherwise the very first
 # permission fixup makes git think every file changed. This isn't a
 # workaround: it's git's own mechanism for "ops-managed permissions differ
