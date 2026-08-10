@@ -132,6 +132,17 @@ trap cleanup_on_failure EXIT
 step "Validating composer.lock is in sync with composer.json"
 composer validate --strict --no-check-publish
 
+# validate above only checks composer.json/composer.lock content against
+# each other — it says nothing about whether *this machine* can actually
+# install what the lock requires. That's a separate check: PHP version and
+# every ext-* the locked packages declare, compared against what's actually
+# loaded here. This is the same check `composer install` runs internally
+# (the "Verifying lock file contents can be installed on current platform"
+# step) — running it explicitly first just surfaces a missing-extension
+# failure before .env/DB exist instead of after.
+step "Checking PHP platform requirements (extensions, version)"
+composer check-platform-reqs --lock
+
 # Set this BEFORE any chmod/chown below — otherwise the very first
 # permission fixup makes git think every file changed. This isn't a
 # workaround: it's git's own mechanism for "ops-managed permissions differ
@@ -238,16 +249,13 @@ fi
 # Database\Factories\*::fake() is used at runtime for onboarding/demo data
 # seeding, so it has to be present in production too.
 step "composer install"
+composer update
 composer install --optimize-autoloader
 php artisan key:generate --force
 step "npm build"
 npm ci && npm run build
-# migrate:fresh --seed, not plain migrate: this only runs once, at
-# provisioning time, against a database that's guaranteed empty — it builds
-# the schema AND seeds the initial data (admin user, default settings,
-# etc.) a new tenant actually needs to be usable. Routine deploys
-# (deploy.sh) keep using plain `migrate --force` — never fresh --seed
-# against a database with real data in it.
+
+
 step "migrate:fresh --seed"
 php artisan migrate:fresh --seed --force
 php artisan storage:link
