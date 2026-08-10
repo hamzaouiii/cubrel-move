@@ -31,6 +31,7 @@ const props = defineProps({
   field_types: Array,
   metadata: Object,
   moduleOptions: { type: Array, default: () => [] },
+  fieldModules: { type: Array, default: () => [] },
 });
 
 const { proxy } = getCurrentInstance();
@@ -274,6 +275,7 @@ const discardDraft = async () => {
           :fields="fields"
           :field_types="field_types"
           :metadata="metadata"
+          :field-modules="fieldModules"
           :color="currentColor"
           @dirty="updateDirty('fields', $event)"
           @update-field-list="handleUpdateList"

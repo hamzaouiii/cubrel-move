@@ -27,6 +27,10 @@ class ModuleBuilderController extends Controller
     $category_list = DropdownList::get('module_category_list');
     $module = $this->getOrCreateDraftModule($user_id);
     $field = new Field();
+    $field_modules = Module::select('slug', 'icon', 'color')
+      ->where('is_active', true)
+      ->where('is_relatable', true)
+      ->get();
     return Inertia::render('Settings/Modules/Create', [
       'settingModule' => $module,
       'categoryList'  => $category_list,
@@ -34,6 +38,7 @@ class ModuleBuilderController extends Controller
       'field_types' => config("default_field_types"),
       'metadata' => $field->getEmptyMetadata(),
       'moduleOptions' => $this->lineItemSourceOptions($module),
+      'fieldModules' => $field_modules,
 
     ]);
   }
@@ -197,6 +202,7 @@ class ModuleBuilderController extends Controller
       'min_length' => ['nullable', 'integer'],
       'max_length' => ['nullable', 'integer'],
       'regex' => ['nullable', 'string'],
+      'related_module' => ['nullable', 'string'],
     ]);
 
     $data = array_merge([
@@ -204,6 +210,7 @@ class ModuleBuilderController extends Controller
       'min_length' => null,
       'max_length' => null,
       'regex' => null,
+      'related_module' => null,
       'readonly' => false,
       'required' => false,
       'sortable' => false,

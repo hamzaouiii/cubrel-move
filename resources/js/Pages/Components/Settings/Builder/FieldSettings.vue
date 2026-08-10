@@ -15,6 +15,7 @@ const props = defineProps({
   color: String,
   field_types: Array,
   metadata: Object,
+  fieldModules: { type: Array, default: () => [] },
 });
 
 const page = usePage();
@@ -209,6 +210,7 @@ const setFieldToEdit = (f) => {
           :module="module"
           :field_types="field_types"
           :metadata="metadata"
+          :field-modules="fieldModules"
           v-if="showCreateFieldDialog"
           @on-close-modal="closeCreateFieldDialog"
           @saved="handleNewFieldSaved"
@@ -217,6 +219,7 @@ const setFieldToEdit = (f) => {
           :module="module"
           :field_types="field_types"
           :metadata="metadata"
+          :field-modules="fieldModules"
           v-if="showEditFieldDialog"
           @on-close-modal="closeEditFieldDialog"
           @saved="handleEditedFieldSaved"

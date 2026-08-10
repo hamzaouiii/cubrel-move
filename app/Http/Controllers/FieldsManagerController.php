@@ -91,10 +91,15 @@ class FieldsManagerController extends Controller
     $routeUri = explode("/", $routeUri);
     $ptt = "/" . $routeUri[0] . "/" . $routeUri[1];
     $field_types = config("default_field_types");
+    $field_modules = Module::select('slug', 'icon', 'color')
+      ->where('is_active', true)
+      ->where('is_relatable', true)
+      ->get();
     return Inertia::render('Settings/Fields/Edit', [
       'module'     => $module,
       'metadata' => $module->getFieldMetadata($field),
-      'field_types' => $field_types
+      'field_types' => $field_types,
+      'fieldModules' => $field_modules,
     ]);
   }
 

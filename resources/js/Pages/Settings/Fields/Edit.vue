@@ -32,6 +32,7 @@ const props = defineProps({
     metadata: Object,
     item: Object,
     field_types: Array,
+    fieldModules: Array,
 });
 
 const { proxy } = getCurrentInstance();
@@ -53,6 +54,7 @@ const form = useForm({
     min_length: props.metadata.min_length || "",
     max_length: props.metadata.max_length || "",
     regex: props.metadata.regex || "",
+    related_module: props.metadata.related_module || "",
     dropdown_list: props.metadata.dropdown_list_id || "",
 });
 
@@ -62,6 +64,7 @@ const {
     isCheckbox,
     isDropDown,
     isReadonly,
+    isRelatedModule,
     hasDropdownOptions,
 } = useFieldRules(form, toRef(props, "metadata"));
 
@@ -119,6 +122,14 @@ const typesList = () => {
     return props.field_types.map((type) => ({
         value: type,
         label: t(`fields.types.${type}`),
+    }));
+};
+
+const modulesList = () => {
+    return props.fieldModules.map((item) => ({
+        value: item.slug,
+        icon: item.icon,
+        label: t(`modules.${item.slug}.label`),
     }));
 };
 
@@ -236,6 +247,20 @@ const moduleColor = computed(() =>
                             <DropdownField
                                 v-model="form[fieldName]"
                                 :options="typesList()"
+                            />
+                            <span
+                                v-if="form.errors[fieldName]"
+                                class="settings__module__edit__element__error"
+                            >
+                                {{ form.errors[fieldName] }}
+                            </span>
+                        </template>
+
+                        <template v-else-if="isRelatedModule(fieldName)">
+                            <DropdownField
+                                v-model="form[fieldName]"
+                                :options="modulesList()"
+                                :hasError="form.errors[fieldName]"
                             />
                             <span
                                 v-if="form.errors[fieldName]"

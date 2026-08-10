@@ -27,6 +27,7 @@ const props = defineProps({
   field_types: Array,
   metadata: Object,
   color: String,
+  fieldModules: { type: Array, default: () => [] },
 });
 
 const page = usePage();
@@ -55,6 +56,7 @@ const default_values = {
   min_length: "",
   max_length: "",
   regex: "",
+  related_module: "",
 };
 
 const form = useForm({ ...default_values });
@@ -71,6 +73,7 @@ const {
   isReadonly,
   isDisplayLabel,
   isRegex,
+  isRelatedModule,
   hasDropdownOptions,
 } = useFieldRules(form, toRef(props, "metadata"));
 
@@ -129,6 +132,14 @@ const typesList = () => {
   return props.field_types.map((type) => ({
     value: type,
     label: t(`fields.types.${type}`),
+  }));
+};
+
+const modulesList = () => {
+  return props.fieldModules.map((item) => ({
+    value: item.slug,
+    icon: item.icon,
+    label: t(`modules.${item.slug}.label`),
   }));
 };
 
@@ -355,6 +366,20 @@ const handleKeydown = (e) => {
                         {{ $t("fields.regex_hint") }}
                       </span>
                     </span>
+                    <span
+                      v-if="form.errors[fieldName]"
+                      class="settings__module__edit__element__error"
+                    >
+                      {{ form.errors[fieldName] }}
+                    </span>
+                  </template>
+
+                  <template v-else-if="isRelatedModule(fieldName)">
+                    <DropdownField
+                      v-model="form[fieldName]"
+                      :options="modulesList()"
+                      :hasError="form.errors[fieldName]"
+                    ></DropdownField>
                     <span
                       v-if="form.errors[fieldName]"
                       class="settings__module__edit__element__error"
