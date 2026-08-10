@@ -140,6 +140,7 @@ $bindings = array_fill(0, $moduleCount, $userId);
           $loader = fn() => DB::table('modules')
               ->select('name', 'table_name', 'label', 'slug')
               ->where('has_owner', true)
+              ->where('is_active', true)
               ->get();
 
           return self::CACHE_TTL === null

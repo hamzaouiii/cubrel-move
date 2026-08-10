@@ -7,12 +7,14 @@ const props = defineProps({
 });
 
 const modules = computed(() =>
-  Object.entries(props.ownedRecords).map(([key, records]) => ({
-    key,
-    label: records[0]?.label ?? key,
-    slug: records[0]?.slug ?? key,
-    count: records.length,
-  })),
+  Object.entries(props.ownedRecords)
+    .map(([key, records]) => ({
+      key,
+      label: records[0]?.label ?? key,
+      slug: records[0]?.slug ?? key,
+      count: records.length,
+    }))
+    .filter((mod) => getModuleBySlug(mod.slug)),
 );
 
 const total = computed(() =>

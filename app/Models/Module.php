@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Concerns\HasTranslatableLabel;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Relationships\RelationshipService;
+use App\Services\Users\OwnershipService;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -394,6 +395,9 @@ class Module extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new AdminOnlyModuleScope);
+
+        static::saved(fn (Module $module) => app(OwnershipService::class)->flushModuleCache());
+        static::deleted(fn (Module $module) => app(OwnershipService::class)->flushModuleCache());
     }
 
     /**

@@ -150,6 +150,28 @@ class DashboardControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_deactivated_module_records_excluded_from_owned_records(): void
+    {
+        Cache::flush();
+
+        $module = $this->makeLeadsModule();
+        $user   = $this->makeUser(['is_admin' => false, 'type' => 'sales_rep']);
+
+        Lead::factory()->count(2)->create(['owner_id' => $user->id]);
+
+        $module->is_active = false;
+        $module->show_in_sidebar = false;
+        $module->save();
+
+        $response = $this->actingAs($user)->get('/');
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard/Index')
+            ->missing('ownedRecords.leads')
+        );
+    }
+
     public function test_index_returns_expected_shared_props(): void
     {
         
