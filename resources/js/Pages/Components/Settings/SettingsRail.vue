@@ -50,7 +50,7 @@ function toggle(groupKey, group) {
       :aria-label="$t('settings.collapse_menu')"
       @click="$emit('collapse')"
     >
-      <i class="fa-solid fa-angles-left"></i>
+      <i class="fa-solid fa-angles-right"></i>
       <span>{{ $t("settings.collapse_menu") }}</span>
     </button>
 
