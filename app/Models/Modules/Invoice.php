@@ -5,6 +5,7 @@ namespace App\Models\Modules;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\BaseModule;
+use Illuminate\Validation\ValidationException;
 
 class Invoice extends BaseModule
 {
@@ -37,5 +38,18 @@ class Invoice extends BaseModule
             'label'    => $this->name,
             'sublabel' => $this->number,
         ]);
+    }
+
+    protected static function booted(): void
+    {
+        parent::booted();
+
+        static::saving(function (self $invoice) {
+            if ($invoice->issue_date && $invoice->due_date && $invoice->issue_date->gt($invoice->due_date)) {
+                throw ValidationException::withMessages([
+                    'due_date' => 'Due date must be after issue date.',
+                ]);
+            }
+        });
     }
 }

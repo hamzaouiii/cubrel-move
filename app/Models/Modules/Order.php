@@ -3,6 +3,7 @@
 namespace App\Models\Modules;
 
 use App\Models\BaseModule;
+use Illuminate\Validation\ValidationException;
 
 class Order extends BaseModule
 {
@@ -30,4 +31,17 @@ class Order extends BaseModule
     return [...parent::toSearchResult(), 'label' => $this->name, 'sublabel' => $this->order_number];
   }
   protected $guarded = [];
+
+  protected static function booted(): void
+  {
+    parent::booted();
+
+    static::saving(function (self $order) {
+      if ($order->order_date && $order->due_date && $order->order_date->gt($order->due_date)) {
+        throw ValidationException::withMessages([
+          'due_date' => 'Due date must be after order date.',
+        ]);
+      }
+    });
+  }
 }

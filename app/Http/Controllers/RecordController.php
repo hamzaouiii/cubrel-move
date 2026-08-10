@@ -155,9 +155,15 @@ class RecordController extends Controller
         $moduleModel = Module::where('slug', $module)->firstOrFail();
         $modelClass = $moduleModel->model_class;
 
-        $record = $modelClass::create(
-            $request->except('_token', '_method', 'related', 'owner_id__label')
+        // Null out fields are stripped rather than passed through so unfilled
+        // dropdowns (e.g. direction, status) don't override a DB column default
+        // with an explicit NULL - see the 'direction' NOT NULL crash on Email create.
+        $data = array_filter(
+            $request->except('_token', '_method', 'related', 'owner_id__label'),
+            fn ($value) => $value !== null
         );
+
+        $record = $modelClass::create($data);
 
         if ($request->wantsJson()) {
             return response()->json($record);
@@ -345,6 +351,10 @@ class RecordController extends Controller
 
         if (! $field) {
             return back()->with('error', 'No field specified for update.');
+        }
+
+        if (! $field->enable_mass_update) {
+            return back()->with('error', "The field '{$field->name}' cannot be updated in bulk.");
         }
 
         $field_name = $field->name;

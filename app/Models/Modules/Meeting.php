@@ -5,6 +5,7 @@ namespace App\Models\Modules;
 use App\Models\BaseModule;
 use App\Models\MeetingAttendee;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Validation\ValidationException;
 
 class Meeting extends BaseModule
 {
@@ -32,6 +33,12 @@ class Meeting extends BaseModule
         parent::booted();
 
         static::saving(function (self $meeting) {
+            if ($meeting->start_at && $meeting->end_at && $meeting->start_at->gt($meeting->end_at)) {
+                throw ValidationException::withMessages([
+                    'end_at' => 'End time must be after start time.',
+                ]);
+            }
+
             $meeting->duration = $meeting->start_at && $meeting->end_at
                 ? $meeting->start_at->diffInMinutes($meeting->end_at, absolute: true)
                 : null;

@@ -169,7 +169,7 @@ class FieldsManagerController extends Controller
       'max_length' => ['nullable', 'integer'],
       'regex' => ['nullable', 'string'],
       'related_module' => ['nullable', 'string'],
-      
+
     ]);
 
     $field_name = $data['name'];

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cases', function (Blueprint $table) {
             $table->char('id', 36)->primary();
             $table->string('name');
-            $table->string('subject');
+            $table->string('subject')->nullable();
             $table->text('description')->nullable();
             $table->string('status')->nullable()->default('open');
             $table->string('priority')->nullable()->default('normal');

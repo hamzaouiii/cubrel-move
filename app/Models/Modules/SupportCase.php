@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\BaseModule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Validation\ValidationException;
 
 class SupportCase extends BaseModule
 
@@ -43,6 +44,12 @@ class SupportCase extends BaseModule
     static::saving(function ($case) {
       if ($case->isDirty('name')) {
         $case->subject = $case->name;
+      }
+
+      if ($case->opened_at && $case->closed_at && $case->opened_at->gt($case->closed_at)) {
+        throw ValidationException::withMessages([
+          'closed_at' => 'Closed date must be after opened date.',
+        ]);
       }
     });
   }

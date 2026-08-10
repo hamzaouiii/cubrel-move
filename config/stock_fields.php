@@ -118,11 +118,13 @@ return [
             'name' => 'issue_date',
             'type' => 'date',
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
         'due_date' => [
             'name' => 'due_date',
             'type' => 'date',
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
         'notes' => [
             'name' => 'notes',
@@ -176,11 +178,13 @@ return [
             'name' => 'opened_at',
             'type' => 'datetime',
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
         'closed_at' => [
             'name' => 'closed_at',
             'type' => 'datetime',
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
     ],
     'deals' => [
@@ -262,11 +266,13 @@ return [
             'name' => 'order_date',
             'type' => 'date',
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
         'due_date' => [
             'name' => 'due_date',
             'type' => 'date',
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
     ],
     'users' => [
@@ -449,12 +455,14 @@ return [
             'type' => 'datetime',
             'required' => true,
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
         'end_at' => [
             'name' => 'end_at',
             'type' => 'datetime',
             'required' => true,
             'filterable' => true,
+            'enable_mass_update' => false,
         ],
         'duration' => [
             'name' => 'duration',
@@ -501,11 +509,6 @@ return [
             'type' => 'datetime',
             'filterable' => true,
             'sortable' => true,
-        ],
-        'direction' => [
-            'name' => 'direction',
-            'type' => 'select',
-            'filterable' => true,
         ],
         'mailbox' => [
             'name' => 'mailbox',

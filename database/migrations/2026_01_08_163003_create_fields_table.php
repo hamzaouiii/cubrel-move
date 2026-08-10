@@ -31,6 +31,7 @@ return new class extends Migration
       $table->boolean('searchable')->default(false);
       $table->boolean('filterable')->default(false);
       $table->boolean('sortable')->default(false);
+      $table->boolean('enable_mass_update')->default(true);
 
       $table->string('related_module')->nullable();
       $table->string('default_value')->nullable();

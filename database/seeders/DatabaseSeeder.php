@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
     $this->call(TransformationSeeder::class);
    $this->call(DashboardPresetSeeder::class);
 
-      //  $this->call(UsersTableSeeder::class);
+       $this->call(UsersTableSeeder::class);
       //  $this->call(DevSeeder::class);
       //  $this->call(ActivitySeeder::class);
       //  $this->call(LineItemsSeeder::class);

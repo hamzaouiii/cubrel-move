@@ -15,7 +15,7 @@ return new class extends Migration
             $table->char('id', 36)->primary();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->timestamp('due_at');
+            $table->timestamp('due_at')->nullable();
             $table->timestamp('due_soon_notified_at')->nullable();
             $table->string('status')->nullable()->default('not_started');
             $table->string('priority')->nullable()->default('medium');

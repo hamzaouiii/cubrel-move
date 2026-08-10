@@ -51,7 +51,7 @@ const showSelectAllPrompt = computed(() => {
 
 const fieldDropDownOptions = computed(() => {
   return (props.fields ?? [])
-    .filter((e) => !e.readonly)
+    .filter((e) => !e.readonly && e.enable_mass_update !== false)
     .map((item) => ({
       value: item.key,
       label: item.label,

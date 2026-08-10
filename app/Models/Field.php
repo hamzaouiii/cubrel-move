@@ -41,6 +41,7 @@ class Field extends Model
     'searchable',
     'filterable',
     'sortable',
+    'enable_mass_update',
     'database_type',
     'options',
     'default_value',
@@ -63,6 +64,7 @@ class Field extends Model
     'dropdown_list_id',
     'is_default_for_line_items',
     'is_calculated',
+    'enable_mass_update',
 
   ];
   /**
@@ -80,6 +82,7 @@ class Field extends Model
     'searchable'  => 'boolean',
     'filterable'  => 'boolean',
     'sortable'    => 'boolean',
+    'enable_mass_update' => 'boolean',
     'options'     => 'array',
     'min_length'  => 'integer',
     'max_length'  => 'integer',

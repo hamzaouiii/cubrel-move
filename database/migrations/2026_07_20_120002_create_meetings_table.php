@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->json('location')->nullable();
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
+            $table->timestamp('start_at')->nullable();
+            $table->timestamp('end_at')->nullable();
             $table->unsignedInteger('duration')->nullable();
             $table->string('status')->nullable()->default('planned');
             $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
