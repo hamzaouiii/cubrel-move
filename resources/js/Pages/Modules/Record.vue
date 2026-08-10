@@ -73,13 +73,18 @@ const showExportModal = ref(false);
 const showHistoryModal = ref(false);
 const actionDropDownref = ref(null);
 const activitySidebarRef = ref(null);
+const moduleHasRelatedPanels = () => {
+  const columns = props.relatedLayout?.columns ?? [];
+  return columns.some((col) => (col.layout || []).length > 0);
+};
 const getInitialTab = () => {
   const params = new URLSearchParams(window.location.search);
   const relatedAvailable =
     !isEditing.value &&
     props.record?.related &&
     props.record.related.constructor === Object &&
-    Object.keys(props.record.related).length > 0;
+    Object.keys(props.record.related).length > 0 &&
+    moduleHasRelatedPanels();
 
   return params.get("tab") === "related" && relatedAvailable
     ? "related"
@@ -460,7 +465,8 @@ const showRelatedTab = computed(() => {
   return (
     !isEditing.value &&
     Object.keys(props.record.related).length > 0 &&
-    props.record?.related.constructor === Object
+    props.record?.related.constructor === Object &&
+    moduleHasRelatedPanels()
   );
 });
 // Lifecycle
