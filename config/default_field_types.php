@@ -18,6 +18,7 @@ return [
   'status',
   'address',
   'image',
+  'multivalue',
 ];
 
 // for reference

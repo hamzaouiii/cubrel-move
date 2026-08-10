@@ -498,11 +498,11 @@ return [
         ],
         'to_addresses' => [
             'name' => 'to_addresses',
-            'type' => 'json',
+            'type' => 'multivalue',
         ],
         'cc_addresses' => [
             'name' => 'cc_addresses',
-            'type' => 'json',
+            'type' => 'multivalue',
         ],
         'sent_at' => [
             'name' => 'sent_at',

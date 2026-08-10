@@ -66,12 +66,12 @@ return [
                     ],
                     3 => [
                         'name' => 'to_addresses',
-                        'type' => 'json',
+                        'type' => 'multivalue',
                         'label' => 'modules.emails.fields.to_addresses',
                     ],
                     4 => [
                         'name' => 'cc_addresses',
-                        'type' => 'json',
+                        'type' => 'multivalue',
                         'label' => 'modules.emails.fields.cc_addresses',
                     ],
                     5 => [

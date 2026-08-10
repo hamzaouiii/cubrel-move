@@ -18,6 +18,7 @@ return [
   'key_is_taken_error'    => 'A field with the same system name already exists',
   'label_hint'        => 'Min. 4 characters',
   'regex_hint'        => 'Use for custom validation rules',
+  'multivalue_placeholder' => 'Type and press Enter to add',
 
   'confirm' => [
     'delete_title' => 'Delete field',
@@ -49,6 +50,7 @@ return [
     'address' => 'Address',
     'image' => 'Image',
     'duration' => 'Duration',
+    'multivalue' => 'Multi Value',
   ],
   'metadata' => [
     'name' => 'System Name',

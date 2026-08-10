@@ -18,6 +18,7 @@ return [
     'key_is_taken_error' => 'Ein Feld mit demselben Systemnamen existiert bereits.',
     'regex_hint' => 'Für benutzerdefinierte Validierungsregeln',
     'label_hint' => 'Min. 4 Zeichen',
+    'multivalue_placeholder' => 'Eingeben und Enter drücken zum Hinzufügen',
 
     'confirm' => [
         'delete_title' => 'Feld löschen',
@@ -48,6 +49,7 @@ return [
         'address' => 'Addresse',
         'image' => 'Bild',
         'duration' => 'Dauer',
+        'multivalue' => 'Mehrfachwert',
     ],
     'metadata' => [
         'name' => 'Name',

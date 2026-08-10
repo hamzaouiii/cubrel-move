@@ -19,4 +19,5 @@ return [
   'currency' => 'decimal',
   'image' => 'string',
   'duration' => 'integer',
+  'multivalue' => 'json',
 ];

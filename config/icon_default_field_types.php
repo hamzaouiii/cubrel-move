@@ -74,4 +74,8 @@ return [
         'value' => 'image',
         'icon'  => 'fa-solid fa-image'
     ],
+    [
+        'value' => 'multivalue',
+        'icon'  => 'fa-solid fa-tags'
+    ],
 ];

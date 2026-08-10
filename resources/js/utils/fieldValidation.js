@@ -164,6 +164,15 @@ const imageValidate = (value) => {
   return typeof value === "string";
 };
 
+// Multivalue: valid when it's an array of non-empty strings
+const multivalueValidate = (value) => {
+  if (!value) return true;
+  return (
+    Array.isArray(value) &&
+    value.every((v) => typeof v === "string" && v.trim().length > 0)
+  );
+};
+
 export function fieldValidation() {
   return {
     emailValidate,
@@ -178,5 +187,6 @@ export function fieldValidation() {
     addressValidate,
     currencyValidate,
     imageValidate,
+    multivalueValidate,
   };
 }

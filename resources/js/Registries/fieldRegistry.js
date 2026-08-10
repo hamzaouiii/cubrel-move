@@ -15,6 +15,7 @@ import AddressField from "@/Pages/Components/FiledTypes/AddressField.vue";
 import CurrencyField from "@/Pages/Components/FiledTypes/CurrencyField.vue";
 import ImageField from "@/Pages/Components/FiledTypes/ImageField.vue";
 import DurationField from "@/Pages/Components/FiledTypes/DurationField.vue";
+import MultiValueField from "@/Pages/Components/FiledTypes/MultiValueField.vue";
 
 import { fieldValidation } from "@/utils/fieldValidation";
 const {
@@ -29,6 +30,7 @@ const {
   addressValidate,
   currencyValidate,
   imageValidate,
+  multivalueValidate,
 } = fieldValidation();
 
 export const fieldRegistry = {
@@ -112,5 +114,10 @@ export const fieldRegistry = {
   duration: {
     component: DurationField,
     validate: defaultValidate,
+  },
+  multivalue: {
+    component: MultiValueField,
+    validate: multivalueValidate,
+    isComposite: true,
   },
 };
