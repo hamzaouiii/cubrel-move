@@ -84,6 +84,8 @@ class ModuleScaffolder
             'currency' => 'decimal:2',
             'percentage' => 'decimal:2',
             'checkbox' => 'boolean',
+            'address' => 'array',
+            'multivalue' => 'array',
         ];
 
         return $module->draftFields()
