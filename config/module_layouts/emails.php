@@ -95,31 +95,26 @@ return [
                         'label' => 'modules.emails.fields.sent_at',
                     ],
                     1 => [
-                        'name' => 'direction',
-                        'type' => 'select',
-                        'label' => 'modules.emails.fields.direction',
-                    ],
-                    2 => [
                         'name' => 'mailbox',
                         'type' => 'text',
                         'label' => 'modules.emails.fields.mailbox',
                     ],
-                    3 => [
+                    2 => [
                         'name' => 'created_at',
                         'type' => 'datetime',
                         'label' => 'modules.emails.fields.created_at',
                     ],
-                    4 => [
+                    3 => [
                         'name' => 'updated_at',
                         'type' => 'datetime',
                         'label' => 'modules.emails.fields.updated_at',
                     ],
-                    5 => [
+                    4 => [
                         'name' => 'created_by',
                         'type' => 'record',
                         'label' => 'modules.defaults.created_by',
                     ],
-                    6 => [
+                    5 => [
                         'name' => 'updated_by',
                         'type' => 'record',
                         'label' => 'modules.defaults.updated_by',

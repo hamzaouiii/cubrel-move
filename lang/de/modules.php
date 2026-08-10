@@ -417,7 +417,6 @@ return [
             'to_addresses' => 'An',
             'cc_addresses' => 'CC',
             'sent_at' => 'Gesendet am',
-            'direction' => 'Richtung',
             'mailbox' => 'Postfach',
             'owner_id' => 'Besitzer',
             'created_at' => 'Erstellt am',

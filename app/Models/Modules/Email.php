@@ -16,7 +16,6 @@ class Email extends BaseModule
         'to_addresses',
         'cc_addresses',
         'sent_at',
-        'direction',
         'provider_message_id',
         'mailbox',
         'owner_id',

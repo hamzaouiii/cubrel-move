@@ -94,7 +94,6 @@ class EmailInboundWebhookController extends Controller
             'to_addresses' => $toAddresses,
             'cc_addresses' => $ccAddresses,
             'sent_at' => $this->parseDate($message->getHeaderValue('date')),
-            'direction' => 'logged',
             'provider_message_id' => $messageId,
             'mailbox' => $mailbox['slug'],
             // Null owner_id on a team address falls through to BaseModule's

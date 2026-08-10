@@ -318,7 +318,6 @@ return [
             'to_addresses' => 'To',
             'cc_addresses' => 'CC',
             'sent_at' => 'Sent At',
-            'direction' => 'Direction',
             'mailbox' => 'Mailbox',
             'owner_id' => 'Owner',
             'created_at' => 'Created At',
