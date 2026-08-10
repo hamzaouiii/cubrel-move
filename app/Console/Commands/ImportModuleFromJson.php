@@ -5,10 +5,13 @@ namespace App\Console\Commands;
 use App\Models\DropdownList;
 use App\Models\Field;
 use App\Models\Label;
+use App\Models\Layout;
 use App\Models\Module;
+use App\Models\Relationship;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Relationships\RelationshipService;
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -23,15 +26,28 @@ use Illuminate\Support\Str;
  * modules). Deliberately does not use App\Services\ModuleScaffolder: that
  * service only ever targets the Custom namespace, which is correct for the
  * runtime module builder but wrong here.
+ *
+ * Also accepts optional "layouts" and "relationships" keys on the same
+ * definition, so a module plus its fields, layouts and relationships to
+ * other (already-imported) modules can all come from one JSON file. Both
+ * are re-runnable: layouts key on module+type same as LayoutManagerController,
+ * relationships key on their unique name same as RelationshipManagerController.
+ * Dev-only tool — not meant to run against production data.
  */
 class ImportModuleFromJson extends Command
 {
-    protected $signature = 'modules:import {path : Path to a module definition JSON file}';
+    use ConfirmableTrait;
 
-    protected $description = 'Creates or updates a module (and its fields) from a JSON definition file — supports both custom and core-style modules, for testing';
+    protected $signature = 'modules:import {path : Path to a module definition JSON file} {--force : Allow running outside local/testing without a confirmation prompt}';
+
+    protected $description = 'Dev tool: creates or updates a module, its fields, layouts and relationships from a JSON definition file — supports both custom and core-style modules, for testing';
 
     public function handle(): int
     {
+        if (! $this->confirmToProceed('This is a dev-only scaffolding tool and is not meant to run against production data.')) {
+            return self::FAILURE;
+        }
+
         $path = $this->argument('path');
 
         if (! is_file($path)) {
@@ -136,6 +152,9 @@ class ImportModuleFromJson extends Command
             $this->info("has_line_items is on — default line item fields (subtotal/discount/tax/total) and the '{$module->line_item_source_module}' picker fall back automatically, nothing else to generate.");
         }
 
+        $this->importLayouts($module, $data['layouts'] ?? []);
+        $this->importRelationships($module, $data['relationships'] ?? []);
+
         $this->info("Done. Module available at {$module->path}");
 
         return self::SUCCESS;
@@ -230,6 +249,14 @@ class ImportModuleFromJson extends Command
      * select/status fields resolve their dropdown by convention —
      * "{module_slug}_{field_name}_list" — same lookup StockFieldsSeeder uses,
      * unless the field definition names one explicitly via "dropdown_list".
+     *
+     * If the field def carries an inline "options" (keyed map, the module
+     * builder / status field shape: {key: {label, icon, bg_color,
+     * text_color}}) or "values" (already the DropdownList array shape:
+     * [{value, label, color, bgColor, icon}]), the list is upserted from
+     * that definition — re-running overwrites its values, same as
+     * importLayouts(). Without either, an existing list is looked up and a
+     * missing one just warns, unchanged from before.
      */
     protected function resolveDropdownListId(Module $module, string $name, array $def): ?string
     {
@@ -240,6 +267,24 @@ class ImportModuleFromJson extends Command
         }
 
         $key = $def['dropdown_list'] ?? "{$module->slug}_{$name}_list";
+
+        $values = $this->normalizeDropdownValues($def);
+
+        if ($values !== null) {
+            $list = DropdownList::updateOrCreate(
+                ['key' => $key],
+                [
+                    'values' => $values,
+                    'is_draft' => false,
+                    'is_status' => $type === 'status',
+                ]
+            );
+
+            $this->info("Saved dropdown list [{$key}] with ".count($values).' option(s).');
+
+            return $list->id;
+        }
+
         $id = DropdownList::where('key', $key)->value('id');
 
         if (! $id) {
@@ -247,6 +292,50 @@ class ImportModuleFromJson extends Command
         }
 
         return $id;
+    }
+
+    /**
+     * Accepts either shape and normalizes to the DropdownList "values" array
+     * ([{value, label, color, bgColor, icon}]) the frontend (StatusField.vue
+     * et al.) reads. Returns null when the field def has neither, so the
+     * caller falls back to looking an existing list up instead.
+     */
+    protected function normalizeDropdownValues(array $def): ?array
+    {
+        if (isset($def['values']) && is_array($def['values'])) {
+            return array_values($def['values']);
+        }
+
+        if (! isset($def['options']) || ! is_array($def['options'])) {
+            return null;
+        }
+
+        $values = [];
+
+        foreach ($def['options'] as $optionKey => $option) {
+            $option = is_array($option) ? $option : [];
+
+            $entry = [
+                'value' => $option['value'] ?? $optionKey,
+                'label' => $option['label'] ?? Str::headline((string) $optionKey),
+            ];
+
+            if (isset($option['color']) || isset($option['text_color'])) {
+                $entry['color'] = $option['color'] ?? $option['text_color'];
+            }
+
+            if (isset($option['bgColor']) || isset($option['bg_color'])) {
+                $entry['bgColor'] = $option['bgColor'] ?? $option['bg_color'];
+            }
+
+            if (isset($option['icon'])) {
+                $entry['icon'] = $option['icon'];
+            }
+
+            $values[] = $entry;
+        }
+
+        return $values;
     }
 
     /**
@@ -285,6 +374,129 @@ class ImportModuleFromJson extends Command
             ['key' => "modules.{$module->slug}.single_label", 'module_id' => $module->id],
             ['value' => $module->getRawOriginal('name'), 'is_custom' => true]
         );
+    }
+
+    /**
+     * "layouts" is a map of layout type => definition, the exact shape
+     * LayoutManagerController::store() saves and config/default_layouts.php /
+     * config/module_layouts/*.php already use — e.g.
+     * {"list": {"columns": [...]}, "record": {"sections": [...]}}. Keyed on
+     * module_id + type, same as the layout editor, so re-running overwrites.
+     */
+    protected function importLayouts(Module $module, array $layouts): void
+    {
+        $requiredKeyByType = [
+            'list' => 'columns',
+            'linkingPanel' => 'columns',
+            'related' => 'columns',
+            'record' => 'sections',
+            'lineItemsSnapshot' => 'fields',
+        ];
+
+        foreach ($layouts as $type => $definition) {
+            if (! isset($requiredKeyByType[$type])) {
+                $this->warn("Unknown layout type [{$type}] — skipping. Valid types: ".implode(', ', array_keys($requiredKeyByType)));
+
+                continue;
+            }
+
+            $requiredKey = $requiredKeyByType[$type];
+
+            if (! is_array($definition) || ! isset($definition[$requiredKey]) || ! is_array($definition[$requiredKey])) {
+                $this->warn("Layout [{$type}] is missing its required \"{$requiredKey}\" array — skipping.");
+
+                continue;
+            }
+
+            // Layout::module_id isn't fillable (see LayoutManagerController::store()),
+            // so it's assigned directly rather than through updateOrCreate()'s mass assignment.
+            $layout = Layout::firstOrNew(['module_id' => $module->id, 'type' => $type]);
+            $layout->module_id = $module->id;
+            $layout->module_name = $module->slug;
+            $layout->type = $type;
+            $layout->definition = $definition;
+            $layout->save();
+
+            $this->info("Saved [{$type}] layout for module [{$module->slug}].");
+        }
+    }
+
+    /**
+     * "relationships" is a list of relationship definitions with this module
+     * as one side. Mirrors RelationshipManagerController::store(): "left_module"
+     * defaults to this module's slug, "many-to-one" is normalized into
+     * "one-to-many" with sides swapped (the DB only knows one-to-many), and
+     * name defaults to "{left}_{right}" so re-running is idempotent via the
+     * relationships.name unique key.
+     */
+    protected function importRelationships(Module $module, array $relationships): void
+    {
+        $validTypes = config('default_relationship_types');
+
+        foreach ($relationships as $def) {
+            if (empty($def['right_module']) || empty($def['type'])) {
+                $this->warn('Relationship definition is missing "right_module" or "type" — skipping: '.json_encode($def));
+
+                continue;
+            }
+
+            if (! in_array($def['type'], $validTypes, true)) {
+                $this->warn("Unknown relationship type [{$def['type']}] — skipping. Valid types: ".implode(', ', $validTypes));
+
+                continue;
+            }
+
+            $leftSlug = $def['left_module'] ?? $module->slug;
+            $rightSlug = $def['right_module'];
+            $type = $def['type'];
+
+            if ($type === 'many-to-one') {
+                [$leftSlug, $rightSlug] = [$rightSlug, $leftSlug];
+                $type = 'one-to-many';
+            }
+
+            if ($leftSlug === $rightSlug) {
+                $this->warn("Relationship [{$leftSlug} <-> {$rightSlug}] is self-referencing — skipping.");
+
+                continue;
+            }
+
+            if (! Module::withoutGlobalScope(AdminOnlyModuleScope::class)->where('slug', $rightSlug)->exists()
+                || ! Module::withoutGlobalScope(AdminOnlyModuleScope::class)->where('slug', $leftSlug)->exists()) {
+                $this->warn("Relationship [{$leftSlug} <-> {$rightSlug}] references a module that doesn't exist yet — skipping.");
+
+                continue;
+            }
+
+            $duplicate = Relationship::query()
+                ->where('left_module', $leftSlug)
+                ->where('right_module', $rightSlug)
+                ->where('type', $type)
+                ->where('name', '!=', $def['name'] ?? "{$leftSlug}_{$rightSlug}")
+                ->exists();
+
+            if ($duplicate) {
+                $this->warn("Relationship [{$leftSlug} <-> {$rightSlug}] ({$type}) already exists under a different name — skipping.");
+
+                continue;
+            }
+
+            $name = $def['name'] ?? "{$leftSlug}_{$rightSlug}";
+
+            Relationship::updateOrCreate(
+                ['name' => $name],
+                [
+                    'label' => $def['label'] ?? Str::headline($rightSlug),
+                    'left_module' => $leftSlug,
+                    'right_module' => $rightSlug,
+                    'type' => $type,
+                    'join_table' => 'relationship_links',
+                    'is_system' => $def['is_system'] ?? false,
+                ]
+            );
+
+            $this->info("Saved relationship [{$name}] ({$leftSlug} {$type} {$rightSlug}).");
+        }
     }
 
     protected function buildTable(Module $module): void
