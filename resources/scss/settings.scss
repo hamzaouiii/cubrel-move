@@ -168,11 +168,21 @@
         }
     }
     &__list {
-        display: grid;
-        grid-template-columns: repeat(2, 2fr);
+        display: flex;
+        align-items: flex-start;
         padding: 4px 12px;
-        gap: 0;
-        align-items: start;
+
+        @media (max-width: 750px) {
+            flex-direction: column;
+        }
+
+        &__column {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
         &__section {
             margin: 12px;
             padding: 24px;
@@ -6398,7 +6408,7 @@ textarea {
     align-items: stretch;
     height: 100vh;
     overflow: hidden;
-
+    margin-bottom: 50px;
     &__expand-btn {
         all: unset;
 
