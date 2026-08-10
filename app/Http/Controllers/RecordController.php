@@ -159,7 +159,7 @@ class RecordController extends Controller
         // dropdowns (e.g. direction, status) don't override a DB column default
         // with an explicit NULL - see the 'direction' NOT NULL crash on Email create.
         $data = array_filter(
-            $request->except('_token', '_method', 'related', 'owner_id__label'),
+            $this->stripNonPersistedKeys($request),
             fn ($value) => $value !== null
         );
 
@@ -179,13 +179,20 @@ class RecordController extends Controller
         $modelClass = $moduleModel->model_class;
 
         $record = $modelClass::findOrFail($id);
-        $record->fill($request->except('_token', '_method', 'related', 'owner_id__label'))->save();
+        $record->fill($this->stripNonPersistedKeys($request))->save();
 
         if ($request->wantsJson()) {
             return response()->json($record);
         }
 
         return back()->with('success', 'Record updated successfully.');
+    }
+
+    private function stripNonPersistedKeys(Request $request): array
+    {
+        return collect($request->except('_token', '_method', 'related'))
+            ->reject(fn ($value, string $key) => str_ends_with($key, '__label'))
+            ->all();
     }
 
     public function destroy(string $module, int|string $record)
