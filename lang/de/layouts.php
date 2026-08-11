@@ -72,6 +72,7 @@ return [
     'resetting' => 'Wird zurückgesetzt...',
     'back_to_list' => 'Zurück zu Layouts',
     'required_field' => 'Pflichtfeld',
+    'required_fields_missing' => 'Diese Felder sind erforderlich und können nicht aus dem Layout entfernt werden: :fields',
     'remove_column' => 'Spalte entfernen',
     'confirm_remove_column' => 'Bestätigen',
     'add_column' => 'Spalte hinzufügen',

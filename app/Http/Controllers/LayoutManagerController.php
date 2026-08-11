@@ -21,6 +21,8 @@ class LayoutManagerController extends Controller
                 'definition' => 'required|array',
                 'definition.sections' => 'required|array',
             ]);
+
+            $this->assertRequiredFieldsPresent($module, $validated['definition']['sections']);
         } elseif ($layoutType == 'related') {
             $validated = $request->validate([
                 'definition' => 'required|array',
@@ -51,6 +53,47 @@ class LayoutManagerController extends Controller
         return redirect()
             ->route('settings.modules.layouts.edit', [$module->id, $layoutType])
             ->with('success', __('layouts.layout_update_success'));
+    }
+
+    /**
+     * A field marked required must always be reachable on the record form, or
+     * a create/update could silently (or fatally) omit it.
+     */
+    protected function assertRequiredFieldsPresent(Module $module, array $sections): void
+    {
+        $requiredFields = $module->allFields()
+            ->filter(fn ($field) => $field->required && ! $field->readonly && ! $field->is_calculated);
+
+        $layoutFieldNames = collect($sections)
+            ->filter(fn ($section) => empty($section['has_line_items']) && empty($section['has_attendees']))
+            ->flatMap(fn ($section) => collect($section['layout'] ?? [])->pluck('name'))
+            ->filter();
+
+        $missing = $requiredFields->reject(fn ($field) => $layoutFieldNames->contains($field->name));
+
+        if ($missing->isNotEmpty()) {
+            $labels = $missing->map(fn ($field) => $this->translateFieldLabel($field));
+
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'definition.sections' => __('layouts.required_fields_missing', ['fields' => $labels->implode(', ')]),
+            ]);
+        }
+    }
+
+    protected function translateFieldLabel(\App\Models\Field $field): string
+    {
+        if (! $field->label) {
+            return $field->name;
+        }
+
+        $custom = \App\Models\Label::where('key', $field->label)->value('value');
+        if ($custom) {
+            return $custom;
+        }
+
+        $translated = __($field->label);
+
+        return $translated === $field->label ? $field->label : $translated;
     }
 
     public function show(string $id)

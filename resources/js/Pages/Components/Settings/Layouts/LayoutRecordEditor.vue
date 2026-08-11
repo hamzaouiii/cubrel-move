@@ -295,9 +295,14 @@ const moveColumnBetweenSections = (
   emitUpdatedSections();
 };
 
+const isRequiredColumn = (column) => !!column?.field?.required;
+
 const removeColumnFromSection = (sectionIndex, columnIndex) => {
   const sections = [...internalSections.value];
   const section = sections[sectionIndex];
+  const column = section?.layout?.[columnIndex];
+
+  if (isRequiredColumn(column)) return;
 
   if (section?.layout) {
     section.layout.splice(columnIndex, 1);
@@ -746,9 +751,15 @@ onBeforeUnmount(() => {
                           class="editor__columns__item__label__flag"
                           >{{ $t("fields.metadata.readonly") }}</span
                         >
+                        <span
+                          v-if="isRequiredColumn(column)"
+                          class="editor__columns__item__label__flag"
+                          >{{ $t("layouts.required_field") }}</span
+                        >
                       </span>
 
                       <button
+                        v-if="!isRequiredColumn(column)"
                         @click="
                           removeColumnFromSection(sectionIndex, columnIndex)
                         "
@@ -758,6 +769,11 @@ onBeforeUnmount(() => {
                       >
                         <i class="fa-solid fa-times"></i>
                       </button>
+                      <i
+                        v-else
+                        class="fa-solid fa-lock editor__columns__item__locked"
+                        :title="$t('layouts.required_field')"
+                      ></i>
                     </div>
 
                     <!-- Drop zone after column -->

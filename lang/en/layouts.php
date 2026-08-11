@@ -82,6 +82,7 @@ return [
     'resetting' => 'Resetting...',
     'back_to_list' => 'Back to layouts',
     'required_field' => 'Required Field',
+    'required_fields_missing' => 'These fields are required and cannot be removed from the layout: :fields',
     'fields_header_hint' => 'Click on a field to add it to the subpanel header',
     'linkingPanel' => 'Linking Panel',
     'has_empty_layouts_error' => 'Please remove empty sections',

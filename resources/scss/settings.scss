@@ -3289,8 +3289,8 @@
                     }
                 }
                 &__btn {
-                    --btn-color: var(--primary-color);
-                    --btn-bg-hover: var(--primary-color);
+                    --btn-color: var(--module-color);
+                    --btn-bg-hover: var(--module-color);
                 }
             }
         }
@@ -3629,6 +3629,10 @@
                     color: #dc3545;
                     background: rgba(220, 53, 69, 0.1);
                 }
+            }
+            &__locked {
+                color: #adb5bd;
+                padding: 4px;
             }
         }
     }
@@ -6413,28 +6417,17 @@ textarea {
         position: fixed;
         top: 50%;
         right: 0;
-        transform: translateY(-50%);
-        width: 20px;
-        height: 64px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: var(--sidebar-bg);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        border-left: none;
-        border-radius: 0 var(--radius-md) var(--radius-md) 0;
-        box-shadow: 4px 0px 12px rgba(0, 0, 0, 0.06);
-        color: var(--text-main);
+        right: -2px;
+        box-shadow: -8px 0 24px rgba(15, 23, 42, 0.1);
+        padding: 14px 7px;
+        background: #ffffff;
+        border-radius: 8px 0 0 8px;
+        color: #4b5168;
+        border: none;
         cursor: pointer;
-        z-index: 100;
-        transition:
-            width 0.2s ease,
-            color 0.2s ease;
-
+        transition: all 0.1s ease;
         &:hover {
-            width: 24px;
-            color: var(--primary-color, var(--text-main));
+            transform: scale(1.1);
         }
     }
 
