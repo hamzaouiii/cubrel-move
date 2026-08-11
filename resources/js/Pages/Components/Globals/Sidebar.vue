@@ -119,7 +119,7 @@ const onModuleMouseEnter = (event, mod) => {
         text = t("globals.sidebar.home");
         color = appSettings.value.primary_color;
     } else {
-        text = mod.label;
+        text = t(mod.label);
         color =
             appSettings.value.use_individual_module_colors === "0"
                 ? appSettings.value.primary_color
@@ -275,7 +275,7 @@ const onShowTabMouseLeave = () => {
                             v-if="!collapsedSidebar"
                             class="sidebar__module-list__item__label__text"
                         >
-                            {{ currentModule.label }}
+                            {{ $t(currentModule.label) }}
                         </span>
                     </div>
                 </Link>
@@ -320,7 +320,7 @@ const onShowTabMouseLeave = () => {
                             v-if="!collapsedSidebar"
                             class="sidebar__module-list__item__label__text"
                         >
-                            {{ mod.label }}
+                            {{ $t(mod.label) }}
                         </span>
                     </div>
                 </Link>

@@ -121,14 +121,17 @@ class ImportModuleFromJson extends Command
 
         $fields = $data['fields'] ?? [];
 
+        // Unconditional and idempotent (updateOrCreate): every module needs its
+        // "modules.{slug}.label"/"single_label" Label rows regardless of
+        // is_custom, and regardless of whether the table already existed —
+        // otherwise __() and the frontend t() fallback have nothing to resolve
+        // and the raw translation key leaks into the UI (e.g. the sidebar,
+        // which renders module.label directly without going through t()).
+        $this->createModuleLabelRows($module);
+
         if (! $tableExisted) {
             $this->createDraftFields($module, $fields);
             $this->buildTable($module);
-
-            if ($isCustom) {
-                $this->createModuleLabelRows($module);
-            }
-
             $this->activateDraftFields($module);
 
             $this->info("Created table [{$tableName}] with ".count($fields).' field(s) as real columns.');
@@ -653,6 +656,8 @@ class ImportModuleFromJson extends Command
             'currency' => 'decimal:2',
             'percentage' => 'decimal:2',
             'checkbox' => 'boolean',
+            'address' => 'array',
+            'multivalue' => 'array',
         ];
 
         return $module->draftFields()
