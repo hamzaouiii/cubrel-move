@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 class DeactivateModule extends Command
 {
   protected $signature = 'modules:deactivate {slug : The slug of the module to deactivate}';
-  protected $description = 'Deactivates a module by slug (blocks CRUD/list/search/dashboards and hides it from the sidebar)';
+  protected $description = 'Deactivates a module by slug (blocks CRUD/list/search/dashboards, hides its relationships/related panels on other modules, and hides it from the sidebar)';
 
   public function handle()
   {

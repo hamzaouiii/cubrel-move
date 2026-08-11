@@ -388,7 +388,11 @@ class RelationshipService
       ->unique()
       ->values();
 
+    // Only active modules: a deactivated module's relationships/related panels
+    // must disappear from every other module without deleting the Relationship
+    // rows, so they come back automatically if the module is reactivated.
     $modules = Module::whereIn('slug', $relatedSlugs)
+      ->where('is_active', true)
       ->get()
       ->keyBy('slug');
 
@@ -399,16 +403,14 @@ class RelationshipService
       self::$moduleCache[$slug] = $module;
     }
 
-    return $relationships->map(function ($relationship) use ($modules) {
+    return $relationships
+      ->filter(fn ($relationship) => $modules->has($relationship->related_slug))
+      ->map(function ($relationship) use ($modules) {
+        $relationship->related_fields = $modules->get($relationship->related_slug)->allFields();
 
-      $module = $modules->get($relationship->related_slug);
-
-      $relationship->related_fields = $module
-        ? $module->allFields()
-        : collect();
-
-      return $relationship;
-    });
+        return $relationship;
+      })
+      ->values();
   }
 
   /**

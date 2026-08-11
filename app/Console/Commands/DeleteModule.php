@@ -70,6 +70,7 @@ class DeleteModule extends Command
 
         DB::transaction(function () use ($module, $relationships) {
             foreach ($relationships as $relationship) {
+                $relationship->cleanupRelationshipPanels();
                 $relationship->delete();
             }
 
