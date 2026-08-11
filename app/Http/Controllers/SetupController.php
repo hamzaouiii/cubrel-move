@@ -43,6 +43,7 @@ class SetupController extends Controller
             'token'   => $token,
             'invalid' => $setupToken === null,
             'locale'  => $locale,
+            'email'   => $setupToken?->email,
         ]);
     }
 
@@ -55,13 +56,21 @@ class SetupController extends Controller
         $setupToken = $this->tokens->validate($token);
         abort_if($setupToken === null, 410, 'This setup link has expired or already been used.');
 
-        $data = $request->validate(array_merge(
+        $rules = array_merge(
             AccountRules::newAccount(),
-            [
-                'email'  => ['required', 'email', 'unique:users,email'],
-                'locale' => ['nullable', 'in:' . implode(',', $this->supportedLocales())],
-            ]
-        ));
+            ['locale' => ['nullable', 'in:' . implode(',', $this->supportedLocales())]]
+        );
+
+        if ($setupToken->email === null) {
+            $rules['email'] = ['required', 'email', 'unique:users,email'];
+        }
+
+        $data = $request->validate($rules);
+
+        // A token linked to an email is locked to it server-side — the form
+        // field is readonly, but a tampered request must not be able to
+        // override who the setup link was issued for.
+        $data['email'] = $setupToken->email ?? $data['email'];
 
         $user = User::createFromAccountForm($data, ['is_admin' => true, 'is_root' => true]);
 

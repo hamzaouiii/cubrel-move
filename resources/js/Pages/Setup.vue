@@ -5,6 +5,7 @@ const props = defineProps({
   token: String,
   invalid: Boolean,
   locale: String,
+  email: String,
 });
 
 const page = usePage();
@@ -14,7 +15,7 @@ const form = useForm({
   first_name: "",
   last_name: "",
   username: "",
-  email: "",
+  email: props.email || "",
   password: "",
   password_confirmation: "",
   locale: props.locale,
@@ -66,110 +67,168 @@ const submit = () => {
           </p>
         </div>
 
-        <div class="accept-card__body">
-          <div
-            class="field"
-            :class="{ 'field--error': form.errors.first_name }"
-          >
+        <form class="accept-card__body" @submit.prevent="submit">
+          <div class="field">
             <label class="field__label">{{
               $t("globals.login.first_name")
             }}</label>
-            <input
-              v-model="form.first_name"
-              type="text"
-              class="field__input"
-              :placeholder="$t('globals.login.first_name_placeholder')"
-              autocomplete="name"
-            />
+            <div
+              class="field__control"
+              :class="{ 'field__control--error': form.errors.first_name }"
+            >
+              <input
+                v-model="form.first_name"
+                type="text"
+                class="field__input"
+                :placeholder="$t('globals.login.first_name_placeholder')"
+                autocomplete="name"
+                @input="form.clearErrors('first_name')"
+              />
+              <span v-if="form.errors.first_name" class="field__error-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </span>
+            </div>
             <span v-if="form.errors.first_name" class="field__error">
               {{ form.errors.first_name }}
             </span>
           </div>
-          <div class="field" :class="{ 'field--error': form.errors.last_name }">
+          <div class="field">
             <label class="field__label">{{
               $t("globals.login.last_name")
             }}</label>
-            <input
-              v-model="form.last_name"
-              type="text"
-              class="field__input"
-              :placeholder="$t('globals.login.last_name_placeholder')"
-              autocomplete="name"
-            />
+            <div
+              class="field__control"
+              :class="{ 'field__control--error': form.errors.last_name }"
+            >
+              <input
+                v-model="form.last_name"
+                type="text"
+                class="field__input"
+                :placeholder="$t('globals.login.last_name_placeholder')"
+                autocomplete="name"
+                @input="form.clearErrors('last_name')"
+              />
+              <span v-if="form.errors.last_name" class="field__error-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </span>
+            </div>
             <span v-if="form.errors.last_name" class="field__error">
               {{ form.errors.last_name }}
             </span>
           </div>
 
-          <div class="field" :class="{ 'field--error': form.errors.username }">
+          <div class="field">
             <label class="field__label">{{
               $t("globals.login.username")
             }}</label>
-            <input
-              v-model="form.username"
-              type="text"
-              class="field__input"
-              :placeholder="$t('globals.login.username_placeholder')"
-              autocomplete="username"
-            />
+            <div
+              class="field__control"
+              :class="{ 'field__control--error': form.errors.username }"
+            >
+              <input
+                v-model="form.username"
+                type="text"
+                class="field__input"
+                :placeholder="$t('globals.login.username_placeholder')"
+                autocomplete="username"
+                @input="form.clearErrors('username')"
+              />
+              <span v-if="form.errors.username" class="field__error-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </span>
+            </div>
             <span v-if="form.errors.username" class="field__error">
               {{ form.errors.username }}
             </span>
           </div>
 
-          <div class="field" :class="{ 'field--error': form.errors.email }">
+          <div class="field">
             <label class="field__label">{{
               $t("globals.login.email")
             }}</label>
-            <input
-              v-model="form.email"
-              type="email"
-              class="field__input"
-              :placeholder="$t('globals.login.email_placeholder')"
-              autocomplete="email"
-            />
+            <div
+              class="field__control field__control--email"
+              :class="{
+                'field__control--error': form.errors.email,
+                'field__control--readonly': !!props.email,
+              }"
+            >
+              <i class="field__icon fa-regular fa-envelope"></i>
+              <input
+                v-model="form.email"
+                type="email"
+                class="field__input"
+                :placeholder="$t('globals.login.email_placeholder')"
+                autocomplete="email"
+                :readonly="!!props.email"
+                @input="form.clearErrors('email')"
+              />
+              <span v-if="form.errors.email" class="field__error-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </span>
+            </div>
             <span v-if="form.errors.email" class="field__error">
               {{ form.errors.email }}
             </span>
           </div>
 
-          <div class="field" :class="{ 'field--error': form.errors.password }">
+          <div class="field">
             <label class="field__label">{{
               $t("globals.login.password")
             }}</label>
-            <input
-              v-model="form.password"
-              type="password"
-              class="field__input"
-              :placeholder="$t('globals.login.password_placeholder')"
-              autocomplete="new-password"
-            />
+            <div
+              class="field__control"
+              :class="{ 'field__control--error': form.errors.password }"
+            >
+              <input
+                v-model="form.password"
+                type="password"
+                class="field__input"
+                :placeholder="$t('globals.login.password_placeholder')"
+                autocomplete="new-password"
+                @input="form.clearErrors('password')"
+              />
+              <span v-if="form.errors.password" class="field__error-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </span>
+            </div>
             <span v-if="form.errors.password" class="field__error">
               {{ form.errors.password }}
             </span>
           </div>
 
-          <div
-            class="field"
-            :class="{ 'field--error': form.errors.password_confirmation }"
-          >
+          <div class="field">
             <label class="field__label">{{
               $t("globals.login.confirm_password")
             }}</label>
-            <input
-              v-model="form.password_confirmation"
-              type="password"
-              class="field__input"
-              :placeholder="$t('globals.login.confirm_password_placeholder')"
-              autocomplete="new-password"
-            />
+            <div
+              class="field__control"
+              :class="{
+                'field__control--error': form.errors.password_confirmation,
+              }"
+            >
+              <input
+                v-model="form.password_confirmation"
+                type="password"
+                class="field__input"
+                :placeholder="$t('globals.login.confirm_password_placeholder')"
+                autocomplete="new-password"
+                @input="form.clearErrors('password_confirmation')"
+              />
+              <span
+                v-if="form.errors.password_confirmation"
+                class="field__error-icon"
+              >
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </span>
+            </div>
             <span v-if="form.errors.password_confirmation" class="field__error">
               {{ form.errors.password_confirmation }}
             </span>
           </div>
 
           <button
-            @click="submit"
+            type="submit"
             :disabled="form.processing"
             class="accept-card__submit"
             :class="{ 'accept-card__submit--loading': form.processing }"
@@ -182,7 +241,7 @@ const submit = () => {
               {{ $t("globals.login.setting_up_account") }}
             </span>
           </button>
-        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -311,31 +370,81 @@ const submit = () => {
     letter-spacing: 0.01em;
   }
 
+  &__control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.8rem;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-color);
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:focus-within {
+      border-color: var(--primary-color);
+      background: white;
+
+      .field__icon {
+        color: var(--primary-color);
+      }
+    }
+
+    &--error {
+      border-color: var(--danger-color);
+      background: #fef2f2;
+
+      .field__icon {
+        color: var(--danger-color);
+      }
+    }
+
+    &--readonly {
+      background: var(--bg-hover);
+      border-color: var(--border-color);
+      cursor: default;
+
+      .field__icon {
+        color: #9ca3af;
+      }
+
+      .field__input {
+        cursor: default;
+        color: var(--text-muted);
+      }
+    }
+  }
+
+  &__icon {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+  }
+
   &__input {
-    padding: 11px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    all: unset;
+    flex: 1;
     font-size: 15px;
     color: var(--text-main);
-    transition: all 0.2s ease;
-    outline: none;
     font-family: inherit;
-
-    &:focus {
-      border-color: var(--primary-color);
-    }
+    letter-spacing: 0.3px;
 
     &::placeholder {
       color: #9ca3af;
     }
   }
 
-  &--error &__input {
-    border-color: var(--danger-color);
+  &__error-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
 
-    &:focus {
-      box-shadow: 0 0 0 3px
-        color-mix(in srgb, var(--danger-color) 15%, transparent);
+    i {
+      color: var(--danger-color);
+      font-size: 1rem;
+      animation: pulse 1s ease-in-out;
     }
   }
 

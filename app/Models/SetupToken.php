@@ -12,6 +12,7 @@ class SetupToken extends Model
 
     protected $fillable = [
         'token_hash',
+        'email',
         'expires_at',
         'used_at',
     ];

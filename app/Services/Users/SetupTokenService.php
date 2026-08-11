@@ -23,7 +23,7 @@ class SetupTokenService
      * token should ever exist at a time. Returns the raw token — it is
      * never persisted and cannot be recovered later, only reissued.
      */
-    public function generate(): string
+    public function generate(?string $email = null): string
     {
         SetupToken::whereNull('used_at')
             ->where('expires_at', '>', now())
@@ -33,6 +33,7 @@ class SetupTokenService
 
         SetupToken::create([
             'token_hash' => $this->hash($rawToken),
+            'email'      => $email,
             'expires_at' => now()->addHours(self::TTL_HOURS),
         ]);
 

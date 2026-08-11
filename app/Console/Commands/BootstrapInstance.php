@@ -37,7 +37,7 @@ class BootstrapInstance extends Command
     }
 
     $expiresAt = now()->addHours(SetupTokenService::TTL_HOURS);
-    $token = $tokens->generate();
+    $token = $tokens->generate($email);
     $url = route('setup.show', array_filter(['token' => $token, 'locale' => $locale]));
 
     if ($email) {
