@@ -83,6 +83,12 @@ class AuditObserver
     /** Static cache keyed by model class - previously uncached, re-queried on every event. */
     private static array $moduleCache = [];
 
+    // Keyed on model class, stable across a test run - tests must reset this between cases.
+    public static function clearModuleCache(): void
+    {
+        self::$moduleCache = [];
+    }
+
     private function resolveModule(BaseModule $model): ?Module
     {
         $class = get_class($model);

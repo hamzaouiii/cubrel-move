@@ -25,6 +25,12 @@ class Module extends Model
 
     protected static array $staticFieldCache = [];
 
+    // Keyed on module id, stable across a test run - tests must reset this between cases.
+    public static function clearFieldCache(): void
+    {
+        self::$staticFieldCache = [];
+    }
+
     protected $fillable = [
         'slug',
         'name',

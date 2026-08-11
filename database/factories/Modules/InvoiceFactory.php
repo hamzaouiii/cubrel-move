@@ -33,8 +33,10 @@ class InvoiceFactory extends Factory
         'viewed',
       ]),
 
-      'issue_date' => $this->faker->optional()->date(),
-      'due_date'   => $this->faker->optional()->date(),
+      'issue_date' => $issueDate = $this->faker->optional()->date(),
+      'due_date'   => $issueDate
+        ? $this->faker->optional()->dateTimeBetween($issueDate, (new \DateTime($issueDate))->modify('+90 days'))?->format('Y-m-d')
+        : $this->faker->optional()->date(),
 
       'notes' => $this->faker->optional()->paragraph(),
       'created_at' => \Carbon\Carbon::instance($this->faker->dateTimeBetween('-2 years', 'now'))->utc(),
