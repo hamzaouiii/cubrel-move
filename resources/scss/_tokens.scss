@@ -69,7 +69,6 @@ $palette: (
     --color-shadow-md: rgba(0, 0, 0, 0.12);
     --color-shadow-inset-highlight: rgba(255, 255, 255, 0.3);
 
-    // Status-tinted interactive states
     --color-danger-hover-border: #fca5a5;
     --color-danger-hover-text: #dc2626;
     --color-danger-solid: #dc2626;
@@ -79,11 +78,15 @@ $palette: (
     --color-info-border-subtle: #dbeafe;
     --color-info-text: #2563eb;
 
+    --color-warning-bg-subtle: #fffbeb;
+    --color-warning-border-subtle: #fde68a;
+    --color-warning-solid: #d39e00;
+    --color-warning-text: #b45309;
+
     --color-success-bg-subtle: #dcfce7;
     --color-success-text: #16a34a;
     --color-success-solid: #16a34a;
 
-    // Ordered categorical palette for charts
     --chart-color-1: #3b8bff;
     --chart-color-2: #10b981;
     --chart-color-3: #f59e0b;
@@ -143,6 +146,11 @@ $palette: (
     --color-info-border: #3a5a8a;
     --color-info-border-subtle: rgba(59, 130, 246, 0.25);
     --color-info-text: #60a5fa;
+
+    --color-warning-bg-subtle: rgba(217, 158, 0, 0.14);
+    --color-warning-border-subtle: rgba(217, 158, 0, 0.3);
+    --color-warning-solid: #e0a92e;
+    --color-warning-text: #f0b429;
 
     --color-success-bg-subtle: rgba(34, 197, 94, 0.15);
     --color-success-text: #4ade80;

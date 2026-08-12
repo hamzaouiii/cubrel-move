@@ -961,6 +961,7 @@ onUnmounted(() => {
   padding: 8px 10px 8px 30px;
   border: 1px solid var(--cp-border-strong);
   border-radius: 8px;
+  background-color: var(--cp-surface);
   font-size: 13px;
   color: var(--cp-text);
   outline: none;

@@ -41,7 +41,8 @@ class SettingsController extends Controller
       'dateFormatOptions' => FormatOptions::dateFormatOptions($tz),
       'datetimeFormatOptions' => FormatOptions::datetimeFormatOptions($tz),
       'timezoneOptions' => $this->timezoneOptions($tz),
-      'currencyOptions' => DropdownList::get('currency_list')->values ?? []
+      'currencyOptions' => DropdownList::get('currency_list')->values ?? [],
+      'themeOptions' => config('preferences.theme_options'),
     ]);
   }
 

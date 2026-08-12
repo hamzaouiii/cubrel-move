@@ -4,7 +4,6 @@
   @include shell.field-base;
   position: relative;
 
-  // ===== EDIT MODE =====
   &--edit {
     @include shell.field-edit-shell;
 
@@ -26,7 +25,7 @@
         letter-spacing: 0.3px;
 
         &::placeholder {
-          color: #d1d5db;
+          color: var(--color-border-muted);
           font-family: inherit;
           font-style: italic;
         }
@@ -42,7 +41,6 @@
     @include shell.field-readonly-state("email-field", ".email-icon");
   }
 
-  // ===== DETAIL MODE =====
   &--detail {
     .email-detail-icon {
       color: var(--module-color);
@@ -55,12 +53,12 @@
       font-family: "SF Mono", "Monaco", "Cascadia Code", monospace;
 
       .email-local-part {
-        color: #1e293b;
+        color: var(--color-text-heading);
         font-weight: 500;
       }
 
       .email-at-sign {
-        color: #94a3b8;
+        color: var(--color-text-faint);
         margin: 0 0.125rem;
         font-weight: 400;
       }
@@ -68,25 +66,23 @@
       .email-domain {
         color: var(--module-color);
         font-weight: 600;
-        background: rgba(59, 130, 246, 0.1);
+        background: color-mix(in srgb, var(--module-color) 10%, transparent);
         padding: 0.125rem 0.375rem;
         border-radius: 4px;
       }
     }
   }
 
-  // ===== TABLE MODE =====
   &--table {
     @include shell.field-table-shell;
 
     .email-table-icon {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       font-size: 0.8rem;
       opacity: 0.7;
     }
   }
 
-  // ===== SETTINGS MODE =====
   &--settings {
     @include shell.field-settings-shell;
 
@@ -97,7 +93,7 @@
       gap: 0.5rem;
 
       .email-icon {
-        color: #6b7280;
+        color: var(--color-text-muted);
         font-size: 0.9rem;
       }
 
@@ -109,7 +105,7 @@
 
         &:disabled {
           background: transparent;
-          color: #9ca3af;
+          color: var(--color-text-faint);
           cursor: not-allowed;
         }
       }
@@ -120,7 +116,6 @@
     }
   }
 
-  // Error icon container
   .error-icon-container {
     @include shell.field-error-icon-container;
   }

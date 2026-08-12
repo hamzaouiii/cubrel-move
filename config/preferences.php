@@ -193,5 +193,6 @@ return [
   'theme_options' => [
     ['label' => 'Light', 'value' => 'light'],
     ['label' => 'Dark', 'value' => 'dark'],
+    ['label' => 'Auto', 'value' => 'auto'],
   ],
 ];

@@ -10,6 +10,15 @@ return [
     'unsaved_changes_leave' => 'Änderungen verwerfen',
     'unsaved_changes_stay' => 'Hier bleiben',
     'changes_discarded' => 'Deine Änderungen wurden verworfen.',
+    'theme_switcher' => [
+        'light' => 'Hell',
+        'dark' => 'Dunkel',
+        'auto' => 'Automatisch',
+        'current_theme' => 'Aktuelles Design: :state',
+        'cycle_hint' => 'Klicken zum Wechseln: Hell → Automatisch → Dunkel',
+        'system_prefers_dark' => 'System bevorzugt Dunkel',
+        'system_prefers_light' => 'System bevorzugt Hell',
+    ],
 
     'topbar' => [
         'global_search' => 'Globale Suche',

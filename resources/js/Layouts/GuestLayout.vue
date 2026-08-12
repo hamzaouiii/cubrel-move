@@ -1,10 +1,11 @@
 <script setup>
 import Alerts from "@/Pages/Components/Globals/Alerts.vue";
 import { usePage } from "@inertiajs/vue3";
-import { computed, provide, watch } from "vue";
+import { computed, provide } from "vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
 import { useFlashToasts } from "@/Composables/useFlashToasts";
+import { useThemeMode } from "@/Composables/useThemeMode";
 
 const { alerts, info, error, warning, success } = useAlerts();
 useFlashToasts();
@@ -26,16 +27,8 @@ document.documentElement.style.setProperty(
 provide("useModuleColors", useModuleColors);
 
 const themeEnabled = computed(() => appSettings.value.dark_mode_enabled == 1);
-watch(
-  () => appSettings.value.theme,
-  (theme) => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      themeEnabled.value && theme === "dark" ? "dark" : "light",
-    );
-  },
-  { immediate: true },
-);
+const theme = computed(() => appSettings.value.theme);
+useThemeMode(themeEnabled, theme);
 
 </script>
 

@@ -8,8 +8,8 @@
       width: 48px;
       height: 48px;
       border-radius: 8px;
-      border: 1.5px solid #e5e7eb;
-      background: #f9fafb;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-bg-muted);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -25,7 +25,7 @@
       }
 
       .image-field__placeholder-icon {
-        color: #9ca3af;
+        color: var(--color-text-faint);
         font-size: 1.1rem;
       }
 
@@ -35,14 +35,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
         background: rgba(255, 255, 255, 0.7);
         color: var(--module-color);
       }
     }
 
-    // Bigger, wider preview for images that aren't square headshots (e.g. a
-    // company logo) — uses "contain" instead of "cover" so the whole logo
-    // stays visible instead of being cropped.
     &.image-field--lg .image-field__preview {
       width: 220px;
       height: 120px;
@@ -70,8 +68,8 @@
     }
 
     .image-field__upload-btn {
-      border: 1.5px solid #e5e7eb;
-      background: white;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-bg-surface);
       border-radius: 6px;
       padding: 0.45rem 0.75rem;
       font-size: 0.875rem;
@@ -90,12 +88,12 @@
     }
 
     .image-field__remove-btn {
-      border: 1.5px solid #e5e7eb;
-      background: white;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-bg-surface);
       border-radius: 6px;
       padding: 0.45rem 0.6rem;
       cursor: pointer;
-      color: #6b7280;
+      color: var(--color-text-muted);
 
       &:hover {
         border-color: var(--danger-color);
@@ -145,8 +143,8 @@
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: #f3f4f6;
-    color: #9ca3af;
+    background: var(--color-bg-subtle);
+    color: var(--color-text-faint);
     display: flex;
     align-items: center;
     justify-content: center;

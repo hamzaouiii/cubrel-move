@@ -29,6 +29,7 @@ const props = defineProps({
     datetimeFormatOptions: { type: Array, default: [] },
     timezoneOptions: { type: Array, default: [] },
     currencyOptions: { type: Array, default: [] },
+    themeOptions: { type: Array, default: () => [] },
 });
 
 const appSettings = usePage().props.appSettings;
@@ -114,10 +115,7 @@ const isDirty = () => form.isDirty;
 
                 <ThemeSwitcher
                     v-model="themeField.value"
-                    :options="[
-                        { label: 'Light', value: 'light' },
-                        { label: 'Dark', value: 'dark' },
-                    ]"
+                    :options="themeOptions"
                     @update:model-value="saveSetting"
                 />
             </form>

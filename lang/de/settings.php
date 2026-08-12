@@ -77,7 +77,7 @@ return [
         'border_radius' => 'Randradius',
         'enabled_languages' => 'Aktivierte Sprachen',
         'secondary_color' => 'Sekundärfarbe',
-        'theme' => 'Thema',
+        'theme' => 'Bildschirmmodus',
         'default_locale' => 'Standardgebietsschema',
         'primary_color' => 'Primärfarbe',
         'table_striped_rows' => 'Gestreifte Tabellenzeilen',

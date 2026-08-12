@@ -10,6 +10,15 @@ return [
     'unsaved_changes_leave' => 'Discard Changes',
     'unsaved_changes_stay' => 'Stay',
     'changes_discarded' => 'Your changes have been discarded.',
+    'theme_switcher' => [
+        'light' => 'Light',
+        'dark' => 'Dark',
+        'auto' => 'Auto',
+        'current_theme' => 'Current theme: :state',
+        'cycle_hint' => 'Click to cycle: Light → Auto → Dark',
+        'system_prefers_dark' => 'System prefers dark',
+        'system_prefers_light' => 'System prefers light',
+    ],
     'topbar' => [
         'global_search' => 'Globale Search',
         'settings' => 'Workspace',

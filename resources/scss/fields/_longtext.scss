@@ -8,7 +8,6 @@
   border-radius: 8px;
   position: relative;
 
-  // ===== EDIT MODE =====
   &--edit {
     @include shell.field-edit-shell;
 
@@ -39,7 +38,6 @@
     );
   }
 
-  // ===== DETAIL MODE =====
   &--detail {
     font-size: 1rem;
 
@@ -58,12 +56,12 @@
     }
 
     .long-text-copy-btn {
-      background: white;
-      border: 1px solid #e2e8f0;
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
       border-radius: 6px;
       padding: 0.375rem 0.625rem;
       cursor: pointer;
-      color: #64748b;
+      color: var(--color-text-muted);
       font-size: 0.875rem;
       transition: all 0.2s ease;
       flex-shrink: 0;
@@ -82,19 +80,17 @@
     }
   }
 
-  // ===== TABLE MODE =====
   &--table {
     @include shell.field-table-shell;
 
     .long-text-table-icon {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       font-size: 0.8rem;
       opacity: 0.7;
       flex-shrink: 0;
     }
   }
 
-  // ===== SETTINGS MODE =====
   &--settings {
     max-width: 450px;
     padding: 0.5rem 0.75rem;
@@ -107,7 +103,7 @@
       gap: 0.75rem;
 
       .long-text-icon {
-        color: #6b7280;
+        color: var(--color-text-muted);
         font-size: 0.9rem;
         margin-top: 0.375rem;
         flex-shrink: 0;
@@ -124,7 +120,7 @@
 
         &:disabled {
           background: transparent;
-          color: #9ca3af;
+          color: var(--color-text-faint);
           cursor: not-allowed;
         }
       }
@@ -135,7 +131,6 @@
     }
   }
 
-  // Error icon container
   .error-icon-container {
     display: flex;
     align-items: center;

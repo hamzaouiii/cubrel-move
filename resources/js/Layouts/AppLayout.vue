@@ -5,7 +5,7 @@ import Alerts from "@/Pages/Components/Globals/Alerts.vue";
 import NotificationToasts from "@/Pages/Components/Globals/NotificationToasts.vue";
 import ConfirmOverlay from "@/Pages/Components/Globals/ConfirmOverlay.vue";
 import { usePage } from "@inertiajs/vue3";
-import { computed, provide, ref, watch, onMounted, onUnmounted } from "vue";
+import { computed, provide, ref, onMounted, onUnmounted } from "vue";
 import { echo } from "@laravel/echo-vue";
 import ImpersonationBanner from "@/Pages/Components/Globals/ImpersonationBanner.vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -13,6 +13,7 @@ import { useFlashToasts } from "@/Composables/useFlashToasts";
 import { useKeepAlive } from "@/Composables/useKeepAlive";
 import { useNotifications } from "@/Composables/useNotifications";
 import { useLiveToasts } from "@/Composables/useLiveToasts";
+import { useThemeMode } from "@/Composables/useThemeMode";
 
 const { alerts, info, error, warning, success } = useAlerts();
 useFlashToasts();
@@ -76,16 +77,8 @@ document.documentElement.style.setProperty(
 provide("useModuleColors", useModuleColors);
 
 const themeEnabled = computed(() => appSettings.value.dark_mode_enabled == 1);
-watch(
-  () => appSettings.value.theme,
-  (theme) => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      themeEnabled.value && theme === "dark" ? "dark" : "light",
-    );
-  },
-  { immediate: true },
-);
+const theme = computed(() => appSettings.value.theme);
+useThemeMode(themeEnabled, theme);
 
 </script>
 

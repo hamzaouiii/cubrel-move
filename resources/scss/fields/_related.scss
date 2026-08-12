@@ -11,7 +11,7 @@
     font-size: 1.1rem;
     flex-shrink: 0;
   }
-  // ===== EDIT MODE =====
+
   &--edit {
     @include shell.field-edit-shell;
     display: flex;
@@ -63,7 +63,6 @@
     }
   }
 
-  // ===== DETAIL MODE =====
   &--detail {
     .related-detail-content {
       flex: 1;
@@ -87,7 +86,7 @@
           .related-module-badge {
             font-weight: 600;
             text-transform: uppercase;
-            background: rgba(59, 130, 246, 0.1);
+            background: color-mix(in srgb, var(--module-color) 10%, transparent);
             color: var(--module-color);
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
@@ -110,7 +109,7 @@
 
         .record-id {
           font-size: 0.75rem;
-          color: #94a3b8;
+          color: var(--color-text-faint);
           font-family: monospace;
         }
       }
@@ -123,12 +122,12 @@
 
       .copy-btn,
       .open-btn {
-        background: white;
-        border: 1px solid #e2e8f0;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border);
         border-radius: 6px;
         padding: 0.375rem 0.625rem;
         cursor: pointer;
-        color: #64748b;
+        color: var(--color-text-muted);
         font-size: 0.875rem;
         transition: all 0.2s ease;
 
@@ -146,7 +145,6 @@
     }
   }
 
-  // ===== RELATED PANEL MODE =====
   &--related-panel {
     .related-panel-header {
       display: flex;
@@ -154,7 +152,7 @@
       gap: 0.5rem;
       margin-bottom: 0.75rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--color-border);
 
       .related-panel-icon {
         color: var(--module-color);
@@ -164,7 +162,7 @@
       .related-panel-title {
         font-size: 0.875rem;
         font-weight: 600;
-        color: #1e293b;
+        color: var(--color-text-heading);
       }
     }
 
@@ -177,8 +175,8 @@
           align-items: center;
           gap: 0.75rem;
           padding: 0.75rem;
-          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-          border: 1px solid #e2e8f0;
+          background: linear-gradient(135deg, var(--color-bg-surface) 0%, var(--color-bg-muted) 100%);
+          border: 1px solid var(--color-border);
           border-radius: 8px;
           transition: all 0.2s ease;
           cursor: pointer;
@@ -189,7 +187,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(59, 130, 246, 0.1);
+            background: color-mix(in srgb, var(--module-color) 10%, transparent);
             border-radius: 6px;
             color: var(--module-color);
           }
@@ -199,7 +197,7 @@
 
             .card-module {
               font-size: 0.75rem;
-              color: #64748b;
+              color: var(--color-text-muted);
               text-transform: uppercase;
               letter-spacing: 0.5px;
             }
@@ -207,21 +205,21 @@
             .card-id {
               font-size: 0.875rem;
               font-weight: 600;
-              color: #1e293b;
+              color: var(--color-text-heading);
               font-family: monospace;
             }
           }
 
           .card-action {
-            color: #94a3b8;
+            color: var(--color-text-faint);
             transition: all 0.2s ease;
           }
 
           &:hover {
-            background: #ffffff;
+            background: var(--color-bg-surface);
             border-color: var(--module-color);
             transform: translateX(4px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px var(--color-shadow-md);
 
             .card-action {
               color: var(--module-color);
@@ -239,7 +237,7 @@
       justify-content: center;
       padding: 2rem;
       text-align: center;
-      color: #94a3b8;
+      color: var(--color-text-faint);
 
       i {
         font-size: 2rem;
@@ -253,7 +251,6 @@
     }
   }
 
-  // ===== LINKING PANEL MODE =====
   &--linking-panel {
     .linking-panel-content {
       .linking-preview {
@@ -261,8 +258,8 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.5rem;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: var(--color-bg-muted);
+        border: 1px solid var(--color-border);
         border-radius: 6px;
 
         .linking-icon {
@@ -276,26 +273,26 @@
           .linking-label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: #1e293b;
+            color: var(--color-text-heading);
           }
 
           .linking-module {
             font-size: 0.75rem;
-            color: #64748b;
+            color: var(--color-text-muted);
           }
         }
 
         .linking-remove-btn {
           background: transparent;
           border: none;
-          color: #94a3b8;
+          color: var(--color-text-faint);
           cursor: pointer;
           padding: 0.25rem;
           border-radius: 4px;
           transition: all 0.2s ease;
 
           &:hover {
-            background: #fee2e2;
+            background: var(--color-danger-bg-subtle);
             color: var(--danger-color);
           }
         }
@@ -309,9 +306,9 @@
         width: 100%;
         padding: 0.75rem;
         background: transparent;
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed var(--color-border-muted);
         border-radius: 6px;
-        color: #64748b;
+        color: var(--color-text-muted);
         cursor: pointer;
         transition: all 0.2s ease;
 
@@ -326,13 +323,12 @@
         &:hover {
           border-color: var(--module-color);
           color: var(--module-color);
-          background: rgba(59, 130, 246, 0.05);
+          background: color-mix(in srgb, var(--module-color) 5%, transparent);
         }
       }
     }
   }
 
-  // ===== SETTINGS MODE =====
   &--settings {
     max-width: 450px;
     padding: 0 0.75rem;
@@ -344,7 +340,7 @@
       gap: 0.5rem;
 
       .related-icon {
-        color: #6b7280;
+        color: var(--color-text-muted);
         font-size: 0.9rem;
       }
 
@@ -357,7 +353,7 @@
 
         &:disabled {
           background: transparent;
-          color: #9ca3af;
+          color: var(--color-text-faint);
           cursor: not-allowed;
         }
       }
@@ -371,13 +367,13 @@
   &--error {
     color: var(--danger-color);
     border-color: var(--danger-color);
-    background: #fef2f2;
+    background: var(--color-danger-bg-subtle);
     .related-detail-icon {
       color: var(--danger-color) !important;
     }
   }
   .field-empty {
-    color: #94a3b8;
+    color: var(--color-text-faint);
     font-style: italic;
     margin-left: 20px;
   }

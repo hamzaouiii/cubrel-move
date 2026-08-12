@@ -1,3 +1,4 @@
+@use "tokens";
 @use "fonts";
 @use "globals";
 @use "sidebar";
@@ -20,7 +21,7 @@ body {
 body {
   font-family: "Fira Sans", "Heebo", sans-serif;
   margin-bottom: 0 !important;
-  color: #323450;
+  color: var(--color-text-primary);
 }
 ul {
   list-style: none;
@@ -31,13 +32,13 @@ a {
 }
 .root {
   min-height: 100vh;
-  background: #f5f6fa;
+  background: var(--color-bg-app);
   background-size: 100% 100%;
   display: flex;
-  background-color: #f5f6fa;
+  background-color: var(--color-bg-app);
   background-image: radial-gradient(
-    #a0a0a029 1.2000000000000002px,
-    #f5f6fa3d 1.2000000000000002px
+    var(--color-bg-app-pattern-dot) 1.2000000000000002px,
+    var(--color-bg-app-pattern-dot-soft) 1.2000000000000002px
   );
   background-size: 24px 24px;
   &__content {
@@ -58,14 +59,12 @@ a {
   ) !important;
 }
 
-/* Add a shadow/glow to the tip of the bar */
 #nprogress .peg {
   box-shadow:
     0 0 10px var(--primary-color),
     0 0 5px var(--primary-color) !important;
 }
 
-/* Style the spinner if you kept it enabled */
 #nprogress .spinner-icon {
   border-top-color: var(--primary-color) !important;
   border-left-color: var(--primary-color) !important;
@@ -139,7 +138,7 @@ h4,
 h5,
 h6 {
   font-weight: 700;
-  color: #323450;
+  color: var(--color-text-primary);
   margin-bottom: 0;
   font-family: "Fira Sans", sans-serif;
 }

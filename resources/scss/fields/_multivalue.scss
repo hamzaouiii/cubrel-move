@@ -1,6 +1,5 @@
 @use "shell";
 
-// ----------------multivalue field
 .multivalue-field {
     position: relative;
     width: 100%;
@@ -13,17 +12,17 @@
         padding: 0 0.75rem;
         &.multivalue-field--error {
             border-color: var(--danger-color);
-            background: #fef2f2;
+            background: var(--color-danger-bg-subtle);
         }
 
         &.multivalue-field--readonly {
-            background-color: #f8fafc;
+            background-color: var(--color-bg-muted);
             cursor: not-allowed;
         }
 
         &:focus-within {
             border-color: var(--module-color);
-            background-color: white;
+            background-color: var(--color-bg-surface);
         }
     }
 
@@ -33,7 +32,7 @@
     }
 
     &--empty {
-        color: #94a3b8;
+        color: var(--color-text-faint);
     }
 }
 
@@ -58,8 +57,8 @@
     font-weight: 500;
     line-height: 1.4;
     color: var(--module-color);
-    background-color: color-mix(in srgb, var(--module-color) 14%, white);
-    border: 1px solid color-mix(in srgb, var(--module-color) 28%, white);
+    background-color: color-mix(in srgb, var(--module-color) 14%, var(--color-bg-surface));
+    border: 1px solid color-mix(in srgb, var(--module-color) 28%, var(--color-bg-surface));
     white-space: nowrap;
 
     &--sm {
@@ -101,4 +100,4 @@
     font-size: 0.9rem;
     padding: 0.15rem 0;
 }
-// ------------------------------------end of multivalue
+
