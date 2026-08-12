@@ -113,7 +113,7 @@ return [
     [
         'setting_item' => 'appearance',
         'key' => 'theme',
-        'value' => 'dark',
+        'value' => 'auto',
         'label' => 'settings.fields.theme',
         'type' => 'theme_switcher',
         'sort_order' => 1,
