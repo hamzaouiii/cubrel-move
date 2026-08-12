@@ -106,13 +106,12 @@ const boxColor = props.color ?? "#3b82f6";
   pointer-events: none;
 }
 
-/* 🔥 LOCKED BOX */
 .custom-checkbox__box {
   width: 20px;
   height: 20px;
-  border: 2px solid #cbd5e1;
+  border: 2px solid var(--color-border-muted);
   border-radius: 6px;
-  background: white;
+  background: var(--color-bg-surface);
 
   display: inline-flex;
   align-items: center;
@@ -122,7 +121,6 @@ const boxColor = props.color ?? "#3b82f6";
   position: relative;
 }
 
-/* 🔥 ICON NO LONGER AFFECTS LAYOUT */
 .custom-checkbox__check {
   font-size: 12px;
   line-height: 1;

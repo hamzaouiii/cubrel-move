@@ -19,10 +19,6 @@ const emit = defineEmits(["update:modelValue"]);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-/* ------------------------------------------------------------------ *
- * Recent colors — module-scoped so they survive component remounts,
- * with best-effort localStorage persistence across reloads.
- * ------------------------------------------------------------------ */
 const RECENTS_KEY = "cubrel.colorpicker.recents";
 const RECENTS_MAX = 8;
 
@@ -47,34 +43,26 @@ function addRecent(color) {
   try {
     localStorage.setItem(RECENTS_KEY, JSON.stringify(next));
   } catch {
-    /* storage unavailable — keep in-memory only */
+
   }
 }
 
-/* ------------------------------------------------------------------ *
- * State
- * ------------------------------------------------------------------ */
 const isOpen = ref(false);
 const root = ref(null);
 const { flipUp, recalc } = useDropdownFlip(root, { menuHeight: 480 });
 
-const activeTab = ref("palette"); // "palette" | "custom"
+const activeTab = ref("palette");
 const searchQuery = ref("");
 
-// Hex input state
 const hexInput = ref("");
 const hexInputError = ref("");
 
-// HSV state for the custom picker
 const hue = ref(210);
 const sat = ref(0.6);
 const val = ref(1);
 const svArea = ref(null);
 const hueBar = ref(null);
 
-/* ------------------------------------------------------------------ *
- * Color conversion helpers (pure)
- * ------------------------------------------------------------------ */
 function hsvToRgb(h, s, v) {
   const c = v * s;
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
@@ -134,12 +122,6 @@ function rgbToHsv(r, g, b) {
   return { h, s: max === 0 ? 0 : d / max, v: max };
 }
 
-/* ------------------------------------------------------------------ *
- * Palette — grouped as clean tonal ramps.
- * Keeps your existing i18n keys (shadeKey / keywordKey) so no new
- * translations are required for the swatch groups. Each group now
- * bundles related hue families and is ordered dark -> light.
- * ------------------------------------------------------------------ */
 const excludedWhiteShades = new Set([
   "#F9FAFB",
   "#FAFAFA",
@@ -157,7 +139,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.blues",
     keywordKey: "fields.colorpicker.keywords.blues",
     colors: [
-      // blue
+
       "#1E3A8A",
       "#1E40AF",
       "#1D4ED8",
@@ -166,7 +148,7 @@ const colorPalette = [
       "#60A5FA",
       "#93C5FD",
       "#BFDBFE",
-      // sky
+
       "#0C4A6E",
       "#075985",
       "#0369A1",
@@ -175,7 +157,7 @@ const colorPalette = [
       "#38BDF8",
       "#7DD3FC",
       "#BAE6FD",
-      // indigo
+
       "#312E81",
       "#3730A3",
       "#4338CA",
@@ -184,7 +166,7 @@ const colorPalette = [
       "#818CF8",
       "#A5B4FC",
       "#C7D2FE",
-      // deep slate-blues
+
       "#0F172A",
       "#1E293B",
       "#334155",
@@ -195,7 +177,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.teals",
     keywordKey: "fields.colorpicker.keywords.teals",
     colors: [
-      // teal
+
       "#134E4A",
       "#115E59",
       "#0F766E",
@@ -204,7 +186,7 @@ const colorPalette = [
       "#2DD4BF",
       "#5EEAD4",
       "#99F6E4",
-      // cyan
+
       "#164E63",
       "#155E75",
       "#0E7490",
@@ -213,7 +195,7 @@ const colorPalette = [
       "#22D3EE",
       "#67E8F9",
       "#A5F3FC",
-      // emerald bridge
+
       "#064E3B",
       "#065F46",
       "#047857",
@@ -228,7 +210,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.greens",
     keywordKey: "fields.colorpicker.keywords.greens",
     colors: [
-      // green
+
       "#14532D",
       "#166534",
       "#15803D",
@@ -237,7 +219,7 @@ const colorPalette = [
       "#4ADE80",
       "#86EFAC",
       "#BBF7D0",
-      // lime
+
       "#365314",
       "#3F6212",
       "#4D7C0F",
@@ -252,7 +234,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.yellows",
     keywordKey: "fields.colorpicker.keywords.yellows",
     colors: [
-      // amber
+
       "#78350F",
       "#92400E",
       "#B45309",
@@ -261,7 +243,7 @@ const colorPalette = [
       "#FBBF24",
       "#FCD34D",
       "#FDE68A",
-      // yellow
+
       "#713F12",
       "#854D0E",
       "#A16207",
@@ -269,7 +251,7 @@ const colorPalette = [
       "#EAB308",
       "#FACC15",
       "#FDE047",
-      // orange
+
       "#7C2D12",
       "#9A3412",
       "#C2410C",
@@ -283,7 +265,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.reds",
     keywordKey: "fields.colorpicker.keywords.reds",
     colors: [
-      // red
+
       "#7F1D1D",
       "#991B1B",
       "#B91C1C",
@@ -292,7 +274,7 @@ const colorPalette = [
       "#F87171",
       "#FCA5A5",
       "#FECACA",
-      // rose
+
       "#881337",
       "#9F1239",
       "#BE123C",
@@ -300,7 +282,7 @@ const colorPalette = [
       "#F43F5E",
       "#FB7185",
       "#FDA4AF",
-      // pink
+
       "#831843",
       "#9D174D",
       "#BE185D",
@@ -314,7 +296,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.purples",
     keywordKey: "fields.colorpicker.keywords.purples",
     colors: [
-      // violet
+
       "#4C1D95",
       "#5B21B6",
       "#6D28D9",
@@ -323,7 +305,7 @@ const colorPalette = [
       "#A78BFA",
       "#C4B5FD",
       "#DDD6FE",
-      // purple
+
       "#581C87",
       "#6B21A8",
       "#7E22CE",
@@ -331,7 +313,7 @@ const colorPalette = [
       "#A855F7",
       "#C084FC",
       "#D8B4FE",
-      // fuchsia
+
       "#701A75",
       "#86198F",
       "#A21CAF",
@@ -345,7 +327,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.slates",
     keywordKey: "fields.colorpicker.keywords.slates",
     colors: [
-      // slate
+
       "#0F172A",
       "#1E293B",
       "#334155",
@@ -353,21 +335,21 @@ const colorPalette = [
       "#64748B",
       "#94A3B8",
       "#CBD5E1",
-      // gray
+
       "#111827",
       "#1F2937",
       "#374151",
       "#4B5563",
       "#6B7280",
       "#9CA3AF",
-      // zinc
+
       "#18181B",
       "#27272A",
       "#3F3F46",
       "#52525B",
       "#71717A",
       "#A1A1AA",
-      // neutral
+
       "#171717",
       "#262626",
       "#404040",
@@ -380,7 +362,7 @@ const colorPalette = [
     shadeKey: "fields.colorpicker.shades.earth",
     keywordKey: "fields.colorpicker.keywords.earth",
     colors: [
-      // classic browns
+
       "#3E2723",
       "#4E342E",
       "#5D4037",
@@ -389,14 +371,14 @@ const colorPalette = [
       "#8D6E63",
       "#A1887F",
       "#BCAAA4",
-      // stone
+
       "#292524",
       "#44403C",
       "#57534E",
       "#78716C",
       "#A8A29E",
       "#D6D3D1",
-      // warm/saddle browns
+
       "#7B3F00",
       "#8B4513",
       "#A0522D",
@@ -408,7 +390,6 @@ const colorPalette = [
   },
 ];
 
-/* Translated palette + a searchable text blob per group */
 const translatedGroups = computed(() =>
   colorPalette
     .map((group) => {
@@ -426,7 +407,6 @@ const translatedGroups = computed(() =>
     .filter((group) => group.colors.length > 0),
 );
 
-/* Filter whole groups by the translated search blob (keeps labels intact) */
 const filteredGroups = computed(() => {
   const query = searchQuery.value.toLowerCase().trim();
   if (!query) return translatedGroups.value;
@@ -437,9 +417,6 @@ const hasResults = computed(() =>
   filteredGroups.value.some((g) => g.colors.length > 0),
 );
 
-/* ------------------------------------------------------------------ *
- * Custom (HSV) picker
- * ------------------------------------------------------------------ */
 const currentHex = computed(() => {
   const { r, g, b } = hsvToRgb(hue.value, sat.value, val.value);
   return rgbToHex(r, g, b);
@@ -452,13 +429,12 @@ function syncFromHex(hex) {
   if (!normalized) return;
   const { r, g, b } = hexToRgb(normalized);
   const hsv = rgbToHsv(r, g, b);
-  // Preserve hue for pure grays so the hue slider doesn't jump to 0
+
   if (hsv.s > 0) hue.value = hsv.h;
   sat.value = hsv.s;
   val.value = hsv.v;
 }
 
-/* Generic pointer drag: calls handler(fractionX, fractionY) on down/move */
 function startDrag(el, handler, evt) {
   const rect = el.getBoundingClientRect();
   const update = (e) => {
@@ -510,7 +486,6 @@ function onHuePointerDown(e) {
   );
 }
 
-/* Nudge SV handle with the keyboard for accessibility */
 function onSvKeydown(e) {
   const step = e.shiftKey ? 0.1 : 0.02;
   let handled = true;
@@ -526,9 +501,6 @@ function onSvKeydown(e) {
   }
 }
 
-/* ------------------------------------------------------------------ *
- * Hex input
- * ------------------------------------------------------------------ */
 const hexInputValid = computed(() => normalizeHex(hexInput.value) !== null);
 
 const previewHexColor = computed(
@@ -545,26 +517,20 @@ const applyHex = () => {
   commit(normalized);
 };
 
-/* ------------------------------------------------------------------ *
- * Eyedropper (Chromium) — pick a color from anywhere on screen
- * ------------------------------------------------------------------ */
 const hasEyeDropper = typeof window !== "undefined" && "EyeDropper" in window;
 
 async function pickFromScreen() {
   if (!hasEyeDropper) return;
   try {
-    // eslint-disable-next-line no-undef
+
     const result = await new window.EyeDropper().open();
     const normalized = normalizeHex(result.sRGBHex);
     if (normalized) commit(normalized);
   } catch {
-    /* user cancelled */
+
   }
 }
 
-/* ------------------------------------------------------------------ *
- * Selection / commit
- * ------------------------------------------------------------------ */
 function commit(color, { close = true } = {}) {
   const normalized = normalizeHex(color) || color;
   emit("update:modelValue", normalized);
@@ -574,9 +540,6 @@ function commit(color, { close = true } = {}) {
 
 const selectColor = (color) => commit(color);
 
-/* ------------------------------------------------------------------ *
- * Open / close
- * ------------------------------------------------------------------ */
 function resetTransient() {
   searchQuery.value = "";
   hexInput.value = "";
@@ -614,9 +577,6 @@ watch(activeTab, async (tab) => {
   }
 });
 
-/* ------------------------------------------------------------------ *
- * Outside click + Escape
- * ------------------------------------------------------------------ */
 const handleClickOutside = (event) => {
   if (root.value && !root.value.contains(event.target)) {
     closePanel();
@@ -641,7 +601,7 @@ onUnmounted(() => {
 
 <template>
   <div class="color-picker" ref="root">
-    <!-- Trigger -->
+
     <button
       type="button"
       class="color-picker__control"
@@ -670,7 +630,7 @@ onUnmounted(() => {
         :class="{ 'color-picker__panel--flip-up': flipUp }"
         role="dialog"
       >
-        <!-- Tabs -->
+
         <div class="color-picker__tabs" role="tablist">
           <button
             type="button"
@@ -696,7 +656,6 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- ============ PALETTE TAB ============ -->
         <div v-show="activeTab === 'palette'" class="color-picker__body">
           <div class="color-picker__search-wrapper">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -709,7 +668,6 @@ onUnmounted(() => {
             />
           </div>
 
-          <!-- Recently used -->
           <div
             v-if="recentColors.length && !searchQuery"
             class="color-picker__group"
@@ -737,7 +695,6 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Grouped swatches -->
           <div class="color-picker__scroll">
             <div
               v-for="group in filteredGroups"
@@ -771,9 +728,8 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- ============ CUSTOM TAB ============ -->
         <div v-show="activeTab === 'custom'" class="color-picker__body">
-          <!-- Saturation / Value area -->
+
           <div
             ref="svArea"
             class="color-picker__sv"
@@ -796,7 +752,6 @@ onUnmounted(() => {
             ></div>
           </div>
 
-          <!-- Hue slider -->
           <div
             ref="hueBar"
             class="color-picker__hue"
@@ -808,7 +763,6 @@ onUnmounted(() => {
             ></div>
           </div>
 
-          <!-- Live preview + value -->
           <div class="color-picker__custom-readout">
             <div
               class="color-picker__custom-swatch"
@@ -827,7 +781,6 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <!-- Manual hex entry -->
           <div class="color-picker__hex-section">
             <div class="color-picker__hex-input-group">
               <input
@@ -863,26 +816,24 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Themeable via CSS custom properties — override at any ancestor.
-   Defaults lean on Cubrel's accent blue. */
+
 .color-picker {
-  --cp-accent: #3b8bff;
-  --cp-surface: #ffffff;
-  --cp-border: #e5e7eb;
-  --cp-border-strong: #d1d5db;
-  --cp-text: #1f2937;
-  --cp-text-muted: #6b7280;
+  --cp-accent: var(--primary-color);
+  --cp-surface: var(--color-bg-surface);
+  --cp-border: var(--color-border);
+  --cp-border-strong: var(--color-border-muted);
+  --cp-text: var(--color-text-heading);
+  --cp-text-muted: var(--color-text-muted);
   --cp-radius: 12px;
   --cp-shadow:
-    0 12px 32px -8px rgba(17, 24, 39, 0.24),
-    0 2px 8px -2px rgba(17, 24, 39, 0.12);
+    0 12px 32px -8px var(--color-shadow-elevated),
+    0 2px 8px -2px var(--color-shadow-md);
 
   position: relative;
   width: 100%;
   font-family: inherit;
 }
 
-/* ---- Trigger ---- */
 .color-picker__control {
   display: flex;
   align-items: center;
@@ -905,7 +856,7 @@ onUnmounted(() => {
 }
 .color-picker__control.is-open {
   border-color: var(--cp-accent);
-  box-shadow: 0 0 0 3px rgba(59, 139, 255, 0.18);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cp-accent) 18%, transparent);
 }
 .color-picker__preview-wrapper {
   display: flex;
@@ -917,12 +868,12 @@ onUnmounted(() => {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-shadow-md);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
   flex-shrink: 0;
 }
 .color-picker__preview-circle.is-empty {
-  background: repeating-conic-gradient(#e5e7eb 0% 25%, #ffffff 0% 50%) 50% /
+  background: repeating-conic-gradient(var(--color-border) 0% 25%, var(--color-bg-surface) 0% 50%) 50% /
     10px 10px;
 }
 .color-picker__value {
@@ -937,7 +888,6 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-/* ---- Panel ---- */
 .color-picker__panel {
   position: absolute;
   z-index: 50;
@@ -956,7 +906,6 @@ onUnmounted(() => {
   bottom: calc(100% + 8px);
 }
 
-/* ---- Tabs ---- */
 .color-picker__tabs {
   display: flex;
   padding: 6px;
@@ -982,7 +931,7 @@ onUnmounted(() => {
     color 0.15s ease;
 }
 .color-picker__tab:hover {
-  background: rgba(59, 139, 255, 0.08);
+  background: color-mix(in srgb, var(--cp-accent) 8%, transparent);
   color: var(--cp-text);
 }
 .color-picker__tab.is-active {
@@ -994,7 +943,6 @@ onUnmounted(() => {
   padding: 12px;
 }
 
-/* ---- Search ---- */
 .color-picker__search-wrapper {
   position: relative;
   margin-bottom: 12px;
@@ -1022,10 +970,9 @@ onUnmounted(() => {
 }
 .color-picker__search:focus {
   border-color: var(--cp-accent);
-  box-shadow: 0 0 0 3px rgba(59, 139, 255, 0.15);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cp-accent) 15%, transparent);
 }
 
-/* ---- Groups + grid ---- */
 .color-picker__scroll {
   max-height: 224px;
   overflow-y: auto;
@@ -1062,7 +1009,7 @@ onUnmounted(() => {
   border-radius: 6px;
   cursor: pointer;
   padding: 0;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 0 0 1px var(--color-shadow-md);
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease;
@@ -1070,8 +1017,8 @@ onUnmounted(() => {
 .color-picker__swatch:hover {
   transform: scale(1.12);
   box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
-    0 2px 6px rgba(0, 0, 0, 0.2);
+    inset 0 0 0 1px var(--color-shadow-md),
+    0 2px 6px var(--color-shadow-elevated);
   z-index: 1;
 }
 .color-picker__swatch:focus-visible {
@@ -1080,10 +1027,11 @@ onUnmounted(() => {
 }
 .color-picker__swatch.is-active {
   box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px var(--color-shadow-md),
     0 0 0 2px var(--cp-surface),
     0 0 0 4px var(--cp-accent);
 }
+
 .color-picker__check {
   color: #fff;
   font-size: 10px;
@@ -1096,7 +1044,6 @@ onUnmounted(() => {
   color: var(--cp-text-muted);
 }
 
-/* ---- Custom: SV area ---- */
 .color-picker__sv {
   position: relative;
   width: 100%;
@@ -1108,7 +1055,7 @@ onUnmounted(() => {
   outline: none;
 }
 .color-picker__sv:focus-visible {
-  box-shadow: 0 0 0 3px rgba(59, 139, 255, 0.4);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cp-accent) 40%, transparent);
 }
 .color-picker__sv-white,
 .color-picker__sv-black {
@@ -1135,7 +1082,6 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* ---- Custom: hue slider ---- */
 .color-picker__hue {
   position: relative;
   height: 14px;
@@ -1167,7 +1113,6 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* ---- Custom: readout ---- */
 .color-picker__custom-readout {
   display: flex;
   align-items: center;
@@ -1178,7 +1123,7 @@ onUnmounted(() => {
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 0 1px var(--color-shadow-md);
   flex-shrink: 0;
 }
 .color-picker__custom-hex {
@@ -1205,7 +1150,6 @@ onUnmounted(() => {
   color: var(--cp-accent);
 }
 
-/* ---- Hex input ---- */
 .color-picker__hex-section {
   margin-top: 14px;
 }
@@ -1231,13 +1175,13 @@ onUnmounted(() => {
 }
 .color-picker__hex-input:focus {
   border-color: var(--cp-accent);
-  box-shadow: 0 0 0 3px rgba(59, 139, 255, 0.15);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cp-accent) 15%, transparent);
 }
 .color-picker__hex-preview {
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 0 1px var(--color-shadow-md);
   flex-shrink: 0;
 }
 .color-picker__hex-apply {
@@ -1263,10 +1207,9 @@ onUnmounted(() => {
 .color-picker__hex-error {
   margin-top: 6px;
   font-size: 12px;
-  color: #dc2626;
+  color: var(--danger-color);
 }
 
-/* ---- Transition ---- */
 .picker-fade-enter-active,
 .picker-fade-leave-active {
   transition:

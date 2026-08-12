@@ -5,6 +5,7 @@ import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { useAlerts } from "@/Composables/useAlerts";
 import DropdownField from "../Components/FiledTypes/SettingDropdownField.vue";
 import Switcher from "../Components/FiledTypes/Switcher.vue";
+import ThemeSwitcher from "../Components/FiledTypes/ThemeSwitcher.vue";
 import Checkbox from "../Components/FiledTypes/Checkbox.vue";
 import ColorPicker from "../Components/FiledTypes/ColorPicker.vue";
 import AppTooltip from "../Components/Globals/AppTooltip.vue";
@@ -29,8 +30,6 @@ const props = defineProps({
   dateFormatOptions: { type: Array, default: () => [] },
   datetimeFormatOptions: { type: Array, default: () => [] },
 });
-
-// tabs are reflected in the URL (?tab=key) so a specific tab can be linked
 
 const tabFromUrl = () => {
   const key = new URLSearchParams(window.location.search).get("tab");
@@ -67,7 +66,6 @@ const allKeys = Object.values(props.tabs).flatMap((tab) =>
   Object.keys(tab.fields),
 );
 
-// Which keys currently carry a personal override vs. inherit the System value.
 const overridden = reactive(
   Object.fromEntries(
     allKeys.map((key) => [
@@ -99,8 +97,6 @@ const resetField = (key) => {
 
 const isDirty = computed(() => form.isDirty);
 
-// snapshot of overridden flags as loaded from the server, so "discard
-// changes" can revert them alongside form.reset() (which only covers values)
 const initialOverridden = { ...overridden };
 
 const discardChanges = () => {
@@ -131,8 +127,6 @@ const resetType = (type) => {
   resetField(`notify_inapp_${type}`);
 };
 
-// Fields backed by an options list (dropdowns/switchers) store a raw value
-// (e.g. "l, d.m.Y") — show the matching option's human label instead.
 const optionsForType = (type) => {
   if (type === "date") return props.dateFormatOptions;
   if (type === "datetime") return props.datetimeFormatOptions;
@@ -188,6 +182,18 @@ const savePreferences = () => {
         error(t("globals.preferences.update_error"));
       },
     });
+};
+
+const isAppearanceTab = computed(() => currentTab.value === "appearance");
+
+const onThemeToggle = (key) => {
+  markOverridden(key);
+  savePreferences();
+};
+
+const onThemeReset = (key) => {
+  resetField(key);
+  savePreferences();
 };
 
 const tooltip = reactive({
@@ -329,7 +335,31 @@ const hideTooltip = () => {
         </div>
       </div>
 
-      <!-- Other tabs (unchanged) -->
+      <div v-else-if="isAppearanceTab" class="settings__system">
+        <div class="settings__appearance">
+          <label class="settings__appearance__label">
+            {{ $t(currentFields[0].label) }}
+          </label>
+
+          <ThemeSwitcher
+            v-model="form[currentFields[0].key]"
+            :options="themeOptions"
+            @update:model-value="onThemeToggle(currentFields[0].key)"
+          />
+
+          <button
+            v-if="overridden[currentFields[0].key]"
+            type="button"
+            class="preferences__reset-btn"
+            @click="onThemeReset(currentFields[0].key)"
+            @mouseenter="onResetMouseEnter"
+            @mouseleave="hideTooltip"
+          >
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+      </div>
+
       <div v-else-if="currentFields.length === 0" class="settings__empty">
         <i class="fa-solid fa-bell"></i>
         <p>{{ $t("globals.preferences.notifications_placeholder") }}</p>
@@ -381,13 +411,6 @@ const hideTooltip = () => {
                 <Switcher
                   v-model="form[f.key]"
                   :options="languageOptions"
-                  @update:model-value="markOverridden(f.key)"
-                />
-              </template>
-              <template v-else-if="f.type === 'theme_switcher'">
-                <Switcher
-                  v-model="form[f.key]"
-                  :options="themeOptions"
                   @update:model-value="markOverridden(f.key)"
                 />
               </template>
@@ -475,7 +498,8 @@ const hideTooltip = () => {
   }
 }
 
-.settings__system__form__field {
+.settings__system__form__field,
+.settings__appearance {
   .preferences__reset-btn {
     margin-left: 10px;
     flex-shrink: 0;
@@ -501,7 +525,6 @@ const hideTooltip = () => {
   }
 }
 
-/* ----- tabs (no changes, but kept for completeness) ----- */
 .settings__module__tabs__item {
   border: none;
   background: transparent;
@@ -514,7 +537,6 @@ const hideTooltip = () => {
   background: color-mix(in srgb, var(--module-color) 10%, transparent);
 }
 
-/* ----- responsive adjustments for notifications grid ----- */
 @media (max-width: 820px) {
   .settings__notifications {
     &__header,
@@ -542,14 +564,14 @@ const hideTooltip = () => {
     margin: 0 -8px 24px;
 
     &__header {
-      display: none; /* hide header on small screens */
+      display: none;
     }
 
     &__row {
       grid-template-columns: 1fr;
       gap: 8px;
       padding: 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      border-bottom: 1px solid var(--color-border-glass);
 
       &__label {
         order: 1;
@@ -568,7 +590,7 @@ const hideTooltip = () => {
           content: attr(data-label);
           font-size: 0.7rem;
           font-weight: 500;
-          color: #6b7280;
+          color: var(--color-text-muted);
           min-width: 70px;
         }
       }

@@ -988,7 +988,8 @@ return [
         'current_system_value' => 'Systemstandard: :value',
         'tabs' => [
             'general' => 'Allgemein',
-            'style' => 'Stil',
+            'appearance' => 'Erscheinungsbild',
+            'color_branding' => 'Farbe & Branding',
             'lists' => 'Listen & Panels',
             'notifications' => 'Benachrichtigungen',
         ],

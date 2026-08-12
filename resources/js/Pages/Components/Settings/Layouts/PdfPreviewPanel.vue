@@ -19,9 +19,8 @@ const fetchError = ref("");
 const bodyRef = ref(null);
 const bodyWidth = ref(852);
 
-// A4 width at 96 dpi; height is measured after the iframe loads
 const A4_W = 794;
-const frameH = ref(1200); // initial estimate, replaced on load
+const frameH = ref(1200);
 
 const scale = computed(() => Math.min(1, (bodyWidth.value - 48) / A4_W));
 const wrapperW = computed(() => Math.round(A4_W * scale.value));
@@ -34,7 +33,7 @@ function onIframeLoad(event) {
       frameH.value = doc.documentElement.scrollHeight || doc.body?.scrollHeight || 1200;
     }
   } catch {
-    // srcdoc is same-origin, this won't throw
+
   }
 }
 
@@ -56,7 +55,7 @@ const refresh = async () => {
       },
       { headers: { Accept: "text/html" }, responseType: "text" },
     );
-    frameH.value = 1200; // reset before load event measures actual height
+    frameH.value = 1200;
     htmlContent.value = res.data;
   } catch {
     fetchError.value = t("layouts.pdf_preview_error");
@@ -100,12 +99,11 @@ onUnmounted(() => {
   <Teleport to="body">
     <Transition name="preview-backdrop">
       <div v-if="visible" class="preview-modal">
-        <!-- Backdrop -->
+
         <div class="preview-modal__backdrop" @click="$emit('close')" />
 
-        <!-- Dialog container -->
         <div class="preview-modal__container">
-          <!-- Close button (above card, matching PdfModal style) -->
+
           <button class="preview-modal__close-btn" @click="$emit('close')">
             <svg
               width="18"
@@ -122,9 +120,8 @@ onUnmounted(() => {
             </svg>
           </button>
 
-          <!-- Card -->
           <div class="preview-card">
-            <!-- Header -->
+
             <div class="preview-card__header">
               <div class="preview-card__header-left">
                 <i class="fa-solid fa-eye" style="color: #9ca3af"></i>
@@ -150,9 +147,8 @@ onUnmounted(() => {
               </button>
             </div>
 
-            <!-- Body -->
             <div ref="bodyRef" class="preview-card__body">
-              <!-- No module -->
+
               <div v-if="!moduleSlug" class="preview-empty">
                 <i
                   class="fa-solid fa-file-pdf"
@@ -161,9 +157,8 @@ onUnmounted(() => {
                 <p>{{ $t('layouts.pdf_preview_select_module') }}</p>
               </div>
 
-              <!-- Loading skeleton -->
               <div v-else-if="loading" class="preview-skeleton">
-                <!-- Header row -->
+
                 <div class="skel-hdr">
                   <div>
                     <div
@@ -230,7 +225,7 @@ onUnmounted(() => {
                     ></div>
                   </div>
                 </div>
-                <!-- Fields -->
+
                 <div class="skel-fields" v-for="r in 2" :key="r">
                   <div v-for="c in 4" :key="c" style="flex: 1">
                     <div
@@ -248,7 +243,7 @@ onUnmounted(() => {
                     ></div>
                   </div>
                 </div>
-                <!-- Table header -->
+
                 <div class="skel-tblhdr">
                   <div
                     class="skel"
@@ -272,7 +267,7 @@ onUnmounted(() => {
                     style="width: 75px; height: 10px; border-radius: 3px"
                   ></div>
                 </div>
-                <!-- Table rows -->
+
                 <div class="skel-tblrow" v-for="i in 3" :key="i">
                   <div
                     class="skel"
@@ -296,7 +291,7 @@ onUnmounted(() => {
                     style="width: 75px; height: 10px; border-radius: 3px"
                   ></div>
                 </div>
-                <!-- Totals -->
+
                 <div class="skel-totals">
                   <div v-for="i in 3" :key="i" class="skel-total-row">
                     <div
@@ -321,7 +316,6 @@ onUnmounted(() => {
                 </div>
               </div>
 
-              <!-- Error -->
               <div v-else-if="fetchError" class="preview-error">
                 <i
                   class="fa-solid fa-circle-exclamation"
@@ -333,7 +327,6 @@ onUnmounted(() => {
                 </button>
               </div>
 
-              <!-- Rendered preview -->
               <div
                 v-else-if="htmlContent"
                 class="preview-scaler-wrap"
@@ -352,13 +345,13 @@ onUnmounted(() => {
                 />
               </div>
             </div>
-            <!-- /body -->
+
           </div>
-          <!-- /card -->
+
         </div>
-        <!-- /container -->
+
       </div>
-      <!-- /modal -->
+
     </Transition>
   </Teleport>
 </template>
@@ -422,9 +415,9 @@ onUnmounted(() => {
 }
 
 .preview-card {
-  background: #fff;
+  background: var(--color-bg-surface);
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 50px -12px var(--color-shadow-elevated);
   overflow: hidden;
   flex: 1;
   display: flex;
@@ -433,8 +426,8 @@ onUnmounted(() => {
 
   &__header {
     padding: 18px 24px;
-    background: linear-gradient(135deg, #f9fafb 0%, #fff 100%);
-    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-bg-surface) 100%);
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -451,13 +444,13 @@ onUnmounted(() => {
   &__title {
     font-size: 16px;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-text-heading);
   }
 
   &__badge {
     font-size: 11px;
-    color: #6b7280;
-    background: #f3f4f6;
+    color: var(--color-text-muted);
+    background: var(--color-bg-subtle);
     padding: 2px 8px;
     border-radius: 99px;
   }
@@ -469,10 +462,10 @@ onUnmounted(() => {
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 500;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border);
     border-radius: 7px;
-    background: #fff;
-    color: #374151;
+    background: var(--color-bg-surface);
+    color: var(--color-text-strong);
     cursor: pointer;
     transition:
       background 0.15s,
@@ -480,8 +473,8 @@ onUnmounted(() => {
     flex-shrink: 0;
 
     &:hover:not(:disabled) {
-      background: #f9fafb;
-      border-color: #d1d5db;
+      background: var(--color-bg-muted);
+      border-color: var(--color-border-muted);
     }
 
     &:disabled {
@@ -501,12 +494,11 @@ onUnmounted(() => {
   }
 }
 
-/* ── Scaled iframe wrapper ─────────────────────────────────────── */
 .preview-scaler-wrap {
   position: relative;
   overflow: hidden;
   border-radius: 3px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 24px var(--color-shadow-elevated);
 }
 
 .preview-iframe {
@@ -515,7 +507,6 @@ onUnmounted(() => {
   transform-origin: top left;
 }
 
-/* ── Empty / error states ──────────────────────────────────────── */
 .preview-empty,
 .preview-error {
   display: flex;
@@ -523,35 +514,34 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: #9ca3af;
+  color: var(--color-text-faint);
   font-size: 13px;
   text-align: center;
   padding: 60px 32px;
 }
 
 .preview-error {
-  color: #374151;
+  color: var(--color-text-strong);
 }
 
 .preview-retry-btn {
   padding: 7px 18px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--color-danger-hover-border);
   border-radius: 7px;
-  background: #fff5f5;
-  color: #dc2626;
+  background: var(--color-danger-bg-subtle);
+  color: var(--color-danger-hover-text);
   font-size: 13px;
   cursor: pointer;
   margin-top: 4px;
 }
 
-/* ── Loading skeleton ──────────────────────────────────────────── */
 .preview-skeleton {
-  background: #fff;
+  background: var(--color-bg-surface);
   border-radius: 4px;
   padding: 32px 36px;
   width: 100%;
   max-width: 794px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 24px var(--color-shadow-elevated);
 }
 
 .skel-hdr {
@@ -559,7 +549,7 @@ onUnmounted(() => {
   justify-content: space-between;
   margin-bottom: 28px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-bg-subtle);
 }
 
 .skel-fields {
@@ -572,8 +562,8 @@ onUnmounted(() => {
   display: flex;
   gap: 12px;
   padding: 10px 0;
-  border-top: 1.5px solid #d1d5db;
-  border-bottom: 1.5px solid #d1d5db;
+  border-top: 1.5px solid var(--color-border-muted);
+  border-bottom: 1.5px solid var(--color-border-muted);
   margin-bottom: 4px;
   margin-top: 12px;
 }
@@ -582,7 +572,7 @@ onUnmounted(() => {
   display: flex;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-bg-subtle);
 }
 
 .skel-totals {
@@ -606,16 +596,15 @@ onUnmounted(() => {
   justify-content: space-between;
   width: 100%;
   padding-top: 8px;
-  border-top: 1.5px solid #111;
+  border-top: 1.5px solid var(--color-text-heading);
 }
 
 .skel {
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg-subtle) 50%, var(--color-border) 75%);
   background-size: 200% 100%;
   animation: skel-shimmer 1.4s infinite;
 }
 
-/* ── Animations ────────────────────────────────────────────────── */
 @keyframes skel-shimmer {
   0% {
     background-position: 200% 0;
@@ -642,7 +631,6 @@ onUnmounted(() => {
   }
 }
 
-/* ── Transition ────────────────────────────────────────────────── */
 .preview-backdrop-enter-active {
   animation: backdrop-in 0.25s ease-out;
 }

@@ -3,7 +3,7 @@ import { ref, computed, getCurrentInstance } from "vue";
 import axios from "axios";
 
 const props = defineProps({
-  mode: { type: String, default: "single" }, // "single" | "bulk"
+  mode: { type: String, default: "single" },
   moduleSlug: { type: String, required: true },
   recordId: { type: String, default: "" },
   recordName: { type: String, default: "" },
@@ -15,7 +15,6 @@ const emit = defineEmits(["close", "cancel"]);
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-// phases: select | generating | ready | error
 const phase = ref("select");
 const selectedFormat = ref(null);
 const blobUrl = ref(null);
@@ -111,7 +110,7 @@ const cancel = () => {
 
     <div class="pdf-modal__container">
       <div class="deployment-card">
-        <!-- Header -->
+
         <div class="deployment-card__header">
           <div class="deployment-card__title-group">
             <h3 class="deployment-card__title">
@@ -165,9 +164,8 @@ const cancel = () => {
           </div>
         </div>
 
-        <!-- Body -->
         <div class="pdf-modal__body">
-          <!-- Select phase: choose JSON or CSV -->
+
           <template v-if="phase === 'select'">
             <div
               v-for="format in formats"
@@ -196,7 +194,6 @@ const cancel = () => {
             </div>
           </template>
 
-          <!-- Generating phase -->
           <template v-else-if="phase === 'generating'">
             <div class="pdf-modal__spinner-wrap">
               <div class="saving-loader import-modal__loader">
@@ -215,7 +212,6 @@ const cancel = () => {
             </div>
           </template>
 
-          <!-- Ready phase -->
           <template v-else-if="phase === 'ready'">
             <div class="pdf-modal__ready">
               <div class="pdf-modal__ready__icon">
@@ -231,7 +227,6 @@ const cancel = () => {
             </div>
           </template>
 
-          <!-- Error phase -->
           <template v-else-if="phase === 'error'">
             <div class="pdf-modal__error">
               <div class="pdf-modal__error__icon">
@@ -248,10 +243,9 @@ const cancel = () => {
           </template>
         </div>
 
-        <!-- Footer -->
         <div class="deployment-card__footer">
           <div class="deployment-card__footer__content">
-            <!-- Generating footer -->
+
             <div v-if="phase === 'generating'" class="deployment-message">
               <div class="deployment-message__dot"></div>
               <span class="deployment-message__text">{{
@@ -259,7 +253,6 @@ const cancel = () => {
               }}</span>
             </div>
 
-            <!-- Ready footer -->
             <template v-else-if="phase === 'ready'">
               <div class="deployment-success">
                 <div class="deployment-success__message">
@@ -287,7 +280,6 @@ const cancel = () => {
               </div>
             </template>
 
-            <!-- Error footer -->
             <template v-else-if="phase === 'error'">
               <div class="deployment-failed">
                 <div class="deployment-failed__actions">
@@ -317,9 +309,8 @@ const cancel = () => {
               </div>
             </template>
 
-            <!-- Select footer -->
             <template v-else>
-              <span style="font-size: 13px; color: #9ca3af">
+              <span style="font-size: 13px; color: var(--color-text-faint)">
                 {{ $t("globals.export.modal_format_hint") }}
               </span>
             </template>
@@ -327,7 +318,6 @@ const cancel = () => {
         </div>
       </div>
 
-      <!-- Close button -->
       <button class="pdf-modal__close" @click="cancel" :disabled="!canClose">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -338,7 +328,7 @@ const cancel = () => {
 <style scoped>
 .export-modal__format-description {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-text-faint);
   font-weight: normal;
 }
 </style>

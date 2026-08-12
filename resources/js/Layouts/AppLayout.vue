@@ -5,7 +5,7 @@ import Alerts from "@/Pages/Components/Globals/Alerts.vue";
 import NotificationToasts from "@/Pages/Components/Globals/NotificationToasts.vue";
 import ConfirmOverlay from "@/Pages/Components/Globals/ConfirmOverlay.vue";
 import { usePage } from "@inertiajs/vue3";
-import { computed, provide, ref, onMounted, onUnmounted } from "vue";
+import { computed, provide, ref, watch, onMounted, onUnmounted } from "vue";
 import { echo } from "@laravel/echo-vue";
 import ImpersonationBanner from "@/Pages/Components/Globals/ImpersonationBanner.vue";
 import { useAlerts } from "@/Composables/useAlerts";
@@ -75,22 +75,18 @@ document.documentElement.style.setProperty(
 );
 provide("useModuleColors", useModuleColors);
 
-// test alerts
-// info("Operation completed successfully", { timeout: 0 });
-// error("Failed to connect to the database", { timeout: 0 });
-// warning("Disk space is running low", { progressable: true });
-// success("Your changes have been saved", { timeout: 0 });
+const themeEnabled = computed(() => appSettings.value.dark_mode_enabled == 1);
+watch(
+  () => appSettings.value.theme,
+  (theme) => {
+    document.documentElement.setAttribute(
+      "data-theme",
+      themeEnabled.value && theme === "dark" ? "dark" : "light",
+    );
+  },
+  { immediate: true },
+);
 
-// test live notification toast
-// pushToast(
-//   {
-//     icon: "fa-solid fa-bell",
-//     title: "Record assigned",
-//     body: "Acme Corp was assigned to you by Jane Doe",
-//     url: "#",
-//   },
-//   { persist: true },
-// );
 </script>
 
 <template>

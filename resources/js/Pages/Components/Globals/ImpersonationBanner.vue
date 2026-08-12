@@ -45,10 +45,10 @@ const leaveImpersonation = () => {
   width: 100%;
   z-index: 1001;
   padding: 2px 10px;
-  background-color: var(--primary-color); // yellow
+  background-color: var(--primary-color);
   color: whitesmoke;
 
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--color-border-glass);
 
   &__content {
     display: flex;

@@ -179,10 +179,10 @@ const submit = () => {
 .accept-invite {
   --primary-color: var(--primary-color);
   --primary-dark: color-mix(in srgb, var(--primary-color) 80%, black);
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --bg-hover: #f9fafb;
+  --text-main: var(--color-text-heading);
+  --text-muted: var(--color-text-muted);
+  --border-color: var(--color-border);
+  --bg-hover: var(--color-bg-muted);
   --danger-color: #ef4444;
 
   position: fixed;
@@ -191,7 +191,7 @@ const submit = () => {
   align-items: center;
   justify-content: center;
   font-family: "Fira Sans", "Heebo", sans-serif;
-  background-color: whitesmoke;
+  background-color: var(--color-bg-app);
 
   &__container {
     position: relative;
@@ -204,14 +204,14 @@ const submit = () => {
 }
 
 .accept-card {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--color-shadow-elevated);
   overflow: hidden;
 
   &__header {
     padding: 36px 36px 28px;
-    background: linear-gradient(135deg, var(--bg-hover) 0%, white 100%);
+    background: linear-gradient(135deg, var(--bg-hover) 0%, var(--color-bg-surface) 100%);
     border-bottom: 1px solid var(--border-color);
     text-align: center;
   }
@@ -219,7 +219,7 @@ const submit = () => {
   &__logo {
     width: 56px;
     height: 56px;
-    background: color-mix(in srgb, var(--primary-color) 10%, white);
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--color-bg-surface));
     color: var(--primary-color);
     border-radius: 14px;
     display: flex;
@@ -248,8 +248,8 @@ const submit = () => {
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: color-mix(in srgb, var(--primary-color) 8%, white);
-    border: 1px solid color-mix(in srgb, var(--primary-color) 20%, white);
+    background: color-mix(in srgb, var(--primary-color) 8%, var(--color-bg-surface));
+    border: 1px solid color-mix(in srgb, var(--primary-color) 20%, var(--color-bg-surface));
     border-radius: 999px;
     font-size: 14px;
     font-weight: 500;
@@ -331,7 +331,7 @@ const submit = () => {
     }
 
     &::placeholder {
-      color: #9ca3af;
+      color: var(--color-text-faint);
     }
   }
 

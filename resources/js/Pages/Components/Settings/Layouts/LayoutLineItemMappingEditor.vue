@@ -2,19 +2,17 @@
 import { ref, watch, computed, getCurrentInstance, onBeforeUnmount } from "vue";
 
 const props = defineProps({
-  // Ordered list of chosen line-item fields, each optionally mapped to a
-  // source-module field: [{ name, label, type, source_field }]
+
   columns: {
     type: Array,
     default: () => [],
   },
-  // The shared line_items module's own fields not yet chosen.
+
   availableFields: {
     type: Array,
     default: () => [],
   },
-  // Fields on the configured line-item source module, offered as autofill
-  // targets for each chosen line-item field.
+
   sourceFields: {
     type: Array,
     default: () => [],
@@ -123,7 +121,7 @@ const moveBetweenLists = (fromRef, toRef, fromIndex, toIndex) => {
   const from = [...fromRef.value];
   const to = [...toRef.value];
   const [item] = from.splice(fromIndex, 1);
-  // Chosen fields default to unmapped (manual entry) until the admin picks one.
+
   to.splice(toIndex, 0, { source_field: null, ...item });
   fromRef.value = from;
   toRef.value = to;
@@ -406,9 +404,7 @@ onBeforeUnmount(() => stopGhostAnimation());
 </template>
 
 <style lang="scss" scoped>
-// Just the "this field autofills from the source module" indicator — the
-// rest of this editor intentionally matches the other (unstyled) layout
-// editors for now.
+
 .mapped-badge {
   display: inline-flex;
   align-items: center;
@@ -419,7 +415,7 @@ onBeforeUnmount(() => stopGhostAnimation());
   font-weight: 600;
   white-space: nowrap;
   color: var(--module-color, #3498db);
-  background: color-mix(in srgb, var(--module-color, #3498db) 12%, white);
+  background: color-mix(in srgb, var(--module-color, #3498db) 12%, var(--color-bg-surface));
 
   i {
     font-size: 0.65rem;
@@ -430,14 +426,15 @@ onBeforeUnmount(() => stopGhostAnimation());
   flex: 0 0 auto;
   width: 200px;
   padding: 6px 28px 6px 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  background: #f9fafb
+
+  background: var(--color-bg-muted)
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239ca3af'/%3E%3C/svg%3E")
     no-repeat right 10px center;
   appearance: none;
   font-size: 0.82rem;
-  color: #374151;
+  color: var(--color-text-strong);
   cursor: pointer;
   transition: all 0.15s ease;
 
@@ -448,7 +445,7 @@ onBeforeUnmount(() => stopGhostAnimation());
   &:focus {
     outline: none;
     border-color: var(--module-color, #3498db);
-    background-color: #fff;
+    background-color: var(--color-bg-surface);
   }
 }
 </style>

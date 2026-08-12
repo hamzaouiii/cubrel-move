@@ -13,6 +13,7 @@ import {
   BarController,
   LineController,
 } from "chart.js";
+import { useChartTheme } from "@/Composables/useChartTheme.js";
 
 Chart.register(
   BarElement,
@@ -35,7 +36,8 @@ const color   = computed(() => props.instance.config.color ?? primary);
 const chartRef = ref(null);
 let chartInst = null;
 
-// 'loading' | 'loaded' | 'empty' | 'error'
+const { onThemeChange, axisTextColor, gridColor } = useChartTheme();
+
 const state = ref("loading");
 const chartData = ref(null);
 
@@ -91,11 +93,11 @@ function renderChart() {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { font: { size: 11 }, color: "#888" },
+          ticks: { font: { size: 11 }, color: axisTextColor() },
         },
         y: {
-          grid: { color: "rgba(0,0,0,0.05)" },
-          ticks: { font: { size: 11 }, color: "#888" },
+          grid: { color: gridColor() },
+          ticks: { font: { size: 11 }, color: axisTextColor() },
           beginAtZero: true,
         },
       },
@@ -105,6 +107,9 @@ function renderChart() {
 
 onMounted(load);
 onBeforeUnmount(() => chartInst?.destroy());
+onThemeChange(() => {
+  if (state.value === "loaded") renderChart();
+});
 defineExpose({ load });
 </script>
 

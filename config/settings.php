@@ -20,13 +20,21 @@ return [
         'isActive' => 1,
         'icon' => 'fa-solid fa-globe'
       ],
-      'style' => [
-        'name' => 'Style',
-        'slug' => 'style',
-        'label' => 'settings.items.style',
-        'path' => '/settings/system/style',
+      'color-branding' => [
+        'name' => 'Color & Branding',
+        'slug' => 'color-branding',
+        'label' => 'settings.items.color_branding',
+        'path' => '/settings/system/color-branding',
         'isActive' => 1,
         'icon' => 'fa-solid fa-paint-brush'
+      ],
+      'appearance' => [
+        'name' => 'Appearance',
+        'slug' => 'appearance',
+        'label' => 'settings.items.appearance',
+        'path' => '/settings/system/appearance',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-circle-half-stroke'
       ],
       'system-settings' => [
         'name' => 'System Settings',

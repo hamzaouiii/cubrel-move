@@ -32,8 +32,7 @@ const searchFocused = ref(false);
 const searchInput = ref(null);
 
 const onSearchBlur = () => {
-  // Delayed so a mousedown on a result (which blurs the input first) still
-  // registers as a click before the results list disappears.
+
   setTimeout(() => {
     searchFocused.value = false;
   }, 150);
@@ -80,9 +79,6 @@ const removeColumn = (index) => {
   emitUpdatedColumns();
 };
 
-// Drag-and-drop below mirrors LayoutListEditor.vue's ghost/drop-zone mechanics
-// (same lerp-animated floating ghost, same before/after drop-zone strips),
-// trimmed to a single reorderable list since there's no more sidebar to drag from.
 const dragging = ref(null);
 const originOffset = ref({ x: 0, y: 0 });
 const dragOver = ref(null);
@@ -333,8 +329,8 @@ const emitUpdatedColumns = () => {
 <style lang="scss" scoped>
 .lic-editor {
   position: relative;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   box-shadow: none;
   padding: 10px;
@@ -350,9 +346,9 @@ const emitUpdatedColumns = () => {
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #f9fafb;
+    background: var(--color-bg-muted);
     transition: border-color 0.15s ease;
 
     &:focus-within {
@@ -360,7 +356,7 @@ const emitUpdatedColumns = () => {
     }
 
     &__icon {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       font-size: 0.78rem;
       cursor: pointer;
 
@@ -375,15 +371,15 @@ const emitUpdatedColumns = () => {
       justify-content: center;
       background: none;
       border: none;
-      color: #9ca3af;
+      color: var(--color-text-faint);
       cursor: pointer;
       padding: 2px 4px;
       border-radius: 4px;
       font-size: 0.75rem;
 
       &:hover {
-        color: #374151;
-        background: rgba(0, 0, 0, 0.05);
+        color: var(--color-text-strong);
+        background: var(--color-hover);
       }
     }
 
@@ -392,14 +388,14 @@ const emitUpdatedColumns = () => {
       border: none;
       background: transparent;
       font-size: 0.85rem;
-      color: #374151;
+      color: var(--color-text-strong);
 
       &:focus {
         outline: none;
       }
 
       &::placeholder {
-        color: #9ca3af;
+        color: var(--color-text-faint);
       }
     }
   }
@@ -412,10 +408,10 @@ const emitUpdatedColumns = () => {
     z-index: 5;
     max-height: 190px;
     overflow-y: auto;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    box-shadow: 0 4px 12px var(--color-shadow-md);
     padding: 4px;
 
     &__item {
@@ -428,7 +424,7 @@ const emitUpdatedColumns = () => {
       background: transparent;
       border-radius: 4px;
       font-size: 0.82rem;
-      color: #374151;
+      color: var(--color-text-strong);
       cursor: pointer;
       text-align: left;
 
@@ -438,14 +434,14 @@ const emitUpdatedColumns = () => {
       }
 
       &:hover {
-        background: color-mix(in srgb, var(--module-color, #3498db) 10%, white);
+        background: color-mix(in srgb, var(--module-color, #3498db) 10%, var(--color-bg-surface));
       }
     }
 
     &__empty {
       padding: 6px 8px;
       font-size: 0.8rem;
-      color: #9ca3af;
+      color: var(--color-text-faint);
       margin: 0;
     }
   }
@@ -480,19 +476,19 @@ const emitUpdatedColumns = () => {
         align-items: center;
         gap: 8px;
         padding: 6px 8px;
-        border: 1px solid #e9ecef;
+        border: 1px solid var(--color-border);
         border-radius: 6px;
-        background: #f9fafb;
+        background: var(--color-bg-muted);
         cursor: move;
         transition: all 0.15s ease;
 
         &:hover {
-          border-color: #adb5bd;
+          border-color: var(--color-text-faint);
         }
       }
 
       &__handle {
-        color: #adb5bd;
+        color: var(--color-text-faint);
         font-size: 0.78rem;
 
         &:active {
@@ -503,13 +499,13 @@ const emitUpdatedColumns = () => {
       &__label {
         flex: 1;
         font-size: 0.85rem;
-        color: #212529;
+        color: var(--color-text-heading);
       }
 
       &__remove {
         background: none;
         border: none;
-        color: #9ca3af;
+        color: var(--color-text-faint);
         cursor: pointer;
         padding: 2px 4px;
         border-radius: 4px;
@@ -526,9 +522,9 @@ const emitUpdatedColumns = () => {
   &__empty {
     padding: 14px;
     text-align: center;
-    color: #9ca3af;
+    color: var(--color-text-faint);
     font-size: 0.82rem;
-    border: 1px dashed #dee2e6;
+    border: 1px dashed var(--color-border-muted);
     border-radius: 6px;
   }
 
@@ -536,11 +532,11 @@ const emitUpdatedColumns = () => {
     position: fixed;
     z-index: 100;
     pointer-events: none;
-    background: white;
-    border: 1px solid #e9ecef;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     padding: 6px 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px var(--color-shadow-elevated);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -548,12 +544,12 @@ const emitUpdatedColumns = () => {
     transform: translateZ(0);
 
     &__handle {
-      color: #adb5bd;
+      color: var(--color-text-faint);
     }
 
     &__label {
       font-size: 0.85rem;
-      color: #212529;
+      color: var(--color-text-heading);
     }
   }
 }

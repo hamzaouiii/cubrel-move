@@ -80,13 +80,11 @@ const validateRow = () => {
   return Object.keys(errors).length === 0;
 };
 
-// ── State ─────────────────────────────────────────────────────────────────────
 const items = ref([]);
 const loading = ref(false);
 const saving = ref(false);
 const drawerOpen = ref(false);
-const editingItem = ref(null); // null = new row, object = existing row
-// ── Fetch ─────────────────────────────────────────────────────────────────────
+const editingItem = ref(null);
 
 const fetchItems = async () => {
   loading.value = true;
@@ -109,8 +107,6 @@ watch(
   },
   { immediate: true },
 );
-
-// ── Totals ────────────────────────────────────────────────────────────────────
 
 const totals = computed(() => {
   const subtotal = items.value.reduce(
@@ -137,8 +133,6 @@ const fmt = (n) =>
     maximumFractionDigits: 2,
   });
 
-// ── Row form state (used in the drawer/sheet) ─────────────────────────────────
-
 const emptyRow = () => ({
   id: null,
   product_id: null,
@@ -150,7 +144,7 @@ const emptyRow = () => ({
   discount: 0,
   tax_rate: 0,
   note: "",
-  // computed — shown read-only in the form
+
   subtotal: 0,
   discount_amount: 0,
   tax_amount: 0,
@@ -178,14 +172,10 @@ const recalcRow = () => {
   row.value.total = subtotal - da + tax_amount;
 };
 
-// Every sheet field (product-picker aside) is bound generically, so a single
-// handler recalculates totals regardless of which configured field changed.
 const updateRowField = (name, value) => {
   row.value[name] = value;
   recalcRow();
 };
-
-// ── Product select ────────────────────────────────────────────────────────────
 
 const onProductSelect = (product) => {
   row.value.product_id = product.id;
@@ -202,8 +192,6 @@ const onProductSelect = (product) => {
   recalcRow();
   drawerOpen.value = false;
 };
-
-// ── Open / close sheet ────────────────────────────────────────────────────────
 
 const sheetOpen = ref(false);
 
@@ -227,8 +215,6 @@ const closeSheet = () => {
   editingItem.value = null;
   rowErrors.value = {};
 };
-
-// ── Save row ──────────────────────────────────────────────────────────────────
 
 const saveRow = async () => {
   clearAllAlerts();
@@ -281,8 +267,6 @@ const saveRow = async () => {
   }
 };
 
-// ── Delete row ────────────────────────────────────────────────────────────────
-
 const deleteRow = async (item) => {
   const ok = await confirm({
     title: t("modules.line_items.delete_title"),
@@ -301,8 +285,6 @@ const deleteRow = async (item) => {
     console.error("LineItemsPanel delete error", e.message);
   }
 };
-
-// ── Drag to reorder ───────────────────────────────────────────────────────────
 
 const dragging = ref(null);
 const dragOver = ref(null);
@@ -362,7 +344,6 @@ const onDrop = async (zoneIndex, event) => {
   const fromIndex = dragging.value;
   endDrag();
 
-  // Correct for the removal: inserting after the source shifts indices down by 1
   const toIndex = zoneIndex > fromIndex ? zoneIndex - 1 : zoneIndex;
   if (fromIndex === toIndex) return;
 
@@ -430,7 +411,6 @@ const productLinkingLayout = computed(() => {
   return layout?.layouts?.linkingPanel?.columns || null;
 });
 
-// Same "Select <label>" idiom RecordSelectorDrawer's own drawerTitle uses.
 const sourceModuleLabel = computed(() =>
   t("modules." + props.sourceModule + ".single_label"),
 );
@@ -440,7 +420,7 @@ const productPickerPlaceholder = computed(
 </script>
 
 <template>
-  <!-- ── Panel wrapper — mirrors .record-layout__sections__item ──────────── -->
+
   <div
     class="line-items-panel"
     :style="{ '--module-color': moduleColor }"
@@ -452,7 +432,6 @@ const productPickerPlaceholder = computed(
       </button>
     </div>
 
-    <!-- ── Loading skeleton ──────────────────────────────────────────────── -->
     <template v-if="loading">
       <div class="line-items-panel__table-wrap">
         <table class="line-items-panel__table">
@@ -490,13 +469,11 @@ const productPickerPlaceholder = computed(
       </div>
     </template>
 
-    <!-- ── Empty state ───────────────────────────────────────────────────── -->
     <div v-else-if="!items.length" class="line-items-panel__empty">
       <i class="fa-solid fa-list-ul"></i>
       <span>{{ $t("modules.line_items.no_items") }}</span>
     </div>
 
-    <!-- ── Table ─────────────────────────────────────────────────────────── -->
     <template v-else>
       <div class="line-items-panel__table-wrap">
         <table class="line-items-panel__table">
@@ -573,7 +550,6 @@ const productPickerPlaceholder = computed(
         </table>
       </div>
 
-      <!-- ── Totals row ───────────────────────────────────────────────────── -->
       <div class="line-items-panel__totals">
         <div class="totals-grid">
           <span class="totals-grid__label">{{
@@ -609,9 +585,6 @@ const productPickerPlaceholder = computed(
       </div>
     </template>
 
-    <!-- ════════════════════════════════════════════════════════════════════
-         Row edit sheet — slides in from the right, same pattern as drawers
-    ═════════════════════════════════════════════════════════════════════ -->
     <Transition name="slide-right" appear>
       <div
         v-if="sheetOpen"
@@ -622,7 +595,7 @@ const productPickerPlaceholder = computed(
         @click.self="closeSheet"
       >
         <div class="related-links">
-          <!-- Header -->
+
           <div class="related-links__header">
             <div class="related-links__header__title">
               {{
@@ -649,9 +622,8 @@ const productPickerPlaceholder = computed(
             </div>
           </div>
 
-          <!-- Body -->
           <div class="line-items-sheet__body">
-            <!-- Product picker -->
+
             <div class="sheet-field">
               <label class="sheet-field__label">
                 {{ $t("modules.line_items.fields.product_id") }}
@@ -667,8 +639,6 @@ const productPickerPlaceholder = computed(
               </div>
             </div>
 
-            <!-- Configured line-item fields (order/inclusion driven by the
-                 Line Items snapshot layout) -->
             <div
               v-for="fieldEntry in snapshotLayout?.fields || []"
               :key="fieldEntry.name"
@@ -694,7 +664,6 @@ const productPickerPlaceholder = computed(
               />
             </div>
 
-            <!-- Live totals preview -->
             <div class="sheet-totals-preview">
               <div class="sheet-totals-preview__row">
                 <span>{{ $t("modules.line_items.fields.subtotal") }}</span>
@@ -725,7 +694,6 @@ const productPickerPlaceholder = computed(
       </div>
     </Transition>
 
-    <!-- Smooth drag ghost — follows cursor with lerp, hides browser default -->
     <div
       v-if="dragging !== null"
       class="li-ghost"
@@ -738,7 +706,6 @@ const productPickerPlaceholder = computed(
       <span class="li-ghost__label">{{ ghostLabel }}</span>
     </div>
 
-    <!-- Related-record selector drawer (nested, reuses your existing component) -->
     <RecordSelectorDrawer
       :open="drawerOpen"
       :search-endpoint="`/relatedfield/search/${sourceModule}`"
@@ -786,7 +753,7 @@ const productPickerPlaceholder = computed(
         opacity 0.15s ease;
 
       &:hover {
-        background: color-mix(in srgb, var(--module-color) 80%, white 20%);
+        background: color-mix(in srgb, var(--module-color) 80%, var(--color-bg-surface));
       }
     }
   }
@@ -797,12 +764,12 @@ const productPickerPlaceholder = computed(
     align-items: center;
     justify-content: center;
     gap: 10px;
-    color: #9ca3af;
+    color: var(--color-text-faint);
   }
 
   &__table-wrap {
     overflow-x: auto;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--color-bg-subtle);
   }
 
   &__table {
@@ -810,7 +777,7 @@ const productPickerPlaceholder = computed(
     border-collapse: collapse;
 
     thead tr {
-      border-bottom: 1px solid #e9eaec;
+      border-bottom: 1px solid var(--color-border);
     }
 
     th {
@@ -818,7 +785,7 @@ const productPickerPlaceholder = computed(
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #9ca3af;
+      color: var(--color-text-faint);
       text-align: left;
       white-space: nowrap;
       font-size: 0.8rem;
@@ -833,7 +800,7 @@ const productPickerPlaceholder = computed(
 
     td {
       padding: 10px 12px;
-      color: #374151;
+      color: var(--color-text-strong);
       vertical-align: middle;
       font-size: 0.95rem;
       text-wrap: nowrap;
@@ -844,7 +811,7 @@ const productPickerPlaceholder = computed(
     display: flex;
     justify-content: flex-end;
     padding: 16px 20px;
-    border-top: 1px solid #e9eaec;
+    border-top: 1px solid var(--color-border);
   }
 }
 
@@ -855,7 +822,7 @@ const productPickerPlaceholder = computed(
 
 .col-pos {
   width: 28px;
-  color: #9ca3af;
+  color: var(--color-text-faint);
 }
 
 .col-name {
@@ -892,16 +859,16 @@ const productPickerPlaceholder = computed(
 .item-note {
   display: block;
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--color-text-faint);
   margin-top: 2px;
 }
 
 .muted {
-  color: #d1d5db;
+  color: var(--color-border-muted);
 }
 
 .drag-handle {
-  color: #d1d5db;
+  color: var(--color-border-muted);
   cursor: move;
   font-size: 12px;
 
@@ -913,7 +880,7 @@ const productPickerPlaceholder = computed(
 .btn-delete {
   background: none;
   border: none;
-  color: #d1d5db;
+  color: var(--color-border-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -926,11 +893,11 @@ const productPickerPlaceholder = computed(
 }
 
 .li-row {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-bg-subtle);
   cursor: pointer;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--color-bg-muted);
   }
 
   &--dragging {
@@ -961,10 +928,10 @@ const productPickerPlaceholder = computed(
   z-index: 100;
   pointer-events: none;
   background: white;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 10px 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--color-shadow-elevated);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -972,11 +939,11 @@ const productPickerPlaceholder = computed(
   transform: translateZ(0);
 
   &__handle {
-    color: #adb5bd;
+    color: var(--color-text-faint);
   }
 
   &__label {
-    color: #212529;
+    color: var(--color-text-heading);
     white-space: nowrap;
   }
 }
@@ -988,28 +955,28 @@ const productPickerPlaceholder = computed(
   text-align: right;
 
   &__label {
-    color: #6b7280;
+    color: var(--color-text-muted);
 
     &--total {
       font-weight: 600;
-      color: #111;
+      color: var(--color-text-heading);
       padding-top: 8px;
-      border-top: 2px solid #111;
+      border-top: 2px solid var(--color-text-heading);
     }
   }
 
   &__value {
-    color: #111;
+    color: var(--color-text-heading);
     font-variant-numeric: tabular-nums;
 
     &.discount {
-      color: #ef4444;
+      color: var(--danger-color);
     }
 
     &--total {
       font-weight: 700;
       padding-top: 8px;
-      border-top: 2px solid #111;
+      border-top: 2px solid var(--color-text-heading);
     }
   }
 }
@@ -1042,10 +1009,10 @@ const productPickerPlaceholder = computed(
     font-weight: 600;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--color-text-faint);
 
     &--error {
-      color: #ef4444;
+      color: var(--danger-color);
     }
   }
 
@@ -1056,9 +1023,9 @@ const productPickerPlaceholder = computed(
     min-height: 2.5rem;
     padding: 0 0.75rem;
     border-radius: 8px;
-    border: 1.5px solid #e5e7eb;
-    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1.5px solid var(--color-border);
+    background: linear-gradient(135deg, var(--color-bg-surface) 0%, var(--color-bg-surface) 100%);
+    box-shadow: 0 1px 3px var(--color-shadow-strong);
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1068,19 +1035,19 @@ const productPickerPlaceholder = computed(
     }
 
     .placeholder {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       padding: 0.625rem 0;
     }
 
     i {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       font-size: 11px;
     }
   }
 }
 
 .sheet-totals-preview {
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-bg-subtle);
   padding-top: 12px;
   display: flex;
   flex-direction: column;
@@ -1090,23 +1057,23 @@ const productPickerPlaceholder = computed(
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #6b7280;
+    color: var(--color-text-muted);
 
     span:last-child {
       font-variant-numeric: tabular-nums;
-      color: #111;
+      color: var(--color-text-heading);
     }
 
     .discount {
-      color: #ef4444;
+      color: var(--danger-color);
     }
 
     &--total {
       font-weight: 600;
       font-size: 13px;
-      color: #111;
+      color: var(--color-text-heading);
       padding-top: 6px;
-      border-top: 1px solid #e5e7eb;
+      border-top: 1px solid var(--color-border);
       margin-top: 4px;
 
       span:last-child {
@@ -1128,12 +1095,12 @@ const productPickerPlaceholder = computed(
   color: white;
 
   &--secondary {
-    border: 1px solid #e5e7eb;
-    background: #fff;
-    color: #374151;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-surface);
+    color: var(--color-text-strong);
 
     &:hover {
-      background: #f9fafb;
+      background: var(--color-bg-muted);
     }
   }
 
@@ -1164,7 +1131,7 @@ const productPickerPlaceholder = computed(
 
 .sk {
   border-radius: 4px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border) 50%, var(--color-bg-subtle) 75%);
   background-size: 1200px 100%;
   animation: sk-shimmer 1.4s infinite linear;
 

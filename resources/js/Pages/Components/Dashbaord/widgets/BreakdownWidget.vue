@@ -13,7 +13,7 @@ import {
   DoughnutController,
   BarController,
 } from "chart.js";
-import { CHART_PALETTE } from "../dashboardUi.js";
+import { useChartTheme } from "@/Composables/useChartTheme.js";
 
 Chart.register(
   ArcElement,
@@ -39,8 +39,11 @@ let chartInst = null;
 const state = ref("loading");
 const chartData = ref(null);
 
+const { onThemeChange, chartColors, axisTextColor, gridColor, surfaceColor } =
+  useChartTheme();
+
 const chartType = props.instance.config.chartType ?? "donut";
-const palette   = props.instance.config.palette ?? CHART_PALETTE;
+const palette   = props.instance.config.palette ?? chartColors();
 
 async function load() {
   state.value = "loading";
@@ -81,7 +84,7 @@ function renderChart() {
             data,
             backgroundColor: colors,
             borderWidth: 2,
-            borderColor: "#fff",
+            borderColor: surfaceColor(),
           },
         ],
       },
@@ -92,7 +95,7 @@ function renderChart() {
         plugins: {
           legend: {
             position: "right",
-            labels: { font: { size: 12 }, color: "#475569", padding: 12 },
+            labels: { font: { size: 12 }, color: axisTextColor(), padding: 12 },
           },
           tooltip: { enabled: true },
         },
@@ -119,11 +122,11 @@ function renderChart() {
         scales: {
           x: {
             grid: { display: false },
-            ticks: { font: { size: 11 }, color: "#888" },
+            ticks: { font: { size: 11 }, color: axisTextColor() },
           },
           y: {
-            grid: { color: "rgba(0,0,0,0.05)" },
-            ticks: { font: { size: 11 }, color: "#888" },
+            grid: { color: gridColor() },
+            ticks: { font: { size: 11 }, color: axisTextColor() },
             beginAtZero: true,
           },
         },
@@ -134,6 +137,9 @@ function renderChart() {
 
 onMounted(load);
 onBeforeUnmount(() => chartInst?.destroy());
+onThemeChange(() => {
+  if (state.value === "loaded") renderChart();
+});
 defineExpose({ load });
 </script>
 
