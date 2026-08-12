@@ -295,6 +295,6 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
     Route::put('/{module}', [RecordController::class, 'updateMany'])->name('modules.records.updateMany');
     Route::delete('/{module}/{record}', [RecordController::class, 'destroy'])->name('modules.records.destroy');
 
-    Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$|preferences$|about$).+')->name('modules.index');
+    Route::get('/{module}', ListController::class)->where('module', '^(?!login$|logout$|profile$|preferences$|about$)[^.]+$')->name('modules.index');
 });
 

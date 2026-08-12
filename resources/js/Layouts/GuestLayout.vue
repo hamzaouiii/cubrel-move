@@ -5,6 +5,7 @@ import { computed, provide } from "vue";
 
 import { useAlerts } from "@/Composables/useAlerts";
 import { useFlashToasts } from "@/Composables/useFlashToasts";
+import { useThemeMode } from "@/Composables/useThemeMode";
 
 const { alerts, info, error, warning, success } = useAlerts();
 useFlashToasts();
@@ -24,11 +25,11 @@ document.documentElement.style.setProperty(
   appSettings.value?.primary_color || "#3498db",
 );
 provide("useModuleColors", useModuleColors);
-// test alerts
-// info("Operation completed successfully", { timeout: 0 });
-// error("Failed to connect to the database", { timeout: 0 });
-// warning("Disk space is running low", { timeout: 0, progressable: true });
-// success("Your changes have been saved", { timeout: 0 });
+
+const themeEnabled = computed(() => appSettings.value.dark_mode_enabled == 1);
+const theme = computed(() => appSettings.value.theme);
+useThemeMode(themeEnabled, theme);
+
 </script>
 
 <template>
@@ -37,6 +38,7 @@ provide("useModuleColors", useModuleColors);
     :style="{
       '--primary-color': appSettings.primary_color,
       '--danger-color': appSettings.danger_color,
+      '--success-color': appSettings.success_color,
       '--secondary-color': appSettings.secondary_color,
     }"
   >

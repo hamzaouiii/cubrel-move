@@ -1,4 +1,3 @@
-<!-- components/Dashboard/DealStages.vue -->
 <script setup>
 import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from "vue";
 import {
@@ -8,6 +7,7 @@ import {
   Legend,
   DoughnutController,
 } from "chart.js";
+import { useChartTheme } from "@/Composables/useChartTheme.js";
 
 Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
 
@@ -26,42 +26,49 @@ let donutChartInstance = null;
 const { proxy } = getCurrentInstance();
 const t = proxy.$t;
 
-onMounted(() => {
-  if (donutChartRef.value) {
-    const { won, lost, open } = props.dealStages;
-    const total = won + lost + open;
-    donutChartInstance = new Chart(donutChartRef.value, {
-      type: "doughnut",
-      data: {
-        labels: [
-          t("globals.dashbaord.won"),
-          t("globals.dashbaord.open"),
-          t("globals.dashbaord.lost"),
-        ],
-        datasets: [
-          {
-            data: total > 0 ? [won, open, lost] : [1, 1, 1],
-            backgroundColor:
-              total > 0
-                ? ["#1d9e75", "#3B8BFF", "#D85A30"]
-                : ["#e5e7eb", "#e5e7eb", "#e5e7eb"],
-            borderWidth: 2,
-            borderColor: "#fff",
-            hoverOffset: 8,
-          },
-        ],
-      },
-      options: {
-        responsive: false,
-        cutout: "72%",
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: total > 0 },
+const { onThemeChange, gridColor, surfaceColor } = useChartTheme();
+
+function renderChart() {
+  if (!donutChartRef.value) return;
+
+  donutChartInstance?.destroy();
+
+  const { won, lost, open } = props.dealStages;
+  const total = won + lost + open;
+  donutChartInstance = new Chart(donutChartRef.value, {
+    type: "doughnut",
+    data: {
+      labels: [
+        t("globals.dashbaord.won"),
+        t("globals.dashbaord.open"),
+        t("globals.dashbaord.lost"),
+      ],
+      datasets: [
+        {
+          data: total > 0 ? [won, open, lost] : [1, 1, 1],
+          backgroundColor:
+            total > 0
+              ? ["#1d9e75", "#3B8BFF", "#D85A30"]
+              : [gridColor(), gridColor(), gridColor()],
+          borderWidth: 2,
+          borderColor: surfaceColor(),
+          hoverOffset: 8,
         },
+      ],
+    },
+    options: {
+      responsive: false,
+      cutout: "72%",
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: total > 0 },
       },
-    });
-  }
-});
+    },
+  });
+}
+
+onMounted(renderChart);
+onThemeChange(renderChart);
 
 onBeforeUnmount(() => {
   donutChartInstance?.destroy();
@@ -76,7 +83,7 @@ onBeforeUnmount(() => {
       }}</span>
     </div>
     <div class="dashboard__card__body">
-      <!-- Donut -->
+
       <div class="donut-block">
         <div class="donut-wrap">
           <canvas

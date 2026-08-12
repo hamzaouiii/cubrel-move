@@ -1,4 +1,3 @@
-<!-- LongText.vue -->
 <script setup>
 import { computed, ref, watch } from "vue";
 import { useClipboard } from "@/Composables/useClipboard";

@@ -26,4 +26,18 @@ class Email extends BaseModule
         'cc_addresses' => 'array',
         'sent_at' => 'datetime',
     ];
+
+    public function toSearchResult(): array
+    {
+        return array_merge(parent::toSearchResult(), [
+            'label'    => $this->name,
+            'sublabel' => $this->from_address,
+        ]);
+    }
+
+    // emails table has no description column, unlike other modules
+    protected function searchableFields(): array
+    {
+        return array_diff(parent::searchableFields(), ['description']);
+    }
 }

@@ -1,6 +1,18 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@php
+    $darkModeEnabled = config('theme.dark_mode_enabled');
+    $personalTheme = \App\Support\Settings::getPersonal('theme', 'light');
+    $initialTheme = $darkModeEnabled && $personalTheme === 'dark' ? 'dark' : 'light';
+@endphp
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ $initialTheme }}">
     <head>
+        @if($darkModeEnabled && $personalTheme === 'auto')
+        <script>
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        </script>
+        @endif
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 

@@ -63,7 +63,9 @@ class AppServiceProvider extends ServiceProvider
       'appSettings'  => function () {
         $overrides = array_filter(Auth::user()?->preferences ?? [], fn ($v) => $v !== null);
 
-        return array_merge(Settings::all(), $overrides);
+        return array_merge(Settings::all(), $overrides, [
+          'dark_mode_enabled' => config('theme.dark_mode_enabled'),
+        ]);
       },
       'modules'      => fn() => Module::forSidebar(),
       'layouts'      => fn() => Layout::getAllLayouts(),

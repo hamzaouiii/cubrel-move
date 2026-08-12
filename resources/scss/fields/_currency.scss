@@ -4,7 +4,7 @@
   border-radius: 8px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  // ===== EDIT / SETTINGS MODE =====
+
   &--edit {
     @include shell.field-edit-shell;
     position: relative;
@@ -24,7 +24,7 @@
 
       .currency-icon {
         font-size: 1rem;
-        color: #94a3b8;
+        color: var(--color-text-faint);
       }
     }
 
@@ -56,7 +56,7 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #94a3b8;
+        color: var(--color-text-faint);
       }
     }
 
@@ -71,38 +71,37 @@
       }
 
       &:disabled {
-        color: #94a3b8;
+        color: var(--color-text-faint);
         cursor: default;
-        border-bottom-color: #f1f5f9;
+        border-bottom-color: var(--color-bg-subtle);
       }
 
       &:hover:not(:disabled) {
-        border-bottom-color: #cbd5e1;
+        border-bottom-color: var(--color-border-muted);
       }
     }
 
     .currency-display {
       font-size: 0.9rem;
       padding: 0.5rem 0;
-      color: #1e293b;
+      color: var(--color-text-heading);
       font-variant-numeric: tabular-nums;
       display: block;
     }
 
     &:hover {
-      border-color: #cbd5e1;
-      background: white;
+      border-color: var(--color-border-muted);
+      background: var(--color-bg-surface);
     }
 
     &:focus-within {
       border-color: var(--module-color);
-      background: white;
+      background: var(--color-bg-surface);
     }
 
-    // Error state
     &.currency-field--error {
       border-color: var(--danger-color);
-      background: #fef2f2;
+      background: var(--color-danger-bg-subtle);
 
       .input-label {
         color: var(--danger-color);
@@ -113,17 +112,15 @@
       }
     }
 
-    // Readonly state
     &.currency-field--readonly {
-      background: #f8fafc;
-      border-color: #e2e8f0;
+      background: var(--color-bg-muted);
+      border-color: var(--color-border);
 
       .currency-display {
-        color: #64748b;
+        color: var(--color-text-muted);
       }
     }
 
-    // Has value state
     &.currency-field--has-value {
       .currency-input {
         font-weight: 500;
@@ -135,7 +132,6 @@
     }
   }
 
-  // ===== DETAIL MODE =====
   &--detail {
     .currency-detail-icon {
       color: var(--module-color);
@@ -159,8 +155,8 @@
           font-weight: 700;
           text-transform: uppercase;
           color: var(--module-color);
-          background: color-mix(in srgb, var(--module-color) 10%, white);
-          border: 1px solid color-mix(in srgb, var(--module-color) 20%, white);
+          background: color-mix(in srgb, var(--module-color) 10%, var(--color-bg-surface));
+          border: 1px solid color-mix(in srgb, var(--module-color) 20%, var(--color-bg-surface));
           border-radius: 4px;
           padding: 0.2rem 0.5rem;
           flex-shrink: 0;
@@ -182,12 +178,12 @@
       flex-shrink: 0;
 
       .copy-btn {
-        background: white;
-        border: 1px solid #e2e8f0;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border);
         border-radius: 6px;
         padding: 0.375rem 0.625rem;
         cursor: pointer;
-        color: #64748b;
+        color: var(--color-text-muted);
         font-size: 0.875rem;
         transition: all 0.2s ease;
 
@@ -201,7 +197,6 @@
     }
   }
 
-  // ===== TABLE MODE =====
   &--table {
     display: inline-flex;
     align-items: center;
@@ -213,14 +208,13 @@
     cursor: default;
 
     .currency-table-icon {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       font-size: 0.98rem;
       opacity: 0.7;
       flex-shrink: 0;
     }
   }
 
-  // ===== RELATED PANEL MODE =====
   &--related {
     display: inline-flex;
     align-items: center;
@@ -230,13 +224,12 @@
     border-radius: 6px;
 
     .currency-related-icon {
-      color: #9ca3af;
+      color: var(--color-text-faint);
       font-size: 0.8rem;
       flex-shrink: 0;
     }
   }
 
-  // Error icon container
   .error-icon-container {
     display: flex;
     align-items: center;

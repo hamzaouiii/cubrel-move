@@ -23,10 +23,19 @@ return [
         ],
       ],
     ],
-    'style' => [
-      'label' => 'globals.preferences.tabs.style',
+    'appearance' => [
+      'label' => 'globals.preferences.tabs.appearance',
       'fields' => [
-       
+        'theme' => [
+          'type' => 'theme_switcher',
+          'label' => 'settings.fields.theme',
+          'validation' => 'nullable|string|in:light,dark',
+        ],
+      ],
+    ],
+    'color-branding' => [
+      'label' => 'globals.preferences.tabs.color_branding',
+      'fields' => [
         'primary_color' => [
           'type' => 'color',
           'label' => 'settings.fields.primary_color',
@@ -184,5 +193,6 @@ return [
   'theme_options' => [
     ['label' => 'Light', 'value' => 'light'],
     ['label' => 'Dark', 'value' => 'dark'],
+    ['label' => 'Auto', 'value' => 'auto'],
   ],
 ];

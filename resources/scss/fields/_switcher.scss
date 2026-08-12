@@ -1,15 +1,15 @@
 .switcher {
   display: inline-flex;
-  background-color: #f1f3f5; // Light grey track
+  background-color: var(--color-bg-subtle);
   padding: 4px;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
 
   .switch-option {
     padding: 6px 16px;
     font-size: 14px;
     font-weight: 600;
-    color: #6c757d;
+    color: var(--color-text-muted);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -19,15 +19,15 @@
     justify-content: center;
     margin: 0 5px;
     &:hover:not(.selected) {
-      color: #333;
-      background-color: rgba(0, 0, 0, 0.05);
+      color: var(--color-text-heading);
+      background-color: var(--color-hover);
     }
   }
 
   .selected {
     color: white;
     background-color: var(--primary-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 4px var(--color-shadow-md);
     transform: scale(1.02);
   }
 }

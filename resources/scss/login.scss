@@ -1,14 +1,16 @@
+
+
 $primary-light: #e0e7ff;
-$text-light: #6b7280;
-$border-color: #e5e7eb;
-$background: #ffffff;
-$input-bg: #f9fafb;
+$text-light: var(--color-text-muted);
+$border-color: var(--color-border);
+$background: var(--color-bg-surface);
+$input-bg: var(--color-bg-muted);
 
 .login {
   display: flex;
   flex-direction: row;
 
-  background-color: whitesmoke;
+  background-color: var(--color-bg-app);
   height: 100vh;
   &__mural {
     width: 50vw;
@@ -18,7 +20,12 @@ $input-bg: #f9fafb;
     border-radius: 45px;
     background: url("@img/login-bg.jpg");
     background-size: 100% 100%;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 25px 50px -12px var(--color-shadow-elevated);
+
+    [data-theme="dark"] & {
+      background: url("@img/cubrel-night.png");
+      background-size: 100% 100%;
+    }
 
     &__logo {
       position: relative;
@@ -54,7 +61,7 @@ $input-bg: #f9fafb;
     &__header {
       font-size: 2rem;
       font-weight: 700;
-      color: #323450;
+      color: var(--color-text-primary);
       margin-bottom: 0;
       font-family: "Fira Sans", sans-serif;
       text-align: center;
@@ -77,9 +84,6 @@ $input-bg: #f9fafb;
   }
 }
 
-// ─── Responsive ─────────────────────────────────────────────────────────────
-
-// Tablet and below: drop the mural, let the card take the full viewport.
 @media (max-width: 960px) {
   .login {
     &__mural {
@@ -105,7 +109,6 @@ $input-bg: #f9fafb;
   }
 }
 
-// Phones: tighten spacing and shrink type that was sized for a wide card.
 @media (max-width: 480px) {
   .login {
     height: 100%;
@@ -163,7 +166,7 @@ $input-bg: #f9fafb;
     &__header {
       font-size: 2.25rem;
       font-weight: 700;
-      color: #323450;
+      color: var(--color-text-primary);
       margin-bottom: 1.5rem;
       font-family: "Fira Sans", sans-serif;
       text-align: center;
@@ -206,11 +209,10 @@ $input-bg: #f9fafb;
     margin-bottom: 0.5rem;
     font-size: 0.999rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--color-text-strong);
   }
 }
 
-// Input Field
 .input-wrapper {
   position: relative;
   border: 2px solid;
@@ -242,21 +244,21 @@ $input-bg: #f9fafb;
     padding: 0.875rem 1rem;
     width: 100%;
     &::placeholder {
-      color: #9ca3af;
+      color: var(--color-text-faint);
     }
 
     &:disabled {
-      background-color: #f3f4f6;
+      background-color: var(--color-bg-subtle);
       cursor: not-allowed;
       opacity: 0.7;
     }
 
     &.is-invalid {
       border-color: var(--danger-color);
-      background-color: #fef2f2;
+      background-color: var(--color-danger-bg-subtle);
 
       &:focus {
-        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        box-shadow: 0 0 0 4px var(--color-danger-ring);
       }
     }
   }
@@ -270,7 +272,7 @@ $input-bg: #f9fafb;
       width: 100%;
     }
   }
-  // Password Toggle Button
+
   .password-toggle {
     position: absolute;
     right: 0.5rem;
@@ -298,7 +300,6 @@ $input-bg: #f9fafb;
   }
 }
 
-// Error Message
 .error-message {
   margin-top: 0.5rem;
   font-size: 0.8rem;
@@ -322,7 +323,6 @@ $input-bg: #f9fafb;
   }
 }
 
-// Submit Button
 .submit-btn {
   width: 100%;
   margin-top: 1rem;
@@ -373,8 +373,8 @@ $input-bg: #f9fafb;
   margin-bottom: 1.25rem;
   padding: 0.5rem 1rem;
   border-radius: 0.75rem;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: var(--color-danger-tint);
+  border: 1px solid var(--color-danger-border-subtle);
   color: var(--danger-color);
   font-size: 0.875rem;
   font-weight: 500;

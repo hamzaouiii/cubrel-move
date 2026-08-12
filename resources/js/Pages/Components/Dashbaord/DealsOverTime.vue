@@ -8,6 +8,7 @@ import {
   LinearScale,
   Tooltip,
 } from "chart.js";
+import { useChartTheme } from "@/Composables/useChartTheme.js";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip);
 
@@ -22,8 +23,9 @@ const appSettings = page.props.appSettings;
 const oppChartRef = ref(null);
 let oppChartInstance = null;
 
-// Chart mode toggle
 const chartMode = ref("count");
+
+const { onThemeChange, axisTextColor, gridColor } = useChartTheme();
 
 function switchMode(mode) {
   chartMode.value = mode;
@@ -40,41 +42,52 @@ function switchMode(mode) {
   oppChartInstance.update();
 }
 
-onMounted(() => {
-  if (oppChartRef.value && props.dealsOverTime.length) {
-    oppChartInstance = new Chart(oppChartRef.value, {
-      type: "bar",
-      data: {
-        labels: props.dealsOverTime.map((d) => d.month),
-        datasets: [
-          {
-            label: t("globals.dashboard.count"),
-            data: props.dealsOverTime.map((d) => d.count),
-            backgroundColor: appSettings.primary_color,
-            borderRadius: 4,
-            barPercentage: 0.5,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 }, color: "#888" },
-          },
-          y: {
-            grid: { color: "rgba(0,0,0,0.05)" },
-            ticks: { font: { size: 11 }, color: "#888" },
-            beginAtZero: true,
-          },
+function renderChart() {
+  if (!oppChartRef.value || !props.dealsOverTime.length) return;
+
+  oppChartInstance?.destroy();
+
+  oppChartInstance = new Chart(oppChartRef.value, {
+    type: "bar",
+    data: {
+      labels: props.dealsOverTime.map((d) => d.month),
+      datasets: [
+        {
+          label:
+            chartMode.value === "count"
+              ? t("globals.dashboard.count")
+              : t("globals.dashboard.value") + " (€)",
+          data:
+            chartMode.value === "count"
+              ? props.dealsOverTime.map((d) => d.count)
+              : props.dealsOverTime.map((d) => d.value),
+          backgroundColor: appSettings.primary_color,
+          borderRadius: 4,
+          barPercentage: 0.5,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11 }, color: axisTextColor() },
+        },
+        y: {
+          grid: { color: gridColor() },
+          ticks: { font: { size: 11 }, color: axisTextColor() },
+          beginAtZero: true,
         },
       },
-    });
-  }
-});
+    },
+  });
+}
+
+onMounted(renderChart);
+onThemeChange(renderChart);
 
 onBeforeUnmount(() => {
   oppChartInstance?.destroy();

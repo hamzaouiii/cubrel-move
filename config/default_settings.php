@@ -111,16 +111,16 @@ return [
         'autoload' => 0,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'appearance',
         'key' => 'theme',
-        'value' => 'dark',
+        'value' => 'auto',
         'label' => 'settings.fields.theme',
         'type' => 'theme_switcher',
         'sort_order' => 1,
-        'autoload' => 0,
+        'autoload' => 1,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'primary_color',
         'value' => '#3498db',
         'label' => 'settings.fields.primary_color',
@@ -129,7 +129,7 @@ return [
         'autoload' => 1,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'secondary_color',
         'value' => '#64748B',
         'label' => 'settings.fields.secondary_color',
@@ -138,7 +138,7 @@ return [
         'autoload' => 1,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'success_color',
         'value' => '#10b981',
         'label' => 'settings.fields.success_color',
@@ -147,7 +147,7 @@ return [
         'autoload' => 1,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'danger_color',
         'value' => '#fa8072',
         'label' => 'settings.fields.danger_color',
@@ -156,7 +156,7 @@ return [
         'autoload' => 1,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'border_radius',
         'value' => '10',
         'label' => 'settings.fields.border_radius',
@@ -165,7 +165,7 @@ return [
         'autoload' => 0,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'table_striped_rows',
         'value' => '1',
         'label' => 'settings.fields.table_striped_rows',
@@ -174,7 +174,7 @@ return [
         'autoload' => 0,
     ],
     [
-        'setting_item' => 'style',
+        'setting_item' => 'color-branding',
         'key' => 'use_individual_module_colors',
         'value' => '1',
         'label' => 'settings.fields.use_individual_module_colors',

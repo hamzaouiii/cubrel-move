@@ -15,7 +15,7 @@
   &__slider {
     position: absolute;
     inset: 0;
-    background-color: #ccc;
+    background-color: var(--color-border-muted);
     border-radius: 5px;
     transition: background-color 0.2s ease;
     padding: 5px;
@@ -31,7 +31,7 @@
     background-color: white;
     border-radius: 50%;
     transition: transform 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px var(--color-shadow-elevated);
   }
 
   &__input:checked + &__slider {
@@ -43,7 +43,7 @@
   }
 
   &__input:focus-visible + &__slider {
-    outline: 2px solid #d946ef;
+    outline: 2px solid var(--primary-color);
     outline-offset: 2px;
   }
 
@@ -64,9 +64,9 @@
   font-size: 0.85rem;
   font-weight: 500;
   border-radius: 12px;
-  background: #f3f4f6;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
   cursor: pointer;
   max-width: 60px;
 
@@ -75,8 +75,8 @@
   }
 
   &--active {
-    background: color-mix(in srgb, var(--module-color) 15%, white);
-    border-color: color-mix(in srgb, var(--module-color) 40%, white);
+    background: color-mix(in srgb, var(--module-color) 15%, var(--color-bg-surface));
+    border-color: color-mix(in srgb, var(--module-color) 40%, var(--color-bg-surface));
     color: var(--module-color);
   }
 }

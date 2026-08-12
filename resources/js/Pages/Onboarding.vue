@@ -185,7 +185,7 @@ const skipOnboarding = async () => {
       </ol>
 
       <Transition name="step" mode="out-in">
-        <!-- Invite team (renders its own card chrome) -->
+
         <InviteTeamForm
           v-if="currentStep === 'invite'"
           key="invite"
@@ -194,7 +194,7 @@ const skipOnboarding = async () => {
         />
 
         <div class="card" v-else :key="currentStep">
-          <!-- Organisation info -->
+
           <template v-if="currentStep === 'organisation'">
             <div class="card__header">
               <h1 class="card__title">
@@ -302,7 +302,6 @@ const skipOnboarding = async () => {
             </div>
           </template>
 
-          <!-- Demo data -->
           <template v-else-if="currentStep === 'demo-data'">
             <div class="card__header">
               <h1 class="card__title">
@@ -366,13 +365,13 @@ const skipOnboarding = async () => {
 .onboarding {
   --primary-color: var(--primary-color);
   --primary-dark: color-mix(in srgb, var(--primary-color) 80%, black);
-  --primary-soft: color-mix(in srgb, var(--primary-color) 10%, white);
-  --primary-softer: color-mix(in srgb, var(--primary-color) 5%, white);
+  --primary-soft: color-mix(in srgb, var(--primary-color) 10%, var(--color-bg-surface));
+  --primary-softer: color-mix(in srgb, var(--primary-color) 5%, var(--color-bg-surface));
   --primary-ring: color-mix(in srgb, var(--primary-color) 16%, transparent);
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --bg-hover: #f9fafb;
+  --text-main: var(--color-text-heading);
+  --text-muted: var(--color-text-muted);
+  --border-color: var(--color-border);
+  --bg-hover: var(--color-bg-muted);
   --danger-color: #ef4444;
 
   position: relative;
@@ -388,7 +387,7 @@ const skipOnboarding = async () => {
       var(--primary-softer) 0%,
       transparent 60%
     ),
-    whitesmoke;
+    var(--color-bg-app);
   padding: 28px 24px 60px;
   box-sizing: border-box;
 
@@ -510,7 +509,7 @@ const skipOnboarding = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--color-bg-surface);
     border: 1.5px solid var(--border-color);
     color: var(--text-muted);
     font-size: 13px;
@@ -565,12 +564,12 @@ const skipOnboarding = async () => {
 }
 
 .card {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 20px;
   border: 1px solid var(--border-color);
   box-shadow:
     0 25px 50px -20px var(--primary-ring),
-    0 12px 24px -12px rgba(0, 0, 0, 0.12);
+    0 12px 24px -12px var(--color-shadow-md);
   overflow: hidden;
 
   &__header {
@@ -679,7 +678,7 @@ const skipOnboarding = async () => {
     transition: all 0.2s ease;
 
     &:focus-within {
-      background: white;
+      background: var(--color-bg-surface);
       border-color: var(--primary-color);
     }
   }

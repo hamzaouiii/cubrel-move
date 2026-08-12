@@ -93,7 +93,7 @@ const startDeploy = async () => {
       const serverMessage =
         error.response?.data?.message ||
         t("settings.modulebuilder.errors.unexpected");
-      // Formats as "Step Label: Error Message"
+
       errorMessage.value = `${step.label.replace("...", "")}: ${serverMessage}`;
 
       currentStepIndex.value = -1;
@@ -152,14 +152,13 @@ onMounted(() => {
 </script>
 <template>
   <div class="deployment-modal">
-    <!-- Backdrop with animated gradient -->
+
     <div class="deployment-modal__backdrop"></div>
 
-    <!-- Modal Container -->
     <div class="deployment-modal__container">
-      <!-- Progress Card -->
+
       <div class="deployment-card">
-        <!-- Header with animated gradient line -->
+
         <div class="deployment-card__header">
           <div class="deployment-card__title-group">
             <h3 class="deployment-card__title">
@@ -196,7 +195,6 @@ onMounted(() => {
             </p>
           </div>
 
-          <!-- Overall progress indicator -->
           <div
             class="deployment-card__progress"
             v-if="!isComplete && !hasFailed"
@@ -219,7 +217,6 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Steps List -->
         <div class="deployment-steps">
           <div
             v-for="(step, index) in steps"
@@ -233,7 +230,7 @@ onMounted(() => {
               },
             ]"
           >
-            <!-- Step connector line (except for last step) -->
+
             <div
               v-if="index < steps.length - 1"
               class="deployment-step__connector"
@@ -244,7 +241,7 @@ onMounted(() => {
             ></div>
 
             <div class="deployment-step__content">
-              <!-- Step icon with status -->
+
               <div class="deployment-step__icon-wrapper">
                 <div class="deployment-step__icon">
                   <template v-if="step.status === 'pending'">
@@ -311,7 +308,6 @@ onMounted(() => {
                 </div>
               </div>
 
-              <!-- Step information -->
               <div class="deployment-step__info">
                 <div class="deployment-step__label">{{ step.label }}</div>
                 <div class="deployment-step__description">
@@ -319,7 +315,6 @@ onMounted(() => {
                 </div>
               </div>
 
-              <!-- Status badge -->
               <div class="deployment-step__badge" :class="step.status">
                 <template v-if="step.status === 'pending'">
                   {{ $t("settings.modulebuilder.status.pending") }}
@@ -338,7 +333,6 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Actions Footer -->
         <div class="deployment-card__footer">
           <div class="deployment-card__footer-content">
             <div v-if="!isComplete && !hasFailed" class="deployment-message">
@@ -478,13 +472,13 @@ onMounted(() => {
 .deployment-card {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--color-shadow-elevated);
   overflow: hidden;
 
   &__header {
     padding: 32px 32px 24px;
-    background: linear-gradient(135deg, #f9fafb 0%, white 100%);
-    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-bg-surface) 100%);
+    border-bottom: 1px solid var(--color-border);
   }
 
   &__title-group {
@@ -495,13 +489,13 @@ onMounted(() => {
     margin: 0 0 8px;
     font-size: 24px;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-text-heading);
     letter-spacing: -0.02em;
   }
 
   &__subtitle {
     margin: 0;
-    color: #6b7280;
+    color: var(--color-text-muted);
     font-size: 14px;
     line-height: 1.5;
 
@@ -524,7 +518,7 @@ onMounted(() => {
     .progress-bar {
       flex: 1;
       height: 6px;
-      background: #e5e7eb;
+      background: var(--color-border);
       border-radius: 3px;
       overflow: hidden;
 
@@ -543,7 +537,7 @@ onMounted(() => {
     .progress-text {
       font-size: 13px;
       font-weight: 500;
-      color: #6b7280;
+      color: var(--color-text-muted);
       min-width: 100px;
       text-align: right;
     }
@@ -551,8 +545,8 @@ onMounted(() => {
 
   &__footer {
     padding: 20px 32px;
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
+    background: var(--color-bg-muted);
+    border-top: 1px solid var(--color-border);
 
     &__content {
       display: flex;
@@ -606,10 +600,10 @@ onMounted(() => {
     }
 
     &--secondary {
-      background: #6b7280;
+      background: var(--color-text-muted);
 
       &:hover {
-        background: #4b5563;
+        background: var(--color-text-strong);
       }
     }
   }
@@ -617,7 +611,7 @@ onMounted(() => {
 
 .deployment-steps {
   padding: 24px 32px;
-  background: white;
+  background: var(--color-bg-surface);
 }
 
 .deployment-step {
@@ -638,7 +632,7 @@ onMounted(() => {
     top: 40px;
     width: 2px;
     height: calc(100% - 16px);
-    background: #e5e7eb;
+    background: var(--color-border);
     transition: background 0.3s ease;
 
     &.active {
@@ -656,28 +650,28 @@ onMounted(() => {
     align-items: flex-start;
     gap: 16px;
     padding: 12px 16px;
-    background: white;
+    background: var(--color-bg-surface);
     border-radius: 16px;
     transition: all 0.3s ease;
 
     &:hover {
-      background: #f9fafb;
+      background: var(--color-bg-muted);
     }
   }
 
   &.running &__content {
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.05), transparent);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--module-color) 5%, transparent), transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--module-color) 10%, transparent);
   }
 
   &.failed &__content {
-    background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+    background: linear-gradient(90deg, var(--color-danger-tint), transparent);
+    box-shadow: 0 4px 12px var(--color-danger-tint);
   }
 
   &.success &__content {
     .deployment-step__label {
-      color: #111827;
+      color: var(--color-text-heading);
     }
   }
 
@@ -691,23 +685,23 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f3f4f6;
+    background: var(--color-bg-subtle);
     border-radius: 50%;
-    color: #9ca3af;
+    color: var(--color-text-faint);
     transition: all 0.3s ease;
 
     .running & {
-      background: rgba(99, 102, 241, 0.1);
+      background: color-mix(in srgb, var(--module-color) 10%, transparent);
       color: var(--module-color);
     }
 
     .failed & {
-      background: rgba(239, 68, 68, 0.1);
+      background: var(--color-danger-tint);
       color: var(--danger-color);
     }
 
     .success & {
-      background: color-mix(in srgb, #10b981 10%, white);
+      background: color-mix(in srgb, #10b981 10%, var(--color-bg-surface));
       color: #10b981;
     }
   }
@@ -724,7 +718,7 @@ onMounted(() => {
   &__label {
     font-size: 15px;
     font-weight: 500;
-    color: #4b5563;
+    color: var(--color-text-secondary);
     margin-bottom: 4px;
     transition: color 0.3s ease;
 
@@ -735,7 +729,7 @@ onMounted(() => {
 
   &__description {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--color-text-faint);
   }
 
   &__badge {
@@ -743,22 +737,22 @@ onMounted(() => {
     border-radius: 100px;
     font-size: 12px;
     font-weight: 500;
-    background: #f3f4f6;
-    color: #6b7280;
+    background: var(--color-bg-subtle);
+    color: var(--color-text-muted);
     transition: all 0.3s ease;
 
     &.running {
-      background: rgba(99, 102, 241, 0.1);
+      background: color-mix(in srgb, var(--module-color) 10%, transparent);
       color: var(--module-color);
     }
 
     &.failed {
-      background: rgba(239, 68, 68, 0.1);
+      background: var(--color-danger-tint);
       color: var(--danger-color);
     }
 
     &.success {
-      background: color-mix(in srgb, #10b981 10%, white);
+      background: color-mix(in srgb, #10b981 10%, var(--color-bg-surface));
       color: #10b981;
     }
   }
@@ -779,7 +773,7 @@ onMounted(() => {
 
   &__text {
     font-size: 14px;
-    color: #6b7280;
+    color: var(--color-text-muted);
   }
 }
 
@@ -812,13 +806,13 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 8px;
+
     color: #10b981;
     font-size: 14px;
     font-weight: 500;
   }
 }
 
-// Animations
 @keyframes backdrop-fade {
   from {
     opacity: 0;
@@ -862,7 +856,6 @@ onMounted(() => {
   }
 }
 
-// Responsive adjustments
 @media (max-width: 640px) {
   .deployment-modal__container {
     margin: 0 16px;

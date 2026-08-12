@@ -1,4 +1,3 @@
-<!-- components/Dashboard/RecentOrders.vue -->
 <script setup>
 import { Link, usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
@@ -38,20 +37,10 @@ const module = computed(() =>
               <Link :href="`/leads/${lead.id}`" class="orders-list__num">
                 {{ lead.name }}
               </Link>
-              <!-- <span class="text--muted">{{ order.date }}</span> -->
+
             </div>
           </div>
-          <!-- <div class="orders-list__right">
-            <span
-              class="status-pill"
-              :class="getOrderStatusClass(order.status.status)"
-            >
-              {{ $t(order.status.label) }}
-            </span>
-            <span class="orders-list__amt">
-              {{ formatCurrency(order.total_amount, order.currency) }}
-            </span>
-          </div> -->
+
         </li>
       </ul>
       <div v-else class="empty-state">

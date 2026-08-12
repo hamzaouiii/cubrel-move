@@ -19,7 +19,7 @@ const props = defineProps({
     required: false,
   },
   name: {
-    // Added for accessibility & native grouping
+
     type: String,
     default: "custom-radio-group",
   },
@@ -34,7 +34,7 @@ const select = () => {
   emit("update:modelValue", props.value);
 };
 
-const boxColor = props.color ?? "#2563eb"; // Using your "Create" button blue
+const boxColor = props.color ?? "#2563eb";
 </script>
 
 <template>
@@ -74,7 +74,7 @@ const boxColor = props.color ?? "#2563eb"; // Using your "Create" button blue
   user-select: none;
   position: relative;
   font-size: 0.95rem;
-  color: #334155; // Slate-700
+  color: var(--color-text-strong);
   transition: color 0.2s ease;
 
   &__native {
@@ -83,9 +83,8 @@ const boxColor = props.color ?? "#2563eb"; // Using your "Create" button blue
     width: 0;
     height: 0;
 
-    // Focus state for accessibility
     &:focus-visible + .custom-radio__visual {
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--radio-color) 20%, transparent);
       border-color: var(--radio-color);
     }
   }
@@ -93,9 +92,9 @@ const boxColor = props.color ?? "#2563eb"; // Using your "Create" button blue
   &__visual {
     width: 20px;
     height: 20px;
-    border: 2px solid #cbd5e1; // Slate-300
+    border: 2px solid var(--color-border-muted);
     border-radius: 50%;
-    background: white;
+    background: var(--color-bg-surface);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -113,24 +112,21 @@ const boxColor = props.color ?? "#2563eb"; // Using your "Create" button blue
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  // Hover States
   &:hover:not(.is-disabled) {
-    color: #000;
+    color: var(--color-text-heading);
 
     .custom-radio__visual {
       border-color: var(--radio-color);
-      background-color: #f8fafc;
+      background-color: var(--color-bg-muted);
     }
   }
 
-  // Checked State
   &.is-checked {
     .custom-radio__visual {
       border-color: var(--radio-color);
       background: var(--radio-color);
 
-      // Subtle outer glow
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 4px var(--color-shadow-strong);
     }
 
     .custom-radio__dot {
@@ -138,14 +134,13 @@ const boxColor = props.color ?? "#2563eb"; // Using your "Create" button blue
     }
   }
 
-  // Disabled State
   &.is-disabled {
     opacity: 0.5;
     cursor: not-allowed;
 
     .custom-radio__visual {
-      background: #f1f5f9;
-      border-color: #e2e8f0;
+      background: var(--color-bg-subtle);
+      border-color: var(--color-border);
     }
   }
 }

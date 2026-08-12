@@ -13,6 +13,7 @@ import { useFlashToasts } from "@/Composables/useFlashToasts";
 import { useKeepAlive } from "@/Composables/useKeepAlive";
 import { useNotifications } from "@/Composables/useNotifications";
 import { useLiveToasts } from "@/Composables/useLiveToasts";
+import { useThemeMode } from "@/Composables/useThemeMode";
 
 const { alerts, info, error, warning, success } = useAlerts();
 useFlashToasts();
@@ -75,22 +76,10 @@ document.documentElement.style.setProperty(
 );
 provide("useModuleColors", useModuleColors);
 
-// test alerts
-// info("Operation completed successfully", { timeout: 0 });
-// error("Failed to connect to the database", { timeout: 0 });
-// warning("Disk space is running low", { progressable: true });
-// success("Your changes have been saved", { timeout: 0 });
+const themeEnabled = computed(() => appSettings.value.dark_mode_enabled == 1);
+const theme = computed(() => appSettings.value.theme);
+useThemeMode(themeEnabled, theme);
 
-// test live notification toast
-// pushToast(
-//   {
-//     icon: "fa-solid fa-bell",
-//     title: "Record assigned",
-//     body: "Acme Corp was assigned to you by Jane Doe",
-//     url: "#",
-//   },
-//   { persist: true },
-// );
 </script>
 
 <template>

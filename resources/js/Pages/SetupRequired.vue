@@ -32,10 +32,10 @@ const appSettings = page.props.appSettings;
 <style lang="scss" scoped>
 .setup-required {
   --primary-color: var(--primary-color);
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --bg-hover: #f9fafb;
+  --text-main: var(--color-text-heading);
+  --text-muted: var(--color-text-muted);
+  --border-color: var(--color-border);
+  --bg-hover: var(--color-bg-muted);
 
   position: fixed;
   inset: 0;
@@ -43,7 +43,7 @@ const appSettings = page.props.appSettings;
   align-items: center;
   justify-content: center;
   font-family: "Fira Sans", "Heebo", sans-serif;
-  background-color: whitesmoke;
+  background-color: var(--color-bg-app);
 
   &__container {
     position: relative;
@@ -56,9 +56,9 @@ const appSettings = page.props.appSettings;
 }
 
 .setup-card {
-  background: white;
+  background: var(--color-bg-surface);
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--color-shadow-elevated);
   padding: 44px 36px;
   text-align: center;
 
@@ -66,7 +66,7 @@ const appSettings = page.props.appSettings;
     width: 64px;
     height: 64px;
     margin: 0 auto 24px;
-    background: color-mix(in srgb, var(--primary-color) 10%, white);
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--color-bg-surface));
     color: var(--primary-color);
     border-radius: 50%;
     display: flex;
