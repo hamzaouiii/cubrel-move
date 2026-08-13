@@ -1,6 +1,6 @@
 # Cubrel CRM — Feature Inventory
 
-> Verified 2026-08-07 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
+> Verified 2026-08-13 against the current codebase — routes, controllers, models, config, migrations, and Vue components.
 
 ---
 
@@ -53,7 +53,7 @@ Each business module is stored in its own table, extends `BaseModule`, and carri
 | **Calls**         | `calls`    | direction, call_at, duration_minutes, status, outcome                                    | No         | Yes   |
 | **Meetings**      | `meetings` | location (address), start_at, end_at, duration (auto-computed), status                   | No         | Yes   |
 | **Notes**         | `notes`    | (default fields only)                                                                    | No         | Yes   |
-| **Emails**        | `emails`   | body, from_name, from_address, to_addresses (JSON), cc_addresses (JSON), sent_at, direction, mailbox | No | Yes |
+| **Emails**        | `emails`   | body, from_name, from_address, to_addresses (multivalue), cc_addresses (multivalue), sent_at, mailbox | No | Yes |
 
 Every core module also carries `created_by`/`updated_by` (defined in `config/default_fields.php`, a `record`-type field pointing at Users): read-only and set automatically by `BaseModule` — `created_by` on creation, `updated_by` overwritten on every `updating()` — never user-editable, the same way `owner_id` is.
 
@@ -103,6 +103,7 @@ Defined in `config/default_field_types.php` and mapped to database column types 
 | `percentage` | `decimal`  | `PercentageField.vue` | 0–100 range                           |
 | `currency`   | `decimal`  | `CurrencyField.vue`   | non-negative number                   |
 | `address`    | `json`     | `AddressField.vue`    | all sub-fields non-empty              |
+| `multivalue` | `json`     | `MultiValueField.vue` | every entry a non-empty string        |
 | `record`     | `string`   | `RelatedRecord.vue`   | UUID format                           |
 | `image`      | `string`   | `ImageField.vue`      | image upload validation               |
 | `duration`   | `integer`  | `DurationField.vue`   | read-only — no edit-mode input at all |
@@ -110,6 +111,10 @@ Defined in `config/default_field_types.php` and mapped to database column types 
 ### Composite Field: Address
 
 The `address` type stores a JSON object with sub-fields (street, city, postal_code, country, etc.). It is flagged `isComposite: true` in the registry, meaning the field renderer handles it differently from flat types.
+
+### Composite Field: Multivalue
+
+The `multivalue` type stores a JSON array of strings — a tag/capsule input (add via Enter or comma, remove via backspace or click) rather than a single value. Also flagged `isComposite: true`. Emails' `to_addresses` and `cc_addresses` are the current stock usage.
 
 ### Computed Field: Duration
 
@@ -140,7 +145,7 @@ Every module — stock or custom — carries the same set of boolean flags on it
 
 | Flag                      | Meaning                                                                                                                                                                                                                       | Where it's set                                                                                                                      |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `is_active`               | Module is live and queryable — nearly every controller gates on it. A module built through the Module Builder starts `false` and only flips to `true` once the deploy pipeline's final step completes.                        | Deployment pipeline only — no manual toggle                                                                                         |
+| `is_active`               | Module is live and queryable — nearly every controller gates on it. A module built through the Module Builder starts `false` and only flips to `true` once the deploy pipeline's final step completes.                        | Deployment pipeline; also the dev-only `modules:deactivate` CLI command — no in-app toggle                                          |
 | `is_custom`               | Distinguishes a Module Builder-created module from a static, built-in one.                                                                                                                                                    | Set once at creation, never edited afterward                                                                                        |
 | `show_in_sidebar`         | Module appears in the left-nav sidebar.                                                                                                                                                                                       | Module Builder (create/edit) and Module Manager                                                                                     |
 | `show_in_module_manager`  | Module is listed in the admin Module Manager at all. Always `true` for modules created through the Module Builder.                                                                                                            | Not user-editable                                                                                                                   |
@@ -153,6 +158,10 @@ Every module — stock or custom — carries the same set of boolean flags on it
 | `has_activity`            | Records of this module get the activity timeline sidebar (see [Activities](#18-activities)).                                                                                                                                  | Module Builder only, not editable after creation                                                                                    |
 
 While a module is mid-creation in the Module Builder (`is_draft = true`), it's soft-locked to the editing admin (`locked_by`/`locked_until`, a rolling 2-hour window) so two admins can't clobber the same draft concurrently.
+
+Flipping `is_active` to `false` cascades cleanup so stale data doesn't linger or crash the frontend: `OwnershipService`'s "my records" query excludes inactive modules, `MyRecords.vue` drops any owned-records dashboard group whose module isn't currently active, and `RelationshipService::getRelationshipForModule()` filters out relationships pointing at an inactive module so its related-panels disappear from other modules' record pages. The underlying `Relationship` rows aren't deleted, so everything reappears automatically on reactivation. `userinvites` ships `is_active: false` by default.
+
+The sidebar itself pins whichever module the current page belongs to above its normal category grouping, rather than leaving it in its usual position.
 
 ### Line Items Are Configurable Per Module
 
@@ -181,6 +190,16 @@ Admins can build entirely new modules without writing code. The flow has dedicat
 5. Progress is shown in `Builder/DeployProgressModal.vue`
 
 Covered by an automated end-to-end test: `tests/Feature/Modules/ModuleBuilderWorkflowTest.php` drives the real deploy pipeline over HTTP, asserts the generated PHP files actually land on disk (model + handler), and verifies the resulting module supports full CRUD.
+
+### Console Commands (Dev Tooling)
+
+Three artisan commands complement the Module Builder for local/test workflows. All are explicitly dev-only — not intended to run against production data:
+
+| Command                                          | Purpose                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modules:import {path} {--force}`                | Materializes a module (fields, layouts, relationships, and the model + handler PHP files) from a JSON definition — into either the `Custom` namespace (`is_custom: true`, gitignored) or the core `Modules` namespace (`is_custom: false`, committed, for hand-off-ready test modules). Re-runnable — upserts on rerun. Spec: `docs/dev/module-import-json-spec.md`. |
+| `modules:delete {slug} {--keep-table} {--force}` | Inverse of `modules:import` — deletes the module row, its fields, labels, layouts, and relationships, and generated files (custom modules only), optionally dropping the DB table.                                                                                       |
+| `modules:deactivate {slug}`                      | Sets `is_active`/`show_in_sidebar` to `false` — see [Module Flags Reference](#module-flags-reference) for the cascading cleanup this triggers.                                                                                                                            |
 
 ### Handler Pattern
 
@@ -219,6 +238,8 @@ The Vue editors (`Settings/Layouts/Edit.vue`, `Settings/Layouts/Record.vue`) pro
 
 Layout config per module specifies fields by name and includes display metadata (label translation key, readonly flag, required flag, sortable flag).
 
+Saving a `record` layout is rejected server-side if it drops a field that's `required` (and not `readonly` or calculated) — `LayoutManagerController::assertRequiredFieldsPresent()` checks that every such field still appears somewhere across the layout's sections (excluding the line-items/attendees sections) before persisting, returning a validation error listing the missing fields' labels. `LayoutRecordEditor.vue` mirrors this client-side by refusing to remove a required field's column in the first place.
+
 Within the `record` layout editor, a module's "Line Items" section (`has_line_items: true`) embeds its own `LayoutListEditor` instance, letting admins pick and reorder which `line_items` module fields appear as table columns — a separate field pool from the host module's own fields.
 
 ---
@@ -250,6 +271,8 @@ Both bulk delete and bulk update support three selection modes passed in the req
 | Bulk field update | `PUT /{module}`    | `ListActions/MassUpdateZone.vue` |
 
 A bulk field update applies one field/value pair uniformly to every selected record. If the target field is required, the whole request is rejected up front when the new value would be empty (`MassUpdateZone.vue` shows the same validation client-side that single-record editing uses). The value field also supports `record`-type targets (e.g. bulk-reassigning "Owned by") via the same `RecordSelectorDrawer` picker used on the record page.
+
+A field can also be excluded from bulk update entirely via `Field::enable_mass_update` (default `true`, no field-builder UI toggle — set directly in `config/stock_fields.php`). `MassUpdateZone.vue` filters such fields out of the field picker, and `RecordController` rejects a bulk update targeting one server-side regardless. Used today on date pairs where mass-updating would be semantically meaningless: invoices' issue/due dates, cases' opened/closed dates, orders' order/due dates, and meetings' start/end times.
 
 ### Export
 
@@ -287,6 +310,8 @@ The Create form additionally offers a **`many-to-one`** option, so a relationshi
 | Unlink records                     | `DELETE /modules/{module}/{record}/relationships/{relationship}/{relatedId}` |
 
 The `RelatedLinksOverlay.vue` and `RecordSelectorDrawer.vue` components handle the UI for selecting and linking records. Linking and unlinking are both logged — on both sides of the relationship — see [Audit Trail & Impersonation Sessions](#16-audit-trail--impersonation-sessions).
+
+The record page's Related tab is hidden entirely when the module's `related` layout has no panels configured, rather than showing an empty tab.
 
 ### Relationship Manager (Settings)
 
