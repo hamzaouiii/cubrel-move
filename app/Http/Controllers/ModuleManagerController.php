@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Filesystem\Filesystem;
 use App\Models\Settings\Settings;
-use App\Models\DropdownList;
+use App\Models\ModuleCategory;
 
 
 class ModuleManagerController extends Controller
@@ -40,12 +40,11 @@ class ModuleManagerController extends Controller
   public function show(Request $request)
   {
     $id = $request->route('module');
-    $category_list = DropdownList::get('module_category_list');
 
     $module = Module::where('id', $id)->firstOrFail();
     return Inertia::render('Settings/Modules/Record', [
       'settingModule' => $module,
-      'categoryList'  => $category_list,
+      'categoryList'  => ModuleCategory::asSelectOptions(),
       'moduleOptions' => Module::query()
         ->where('is_product_like', true)
         ->where('is_active', true)

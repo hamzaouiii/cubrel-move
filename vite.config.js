@@ -6,7 +6,7 @@ import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   server: {
-    port: 5173,
+    port: 9873,
   },
   plugins: [
     laravel({

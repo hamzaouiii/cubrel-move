@@ -7,6 +7,7 @@ use App\Models\Field;
 use App\Models\Label;
 use App\Models\Layout;
 use App\Models\Module;
+use App\Models\ModuleCategory;
 use App\Models\Relationship;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Relationships\RelationshipService;
@@ -95,7 +96,7 @@ class ImportModuleFromJson extends Command
             'color' => $data['color'] ?? '#0d6efd',
             'path' => $data['path'] ?? ('/'.$slug),
             'sort_order' => $data['sort_order'] ?? ((Module::max('sort_order') ?? 0) + 1),
-            'category' => $data['category'] ?? 'custom',
+            'module_category_id' => $this->resolveCategoryId($data['category'] ?? 'custom'),
             'is_active' => $data['is_active'] ?? true,
             'is_draft' => false,
             'has_activity' => $data['has_activity'] ?? false,
@@ -227,6 +228,24 @@ class ImportModuleFromJson extends Command
         }
 
         return $created;
+    }
+
+    /**
+     * Accepts either a category label or an existing module_categories.id,
+     * creating a new category by that label if neither matches.
+     */
+    protected function resolveCategoryId(string $labelOrId): string
+    {
+        if (ModuleCategory::whereKey($labelOrId)->exists()) {
+            return $labelOrId;
+        }
+
+        $category = ModuleCategory::firstOrCreate(
+            ['label' => $labelOrId],
+            ['sort_order' => ModuleCategory::nextSortOrder()]
+        );
+
+        return $category->id;
     }
 
     protected function commonFieldAttributes(Module $module, string $name, array $def): array

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('label')->nullable();
             $table->string('single_label')->nullable();
-            $table->string('category')->nullable();
+            $table->string('module_category_id')->nullable();
             $table->string('icon')->default('fa-bahai');
             $table->string('color')->default('#0d6efd');
             $table->string('path');
@@ -42,6 +42,7 @@ return new class extends Migration
             $table->string('line_item_source_module')->nullable();
             $table->index('locked_until');
             $table->timestamps();
+            $table->index('module_category_id');
 
         });
     }

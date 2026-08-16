@@ -96,6 +96,7 @@ return [
         'hide' => 'Hide Sidebar',
         'show' => 'Show Sidebar',
         'home' => 'Dashboard',
+        'uncategorized' => 'General',
     ],
     'copied' => 'Copied',
     'copy_failed' => 'Copy Failed',

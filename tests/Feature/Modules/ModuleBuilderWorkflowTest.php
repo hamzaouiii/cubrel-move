@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Modules;
 
-use App\Models\DropdownList;
 use App\Models\Field;
 use App\Models\Icon;
 use App\Models\Label;
 use App\Models\Module;
+use App\Models\ModuleCategory;
 use App\Models\Settings\SettingValue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +24,7 @@ class ModuleBuilderWorkflowTest extends TestCase
     private array $cleanupFileBaseNames = [];
     private array $cleanupModuleIds = [];
     private array $cleanupUserIds = [];
-    private ?string $cleanupDropdownListId = null;
+    private ?string $cleanupModuleCategoryId = null;
     private ?int $cleanupIconId = null;
 
     protected function setUp(): void
@@ -34,16 +34,13 @@ class ModuleBuilderWorkflowTest extends TestCase
         $this->completeOnboarding();
         SettingValue::create(['setting_item' => 'preferences', 'key' => 'list_view_limit', 'value' => 25]);
 
-        
-        
-        
-        $dropdown = DropdownList::create([
-            'key' => 'module_category_list',
-            'values' => [['label' => 'Sales', 'value' => 'sales', 'status' => 'success']],
-        ]);
-        $this->cleanupDropdownListId = $dropdown->id;
 
-        
+
+
+        $category = ModuleCategory::create(['label' => 'Sales', 'sort_order' => 1]);
+        $this->cleanupModuleCategoryId = $category->id;
+
+
         
         
         $icon = Icon::create(['name' => 'cube', 'style' => 'solid', 'class' => 'fa-solid fa-cube']);
@@ -71,8 +68,8 @@ class ModuleBuilderWorkflowTest extends TestCase
             User::where('id', $userId)->delete();
         }
 
-        if ($this->cleanupDropdownListId) {
-            DropdownList::where('id', $this->cleanupDropdownListId)->delete();
+        if ($this->cleanupModuleCategoryId) {
+            ModuleCategory::where('id', $this->cleanupModuleCategoryId)->delete();
         }
 
         if ($this->cleanupIconId) {
@@ -107,7 +104,7 @@ class ModuleBuilderWorkflowTest extends TestCase
             'display_label' => 'Widgets '.$slugSuffix,
             'single_label' => 'Widget '.$slugSuffix,
             'slug' => $slug,
-            'category' => 'sales',
+            'module_category_id' => $this->cleanupModuleCategoryId,
             'show_in_sidebar' => true,
             'has_line_items' => false,
             'has_owner' => true,
@@ -141,7 +138,7 @@ class ModuleBuilderWorkflowTest extends TestCase
             'display_label' => 'Widgets '.$slugSuffix,
             'single_label' => 'Widget '.$slugSuffix,
             'slug' => $slug,
-            'category' => 'sales',
+            'module_category_id' => $this->cleanupModuleCategoryId,
             'show_in_sidebar' => true,
         ])->assertOk();
 

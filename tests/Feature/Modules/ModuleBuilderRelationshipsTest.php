@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Modules;
 
-use App\Models\DropdownList;
 use App\Models\Field;
 use App\Models\Icon;
 use App\Models\Label;
 use App\Models\Module;
+use App\Models\ModuleCategory;
 use App\Models\Modules\Account;
 use App\Models\Relationship;
 use App\Models\RelationshipLink;
@@ -48,7 +48,7 @@ class ModuleBuilderRelationshipsTest extends TestCase
     private array $cleanupUserIds = [];
     private array $cleanupRelationshipIds = [];
     private array $cleanupAccountIds = [];
-    private ?string $cleanupDropdownListId = null;
+    private ?string $cleanupModuleCategoryId = null;
     private ?int $cleanupIconId = null;
 
     protected function setUp(): void
@@ -58,11 +58,8 @@ class ModuleBuilderRelationshipsTest extends TestCase
         $this->completeOnboarding();
         SettingValue::create(['setting_item' => 'preferences', 'key' => 'list_view_limit', 'value' => 25]);
 
-        $dropdown = DropdownList::create([
-            'key' => 'module_category_list',
-            'values' => [['label' => 'Sales', 'value' => 'sales', 'status' => 'success']],
-        ]);
-        $this->cleanupDropdownListId = $dropdown->id;
+        $category = ModuleCategory::create(['label' => 'Sales', 'sort_order' => 1]);
+        $this->cleanupModuleCategoryId = $category->id;
 
         $icon = Icon::create(['name' => 'cube', 'style' => 'solid', 'class' => 'fa-solid fa-cube']);
         $this->cleanupIconId = $icon->id;
@@ -97,8 +94,8 @@ class ModuleBuilderRelationshipsTest extends TestCase
             User::where('id', $userId)->delete();
         }
 
-        if ($this->cleanupDropdownListId) {
-            DropdownList::where('id', $this->cleanupDropdownListId)->delete();
+        if ($this->cleanupModuleCategoryId) {
+            ModuleCategory::where('id', $this->cleanupModuleCategoryId)->delete();
         }
 
         if ($this->cleanupIconId) {
@@ -135,7 +132,7 @@ class ModuleBuilderRelationshipsTest extends TestCase
             'display_label' => 'Widgets '.$slugSuffix,
             'single_label' => 'Widget '.$slugSuffix,
             'slug' => $slug,
-            'category' => 'sales',
+            'module_category_id' => $this->cleanupModuleCategoryId,
             'show_in_sidebar' => true,
             'has_line_items' => false,
             'has_owner' => true,
@@ -145,7 +142,7 @@ class ModuleBuilderRelationshipsTest extends TestCase
             'display_label' => 'Widgets '.$slugSuffix,
             'single_label' => 'Widget '.$slugSuffix,
             'slug' => $slug,
-            'category' => 'sales',
+            'module_category_id' => $this->cleanupModuleCategoryId,
             'show_in_sidebar' => true,
         ])->assertOk();
 

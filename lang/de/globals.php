@@ -97,6 +97,7 @@ return [
         'hide' => 'Seitenleiste Ausblenden',
         'show' => 'Seitenleiste Einblenden',
         'home' => 'Startseite',
+        'uncategorized' => 'Allgemein',
     ],
     'copied' => 'kopiert!',
     'copy_failed' => 'Kopieren fehlgeschlagen',

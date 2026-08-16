@@ -3459,6 +3459,11 @@
                 }
                 &__title {
                     flex: 10;
+                    display: flex;
+                    align-items: center;
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: var(--color-text-heading);
                     input {
                         width: calc(100% - 24px);
                         padding: 8px 12px;
@@ -5948,6 +5953,96 @@ textarea {
     gap: 6px;
 }
 
+.sidebar-manager {
+    &__toggle {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+
+        &__text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            &__label {
+                font-weight: 600;
+                font-size: 0.95rem;
+                color: var(--color-text-heading);
+            }
+
+            &__hint {
+                font-size: 0.8rem;
+                color: var(--color-text-muted);
+            }
+        }
+    }
+
+    &__editor {
+        padding: 20px;
+    }
+
+    &__modules {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        &__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--color-bg-muted);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            cursor: move;
+            transition: all 0.2s;
+            user-select: none;
+
+            &:hover {
+                border-color: var(--color-text-faint);
+                box-shadow: 0 2px 4px var(--color-shadow-strong);
+            }
+
+            &--dragging {
+                opacity: 0.5;
+            }
+
+            &__handle {
+                color: var(--color-text-faint);
+                cursor: move;
+
+                &:active {
+                    cursor: grabbing;
+                }
+            }
+
+            &__icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 22px;
+                color: var(--module-color);
+            }
+
+            &__label {
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: var(--color-text-heading);
+            }
+        }
+    }
+
+    &__section--drop-target {
+        outline: 2px dashed var(--primary-color);
+        outline-offset: 2px;
+    }
+}
+
 .ple-header-row {
     display: flex;
     align-items: stretch;
@@ -6675,5 +6770,79 @@ textarea {
                 font-weight: 700;
             }
         }
+    }
+}
+
+.module-categories {
+    &__description {
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        margin: 0 0 16px;
+    }
+
+    &__row {
+        cursor: move;
+
+        &--dragging {
+            opacity: 0.4;
+        }
+
+        &--drop-target {
+            outline: 2px dashed var(--primary-color);
+            outline-offset: -2px;
+        }
+
+        &__handle {
+            width: 40px;
+            color: var(--color-text-faint);
+        }
+
+        &__input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            background: transparent;
+            font-size: 0.875rem;
+            color: var(--color-text-heading);
+
+            &:hover {
+                border-color: var(--color-border-muted);
+            }
+
+            &:focus {
+                border-color: var(--primary-color);
+                background: var(--color-bg-surface);
+            }
+        }
+    }
+
+    &__add-row {
+        cursor: default;
+    }
+
+    &__add-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background: var(--color-bg-subtle);
+        color: var(--module-color);
+        transition: all 0.15s ease;
+
+        &:hover {
+            background: color-mix(in srgb, var(--module-color) 15%, var(--color-bg-subtle));
+            transform: scale(1.08);
+        }
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 24px;
+        color: var(--color-text-muted);
     }
 }
