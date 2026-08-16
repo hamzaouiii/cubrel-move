@@ -166,6 +166,14 @@ return [
         'isActive' => 1,
         'icon' => 'fa-solid fa-cubes'
       ],
+      'module-categories' => [
+        'name' => 'Module Categories',
+        'slug' => 'module-categories',
+        'label' => 'settings.items.module_categories',
+        'path' => '/settings/module-categories',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-layer-group'
+      ],
       'dropdowns' => [
         'name' => 'Dropdowns',
         'slug' => 'dropdowns',
@@ -173,6 +181,15 @@ return [
         'path' => '/settings/dropdowns',
         'isActive' => 1,
         'icon' => 'fa-solid fa-list'
+      ],
+            'sidebar' => [
+        'name' => 'Sidebar',
+        'slug' => 'sidebar',
+        'label' => 'settings.items.sidebar',
+        'path' => '/settings/sidebar',
+        'isActive' => 1,
+        'icon' => 'fa-solid fa-bars'
+        
       ]
     ]
   ],

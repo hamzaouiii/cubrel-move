@@ -12,6 +12,7 @@ use App\Http\Controllers\LayoutManagerController;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\ListFilterController;
 use App\Http\Controllers\ModuleBuilderController;
+use App\Http\Controllers\ModuleCategoriesController;
 use App\Http\Controllers\ModuleDeploymentController;
 use App\Http\Controllers\ModuleManagerController;
 use App\Http\Controllers\OnboardingController;
@@ -42,7 +43,7 @@ use App\Http\Controllers\RecordHistoryController;
 use App\Http\Controllers\RecordTimelineController;
 use App\Http\Controllers\EmailCaptureAddressController;
 use App\Http\Controllers\ApiTokenController;
-
+use App\Http\Controllers\SidebarManagerController;
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
@@ -120,6 +121,17 @@ Route::middleware(['auth', 'onboarded'])->group(function () {
         Route::delete('/invites/{invite}', [InviteController::class, 'destroy'])->name('invites.destroy');
 
         Route::prefix('settings')->name('settings.')->group(function () {
+
+        // sidebar
+        Route::get('sidebar', [SidebarManagerController::class,'index'])->name('sidebar.index');
+        Route::put('sidebar', [SidebarManagerController::class,'update'])->name('sidebar.update');
+
+            // Module categories
+            Route::post('module-categories/reorder', [ModuleCategoriesController::class, 'reorder'])
+                ->name('module-categories.reorder');
+            Route::resource('module-categories', ModuleCategoriesController::class)
+                ->except(['show', 'create', 'edit'])
+                ->names('module-categories');
 
             // Module manager
             Route::resource('modules', ModuleManagerController::class)

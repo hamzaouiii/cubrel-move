@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use App\Support\RandomColorGenerator;
 use App\Support\RandomIconGenerator;
 use Illuminate\Support\Facades\DB;
-use App\Models\DropdownList;
+use App\Models\ModuleCategory;
 use App\Models\Field;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -24,7 +24,6 @@ class ModuleBuilderController extends Controller
   public function create()
   {
     $user_id = Auth::id();
-    $category_list = DropdownList::get('module_category_list');
     $module = $this->getOrCreateDraftModule($user_id);
     $field = new Field();
     $field_modules = Module::select('slug', 'icon', 'color')
@@ -33,7 +32,7 @@ class ModuleBuilderController extends Controller
       ->get();
     return Inertia::render('Settings/Modules/Create', [
       'settingModule' => $module,
-      'categoryList'  => $category_list,
+      'categoryList'  => ModuleCategory::asSelectOptions(),
       'fields'        => $module->builderFields(),
       'field_types' => config("default_field_types"),
       'metadata' => $field->getEmptyMetadata(),
@@ -77,7 +76,7 @@ class ModuleBuilderController extends Controller
       'icon'            => ['nullable', 'string', 'max:255'],
       'color'           => ['nullable', 'string', 'max:255'],
       'description'     => ['nullable', 'string'],
-      'category'     => ['required', 'string'],
+      'module_category_id' => ['required', 'string', 'exists:module_categories,id'],
       'show_in_sidebar' => ['boolean'],
       'has_line_items' => ['required', 'boolean'],
       'is_product_like' => ['boolean'],
@@ -100,7 +99,7 @@ class ModuleBuilderController extends Controller
       'color'           => $validated['color'] ?? '#000000',
       'description'     => $validated['description'] ?? '',
       'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
-      'category'        => $validated['category'],
+      'module_category_id' => $validated['module_category_id'],
       'is_draft'        => true,
       'is_active'       => false,
       'label'           => $validated['display_label'], // to be properly handeled after deploying the module
@@ -145,7 +144,7 @@ class ModuleBuilderController extends Controller
       'icon'            => ['nullable', 'string', 'max:255'],
       'color'           => ['nullable', 'string', 'max:255'],
       'description'     => ['nullable', 'string'],
-      'category'     => ['required', 'string'],
+      'module_category_id' => ['required', 'string', 'exists:module_categories,id'],
       'show_in_sidebar' => ['boolean'],
     ]);
 
@@ -161,7 +160,7 @@ class ModuleBuilderController extends Controller
       'description'     => $validated['description'] ?? '',
       'show_in_sidebar' => $validated['show_in_sidebar'] ?? true,
       'show_in_module_manager' => true,
-      'category'        => $validated['category'],
+      'module_category_id' => $validated['module_category_id'],
       'sort_order'      => $DEFAULT_SORT_ORDER,
       'is_draft'        => false,
       'is_active'       => true,

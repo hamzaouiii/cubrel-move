@@ -90,7 +90,7 @@ const inputTypeFor = (key, value) => {
   if (key === "icon") return "icon";
   if (typeof value === "number") return "number";
   if (key === "color") return "color";
-  if (key === "category") return "select";
+  if (key === "module_category_id") return "select";
   if (key === "description") return "textarea";
   if (key === "has_line_items") return "checkbox";
   if (key === "is_product_like") return "checkbox";
@@ -105,7 +105,7 @@ const emit = defineEmits([
   "missing-fields",
   "is-form-dirty",
 ]);
-const requiredFields = ["display_label", "single_label", "category"];
+const requiredFields = ["display_label", "single_label", "module_category_id"];
 // 1. Validation: Checks if required fields are empty
 const hasMissingRequired = computed(() => {
   return requiredFields.some((field) => {

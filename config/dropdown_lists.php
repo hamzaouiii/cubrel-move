@@ -714,50 +714,6 @@ return [
             'icon' => 'fa-solid fa-circle',
         ],
     ],
-    'module_category_list' => [
-        [
-            'label' => 'modules.categories.sales',
-            'value' => 'sales',
-            'color' => '#065f46',
-            'bgColor' => '#d1fae5',
-            'icon' => 'fa-solid fa-check-circle',
-        ],
-        [
-            'label' => 'modules.categories.communication',
-            'value' => 'communication',
-            'color' => '#1e40af',
-            'bgColor' => '#bfdbfe',
-            'icon' => 'fa-solid fa-info-circle',
-        ],
-        [
-            'label' => 'modules.categories.revenue',
-            'value' => 'revenue',
-            'color' => '#065f46',
-            'bgColor' => '#d1fae5',
-            'icon' => 'fa-solid fa-check-circle',
-        ],
-        [
-            'label' => 'modules.categories.activities',
-            'value' => 'activities',
-            'color' => '#5b21b6',
-            'bgColor' => '#ede9fe',
-            'icon' => 'fa-solid fa-bolt',
-        ],
-        [
-            'label' => 'modules.categories.support',
-            'value' => 'support',
-            'color' => '#92400e',
-            'bgColor' => '#fed7aa',
-            'icon' => 'fa-solid fa-exclamation-triangle',
-        ],
-        [
-            'label' => 'modules.categories.system',
-            'value' => 'system',
-            'color' => '#374151',
-            'bgColor' => '#e5e7eb',
-            'icon' => 'fa-solid fa-circle',
-        ],
-    ],
     'users_status_list' => [
         [
             'label' => 'dropdowns.users_status_list.active',

@@ -6,6 +6,7 @@ use App\Concerns\HasTranslatableLabel;
 use App\Scopes\AdminOnlyModuleScope;
 use App\Services\Relationships\RelationshipService;
 use App\Services\Users\OwnershipService;
+use App\Support\Settings;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -37,7 +38,7 @@ class Module extends Model
         'icon',
         'label',
         'is_draft',
-        'category',
+        'module_category_id',
         'single_label',
         'color',
         'path',
@@ -75,10 +76,17 @@ class Module extends Model
 
     public static function forSidebar(): Collection
     {
+
+        $sortByCategory = Settings::bool('sidebar_sort_by_category', true);
+
         return self::where('is_draft', 0)
             ->where('show_in_sidebar', 1)
-            ->orderBy('category')
+            ->with('category')
             ->get()
+            ->sortBy(fn (Module $module) => $sortByCategory
+                ? [$module->category?->sort_order ?? PHP_INT_MAX, $module->sort_order]
+                : [$module->sort_order])
+            ->values()
             ->map(function (Module $module) {
 
                 return [
@@ -89,12 +97,21 @@ class Module extends Model
                     'path' => $module->path,
                     'label' => $module->label,
                     'single_label' => $module->single_label,
-                    'category' => $module->category,
+                    'category_id' => $module->module_category_id,
+                    'category_label' => $module->category?->label,
                     'is_activity' => $module->is_activity,
                     'has_activity' => $module->has_activity,
                 ];
             })
             ->values();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<ModuleCategory, $this>
+     */
+    public function category()
+    {
+        return $this->belongsTo(ModuleCategory::class, 'module_category_id');
     }
 
     /**

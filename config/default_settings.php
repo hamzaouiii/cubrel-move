@@ -335,4 +335,13 @@ return [
         'sort_order' => 7,
         'autoload' => 1,
     ],
+    [
+        'setting_item' => 'sidebar',
+        'key' => 'sidebar_sort_by_category',
+        'value' => 1,
+        'label' => 'settings.sidebar.sort_by_category',
+        'type' => 'bool',
+        'sort_order' => 1,
+        'autoload' => 1,
+    ],
 ];
