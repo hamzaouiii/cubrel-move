@@ -29,6 +29,7 @@ class DevSeeder extends Seeder
     Product::factory()->count(20)->create();
     Deal::factory()->count(15)->create();
     Order::factory()->count(10)->create();
+    // MovesSeeder links its records to Contacts, so it must run after Contact is seeded.
     // Tasks/Calls/Meetings/Notes are seeded (and linked to the records above)
     // by ActivitySeeder, once relationships exist to link them through.
   }

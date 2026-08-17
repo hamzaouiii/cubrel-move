@@ -1,0 +1,501 @@
+{
+  "name": "Umzugsanfrage",
+  "label": "Umzugsanfragen",
+  "single_label": "Umzugsanfrage",
+  "slug": "moverequests",
+  "icon": "fa-solid fa-clipboard-list",
+  "color": "#BCAAA4",
+  "path": "/moverequests",
+  "sort_order": 5,
+  "category": "operations",
+  "has_activity": true,
+  "description": "Inbound quote requests before they're accepted and scheduled as a Move.",
+  "is_custom": false,
+  "fields": {
+    "objekttyp": {
+      "type": "status",
+      "label": "Objekttyp",
+      "filterable": true,
+      "options": {
+        "haus": {
+          "label": "Haus",
+          "icon": "fa-solid fa-house",
+          "bg_color": "#D9A441",
+          "text_color": "#FFFFFF"
+        },
+        "wohnung": {
+          "label": "Wohnung",
+          "icon": "fa-solid fa-building",
+          "bg_color": "#8B7355",
+          "text_color": "#FFFFFF"
+        },
+        "studio": {
+          "label": "Studio",
+          "icon": "fa-solid fa-door-open",
+          "bg_color": "#D4622E",
+          "text_color": "#FFFFFF"
+        }
+      }
+    },
+    "zimmeranzahl": {
+      "type": "integer",
+      "label": "Zimmeranzahl"
+    },
+    "wohnflaeche": {
+      "type": "decimal",
+      "label": "Wohnfläche (m²)"
+    },
+    "stockwerk": {
+      "type": "integer",
+      "label": "Stockwerk"
+    },
+    "etagenanzahl": {
+      "type": "integer",
+      "label": "Etagenanzahl"
+    },
+    "aufzug_vorhanden": {
+      "type": "checkbox",
+      "label": "Aufzug vorhanden",
+      "default_value": false
+    },
+    "abholadresse": {
+      "type": "address",
+      "label": "Abholadresse",
+      "required": true
+    },
+    "zieladresse": {
+      "type": "address",
+      "label": "Zieladresse",
+      "required": true
+    },
+    "entfernung_km": {
+      "type": "decimal",
+      "label": "Entfernung (km)"
+    },
+    "geschaetztes_volumen_m3": {
+      "type": "decimal",
+      "label": "Geschätztes Volumen (m³)",
+      "filterable": true,
+      "sortable": true
+    },
+    "geschaetzter_preis_von": {
+      "type": "currency",
+      "label": "Geschätzter Preis von"
+    },
+    "geschaetzter_preis_bis": {
+      "type": "currency",
+      "label": "Geschätzter Preis bis"
+    },
+    "langer_tragweg": {
+      "type": "checkbox",
+      "label": "Langer Tragweg",
+      "default_value": false
+    },
+    "zerbrechliche_gegenstaende": {
+      "type": "checkbox",
+      "label": "Zerbrechliche Gegenstände",
+      "default_value": false
+    },
+    "demontage": {
+      "type": "checkbox",
+      "label": "Demontage",
+      "default_value": false
+    },
+    "montage": {
+      "type": "checkbox",
+      "label": "Montage",
+      "default_value": false
+    },
+    "wunschtermin": {
+      "type": "date",
+      "label": "Wunschtermin",
+      "filterable": true,
+      "sortable": true
+    },
+    "quelle": {
+      "type": "status",
+      "label": "Quelle",
+      "filterable": true,
+      "options": {
+        "widget": {
+          "label": "Widget",
+          "icon": "fa-solid fa-code",
+          "bg_color": "#3B8BFF",
+          "text_color": "#FFFFFF"
+        },
+        "telefon": {
+          "label": "Telefon",
+          "icon": "fa-solid fa-phone",
+          "bg_color": "#4A6B5A",
+          "text_color": "#FFFFFF"
+        },
+        "empfehlung": {
+          "label": "Empfehlung",
+          "icon": "fa-solid fa-thumbs-up",
+          "bg_color": "#7B5EA7",
+          "text_color": "#FFFFFF"
+        },
+        "laufkundschaft": {
+          "label": "Laufkundschaft",
+          "icon": "fa-solid fa-person-walking",
+          "bg_color": "#8B8B8B",
+          "text_color": "#FFFFFF"
+        }
+      }
+    },
+    "angebotener_preis": {
+      "type": "currency",
+      "label": "Angebotener Preis",
+      "filterable": true
+    },
+    "ablehnungsgrund": {
+      "type": "text",
+      "label": "Ablehnungsgrund"
+    },
+    "status": {
+      "type": "status",
+      "label": "Status",
+      "required": true,
+      "filterable": true,
+      "sortable": true,
+      "default_value": "neu",
+      "options": {
+        "neu": {
+          "label": "Neu",
+          "icon": "fa-solid fa-circle-plus",
+          "bg_color": "#3B8BFF",
+          "text_color": "#FFFFFF"
+        },
+        "geprueft": {
+          "label": "Geprüft",
+          "icon": "fa-solid fa-magnifying-glass",
+          "bg_color": "#D9A441",
+          "text_color": "#FFFFFF"
+        },
+        "angebot_erstellt": {
+          "label": "Angebot erstellt",
+          "icon": "fa-solid fa-file-invoice",
+          "bg_color": "#4A90A4",
+          "text_color": "#FFFFFF"
+        },
+        "konvertiert": {
+          "label": "Konvertiert",
+          "icon": "fa-solid fa-circle-check",
+          "bg_color": "#01BB00",
+          "text_color": "#FFFFFF"
+        },
+        "verloren": {
+          "label": "Verloren",
+          "icon": "fa-solid fa-circle-xmark",
+          "bg_color": "#F93800",
+          "text_color": "#FFFFFF"
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "right_module": "contacts",
+      "type": "many-to-one",
+      "name": "contacts_moverequests",
+      "label": "Move Requests"
+    },
+    {
+      "right_module": "moves",
+      "type": "one-to-one",
+      "name": "moverequests_moves",
+      "label": "Umzüge"
+    }
+  ],
+  "layouts": {
+    "list": {
+      "columns": [
+        {
+          "name": "name",
+          "type": "text",
+          "label": "modules.defaults.name",
+          "sortable": true
+        },
+        {
+          "name": "wunschtermin",
+          "type": "date",
+          "label": "modules.moverequests.fields.wunschtermin",
+          "sortable": true
+        },
+        {
+          "name": "status",
+          "type": "status",
+          "label": "modules.moverequests.fields.status",
+          "sortable": true
+        },
+        {
+          "name": "objekttyp",
+          "type": "status",
+          "label": "modules.moverequests.fields.objekttyp"
+        },
+
+        {
+          "name": "geschaetztes_volumen_m3",
+          "type": "decimal",
+          "label": "modules.moverequests.fields.geschaetztes_volumen_m3",
+          "sortable": true
+        },
+        {
+          "name": "angebotener_preis",
+          "type": "currency",
+          "label": "modules.moverequests.fields.angebotener_preis"
+        }
+      ]
+    },
+    "record": {
+      "sections": [
+        {
+          "name": "Anfrage",
+          "layout": [
+            {
+              "name": "name",
+              "type": "text",
+              "label": "modules.defaults.name"
+            },
+            {
+              "name": "status",
+              "type": "status",
+              "label": "modules.moverequests.fields.status"
+            },
+            {
+              "name": "wunschtermin",
+              "type": "date",
+              "label": "modules.moverequests.fields.wunschtermin"
+            },
+            {
+              "name": "quelle",
+              "type": "status",
+              "label": "modules.moverequests.fields.quelle"
+            },
+            {
+              "name": "objekttyp",
+              "type": "status",
+              "label": "modules.moverequests.fields.objekttyp"
+            }
+          ]
+        },
+        {
+          "name": "Adressen",
+          "layout": [
+            {
+              "name": "abholadresse",
+              "type": "address",
+              "label": "modules.moverequests.fields.abholadresse"
+            },
+            {
+              "name": "zieladresse",
+              "type": "address",
+              "label": "modules.moverequests.fields.zieladresse"
+            },
+            {
+              "name": "entfernung_km",
+              "type": "decimal",
+              "label": "modules.moverequests.fields.entfernung_km"
+            }
+          ]
+        },
+        {
+          "name": "Objektdetails",
+          "layout": [
+            {
+              "name": "zimmeranzahl",
+              "type": "integer",
+              "label": "modules.moverequests.fields.zimmeranzahl"
+            },
+            {
+              "name": "wohnflaeche",
+              "type": "decimal",
+              "label": "modules.moverequests.fields.wohnflaeche"
+            },
+            {
+              "name": "stockwerk",
+              "type": "integer",
+              "label": "modules.moverequests.fields.stockwerk"
+            },
+            {
+              "name": "etagenanzahl",
+              "type": "integer",
+              "label": "modules.moverequests.fields.etagenanzahl"
+            },
+            {
+              "name": "aufzug_vorhanden",
+              "type": "checkbox",
+              "label": "modules.moverequests.fields.aufzug_vorhanden"
+            },
+            {
+              "name": "geschaetztes_volumen_m3",
+              "type": "decimal",
+              "label": "modules.moverequests.fields.geschaetztes_volumen_m3"
+            }
+          ]
+        },
+        {
+          "name": "Preis & Besonderheiten",
+          "layout": [
+            {
+              "name": "geschaetzter_preis_von",
+              "type": "currency",
+              "label": "modules.moverequests.fields.geschaetzter_preis_von"
+            },
+            {
+              "name": "geschaetzter_preis_bis",
+              "type": "currency",
+              "label": "modules.moverequests.fields.geschaetzter_preis_bis"
+            },
+            {
+              "name": "angebotener_preis",
+              "type": "currency",
+              "label": "modules.moverequests.fields.angebotener_preis"
+            },
+            {
+              "name": "ablehnungsgrund",
+              "type": "text",
+              "label": "modules.moverequests.fields.ablehnungsgrund"
+            },
+            {
+              "name": "langer_tragweg",
+              "type": "checkbox",
+              "label": "modules.moverequests.fields.langer_tragweg"
+            },
+            {
+              "name": "zerbrechliche_gegenstaende",
+              "type": "checkbox",
+              "label": "modules.moverequests.fields.zerbrechliche_gegenstaende"
+            },
+            {
+              "name": "demontage",
+              "type": "checkbox",
+              "label": "modules.moverequests.fields.demontage"
+            },
+            {
+              "name": "montage",
+              "type": "checkbox",
+              "label": "modules.moverequests.fields.montage"
+            }
+          ]
+        },
+        {
+          "name": "System",
+          "layout": [
+            {
+              "name": "description",
+              "type": "longtext",
+              "label": "modules.defaults.description"
+            },
+            {
+              "name": "owner_id",
+              "type": "record",
+              "label": "modules.defaults.owner_id"
+            },
+            {
+              "name": "created_by",
+              "type": "record",
+              "label": "modules.defaults.created_by"
+            },
+            {
+              "name": "updated_by",
+              "type": "record",
+              "label": "modules.defaults.updated_by"
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "label": "modules.defaults.created_at"
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "label": "modules.defaults.updated_at"
+            }
+          ]
+        }
+      ]
+    },
+    "related": {
+      "columns": [
+        {
+          "layout": [
+            {
+              "name": "contacts_moverequests",
+              "type": "one-to-many",
+              "label": "relationships.contacts_moverequests",
+              "fields": [
+                {
+                  "name": "name",
+                  "type": "text",
+                  "label": "modules.defaults.name"
+                },
+                {
+                  "name": "email",
+                  "type": "email",
+                  "label": "modules.contacts.fields.email"
+                },
+                {
+                  "name": "phone",
+                  "type": "phone",
+                  "label": "modules.contacts.fields.phone"
+                }
+              ]
+            },
+            {
+              "name": "moverequests_moves",
+              "type": "one-to-one",
+              "label": "relationships.moverequests_moves",
+              "fields": [
+                {
+                  "name": "umzugstermin",
+                  "type": "date",
+                  "label": "modules.moves.fields.umzugstermin"
+                },
+                {
+                  "name": "status",
+                  "type": "status",
+                  "label": "modules.moves.fields.status"
+                },
+                {
+                  "name": "endpreis",
+                  "type": "currency",
+                  "label": "modules.moves.fields.endpreis"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "linkingPanel": {
+      "columns": [
+        {
+          "name": "wunschtermin",
+          "type": "date",
+          "label": "modules.moverequests.fields.wunschtermin"
+        },
+        {
+          "name": "status",
+          "type": "status",
+          "label": "modules.moverequests.fields.status"
+        },
+        {
+          "name": "abholadresse",
+          "type": "address",
+          "label": "modules.moverequests.fields.abholadresse"
+        },
+        {
+          "name": "zieladresse",
+          "type": "address",
+          "label": "modules.moverequests.fields.zieladresse"
+        },
+        {
+          "name": "geschaetztes_volumen_m3",
+          "type": "decimal",
+          "label": "modules.moverequests.fields.geschaetztes_volumen_m3"
+        }
+      ]
+    }
+  }
+}

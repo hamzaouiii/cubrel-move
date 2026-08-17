@@ -10,6 +10,7 @@ use App\Models\Relationship;
 use App\Scopes\AdminOnlyModuleScope;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -21,8 +22,9 @@ use Illuminate\Support\Str;
  * its fields, labels, layouts and relationships (relationship_links cascade
  * off the relationships FK automatically), the generated model/handler
  * files (custom modules only — core files are hand-written and committed,
- * so those are left alone), and finally the underlying DB table. Dev-only
- * tool — not meant to run against production data.
+ * so those are left alone), the generated migration file (core modules
+ * only — custom modules never get one), and finally the underlying DB
+ * table. Dev-only tool — not meant to run against production data.
  */
 class DeleteModule extends Command
 {
@@ -61,7 +63,7 @@ class DeleteModule extends Command
         $this->line("  - {$relationships->count()} relationship(s) (and their links)");
         $this->line('  - generated model/handler files'.($module->is_custom ? '' : ' (skipped — core module, hand-written)'));
         $this->line($dropTable
-            ? "  - table [{$module->table_name}], including all its data"
+            ? "  - table [{$module->table_name}], including all its data".($module->is_custom ? '' : ' (and its migration file)')
             : '  - table left in place (--keep-table or none scaffolded)');
 
         if (! $this->option('force') && ! $this->confirm("Really delete module [{$slug}]? This cannot be undone.")) {
@@ -88,6 +90,10 @@ class DeleteModule extends Command
         }
 
         if ($dropTable) {
+            if (! $module->is_custom) {
+                $this->deleteMigrationFile($module);
+            }
+
             Schema::dropIfExists($module->table_name);
             $this->info("Dropped table [{$module->table_name}].");
         }
@@ -110,6 +116,28 @@ class DeleteModule extends Command
                 File::delete($path);
                 $this->info("Deleted file [{$path}].");
             }
+        }
+    }
+
+    /**
+     * Inverse of ImportModuleFromJson::createTableViaMigration() — core
+     * modules get their table via a generated migration file instead of a
+     * direct Schema::create(), so deleting one has to roll that migration
+     * back (drops the table and clears its migrations-table row) before
+     * removing the file itself.
+     */
+    protected function deleteMigrationFile(Module $module): void
+    {
+        $files = File::glob(database_path("migrations/*_create_{$module->table_name}_table.php"));
+
+        foreach ($files as $file) {
+            Artisan::call('migrate:rollback', [
+                '--path' => 'database/migrations/'.basename($file),
+                '--force' => true,
+            ]);
+
+            File::delete($file);
+            $this->info("Deleted migration [{$file}].");
         }
     }
 

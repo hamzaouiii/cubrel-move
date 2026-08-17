@@ -1,0 +1,370 @@
+{
+  "name": "Umzüge",
+  "label": "Umzüge",
+  "single_label": "Umzug",
+  "slug": "moves",
+  "icon": "fa-solid fa-truck-moving",
+  "color": "#86D1EE",
+  "path": "/moves",
+  "category": "operations",
+  "has_activity": true,
+  "description": "Geplante und durchgeführte Umzüge.",
+  "is_custom": false,
+  "fields": {
+    "umzugstermin": {
+      "type": "date",
+      "label": "Umzugstermin",
+      "required": true,
+      "filterable": true,
+      "sortable": true
+    },
+    "abholadresse": {
+      "type": "address",
+      "label": "Abholadresse",
+      "required": true
+    },
+    "zieladresse": {
+      "type": "address",
+      "label": "Zieladresse",
+      "required": true
+    },
+    "entfernung_km": {
+      "type": "decimal",
+      "label": "Entfernung (km)"
+    },
+    "anzahl_umzugshelfer": {
+      "type": "integer",
+      "label": "Anzahl Umzugshelfer",
+      "default_value": 2
+    },
+    "endgueltiges_volumen_m3": {
+      "type": "decimal",
+      "label": "Endgültiges Volumen (m³)"
+    },
+    "endpreis": {
+      "type": "currency",
+      "label": "Endpreis",
+      "filterable": true
+    },
+    "zahlungsstatus": {
+      "type": "status",
+      "label": "Zahlungsstatus",
+      "filterable": true,
+      "default_value": "unbezahlt",
+      "options": {
+        "unbezahlt": {
+          "label": "Unbezahlt",
+          "icon": "fa-solid fa-circle-xmark",
+          "bg_color": "#F93800",
+          "text_color": "#FFFFFF"
+        },
+        "anzahlung_erhalten": {
+          "label": "Anzahlung erhalten",
+          "icon": "fa-solid fa-hourglass-half",
+          "bg_color": "#D9A441",
+          "text_color": "#FFFFFF"
+        },
+        "bezahlt": {
+          "label": "Bezahlt",
+          "icon": "fa-solid fa-circle-check",
+          "bg_color": "#01BB00",
+          "text_color": "#FFFFFF"
+        }
+      }
+    },
+    "langer_tragweg": {
+      "type": "checkbox",
+      "label": "Langer Tragweg",
+      "default_value": false
+    },
+    "zerbrechliche_gegenstaende": {
+      "type": "checkbox",
+      "label": "Zerbrechliche Gegenstände",
+      "default_value": false
+    },
+    "demontage": {
+      "type": "checkbox",
+      "label": "Demontage",
+      "default_value": false
+    },
+    "montage": {
+      "type": "checkbox",
+      "label": "Montage",
+      "default_value": false
+    },
+    "notizen": {
+      "type": "longtext",
+      "label": "Notizen"
+    },
+    "status": {
+      "type": "status",
+      "label": "Status",
+      "required": true,
+      "filterable": true,
+      "sortable": true,
+      "default_value": "geplant",
+      "options": {
+        "geplant": {
+          "label": "Geplant",
+          "icon": "fa-solid fa-calendar-check",
+          "bg_color": "#3B8BFF",
+          "text_color": "#FFFFFF"
+        },
+        "in_durchfuehrung": {
+          "label": "In Durchführung",
+          "icon": "fa-solid fa-truck-fast",
+          "bg_color": "#D9A441",
+          "text_color": "#FFFFFF"
+        },
+        "abgeschlossen": {
+          "label": "Abgeschlossen",
+          "icon": "fa-solid fa-circle-check",
+          "bg_color": "#01BB00",
+          "text_color": "#FFFFFF"
+        },
+        "storniert": {
+          "label": "Storniert",
+          "icon": "fa-solid fa-circle-xmark",
+          "bg_color": "#B04A3A",
+          "text_color": "#FFFFFF"
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "right_module": "contacts",
+      "type": "many-to-one",
+      "name": "contacts_moves",
+      "label": "Umzüge"
+    }
+  ],
+  "layouts": {
+    "list": {
+      "columns": [
+        {
+          "name": "name",
+          "type": "text",
+          "label": "modules.defaults.name",
+          "sortable": true
+        },
+        {
+          "name": "umzugstermin",
+          "type": "date",
+          "label": "modules.moves.fields.umzugstermin",
+          "sortable": true
+        },
+        {
+          "name": "status",
+          "type": "status",
+          "label": "modules.moves.fields.status",
+          "sortable": true
+        },
+        {
+          "name": "endpreis",
+          "type": "currency",
+          "label": "modules.moves.fields.endpreis",
+          "sortable": true
+        },
+        {
+          "name": "zahlungsstatus",
+          "type": "status",
+          "label": "modules.moves.fields.zahlungsstatus"
+        },
+        {
+          "name": "anzahl_umzugshelfer",
+          "type": "integer",
+          "label": "modules.moves.fields.anzahl_umzugshelfer"
+        }
+      ]
+    },
+    "record": {
+      "sections": [
+        {
+          "name": "Umzugsdetails",
+          "layout": [
+            {
+              "name": "name",
+              "type": "text",
+              "label": "modules.defaults.name"
+            },
+            {
+              "name": "umzugstermin",
+              "type": "date",
+              "label": "modules.moves.fields.umzugstermin"
+            },
+            {
+              "name": "status",
+              "type": "status",
+              "label": "modules.moves.fields.status"
+            },
+            {
+              "name": "abholadresse",
+              "type": "address",
+              "label": "modules.moves.fields.abholadresse"
+            },
+            {
+              "name": "zieladresse",
+              "type": "address",
+              "label": "modules.moves.fields.zieladresse"
+            },
+            {
+              "name": "entfernung_km",
+              "type": "decimal",
+              "label": "modules.moves.fields.entfernung_km"
+            },
+            {
+              "name": "anzahl_umzugshelfer",
+              "type": "integer",
+              "label": "modules.moves.fields.anzahl_umzugshelfer"
+            }
+          ]
+        },
+        {
+          "name": "Volumen & Preis",
+          "layout": [
+            {
+              "name": "endgueltiges_volumen_m3",
+              "type": "decimal",
+              "label": "modules.moves.fields.endgueltiges_volumen_m3"
+            },
+            {
+              "name": "endpreis",
+              "type": "currency",
+              "label": "modules.moves.fields.endpreis"
+            },
+            {
+              "name": "zahlungsstatus",
+              "type": "status",
+              "label": "modules.moves.fields.zahlungsstatus"
+            }
+          ]
+        },
+        {
+          "name": "Besonderheiten",
+          "layout": [
+            {
+              "name": "langer_tragweg",
+              "type": "checkbox",
+              "label": "modules.moves.fields.langer_tragweg"
+            },
+            {
+              "name": "zerbrechliche_gegenstaende",
+              "type": "checkbox",
+              "label": "modules.moves.fields.zerbrechliche_gegenstaende"
+            },
+            {
+              "name": "demontage",
+              "type": "checkbox",
+              "label": "modules.moves.fields.demontage"
+            },
+            {
+              "name": "montage",
+              "type": "checkbox",
+              "label": "modules.moves.fields.montage"
+            }
+          ]
+        },
+        {
+          "name": "Notizen",
+          "layout": [
+            {
+              "name": "notizen",
+              "type": "longtext",
+              "label": "modules.moves.fields.notizen"
+            },
+            {
+              "name": "description",
+              "type": "longtext",
+              "label": "modules.defaults.description"
+            }
+          ]
+        },
+        {
+          "name": "System",
+          "layout": [
+            {
+              "name": "owner_id",
+              "type": "record",
+              "label": "modules.defaults.owner_id"
+            },
+            {
+              "name": "created_by",
+              "type": "record",
+              "label": "modules.defaults.created_by"
+            },
+            {
+              "name": "updated_by",
+              "type": "record",
+              "label": "modules.defaults.updated_by"
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "label": "modules.defaults.created_at"
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "label": "modules.defaults.updated_at"
+            }
+          ]
+        }
+      ]
+    },
+    "related": {
+      "columns": [
+        {
+          "layout": [
+            {
+              "name": "contacts_umzuege",
+              "type": "one-to-many",
+              "label": "relationships.contacts_umzuege",
+              "fields": [
+                {
+                  "name": "name",
+                  "type": "text",
+                  "label": "modules.defaults.name"
+                },
+                {
+                  "name": "email",
+                  "type": "email",
+                  "label": "modules.contacts.fields.email"
+                },
+                {
+                  "name": "phone",
+                  "type": "phone",
+                  "label": "modules.contacts.fields.phone"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "linkingPanel": {
+      "columns": [
+        {
+          "name": "umzugstermin",
+          "type": "date",
+          "label": "modules.moves.fields.umzugstermin"
+        },
+        {
+          "name": "abholadresse",
+          "type": "address",
+          "label": "modules.moves.fields.abholadresse"
+        },
+        {
+          "name": "zieladresse",
+          "type": "address",
+          "label": "modules.moves.fields.zieladresse"
+        },
+        {
+          "name": "status",
+          "type": "status",
+          "label": "modules.moves.fields.status"
+        }
+      ]
+    }
+  }
+}

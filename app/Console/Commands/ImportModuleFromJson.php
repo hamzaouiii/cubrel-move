@@ -14,6 +14,8 @@ use App\Services\Relationships\RelationshipService;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -521,30 +523,56 @@ class ImportModuleFromJson extends Command
         }
     }
 
+    /**
+     * Core modules (is_custom: false) get their table via a real migration
+     * file so it survives migrate:fresh; custom modules keep the old
+     * direct-Schema::create behavior, matching the runtime module builder.
+     */
     protected function buildTable(Module $module): void
     {
         if (Schema::hasTable($module->table_name)) {
             return;
         }
 
-        $typeMapper = config('default_field_types_mapper');
-        $fields = $module->draftFields();
+        $fieldColumns = $this->fieldColumnsForTable($module->draftFields(), config('default_field_types_mapper'));
+
+        if ($module->is_custom) {
+            $this->createTableDirectly($module, $fieldColumns);
+
+            return;
+        }
+
+        $this->createTableViaMigration($module, $fieldColumns);
+    }
+
+    protected function fieldColumnsForTable(Collection $fields, array $typeMapper): array
+    {
+        $columns = [];
+
+        foreach ($fields as $field) {
+            $key = $field['key'] ?? null;
+            $name = $field['name'] ?? null;
+
+            if (! $key || str_starts_with($key, 'default.')) {
+                continue;
+            }
+
+            $columns[] = [$name, $typeMapper[$field['type'] ?? 'text'] ?? 'string'];
+        }
+
+        return $columns;
+    }
+
+    protected function createTableDirectly(Module $module, array $fieldColumns): void
+    {
         $hasLineItems = $module->has_line_items;
 
-        Schema::create($module->table_name, function (Blueprint $table) use ($fields, $typeMapper, $hasLineItems) {
+        Schema::create($module->table_name, function (Blueprint $table) use ($fieldColumns, $hasLineItems) {
             $table->uuid('id')->primary();
             $table->string('name')->nullable();
             $table->text('description')->nullable();
 
-            foreach ($fields as $field) {
-                $key = $field['key'] ?? null;
-                $name = $field['name'] ?? null;
-
-                if (! $key || str_starts_with($key, 'default.')) {
-                    continue;
-                }
-
-                $blueprintMethod = $typeMapper[$field['type'] ?? 'text'] ?? 'string';
+            foreach ($fieldColumns as [$name, $blueprintMethod]) {
                 $table->{$blueprintMethod}($name)->nullable();
             }
 
@@ -563,6 +591,76 @@ class ImportModuleFromJson extends Command
             $table->timestamps();
             $table->softDeletes();
         });
+    }
+
+    /**
+     * Writes a standard timestamped migration file (same shape as any
+     * hand-written one) and runs just that file, instead of calling
+     * Schema::create() directly — so the table is recreated by
+     * migrate:fresh instead of only existing in the current database.
+     */
+    protected function createTableViaMigration(Module $module, array $fieldColumns): void
+    {
+        $lines = [];
+        $lines[] = "\$table->uuid('id')->primary();";
+        $lines[] = "\$table->string('name')->nullable();";
+        $lines[] = "\$table->text('description')->nullable();";
+
+        foreach ($fieldColumns as [$name, $blueprintMethod]) {
+            $lines[] = "\$table->{$blueprintMethod}('{$name}')->nullable();";
+        }
+
+        if ($module->has_line_items) {
+            $lines[] = "\$table->decimal('subtotal', 15, 2)->nullable();";
+            $lines[] = "\$table->decimal('discount_amount', 15, 2)->nullable();";
+            $lines[] = "\$table->decimal('tax_amount', 15, 2)->nullable();";
+            $lines[] = "\$table->decimal('total', 15, 2)->nullable();";
+        }
+
+        $lines[] = "\$table->json('custom_fields')->nullable();";
+        $lines[] = "\$table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();";
+        $lines[] = "\$table->index('owner_id');";
+        $lines[] = "\$table->foreignUuid('created_by')->nullable()->constrained('users')->nullOnDelete();";
+        $lines[] = "\$table->foreignUuid('updated_by')->nullable()->constrained('users')->nullOnDelete();";
+        $lines[] = '$table->timestamps();';
+        $lines[] = '$table->softDeletes();';
+
+        $columnsPhp = implode("\n", array_map(fn ($line) => '            '.$line, $lines));
+
+        $fileName = date('Y_m_d_His')."_create_{$module->table_name}_table.php";
+        $path = database_path("migrations/{$fileName}");
+
+        $contents = <<<PHP
+        <?php
+
+        use Illuminate\Database\Migrations\Migration;
+        use Illuminate\Database\Schema\Blueprint;
+        use Illuminate\Support\Facades\Schema;
+
+        return new class extends Migration
+        {
+            public function up(): void
+            {
+                Schema::create('{$module->table_name}', function (Blueprint \$table) {
+        {$columnsPhp}
+                });
+            }
+
+            public function down(): void
+            {
+                Schema::dropIfExists('{$module->table_name}');
+            }
+        };
+
+        PHP;
+
+        File::put($path, $contents);
+        $this->info("Wrote migration -> {$path}");
+
+        Artisan::call('migrate', [
+            '--path' => "database/migrations/{$fileName}",
+            '--force' => true,
+        ]);
     }
 
     /**
@@ -679,7 +777,7 @@ class ImportModuleFromJson extends Command
             'multivalue' => 'array',
         ];
 
-        return $module->draftFields()
+        return $module->fields()->get()
             ->filter(fn ($field) => ! str_starts_with($field->key ?? '', 'default.') && isset($typeToCast[$field->type]))
             ->mapWithKeys(fn ($field) => [$field->name => $typeToCast[$field->type]])
             ->all();

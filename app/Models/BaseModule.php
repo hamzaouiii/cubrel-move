@@ -39,13 +39,13 @@ abstract class BaseModule extends Model
 
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
 
         // Child can define $moduleCasts property instead
-        // used in Deals and Cases for example.
         if (property_exists($this, 'moduleCasts')) {
             $this->casts = array_merge($this->casts, $this->moduleCasts);
         }
+
+        parent::__construct($attributes);
     }
 
     protected static function booted(): void

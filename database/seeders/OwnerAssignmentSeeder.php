@@ -22,7 +22,9 @@ class OwnerAssignmentSeeder extends Seeder
     'meetings',
     'tasks',
     'notes',
-    'calls'
+    'calls',
+    'moves',
+    'moverequests'
   ];
 
   public function run(): void

@@ -30,18 +30,18 @@ $metricField = fn (string $module, string $aggregate, string $field, string $lab
     'config' => compact('module', 'aggregate', 'field', 'label', 'icon', 'iconBg', 'iconColor', 'filters'),
 ];
 
-$timeSeries = fn (string $module, string $chartType, string $dateRange, string $interval, string $label, array $filters = []) => [
+$timeSeries = fn (string $module, string $chartType, string $dateRange, string $interval, string $label, array $filters = [], string $dateField = 'created_at') => [
     'type' => 'time-series',
     'cols' => 2,
     'config' => [
-        'module'    => $module,
-        'dateField' => 'created_at',
-        'metric'    => ['type' => 'count'],
-        'interval'  => $interval,
+        'module' => $module,
+        'dateField' => $dateField,
+        'metric' => ['type' => 'count'],
+        'interval' => $interval,
         'chartType' => $chartType,
         'dateRange' => $dateRange,
-        'label'     => $label,
-        'filters'   => $filters,
+        'label' => $label,
+        'filters' => $filters,
     ],
 ];
 
@@ -49,12 +49,12 @@ $breakdown = fn (string $module, string $groupBy, string $chartType, string $lab
     'type' => 'breakdown',
     'cols' => 2,
     'config' => [
-        'module'    => $module,
-        'groupBy'   => $groupBy,
-        'metric'    => ['type' => 'count'],
+        'module' => $module,
+        'groupBy' => $groupBy,
+        'metric' => ['type' => 'count'],
         'chartType' => $chartType,
-        'label'     => $label,
-        'filters'   => [],
+        'label' => $label,
+        'filters' => [],
     ],
 ];
 
@@ -62,67 +62,77 @@ $recordList = fn (string $module, array $columns, string $sortField, string $lab
     'type' => 'record-list',
     'cols' => 1,
     'config' => [
-        'module'  => $module,
+        'module' => $module,
         'columns' => $columns,
-        'sort'    => ['field' => $sortField, 'direction' => 'desc'],
-        'limit'   => $limit,
-        'label'   => $label,
+        'sort' => ['field' => $sortField, 'direction' => 'desc'],
+        'limit' => $limit,
+        'label' => $label,
         'filters' => [],
     ],
 ];
 
-// Shared filter sets
-$wonFilter      = [['field' => 'sales_stage', 'operator' => 'equals',     'value' => 'closed_won']];
-$lostFilter     = [['field' => 'sales_stage', 'operator' => 'equals',     'value' => 'closed_lost']];
-$openFilters    = [
-    ['field' => 'sales_stage', 'operator' => 'not_equals', 'value' => 'closed_won'],
-    ['field' => 'sales_stage', 'operator' => 'not_equals', 'value' => 'closed_lost'],
+// Moving-company filter sets (moves / moverequests modules — deals is deactivated,
+// moverequests is its replacement pipeline)
+$requestNewFilter = [['field' => 'status', 'operator' => 'equals', 'value' => 'neu']];
+$requestConvertedFilter = [['field' => 'status', 'operator' => 'equals', 'value' => 'konvertiert']];
+$requestOpenFilters = [
+    ['field' => 'status', 'operator' => 'not_equals', 'value' => 'konvertiert'],
+    ['field' => 'status', 'operator' => 'not_equals', 'value' => 'verloren'],
 ];
+$moveUpcomingFilter = [['field' => 'status', 'operator' => 'equals', 'value' => 'geplant']];
+$moveCompletedFilter = [['field' => 'status', 'operator' => 'equals', 'value' => 'abgeschlossen']];
+$movePaidFilter = [['field' => 'zahlungsstatus', 'operator' => 'equals', 'value' => 'bezahlt']];
 
 return [
 
-    // ── Admin — org-wide across all modules ──────────────────────────────────
+    // ── Admin — org-wide across moves & move requests ────────────────────────
     'admin' => [
-        $metric('leads',  'count', 'Total Leads',  'fa-solid fa-users',              '#e8f5e9', '#2e7d32'),
-        $metric('deals',  'count', 'Won Deals',    'fa-regular fa-circle-check',      '#e3f2fd', '#1565c0', $wonFilter),
-        $metric('deals',  'count', 'Open Deals',   'fa-regular fa-clock',             '#fff3e0', '#e65100', $openFilters),
-        $metric('deals',  'count', 'Lost Deals',   'fa-regular fa-circle-xmark',      '#fce4ec', '#c62828', $lostFilter),
-        'my-records',
-        $recordList('leads',  [],'created_at', 'Recent Leads',  10),
-        $timeSeries('deals',  'line',  'last_6_months', 'month', 'Deals over time'),
-        $breakdown( 'deals',  'sales_stage', 'donut',               'Deal Stages'),
-        $recordList('orders', ['order_number', 'status', 'order_date', 'total'], 'order_date', 'Recent Orders', 5),
+        $metric('moverequests', 'count', 'Neue Umzugsanfragen', 'fa-solid fa-inbox', '#e0f2fe', '#0369a1', $requestNewFilter),
+        // $metric('moverequests', 'count', 'Konvertierte Anfragen', 'fa-regular fa-circle-check', '#ecfde3', '#026305', $requestConvertedFilter),
+        $metric('moves', 'count', 'Anstehende Umzüge', 'fa-solid fa-truck-fast', '#f5efe8', '#7d6d2e', $moveUpcomingFilter),
+        $metric('moves', 'count', 'Abgeschlossene Umzüge', 'fa-regular fa-circle-check', '#ecfdf5', '#065f46', $moveCompletedFilter),
+        $metricField('moves', 'sum', 'endpreis', 'Umsatz (bezahlt)', 'fa-solid fa-euro-sign', '#ecfdf5', '#065f46', $movePaidFilter),
+        // $recordList('moverequests', ['objekttyp', 'wunschtermin', 'geschaetzter_preis_von', 'status'], 'wunschtermin', 'Neue Umzugsanfragen', 10),
+        // $recordList('moves', ['umzugstermin', 'status', 'anzahl_umzugshelfer', 'endpreis'], 'umzugstermin', 'Anstehende Umzüge', 10),
+        // $metricField('moverequests', 'sum', 'angebotener_preis', 'Angebotssumme', 'fa-solid fa-euro-sign', '#f3e8ff', '#7c3aed', $requestOpenFilters),
+        $breakdown('moverequests', 'quelle', 'donut', 'Anfragen nach Quelle'),
+        $breakdown('moves', 'status', 'bar', 'Umzüge nach Status'),
+        $timeSeries('moverequests', 'line', 'last_6_months', 'month', 'Umzugsanfragen im Zeitverlauf'),
+        $timeSeries('moves', 'bar', 'last_6_months', 'month', 'Geplante Umzüge im Zeitverlauf', [], 'umzugstermin'),
+
     ],
 
     // ── Sales Rep — scoped to current user automatically ─────────────────────
     'sales_rep' => [
-        $metric('leads',  'count', 'My Leads',       'fa-solid fa-users',              '#e8f5e9', '#2e7d32'),
-        $metric('deals',  'count', 'My Won Deals',   'fa-regular fa-circle-check',     '#e3f2fd', '#1565c0', $wonFilter),
-        $metric('deals',  'count', 'My Open Deals',  'fa-regular fa-clock',            '#fff3e0', '#e65100', $openFilters),
-        $metricField('deals', 'sum', 'amount', 'Pipeline Value', 'fa-solid fa-euro-sign', '#f3e8ff', '#7c3aed', $openFilters),
+        $metric('moverequests', 'count', 'Meine neuen Anfragen', 'fa-solid fa-inbox', '#e0f2fe', '#0369a1', $requestNewFilter),
+        $metric('moverequests', 'count', 'Meine konvertierten Anfragen', 'fa-regular fa-circle-check', '#e3f2fd', '#1565c0', $requestConvertedFilter),
+        $metric('moves', 'count', 'Meine anstehenden Umzüge', 'fa-solid fa-truck-fast', '#e8f5e9', '#2e7d32', $moveUpcomingFilter),
+        $metricField('moverequests', 'sum', 'angebotener_preis', 'Meine Angebotssumme', 'fa-solid fa-euro-sign', '#f3e8ff', '#7c3aed', $requestOpenFilters),
         'my-records',
-        $recordList('leads', [],            'created_at', 'My Recent Leads', 10),
-        $timeSeries('deals', 'bar', 'last_6_months', 'month', 'My Deals over time'),
-        $breakdown( 'deals', 'sales_stage', 'donut', 'My Deal Stages'),
+        $recordList('moverequests', ['objekttyp', 'wunschtermin', 'geschaetzter_preis_von', 'status'], 'wunschtermin', 'Meine Umzugsanfragen', 10),
+        $timeSeries('moverequests', 'bar', 'last_6_months', 'month', 'Meine Anfragen im Zeitverlauf'),
+        $breakdown('moverequests', 'quelle', 'donut', 'Meine Anfragen nach Quelle'),
     ],
 
     // ── Sales Manager — org-wide, sales-team visibility ──────────────────────
     // Note: config/dashboard.php org_wide_types exempts this type from the implicit owner filter.
     'sales_manager' => [
-        $metric('leads', 'count', 'Total Leads',    'fa-solid fa-users',              '#e8f5e9', '#2e7d32'),
-        $metric('deals', 'count', 'Won Deals',      'fa-regular fa-circle-check',     '#e3f2fd', '#1565c0', $wonFilter),
-        $metricField('deals', 'sum', 'amount', 'Won Revenue',      'fa-solid fa-trophy',         '#ecfdf5', '#065f46', $wonFilter),
-        $metricField('deals', 'sum', 'amount', 'Pipeline Value',   'fa-solid fa-euro-sign',    '#f3e8ff', '#7c3aed', $openFilters),
-        $recordList('leads',  [],                                    'created_at', 'Recent Leads',  10),
-        $timeSeries('deals',  'bar',  'last_12_months', 'month', 'Deals over time'),
-        $breakdown( 'deals',  'sales_stage', 'donut', 'Deal Stages'),
-        $recordList('orders', ['order_number', 'status', 'order_date', 'total'], 'order_date', 'Recent Orders', 10),
+        $metric('moverequests', 'count', 'Anfragen gesamt', 'fa-solid fa-inbox', '#e0f2fe', '#0369a1'),
+        $metric('moverequests', 'count', 'Konvertierte Anfragen', 'fa-regular fa-circle-check', '#e3f2fd', '#1565c0', $requestConvertedFilter),
+        $metricField('moverequests', 'sum', 'angebotener_preis', 'Angebotssumme', 'fa-solid fa-euro-sign', '#f3e8ff', '#7c3aed', $requestOpenFilters),
+        $metricField('moves', 'sum', 'endpreis', 'Umsatz (bezahlt)', 'fa-solid fa-sack-dollar', '#ecfdf5', '#065f46', $movePaidFilter),
+        $recordList('moverequests', ['objekttyp', 'wunschtermin', 'geschaetzter_preis_von', 'status'], 'wunschtermin', 'Aktuelle Umzugsanfragen', 10),
+        $timeSeries('moverequests', 'bar', 'last_12_months', 'month', 'Umzugsanfragen im Zeitverlauf'),
+        $breakdown('moverequests', 'quelle', 'donut', 'Anfragen nach Quelle'),
+        $metric('moves', 'count', 'Anstehende Umzüge', 'fa-solid fa-truck-fast', '#e8f5e9', '#2e7d32', $moveUpcomingFilter),
+        $breakdown('moves', 'status', 'donut', 'Umzüge nach Status'),
+        $recordList('moves', ['umzugstermin', 'status', 'anzahl_umzugshelfer', 'endpreis'], 'umzugstermin', 'Anstehende Umzüge', 10),
     ],
 
     // ── Support Agent — scoped to current user, support-module focused ────────
     'support_agent' => [
-        $metric('cases', 'count', 'My Cases',        'fa-solid fa-life-ring',  '#fff7ed', '#c2410c'),
-        $metric('cases', 'count', 'My Open Cases',   'fa-solid fa-ticket',     '#fef3c7', '#d97706'),
+        $metric('cases', 'count', 'My Cases', 'fa-solid fa-life-ring', '#fff7ed', '#c2410c'),
+        $metric('cases', 'count', 'My Open Cases', 'fa-solid fa-ticket', '#fef3c7', '#d97706'),
         'my-records',
         $recordList('cases', [], 'created_at', 'My Recent Cases', 10),
         $timeSeries('cases', 'line', 'last_6_months', 'month', 'Cases over time'),
@@ -130,23 +140,23 @@ return [
 
     // ── Marketing User — lead-generation and contact growth focus ─────────────
     'marketing_user' => [
-        $metric('leads',    'count', 'Total Leads',    'fa-solid fa-bullseye', '#e8f5e9', '#2e7d32'),
+        $metric('leads', 'count', 'Total Leads', 'fa-solid fa-bullseye', '#e8f5e9', '#2e7d32'),
         $metric('contacts', 'count', 'Total Contacts', 'fa-solid fa-address-book', '#e0f2fe', '#0369a1'),
-        $metric('accounts', 'count', 'Accounts',       'fa-solid fa-building', '#ede9fe', '#5b21b6'),
+        $metric('accounts', 'count', 'Accounts', 'fa-solid fa-building', '#ede9fe', '#5b21b6'),
         'my-records',
-        $timeSeries('leads',    'line', 'last_6_months', 'month', 'New Leads over time'),
+        $timeSeries('leads', 'line', 'last_6_months', 'month', 'New Leads over time'),
         $timeSeries('contacts', 'line', 'last_6_months', 'month', 'New Contacts over time'),
-        $recordList('leads',    [], 'created_at', 'Recent Leads',    10),
+        $recordList('leads', [], 'created_at', 'Recent Leads', 10),
         $recordList('contacts', [], 'created_at', 'Recent Contacts', 10),
     ],
 
     // ── Read Only / Default — minimal, safe for any role ─────────────────────
     'read_only' => [
-        $metric('leads', 'count', 'Leads',      'fa-solid fa-users',          '#e8f5e9', '#2e7d32'),
-        $metric('deals', 'count', 'Won Deals',  'fa-regular fa-circle-check', '#e3f2fd', '#1565c0', $wonFilter),
-        $metric('deals', 'count', 'Open Deals', 'fa-regular fa-clock',        '#fff3e0', '#e65100', $openFilters),
+        $metric('moverequests', 'count', 'Umzugsanfragen', 'fa-solid fa-inbox', '#e0f2fe', '#0369a1'),
+        $metric('moves', 'count', 'Anstehende Umzüge', 'fa-solid fa-truck-fast', '#e8f5e9', '#2e7d32', $moveUpcomingFilter),
+        $metric('moves', 'count', 'Abgeschlossene Umzüge', 'fa-regular fa-circle-check', '#ecfdf5', '#065f46', $moveCompletedFilter),
         'my-records',
-        $recordList('leads', [], 'created_at', 'Recent Leads', 10),
+        $recordList('moves', ['umzugstermin', 'status', 'anzahl_umzugshelfer', 'endpreis'], 'umzugstermin', 'Anstehende Umzüge', 10),
     ],
 
 ];
